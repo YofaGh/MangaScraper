@@ -30,9 +30,3 @@ def get_images():
 
 #get_chapters()
 #get_images()
-res = requests.get('https://manhuascan.us/manga/keep-it-a-secret-from-your-mother/chapter-27')
-#print(res.text)
-soup = BeautifulSoup(res.text, 'html.parser')
-images = soup.find('div', {'id': 'readerarea'}).find_all('img')
-images = [image['src'] for image in images]
-print(images)
