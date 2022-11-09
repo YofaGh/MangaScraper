@@ -29,7 +29,6 @@ class M_Manga:
             return f'Chapter {int(new_name):03d}'
         except:
             return f'Chapter {new_name.split(".", 1)[0].zfill(3)}.{new_name.split(".", 1)[1]}'
-        return rn(chapter)
 
 class Manhuascan(M_Manga):
     def get_chapters(manga):
