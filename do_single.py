@@ -1,8 +1,8 @@
 import requests, time, sys, os
-from assets import create_folder, validate_corrupted_image, validate_truncated_image, waiter, CheckChapters, LastChapter, RangeOfChapters, SetSource, fix_manga_name
 from termcolor import colored
+from assets import *
 
-def download_single(manga, url, source, is_all=False, last=None, ranged=None, chapters=None, auto_merge=False, convert_to_pdf=False):
+def download_single(manga, url, source, is_all, last, ranged, chapters, auto_merge, convert_to_pdf):
     chapters_to_download = get_name_of_chapters(manga, url, source, is_all, last, ranged, chapters)
     download_manga(manga, url, source, chapters_to_download, auto_merge, convert_to_pdf)
 
@@ -56,7 +56,7 @@ def download_manga(manga, url, source, chapters, auto_merge, convert_to_pdf):
                     sys.stdout.write(f'\r{manga}: Downloading {chapters[0]} image {i+adder+1}/{len(images)+adder}...')
                 save_path = f'{fixed_manga}/{renamed_chapter}/{i+adder+1:03d}.{images[i].split(".")[-1]}'
                 if not os.path.exists(save_path):
-                    time.sleep(2)
+                    time.sleep(sleep_time)
                     response = requests.get(images[i])
                     with open(save_path, 'wb') as image:
                         image.write(response.content)

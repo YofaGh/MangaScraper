@@ -118,3 +118,5 @@ sources_dict = {
     'manhwa18.com': Manhwa18,
     'manhwa365.com': Manhwa365
 }
+
+sleep_time = 1

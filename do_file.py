@@ -1,6 +1,6 @@
 import requests, time, json, sys, os
-from assets import validate_corrupted_image, validate_truncated_image, create_folder, sources_dict, waiter, fix_manga_name
 from termcolor import colored
+from assets import *
 
 global mangas
 
@@ -30,7 +30,7 @@ def get_name_of_chapters():
                         mangas[manga]['chapters'].append(chapter)
         mangas[manga]['chapters'] = sorted(mangas[manga]['chapters'], key=sources_dict[mangas[manga]['domain']].rename_chapter)
         print(f'\r{manga}: There are totally {len(mangas[manga]["chapters"])} chapters to download.')
-        time.sleep(2)
+        time.sleep(sleep_time)
     with open('mangas.json', 'w') as mangas_json:
         mangas_json.write(json.dumps(mangas, indent=4))
 
@@ -60,10 +60,11 @@ def download_mangas(auto_merge, convert_to_pdf):
                         sys.stdout.write(f'\r{manga}: Downloading {chapter} image {i+adder+1}/{len(images)+adder}...')
                     save_path = f'{fixed_manga}/{renamed_chapter}/{i+adder+1:03d}.{images[i].split(".")[-1]}'
                     if not os.path.exists(save_path):
-                        time.sleep(2)
+                        time.sleep(sleep_time)
                         response = requests.get(images[i])
                         with open(save_path, 'wb') as image:
                             image.write(response.content)
+                        time.sleep(0.1)
                         if not validate_corrupted_image(save_path):
                             print(colored(f' Warning: Image {i+adder+1} is corrupted. will not be able to merge this chapter', 'red'))
                     if not validate_truncated_image(save_path) and last_truncated != save_path:
@@ -87,6 +88,7 @@ def download_mangas(auto_merge, convert_to_pdf):
             except Exception as error:
                 if str(error) == 'truncated':
                     print(colored(f' {last_truncated} was truncated. trying to download it one more time...', 'red'))
+                    time.sleep(1200)
                 else:
                     raise error
     if inconsistencies:
