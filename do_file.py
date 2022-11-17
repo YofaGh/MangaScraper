@@ -4,7 +4,7 @@ from assets import *
 
 global mangas
 
-def download_file(json_file, auto_merge=False, convert_to_pdf=False):
+def download_file(json_file, auto_merge, convert_to_pdf):
     global mangas
     with open(json_file) as mangas_json:
         mangas = json.loads(mangas_json.read())
@@ -83,7 +83,7 @@ def download_mangas(auto_merge, convert_to_pdf):
                 del mangas[manga]['chapters'][0]
                 with open('mangas.json', 'w') as mangas_json:
                     mangas_json.write(json.dumps(mangas, indent=4))
-            except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout):
+            except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout, ConnectionResetError):
                 waiter()
             except Exception as error:
                 if str(error) == 'truncated':
