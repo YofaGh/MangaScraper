@@ -14,22 +14,23 @@ def download_file(json_file, auto_merge, convert_to_pdf):
 def get_name_of_chapters():
     global mangas
     valid_mangas = [manga for (manga, detm) in mangas.items() if detm['include']]
-    for manga in valid_mangas:
+    for valid_manga in valid_mangas:
+        manga = mangas[valid_manga]
         sys.stdout.write(f'\r{manga}: Getting name of chapters...')
-        if mangas[manga]['last_downloaded_chapter'] != 'pass':
-            chapters = sources_dict[mangas[manga]['domain']].get_chapters(mangas[manga]['url'])
-            if mangas[manga]['last_downloaded_chapter'] is None:
-                mangas[manga]['chapters'] += [chapter for chapter in chapters if chapter not in mangas[manga]['chapters']]
+        if manga['last_downloaded_chapter'] != 'pass':
+            chapters = sources_dict[manga['domain']].get_chapters(manga['url'])
+            if manga['last_downloaded_chapter'] is None:
+                manga['chapters'] += [chapter for chapter in chapters if chapter not in manga['chapters']]
             else:
                 reached_last_downloaded_chapter = False
                 for chapter in chapters:
-                    if chapter == mangas[manga]['last_downloaded_chapter']:
+                    if chapter == manga['last_downloaded_chapter']:
                         reached_last_downloaded_chapter = True
                         continue
-                    if reached_last_downloaded_chapter and chapter not in mangas[manga]['chapters']:
-                        mangas[manga]['chapters'].append(chapter)
-        mangas[manga]['chapters'] = sorted(mangas[manga]['chapters'], key=sources_dict[mangas[manga]['domain']].rename_chapter)
-        print(f'\r{manga}: There are totally {len(mangas[manga]["chapters"])} chapters to download.')
+                    if reached_last_downloaded_chapter and chapter not in manga['chapters']:
+                        manga['chapters'].append(chapter)
+        manga['chapters'] = sorted(manga['chapters'], key=sources_dict[manga['domain']].rename_chapter)
+        print(f'\r{manga}: There are totally {len(manga["chapters"])} chapters to download.')
         time.sleep(sleep_time)
     with open('mangas.json', 'w') as mangas_json:
         mangas_json.write(json.dumps(mangas, indent=4))
@@ -88,7 +89,6 @@ def download_mangas(auto_merge, convert_to_pdf):
             except Exception as error:
                 if str(error) == 'truncated':
                     print(colored(f' {last_truncated} was truncated. trying to download it one more time...', 'red'))
-                    time.sleep(1200)
                 else:
                     raise error
     if inconsistencies:

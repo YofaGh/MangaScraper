@@ -34,7 +34,7 @@ if args.mergechapter and not args.c:
 
 if args.f:
     from do_file import download_file
-    download_file(args.f, args.g)
+    download_file(args.f, args.g, args.p)
 
 elif args.u:
     from do_single import download_single
