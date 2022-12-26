@@ -38,7 +38,7 @@ if args.f:
 
 elif args.u:
     from do_single import download_single
-    download_single(args.n or args.u, args.u, args.s, args.a, args.l, args.r, args.c, args.g)
+    download_single(args.n or args.u, args.u, args.s, args.a, args.l, args.r, args.c, args.g, args.p)
 
 elif args.mergechapter:
     from image_merger import merge_chapter

@@ -1,4 +1,4 @@
-import requests, time, sys, os
+import requests, natsort, time, sys, os
 from termcolor import colored
 from assets import *
 
@@ -33,7 +33,7 @@ def get_name_of_chapters(manga, url, source, is_all, last, ranged, c_chapters):
         renamed_chapters = [source.rename_chapter(str(c)) for c in c_chapters]
         ctd += [chapter for chapter in chapters if (source.rename_chapter(chapter) in renamed_chapters and chapter not in ctd)]
     print(f'\r{manga}: There are totally {len(ctd)} chapters to download.')
-    return sorted(ctd, key=source.rename_chapter)
+    return sorted(ctd, key= lambda _: (source.rename_chapter, natsort.os_sorted))
 
 def download_manga(manga, url, source, chapters, auto_merge, convert_to_pdf):
     inconsistencies = []
