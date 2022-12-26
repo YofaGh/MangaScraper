@@ -29,7 +29,7 @@ def get_name_of_chapters():
                         continue
                     if reached_last_downloaded_chapter and chapter not in manga['chapters']:
                         manga['chapters'].append(chapter)
-        manga['chapters'] = sorted(manga['chapters'], key= lambda x: (sources_dict[manga['domain']].rename_chapter, natsort.os_sorted))
+        manga['chapters'] = sorted(manga['chapters'], key= lambda _: (sources_dict[manga['domain']].rename_chapter, natsort.os_sorted))
         print(f'\r{valid_manga}: There are totally {len(manga["chapters"])} chapters to download.')
         time.sleep(sleep_time)
     with open('mangas.json', 'w') as mangas_json:
