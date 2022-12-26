@@ -9,7 +9,7 @@ def download_file(json_file, auto_merge, convert_to_pdf):
     with open(json_file) as mangas_json:
         mangas = json.loads(mangas_json.read())
     get_name_of_chapters()
-    #download_mangas(auto_merge, convert_to_pdf)
+    download_mangas(auto_merge, convert_to_pdf)
 
 def get_name_of_chapters():
     global mangas
