@@ -1,4 +1,4 @@
-import requests, time, json, sys, os
+import requests, natsort, time, json, sys, os
 from termcolor import colored
 from assets import *
 
@@ -9,14 +9,14 @@ def download_file(json_file, auto_merge, convert_to_pdf):
     with open(json_file) as mangas_json:
         mangas = json.loads(mangas_json.read())
     get_name_of_chapters()
-    download_mangas(auto_merge, convert_to_pdf)
+    #download_mangas(auto_merge, convert_to_pdf)
 
 def get_name_of_chapters():
     global mangas
     valid_mangas = [manga for (manga, detm) in mangas.items() if detm['include']]
     for valid_manga in valid_mangas:
         manga = mangas[valid_manga]
-        sys.stdout.write(f'\r{manga}: Getting name of chapters...')
+        sys.stdout.write(f'\r{valid_manga}: Getting name of chapters...')
         if manga['last_downloaded_chapter'] != 'pass':
             chapters = sources_dict[manga['domain']].get_chapters(manga['url'])
             if manga['last_downloaded_chapter'] is None:
@@ -29,8 +29,8 @@ def get_name_of_chapters():
                         continue
                     if reached_last_downloaded_chapter and chapter not in manga['chapters']:
                         manga['chapters'].append(chapter)
-        manga['chapters'] = sorted(manga['chapters'], key=sources_dict[manga['domain']].rename_chapter)
-        print(f'\r{manga}: There are totally {len(manga["chapters"])} chapters to download.')
+        manga['chapters'] = sorted(manga['chapters'], key= lambda x: (sources_dict[manga['domain']].rename_chapter, natsort.os_sorted))
+        print(f'\r{valid_manga}: There are totally {len(manga["chapters"])} chapters to download.')
         time.sleep(sleep_time)
     with open('mangas.json', 'w') as mangas_json:
         mangas_json.write(json.dumps(mangas, indent=4))

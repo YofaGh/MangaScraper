@@ -116,7 +116,8 @@ sources_dict = {
     'skymanga.xyz': Skymanga,
     'bibimanga.com': Bibimanga,
     'manhwa18.com': Manhwa18,
-    'manhwa365.com': Manhwa365
+    'manhwa365.com': Manhwa365,
+    'readonepiece.com': Readonepiece
 }
 
-sleep_time = 1
+sleep_time = 0.2
