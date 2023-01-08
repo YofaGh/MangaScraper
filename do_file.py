@@ -8,10 +8,10 @@ def download_file(json_file, auto_merge, convert_to_pdf):
     global mangas
     with open(json_file) as mangas_json:
         mangas = json.loads(mangas_json.read())
-    get_name_of_chapters()
-    download_mangas(auto_merge, convert_to_pdf)
+    get_name_of_chapters(json_file)
+    download_mangas(json_file, auto_merge, convert_to_pdf)
 
-def get_name_of_chapters():
+def get_name_of_chapters(json_file):
     global mangas
     valid_mangas = [manga for (manga, detm) in mangas.items() if detm['include']]
     for valid_manga in valid_mangas:
@@ -32,10 +32,10 @@ def get_name_of_chapters():
         manga['chapters'] = sorted(manga['chapters'], key=lambda _: (sources_dict[manga['domain']].rename_chapter, natsort.os_sorted))
         print(f'\r{valid_manga}: There are totally {len(manga["chapters"])} chapters to download.')
         time.sleep(sleep_time)
-    with open('mangas.json', 'w') as mangas_json:
+    with open(json_file, 'w') as mangas_json:
         mangas_json.write(json.dumps(mangas, indent=4))
 
-def download_mangas(auto_merge, convert_to_pdf):
+def download_mangas(json_file, auto_merge, convert_to_pdf):
     global mangas
     inconsistencies = []
     last_truncated = None
@@ -82,7 +82,7 @@ def download_mangas(auto_merge, convert_to_pdf):
                     from pdf_converter import convert_chapter
                     convert_chapter('Merged', manga, chapter, f'Merged/{manga}')
                 del mangas[manga]['chapters'][0]
-                with open('mangas.json', 'w') as mangas_json:
+                with open(json_file, 'w') as mangas_json:
                     mangas_json.write(json.dumps(mangas, indent=4))
             except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout, ConnectionResetError):
                 waiter()
