@@ -120,4 +120,4 @@ sources_dict = {
     'readonepiece.com': Readonepiece
 }
 
-sleep_time = 0.2
+sleep_time = 0.1
