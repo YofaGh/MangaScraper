@@ -4,14 +4,14 @@ from assets import *
 
 global mangas
 
-def download_file(json_file, auto_merge, convert_to_pdf):
+def download_file(json_file, sleep_time, auto_merge, convert_to_pdf):
     global mangas
     with open(json_file) as mangas_json:
         mangas = json.loads(mangas_json.read())
-    get_name_of_chapters(json_file)
-    download_mangas(json_file, auto_merge, convert_to_pdf)
+    get_name_of_chapters(json_file, sleep_time)
+    download_mangas(json_file, sleep_time, auto_merge, convert_to_pdf)
 
-def get_name_of_chapters(json_file):
+def get_name_of_chapters(json_file, sleep_time):
     global mangas
     valid_mangas = [manga for (manga, detm) in mangas.items() if detm['include']]
     for valid_manga in valid_mangas:
@@ -35,7 +35,7 @@ def get_name_of_chapters(json_file):
     with open(json_file, 'w') as mangas_json:
         mangas_json.write(json.dumps(mangas, indent=4))
 
-def download_mangas(json_file, auto_merge, convert_to_pdf):
+def download_mangas(json_file, sleep_time, auto_merge, convert_to_pdf):
     global mangas
     inconsistencies = []
     last_truncated = None
@@ -65,7 +65,6 @@ def download_mangas(json_file, auto_merge, convert_to_pdf):
                         response = requests.get(images[i])
                         with open(save_path, 'wb') as image:
                             image.write(response.content)
-                        time.sleep(0.1)
                         if not validate_corrupted_image(save_path):
                             print(colored(f' Warning: Image {i+adder+1} is corrupted. will not be able to merge this chapter', 'red'))
                     if not validate_truncated_image(save_path) and last_truncated != save_path:
@@ -100,6 +99,9 @@ if __name__ == '__main__':
     parser.add_argument('-f', action='store', required=True, help='downloads chapters specified in given json file')
     parser.add_argument('-p', action='store_true', help='converts merged images to pdf')
     parser.add_argument('-g', action='store_true', help='if set, merges images vertically')
+    parser.add_argument('-t', action='store', default=1, nargs=1, type=int, help='set sleep time between requests')
+    
     args = parser.parse_args()
+    args.t = args.t[0] if type(args.t) is list else args.t
     os.system('color')
-    download_file(args.f, args.g, args.p)
+    download_file(args.f, args.t, args.g, args.p)

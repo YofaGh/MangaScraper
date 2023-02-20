@@ -2,9 +2,9 @@ import requests, natsort, time, sys, os
 from termcolor import colored
 from assets import *
 
-def download_single(manga, url, source, is_all, last, ranged, chapters, auto_merge, convert_to_pdf):
+def download_single(manga, url, source, sleep_time, is_all, last, ranged, chapters, auto_merge, convert_to_pdf):
     chapters_to_download = get_name_of_chapters(manga, url, source, is_all, last, ranged, chapters)
-    download_manga(manga, url, source, chapters_to_download, auto_merge, convert_to_pdf)
+    download_manga(manga, url, source, sleep_time, chapters_to_download, auto_merge, convert_to_pdf)
 
 def get_name_of_chapters(manga, url, source, is_all, last, ranged, c_chapters):
     ctd = []
@@ -35,7 +35,7 @@ def get_name_of_chapters(manga, url, source, is_all, last, ranged, c_chapters):
     print(f'\r{manga}: There are totally {len(ctd)} chapters to download.')
     return sorted(ctd, key= lambda _: (source.rename_chapter, natsort.os_sorted))
 
-def download_manga(manga, url, source, chapters, auto_merge, convert_to_pdf):
+def download_manga(manga, url, source, sleep_time, chapters, auto_merge, convert_to_pdf):
     inconsistencies = []
     last_truncated = None
     fixed_manga = fix_manga_name(manga)
@@ -93,6 +93,8 @@ if __name__ == '__main__':
     parser.add_argument('-n', action='store',  help='specifie name of mangas folder')
     parser.add_argument('-p', action='store_true', help='converts merged images to pdf')
     parser.add_argument('-g', action='store_true', help='if set, merges images vertically')
+    parser.add_argument('-t', action='store', default=1, nargs=1, type=int, help='set sleep time between requests')
+    
     single_manga_chapters = parser.add_mutually_exclusive_group()
     single_manga_chapters.add_argument('-a', action='store_true', help='downloads all available chapters')
     single_manga_chapters.add_argument('-l', action=LastChapter, type=float, help='\
@@ -102,5 +104,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
     if not (args.c or args.a or args.l or args.r):
         parser.error('specify chapters using arguments: [a, l, r, c]')
+    args.t = args.t[0] if type(args.t) is list else args.t
     os.system('color')
     download_single(args.n or args.u, args.s, args.u, args.a, args.l, args.r, args.c, args.g, args.p)

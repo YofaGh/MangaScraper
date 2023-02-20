@@ -119,5 +119,3 @@ sources_dict = {
     'manhwa365.com': Manhwa365,
     'readonepiece.com': Readonepiece
 }
-
-sleep_time = 0.1
