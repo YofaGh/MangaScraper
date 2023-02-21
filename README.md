@@ -78,4 +78,4 @@
 > converting chapters that are merged into fewer images is highly recommended.
 
 ## Search Engine
-> Still in development but allows you search between available sources.
+> Still in development but allows you to search between available sources.
