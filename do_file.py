@@ -62,7 +62,6 @@ def download_mangas(json_file, sleep_time, auto_merge, convert_to_pdf):
                     save_path = f'{fixed_manga}/{renamed_chapter}/{i+adder+1:03d}.{images[i].split(".")[-1]}'
                     if not os.path.exists(save_path):
                         time.sleep(sleep_time)
-                        #response = requests.get(images[i])
                         response = send_request(images[i])
                         with open(save_path, 'wb') as image:
                             image.write(response.content)
@@ -84,8 +83,6 @@ def download_mangas(json_file, sleep_time, auto_merge, convert_to_pdf):
                 del mangas[manga]['chapters'][0]
                 with open(json_file, 'w') as mangas_json:
                     mangas_json.write(json.dumps(mangas, indent=4))
-            #except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout, ConnectionResetError):
-            #    waiter()
             except Exception as error:
                 if str(error) == 'Connection error':
                     waiter()

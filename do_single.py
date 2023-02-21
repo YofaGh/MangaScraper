@@ -57,7 +57,6 @@ def download_manga(manga, url, source, sleep_time, chapters, auto_merge, convert
                 save_path = f'{fixed_manga}/{renamed_chapter}/{i+adder+1:03d}.{images[i].split(".")[-1]}'
                 if not os.path.exists(save_path):
                     time.sleep(sleep_time)
-                    #response = requests.get(images[i])
                     response = send_request(images[i])
                     with open(save_path, 'wb') as image:
                         image.write(response.content)
@@ -75,8 +74,6 @@ def download_manga(manga, url, source, sleep_time, chapters, auto_merge, convert
                 from pdf_converter import convert_chapter
                 convert_chapter('Merged', manga, chapters[0], f'Merged/{manga}')
             del chapters[0]
-        #except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout) as err:
-        #        waiter()
         except Exception as error:
             if str(error) == 'Connection error':
                 waiter()
