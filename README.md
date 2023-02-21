@@ -39,6 +39,13 @@
 > Format of the json file should look like this:
 ```json
 {
+    "Attck on Titan": {
+        "include": true,
+        "domain": "truemanga.com",
+        "url": "attack-on-titan",
+        "last_downloaded_chapter": null,
+        "chapters": []
+    },
     "Secret Class": {
         "include": true,
         "domain": "manhuascan.us",
@@ -46,17 +53,10 @@
         "last_downloaded_chapter": "chapter-100",
         "chapters": []
     },
-    "Boarding Diary": {
+    "One Piece": {
         "include": true,
-        "domain": "manhuascan.us",
-        "url": "boarding-diary",
-        "last_downloaded_chapter": null,
-        "chapters": []
-    },
-    "Brave New World": {
-        "include": true,
-        "domain": "manhuascan.us",
-        "url": "a-wonderful-new-world",
+        "domain": "truemanga.com",
+        "url": "one-piece",
         "last_downloaded_chapter": "pass",
         "chapters": [
             "chapter-1",
