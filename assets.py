@@ -117,5 +117,6 @@ sources_dict = {
     'bibimanga.com': Bibimanga,
     'manhwa18.com': Manhwa18,
     'manhwa365.com': Manhwa365,
-    'readonepiece.com': Readonepiece
+    'readonepiece.com': Readonepiece,
+    'truemanga.com': Truemanga
 }
