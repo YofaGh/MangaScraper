@@ -93,7 +93,7 @@ if __name__ == '__main__':
     parser.add_argument('-n', action='store',  help='specifie name of mangas folder')
     parser.add_argument('-p', action='store_true', help='converts merged images to pdf')
     parser.add_argument('-g', action='store_true', help='if set, merges images vertically')
-    parser.add_argument('-t', action='store', default=1, nargs=1, type=int, help='set sleep time between requests')
+    parser.add_argument('-t', action='store', default=0.1, nargs=1, type=float, help='set sleep time between requests')
     
     single_manga_chapters = parser.add_mutually_exclusive_group()
     single_manga_chapters.add_argument('-a', action='store_true', help='downloads all available chapters')

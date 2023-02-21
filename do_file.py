@@ -99,7 +99,7 @@ if __name__ == '__main__':
     parser.add_argument('-f', action='store', required=True, help='downloads chapters specified in given json file')
     parser.add_argument('-p', action='store_true', help='converts merged images to pdf')
     parser.add_argument('-g', action='store_true', help='if set, merges images vertically')
-    parser.add_argument('-t', action='store', default=1, nargs=1, type=int, help='set sleep time between requests')
+    parser.add_argument('-t', action='store', default=0.1, nargs=1, type=float, help='set sleep time between requests')
     
     args = parser.parse_args()
     args.t = args.t[0] if type(args.t) is list else args.t
