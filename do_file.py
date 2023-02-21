@@ -62,15 +62,16 @@ def download_mangas(json_file, sleep_time, auto_merge, convert_to_pdf):
                     save_path = f'{fixed_manga}/{renamed_chapter}/{i+adder+1:03d}.{images[i].split(".")[-1]}'
                     if not os.path.exists(save_path):
                         time.sleep(sleep_time)
-                        response = requests.get(images[i])
+                        #response = requests.get(images[i])
+                        response = send_request(images[i])
                         with open(save_path, 'wb') as image:
                             image.write(response.content)
                         if not validate_corrupted_image(save_path):
                             print(colored(f' Warning: Image {i+adder+1} is corrupted. will not be able to merge this chapter', 'red'))
-                    if not validate_truncated_image(save_path) and last_truncated != save_path:
-                        last_truncated = save_path
-                        os.remove(save_path)
-                        raise Exception('truncated')
+                        if not validate_truncated_image(save_path) and last_truncated != save_path:
+                            last_truncated = save_path
+                            os.remove(save_path)
+                            raise Exception('truncated')
                 print(colored(f'\r{manga}: {chapter} is done downloading, {len(images)} images were downloaded.', 'green'))
                 if source.rename_chapter(chapter) > source.rename_chapter(mangas[manga]['last_downloaded_chapter']):
                     mangas[manga]['last_downloaded_chapter'] = chapter
@@ -83,9 +84,11 @@ def download_mangas(json_file, sleep_time, auto_merge, convert_to_pdf):
                 del mangas[manga]['chapters'][0]
                 with open(json_file, 'w') as mangas_json:
                     mangas_json.write(json.dumps(mangas, indent=4))
-            except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout, ConnectionResetError):
-                waiter()
+            #except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout, ConnectionResetError):
+            #    waiter()
             except Exception as error:
+                if str(error) == 'Connection error':
+                    waiter()
                 if str(error) == 'truncated':
                     print(colored(f' {last_truncated} was truncated. trying to download it one more time...', 'red'))
                 else:

@@ -33,7 +33,7 @@ def get_name_of_chapters(manga, url, source, is_all, last, ranged, c_chapters):
         renamed_chapters = [source.rename_chapter(str(c)) for c in c_chapters]
         ctd += [chapter for chapter in chapters if (source.rename_chapter(chapter) in renamed_chapters and chapter not in ctd)]
     print(f'\r{manga}: There are totally {len(ctd)} chapters to download.')
-    return sorted(ctd, key= lambda _: (source.rename_chapter, natsort.os_sorted))
+    return sorted(ctd, key=lambda _: (source.rename_chapter, natsort.os_sorted))
 
 def download_manga(manga, url, source, sleep_time, chapters, auto_merge, convert_to_pdf):
     inconsistencies = []
@@ -57,15 +57,16 @@ def download_manga(manga, url, source, sleep_time, chapters, auto_merge, convert
                 save_path = f'{fixed_manga}/{renamed_chapter}/{i+adder+1:03d}.{images[i].split(".")[-1]}'
                 if not os.path.exists(save_path):
                     time.sleep(sleep_time)
-                    response = requests.get(images[i])
+                    #response = requests.get(images[i])
+                    response = send_request(images[i])
                     with open(save_path, 'wb') as image:
                         image.write(response.content)
                     if not validate_corrupted_image(save_path):
                         print(colored(f' Warning: Image {i+adder+1} is corrupted. will not be able to merge this chapter', 'red'))
-                if not validate_truncated_image(save_path) and last_truncated != save_path:
-                    last_truncated = save_path
-                    os.remove(save_path)
-                    raise Exception('truncated')
+                    if not validate_truncated_image(save_path) and last_truncated != save_path:
+                        last_truncated = save_path
+                        os.remove(save_path)
+                        raise Exception('truncated')
             print(colored(f'\r{manga}: {chapters[0]} is done downloading, {len(images)} images were downloaded.', 'green'))
             if auto_merge:
                 from image_merger import merge_chapter
@@ -74,9 +75,11 @@ def download_manga(manga, url, source, sleep_time, chapters, auto_merge, convert
                 from pdf_converter import convert_chapter
                 convert_chapter('Merged', manga, chapters[0], f'Merged/{manga}')
             del chapters[0]
-        except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout) as err:
-                waiter()
+        #except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout) as err:
+        #        waiter()
         except Exception as error:
+            if str(error) == 'Connection error':
+                waiter()
             if str(error) == 'truncated':
                 print(colored(f' {last_truncated} was truncated. trying to download it one more time...', 'red'))
             else:
