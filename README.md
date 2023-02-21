@@ -35,7 +35,7 @@
 > - Name of the Manga and merging args are optional.
 
 ## Download mangas of a file
-> When downloading a single manga using do_file.py you should specify name of a json file
+> When downloading more than one manga using do_file.py you should specify name of a json file
 > Format of the json file should look like this:
 ```json
 {
