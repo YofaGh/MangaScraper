@@ -36,7 +36,7 @@
 
 ## Download mangas of a file
 > When downloading more than one manga using do_file.py you should specify name of a json file.  
-> Json file will be automatically updated after each chapter is downloaded.
+> Json file will be automatically updated after each chapter is downloaded.  
 > Format of the json file should look like this:
 ```json
 {
