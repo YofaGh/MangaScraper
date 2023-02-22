@@ -1,4 +1,4 @@
-import requests, natsort, time, json, sys, os
+import natsort, time, json, sys, os
 from termcolor import colored
 from assets import *
 
