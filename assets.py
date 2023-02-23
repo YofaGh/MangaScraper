@@ -33,25 +33,6 @@ class CheckChapters(argparse.Action):
                 values[i] = int(values[i])
         setattr(namespace, self.dest, values)
 
-def rename_chapter(chapter):
-    if chapter in ['pass', None]:
-        return 'Chapter 000'
-    new_name = ''
-    reached_number = False
-    for ch in chapter:
-        if ch.isdigit():
-            new_name += ch
-            reached_number = True
-        elif ch in '-.' and reached_number:
-            new_name += '.'
-    if not reached_number:
-        return chapter
-    new_name = new_name[:-1] if new_name[-1] == '.' else new_name
-    try:
-        return f'Chapter {int(new_name):03d}'
-    except:
-        return f'Chapter {new_name.split(".", 1)[0].zfill(3)}.{new_name.split(".", 1)[1]}'
-
 def validate_corrupted_image(path_to_image):
     from PIL import Image
     try:

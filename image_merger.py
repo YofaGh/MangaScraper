@@ -1,5 +1,5 @@
 import argparse, sys, os
-from assets import validate_folder, rename_chapter, detect_images, create_path, CheckChapters, fix_manga_name
+from assets import validate_folder, detect_images, create_path, CheckChapters, fix_manga_name
 from termcolor import colored
 from PIL import Image
 
@@ -39,14 +39,13 @@ def merge_folder(path_to_source, path_to_destination):
     return images_path, lists_to_merge
 
 def merge_chapter(manga, chapter):
-    renamed_chapter = rename_chapter(str(chapter))
     fixed_manga = fix_manga_name(manga)
-    if not validate_folder(f'{fixed_manga}/{renamed_chapter}'):
+    if not validate_folder(f'{fixed_manga}/{chapter}'):
         print(colored(f'\r{manga}: Failed to Merge {chapter} because one image is corrupted or truncated.', 'red'))
         return
-    create_path(f'Merged/{fixed_manga}/{renamed_chapter}')
+    create_path(f'Merged/{fixed_manga}/{chapter}')
     sys.stdout.write(f'\r{manga}: Merging {chapter}...')
-    images_path, lists_to_merge = merge_folder(f'{fixed_manga}/{renamed_chapter}', f'Merged/{fixed_manga}/{renamed_chapter}')
+    images_path, lists_to_merge = merge_folder(f'{fixed_manga}/{chapter}', f'Merged/{fixed_manga}/{chapter}')
     print(colored(f'\r{manga}: Merged {len(images_path)} images of {chapter} into {len(lists_to_merge)}.', 'green'))
 
 def merge_manga(manga):

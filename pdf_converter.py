@@ -1,5 +1,5 @@
 import argparse, img2pdf, sys, os
-from assets import validate_folder, rename_chapter, detect_images, create_path, CheckChapters
+from assets import validate_folder, detect_images, create_path, CheckChapters
 from termcolor import colored
 
 def convert_folder(path_to_source, path_to_destination, name):
@@ -12,13 +12,12 @@ def convert_folder(path_to_source, path_to_destination, name):
         pdf_file.write(img2pdf.convert(images_path))
 
 def convert_chapter(path_to_source, manga, chapter, path_to_destination):
-    renamed_chapter = rename_chapter(str(chapter))
-    if not validate_folder(f'{path_to_source}/{manga}/{renamed_chapter}'):
+    if not validate_folder(f'{path_to_source}/{manga}/{chapter}'):
         print(colored(f'\rFailed to convert {manga}/{chapter} because of a corrupted image.', 'red'))
         return
     sys.stdout.write(f'\r{manga}: Converting {chapter} to pdf...')
-    path_to_destination = path_to_destination if path_to_destination else f'{path_to_source}/{manga}/{renamed_chapter}'
-    convert_folder(f'{path_to_source}/{manga}/{renamed_chapter}', path_to_destination, f'{manga}_{renamed_chapter}.pdf')
+    path_to_destination = path_to_destination if path_to_destination else f'{path_to_source}/{manga}/{chapter}'
+    convert_folder(f'{path_to_source}/{manga}/{chapter}', path_to_destination, f'{manga}_{chapter}.pdf')
     print(colored(f'\r{manga}: Converted {chapter} to pdf.      ', 'green'))
 
 def convert_manga(path_to_source, manga, path_to_destination, chapters):

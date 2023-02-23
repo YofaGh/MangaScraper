@@ -69,10 +69,10 @@ def download_manga(manga, url, source, sleep_time, chapters, auto_merge, convert
             print(colored(f'\r{manga}: {chapters[0]} is done downloading, {len(images)} images were downloaded.', 'green'))
             if auto_merge:
                 from image_merger import merge_chapter
-                merge_chapter(manga, chapters[0])
+                merge_chapter(manga, renamed_chapter)
             if convert_to_pdf:
                 from pdf_converter import convert_chapter
-                convert_chapter('Merged', manga, chapters[0], f'Merged/{manga}')
+                convert_chapter('Merged', manga, renamed_chapter, f'Merged/{manga}')
             del chapters[0]
         except Exception as error:
             if str(error) == 'Connection error':
