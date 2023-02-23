@@ -16,23 +16,24 @@
 
 ## Command Line Interface
 > Command center gives you various options like:
-> - download a single manga or multiple
-> - automatically merge them and convert them into pdf
-> - change the time sleep between each request
-> - merge a downloaded chapter or manga
-> - set the chapter numbers to download when downloading a single manga
+> - download a single manga or multiple.
+> - automatically merge them and convert them into pdf.
+> - change the time sleep between each request.
+> - merge a downloaded chapter or manga.
+> - set the chapter numbers to download when downloading a single manga.
 
 ## Sources
-> There are various sources implemented so far. They inherit from M_Manga class.  
+> There are various sources implemented so far. They inherit from Base classes.  
 > They're implemented differently based on the website's source code.  
+> Sending requests to the source is done dirctly by the source class itself, in case if using custom user agents or cookies are needed.  
 > To use them, they're included in sources_dict in assets.py file.
 
 ## Download Single Manga
 > When downloading a single manga using do_single.py, following informations should be provided:
 > - source of manga
 > - url of manga
-> - chapters you want to download. which can be set with [-a, -l, -r, -c] arguments.
-> - Name of the Manga and merging args are optional.
+> - chapters you want to download(which can be set with [-a, -l, -r, -c] arguments)
+> - Name of the Manga and merging args are optional
 
 ## Download mangas of a file
 > When downloading more than one manga using do_file.py you should specify name of a json file.  
@@ -66,8 +67,8 @@
     }
 }
 ```
-> - if the "last_downloaded_chapter" is null, all of the chapters will be added to the download list
-> - if the "last_downloaded_chapter" has valid value, do_file.py will automatically add the chapters after "last_downloaded_chapter" to the download list
+> - if the "last_downloaded_chapter" is null, all of the chapters will be added to the download list.  
+> - if the "last_downloaded_chapter" has valid value, do_file.py will automatically add the chapters after "last_downloaded_chapter" to the download list.  
 > - and if the "last_downloaded_chapter" is equal to "pass", only the download list which user filled will be downloaded.
 
 ## Image merger
