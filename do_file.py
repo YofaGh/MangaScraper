@@ -62,7 +62,7 @@ def download_mangas(json_file, sleep_time, auto_merge, convert_to_pdf):
                     save_path = f'{fixed_manga}/{renamed_chapter}/{i+adder+1:03d}.{images[i].split(".")[-1]}'
                     if not os.path.exists(save_path):
                         time.sleep(sleep_time)
-                        response = send_request(images[i])
+                        response = source.send_request(images[i])
                         with open(save_path, 'wb') as image:
                             image.write(response.content)
                         if not validate_corrupted_image(save_path):
@@ -84,7 +84,7 @@ def download_mangas(json_file, sleep_time, auto_merge, convert_to_pdf):
                 with open(json_file, 'w') as mangas_json:
                     mangas_json.write(json.dumps(mangas, indent=4))
             except Exception as error:
-                if str(error) == 'Connection error':
+                if 'Connection error' in str(error):
                     waiter()
                 if str(error) == 'truncated':
                     print(colored(f' {last_truncated} was truncated. trying to download it one more time...', 'red'))

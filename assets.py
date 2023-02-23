@@ -1,4 +1,4 @@
-import requests, argparse, time, sys, os
+import argparse, time, sys, os
 from termcolor import colored
 from sources import *
 
@@ -57,13 +57,6 @@ def validate_folder(path_to_folder):
         if not (validate_corrupted_image(image_path) and validate_truncated_image(image_path)):
             return False
     return True
-
-def send_request(url):
-    try:
-        response = requests.get(url)
-        return response
-    except:
-        raise Exception('Connection error')
 
 def create_folder(folder):
     os.mkdir(folder) if not os.path.exists(folder) else None
