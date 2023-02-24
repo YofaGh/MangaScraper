@@ -7,7 +7,7 @@
 
 ## Table of Contents
 * [command line interface](#command-line-interface)
-* [sources](#sources)
+* [modules](#modules)
 * [download single manga](#download-single-manga)
 * [download mangas of a file](#download-mangas-of-a-file)
 * [image merger](#image-merger)
@@ -22,8 +22,8 @@
 > - merge a downloaded chapter or manga.
 > - set the chapter numbers to download when downloading a single manga.
 
-## Sources
-> There are various sources implemented so far. They inherit from Base classes.  
+## Modules
+> There are various modules implemented so far. They inherit from Base classes.  
 > They're implemented differently based on the website's source code.  
 > Sending requests to the source is done dirctly by the source class itself, in case if using custom user agents or cookies are needed.  
 > To use them, they're included in sources_dict in assets.py file.
