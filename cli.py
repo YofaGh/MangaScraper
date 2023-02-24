@@ -1,4 +1,4 @@
-import argparse
+import argparse, os
 from utils.assets import SetSource, CheckChapters, LastChapter, RangeOfChapters
 
 parser = argparse.ArgumentParser(allow_abbrev=False)
@@ -34,6 +34,8 @@ if args.mergechapter and (args.n or args.r or args.l or args.a or args.s):
 
 if args.mergechapter and not args.c:
     parser.error('please specify chapter alongside the manga folder with -c argument')
+
+os.system('color')
 
 if args.f:
     from downloaders.manga_file import download_file
