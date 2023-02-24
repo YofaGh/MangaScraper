@@ -36,11 +36,11 @@ if args.mergechapter and not args.c:
     parser.error('please specify chapter alongside the manga folder with -c argument')
 
 if args.f:
-    from do_file import download_file
+    from manga_file import download_file
     download_file(args.f, args.t, args.g, args.p)
 
 elif args.u:
-    from do_single import download_single
+    from manga_single import download_single
     download_single(args.n or args.u, args.u, args.s, args.t, args.a, args.l, args.r, args.c, args.g, args.p)
 
 elif args.mergechapter:
