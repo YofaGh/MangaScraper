@@ -1,6 +1,7 @@
 import natsort, time, json, sys, os
 from termcolor import colored
-from assets import *
+from utils.modules_contributer import contributer
+from utils import assets
 
 global mangas
 
@@ -18,7 +19,7 @@ def get_name_of_chapters(json_file, sleep_time):
         manga = mangas[valid_manga]
         sys.stdout.write(f'\r{valid_manga}: Getting name of chapters...')
         if manga['last_downloaded_chapter'] != 'pass':
-            chapters = sources_dict[manga['domain']].get_chapters(manga['url'])
+            chapters = contributer(manga['domain']).get_chapters(manga['url'])
             if manga['last_downloaded_chapter'] is None:
                 manga['chapters'] += [chapter for chapter in chapters if chapter not in manga['chapters']]
             else:
@@ -29,7 +30,7 @@ def get_name_of_chapters(json_file, sleep_time):
                         continue
                     if reached_last_downloaded_chapter and chapter not in manga['chapters']:
                         manga['chapters'].append(chapter)
-        manga['chapters'] = sorted(manga['chapters'], key=lambda _: (sources_dict[manga['domain']].rename_chapter, natsort.os_sorted))
+        manga['chapters'] = sorted(manga['chapters'], key=lambda _: (contributer(manga['domain']).rename_chapter, natsort.os_sorted))
         print(f'\r{valid_manga}: There are totally {len(manga["chapters"])} chapters to download.')
         time.sleep(sleep_time)
     with open(json_file, 'w') as mangas_json:
@@ -41,13 +42,13 @@ def download_mangas(json_file, sleep_time, auto_merge, convert_to_pdf):
     last_truncated = None
     valid_mangas = [manga for (manga, detm) in mangas.items() if (detm['include'] and detm['chapters'])]
     for manga in valid_mangas:
-        fixed_manga = fix_manga_name(manga)
-        create_folder(fixed_manga)
+        fixed_manga = assets.fix_manga_name(manga)
+        assets.create_folder(fixed_manga)
         while len(mangas[manga]['chapters']) > 0:
             chapter = mangas[manga]['chapters'][0]
-            source = sources_dict[mangas[manga]['domain']]
+            source = contributer(mangas[manga]['domain'])
             renamed_chapter = source.rename_chapter(chapter)
-            create_folder(f'{fixed_manga}/{renamed_chapter}')
+            assets.create_folder(f'{fixed_manga}/{renamed_chapter}')
             try:
                 sys.stdout.write(f'\r{manga}: Creating folder for {chapter}...')
                 images = source.get_images(mangas[manga]['url'], chapter)
@@ -65,9 +66,9 @@ def download_mangas(json_file, sleep_time, auto_merge, convert_to_pdf):
                         response = source.send_request(images[i])
                         with open(save_path, 'wb') as image:
                             image.write(response.content)
-                        if not validate_corrupted_image(save_path):
+                        if not assets.validate_corrupted_image(save_path):
                             print(colored(f' Warning: Image {i+adder+1} is corrupted. will not be able to merge this chapter', 'red'))
-                        if not validate_truncated_image(save_path) and last_truncated != save_path:
+                        if not assets.validate_truncated_image(save_path) and last_truncated != save_path:
                             last_truncated = save_path
                             os.remove(save_path)
                             raise Exception('truncated')
@@ -75,17 +76,17 @@ def download_mangas(json_file, sleep_time, auto_merge, convert_to_pdf):
                 if source.rename_chapter(chapter) > source.rename_chapter(mangas[manga]['last_downloaded_chapter']):
                     mangas[manga]['last_downloaded_chapter'] = chapter
                 if auto_merge:
-                    from image_merger import merge_chapter
+                    from utils.image_merger import merge_chapter
                     merge_chapter(manga, renamed_chapter)
                 if convert_to_pdf:
-                    from pdf_converter import convert_chapter
+                    from utils.pdf_converter import convert_chapter
                     convert_chapter('Merged', manga, renamed_chapter, f'Merged/{manga}')
                 del mangas[manga]['chapters'][0]
                 with open(json_file, 'w') as mangas_json:
                     mangas_json.write(json.dumps(mangas, indent=4))
             except Exception as error:
                 if 'Connection error' in str(error):
-                    waiter()
+                    assets.waiter()
                 if str(error) == 'truncated':
                     print(colored(f' {last_truncated} was truncated. trying to download it one more time...', 'red'))
                 else:

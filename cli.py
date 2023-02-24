@@ -1,5 +1,5 @@
 import argparse
-from assets import SetSource, CheckChapters, LastChapter, RangeOfChapters
+from utils.assets import SetSource, CheckChapters, LastChapter, RangeOfChapters
 
 parser = argparse.ArgumentParser(allow_abbrev=False)
 task = parser.add_mutually_exclusive_group()
@@ -36,24 +36,24 @@ if args.mergechapter and not args.c:
     parser.error('please specify chapter alongside the manga folder with -c argument')
 
 if args.f:
-    from manga_file import download_file
+    from downloaders.manga_file import download_file
     download_file(args.f, args.t, args.g, args.p)
 
 elif args.u:
-    from manga_single import download_single
+    from downloaders.manga_single import download_single
     download_single(args.n or args.u, args.u, args.s, args.t, args.a, args.l, args.r, args.c, args.g, args.p)
 
 elif args.mergechapter:
-    from image_merger import merge_chapter
+    from utils.image_merger import merge_chapter
     for chapter in args.c:
         merge_chapter(args.mergechapter, chapter)
 
 elif args.mergemanga:
-    from image_merger import merge_manga
+    from utils.image_merger import merge_manga
     merge_manga(args.mergemanga)
 
 elif args.mergefolder:
-    from image_merger import merge_folder
+    from utils.image_merger import merge_folder
     merge_folder(args.mergefolder, f'Merged/{args.mergefolder}')
 
 else:

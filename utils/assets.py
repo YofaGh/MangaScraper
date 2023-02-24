@@ -1,10 +1,10 @@
 import argparse, time, sys, os
 from termcolor import colored
-from sources import *
+from utils.modules_contributer import contributer
 
 class SetSource(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
-        values = sources_dict[values]
+        values = contributer(values)
         setattr(namespace, self.dest, values)
 
 class LastChapter(argparse.Action):
@@ -84,13 +84,3 @@ def waiter():
         time.sleep(1)
         sys.stdout.write(colored(f'\rWaiting {i} seconds to attempt a fresh connection. ', 'red'))
     return
-
-sources_dict = {
-    'manhuascan.us': Manhuascan,
-    'skymanga.xyz': Skymanga,
-    'bibimanga.com': Bibimanga,
-    'manhwa18.com': Manhwa18,
-    'manhwa365.com': Manhwa365,
-    'readonepiece.com': Readonepiece,
-    'truemanga.com': Truemanga
-}

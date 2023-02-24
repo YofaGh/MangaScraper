@@ -1,5 +1,5 @@
 import argparse, img2pdf, sys, os
-from assets import validate_folder, detect_images, create_path, CheckChapters
+from utils.assets import validate_folder, detect_images, create_path, CheckChapters
 from termcolor import colored
 
 def convert_folder(path_to_source, path_to_destination, name):

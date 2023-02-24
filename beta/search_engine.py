@@ -1,12 +1,11 @@
 import time, sys
-from assets import sources_dict
-from sources import *
+from utils.modules_contributer import contributer
 
 def search_by_title(title):
     results = {}
     sources = ['manhuascan.us', 'skymanga.xyz', 'bibimanga.com', 'manhwa18.com', 'manhwa365.com']
     for source in sources:
-        search = sources_dict[source].search_by_title(title)
+        search = contributer(source).search_by_title(title)
         while True:
             try:
                 last = next(search)

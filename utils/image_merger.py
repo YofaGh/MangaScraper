@@ -1,5 +1,5 @@
 import argparse, sys, os
-from assets import validate_folder, detect_images, create_path, CheckChapters, fix_manga_name
+from utils.assets import validate_folder, detect_images, create_path, CheckChapters, fix_manga_name
 from termcolor import colored
 from PIL import Image
 
