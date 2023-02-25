@@ -74,7 +74,7 @@ def fix_manga_name(manga):
 def detect_images(path_to_folder):
     images_path = []
     for file in os.listdir(path_to_folder):
-        if file.endswith('.jpg') or file.endswith('.png') or file.endswith('.jpeg') or file.endswith('.gif'):
+        if file.endswith('.jpg') or file.endswith('.png') or file.endswith('.jpeg') or file.endswith('.gif') or file.endswith('.webp'):
             images_path.append(f'{path_to_folder}/{file}')
     return images_path
 
