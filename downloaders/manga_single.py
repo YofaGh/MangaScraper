@@ -42,19 +42,23 @@ def download_manga(manga, url, source, sleep_time, chapters, auto_merge, convert
     assets.create_folder(fixed_manga)
     while len(chapters) > 0:
         renamed_chapter = source.rename_chapter(chapters[0])
+        sys.stdout.write(f'\r{manga}: Creating folder for {chapters[0]}...')
         assets.create_folder(f'{fixed_manga}/{renamed_chapter}')
         try:
-            sys.stdout.write(f'\r{manga}: Creating folder for {chapters[0]}...')
-            images = source.get_images(url, chapters[0])
+            sys.stdout.write(f'\r{manga}: Getting image links of {chapters[0]}...')
+            images, save_names = source.get_images(url, chapters[0])
             adder = 0
             for i in range(len(images)):
                 sys.stdout.write(f'\r{manga}: Downloading {chapters[0]} image {i+adder+1}/{len(images)+adder}...')
-                if f'{i+adder+1}' not in images[i].split('/')[-1]:
-                    adder += 1
-                    inconsistencies.append(f'{manga}/{chapters[0]}/{i+adder:03d}')
-                    print(colored(f' Warning: Inconsistency in order of images!!!. Skipped image {i + adder}', 'red'))
-                    sys.stdout.write(f'\r{manga}: Downloading {chapters[0]} image {i+adder+1}/{len(images)+adder}...')
-                save_path = f'{fixed_manga}/{renamed_chapter}/{i+adder+1:03d}.{images[i].split(".")[-1]}'
+                if not save_names:
+                    if f'{i+adder+1}' not in images[i].split('/')[-1]:
+                        adder += 1
+                        inconsistencies.append(f'{manga}/{chapters[0]}/{i+adder:03d}')
+                        print(colored(f' Warning: Inconsistency in order of images!!!. Skipped image {i + adder}', 'red'))
+                        sys.stdout.write(f'\r{manga}: Downloading {chapters[0]} image {i+adder+1}/{len(images)+adder}...')
+                    save_path = f'{fixed_manga}/{renamed_chapter}/{i+adder+1:03d}.{images[i].split(".")[-1]}'
+                else:
+                    save_path = f'{fixed_manga}/{renamed_chapter}/{save_names[i]}'
                 if not os.path.exists(save_path):
                     time.sleep(sleep_time)
                     response = source.send_request(images[i])
