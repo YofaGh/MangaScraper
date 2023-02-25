@@ -14,7 +14,7 @@ class Truemanga(Manga, Req):
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'id':'chapter-images'}).find_all('img')
         images = [image['data-src'] for image in images]
-        return images
+        return images, False
 
     def search_by_title(title, limit_page=1000):
         results = {}

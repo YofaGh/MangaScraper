@@ -14,4 +14,4 @@ class Readonepiece(Manga, Req):
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find_all('img', {'class', 'mb-3 mx-auto js-page'})
         images = [image['src'] for image in images]
-        return images
+        return images, False

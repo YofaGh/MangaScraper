@@ -14,7 +14,7 @@ class Manhuascan(Manga, Req):
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'id': 'readerarea'}).find_all('img')
         images = [image['src'] for image in images]
-        return images
+        return images, False
 
     def search_by_title(title, limit_page=1000):
         results = {}

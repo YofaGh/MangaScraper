@@ -3,7 +3,7 @@ class Manga:
         return []
 
     def get_images():
-        return []
+        return [], False
 
     def search_by_title():
         return []
