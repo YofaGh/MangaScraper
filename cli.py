@@ -5,6 +5,7 @@ parser = argparse.ArgumentParser(allow_abbrev=False)
 task = parser.add_mutually_exclusive_group()
 task.add_argument('-u', action='store', help='url of the manga')
 task.add_argument('-f', action='store', help='downloads chapters specified in given json file')
+task.add_argument('-doujin', action='store', help='downloads doujin with the given code')
 merging_options = parser.add_mutually_exclusive_group()
 merging_options.add_argument('-mergefolder', action='store', help='merges images in given folder')
 merging_options.add_argument('-mergechapter', action='store', help='merges given chapter')
@@ -26,8 +27,8 @@ args.t = args.t[0] if type(args.t) is list else args.t
 if (args.f or args.mergemanga or args.mergefolder) and (args.c or args.n or args.r or args.l or args.a or args.s):
     parser.error('arguments: [c, n, r, l, a, s] can only be used with -u')
 
-if args.u and not args.s:
-    parser.error('argument s is required when using argument u')
+if (args.u or args.doujin) and not args.s:
+    parser.error('argument s is required when using the following arguments [u, doujin]')
 
 if args.mergechapter and (args.n or args.r or args.l or args.a or args.s):
     parser.error('arguments: [n, r, l, a, s] can only be used with -u')
@@ -44,6 +45,10 @@ if args.f:
 elif args.u:
     from downloaders.manga_single import download_single
     download_single(args.n or args.u, args.u, args.s, args.t, args.a, args.l, args.r, args.c, args.g, args.p)
+
+elif args.doujin:
+    from downloaders.doujin_single import download_doujin
+    download_doujin(args.doujin, args.s, args.t, args.g, args.p)
 
 elif args.mergechapter:
     from utils.image_merger import merge_chapter

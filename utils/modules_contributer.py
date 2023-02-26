@@ -1,4 +1,5 @@
 from modules.Bibimanga import Bibimanga
+from modules.Hentaifox import Hentaifox
 from modules.Mangapark import Mangapark
 from modules.Manhuascan import Manhuascan
 from modules.Manhwa18 import Manhwa18
@@ -9,6 +10,7 @@ from modules.Truemanga import Truemanga
 
 sources_dict = {
     'bibimanga.com': Bibimanga,
+    'hentaifox.com': Hentaifox,
     'mangapark.to': Mangapark,
     'manhuascan.us': Manhuascan,
     'manhwa18.com': Manhwa18,

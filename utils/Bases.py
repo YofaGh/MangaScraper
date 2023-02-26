@@ -27,6 +27,17 @@ class Manga:
         except:
             return f'Chapter {new_name.split(".", 1)[0].zfill(3)}.{new_name.split(".", 1)[1]}'
 
+class Doujin:
+    def get_title():
+        return
+
+    def get_images():
+        return [], False
+
+    def search_by_title():
+        return []
+
+
 class Req():
     def send_request(url):
         import requests
