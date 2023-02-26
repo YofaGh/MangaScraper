@@ -15,7 +15,7 @@ class Hentaifox(Doujin, Req):
     def get_images(code):
         options = webdriver.FirefoxOptions()
         options.add_argument('--headless')
-        service = Service(executable_path='Trash/geckodriver.exe', log_path='NUL')
+        service = Service(executable_path='geckodriver.exe', log_path='NUL')
         browser = webdriver.Firefox(options=options, service=service)
         browser.get(f'https://hentaifox.com/gallery/{code}/')
         view_all_button = browser.find_element(By.XPATH, "//button[@id='load_all']")

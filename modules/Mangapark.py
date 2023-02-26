@@ -9,7 +9,7 @@ class Mangapark(Manga, Req):
     def get_chapters(manga):
         options = webdriver.FirefoxOptions()
         options.add_argument('--headless')
-        service = Service(executable_path='Trash/geckodriver.exe', log_path='NUL')
+        service = Service(executable_path='geckodriver.exe', log_path='NUL')
         browser = webdriver.Firefox(options=options, service=service)
         browser.get(f'https://mangapark.to/title/{manga}')
         soup = BeautifulSoup(browser.page_source, 'html.parser')
@@ -29,7 +29,7 @@ class Mangapark(Manga, Req):
     def get_images(manga, chapter):
         options = webdriver.FirefoxOptions()
         options.add_argument('--headless')
-        service = Service(executable_path='Trash/geckodriver.exe', log_path='NUL')
+        service = Service(executable_path='geckodriver.exe', log_path='NUL')
         browser = webdriver.Firefox(options=options, service=service)
         browser.get(f'https://mangapark.to/title/{manga}/{chapter}')
         load_all_images_button = browser.find_elements(By.XPATH, "//button[@class='btn btn-sm btn-info btn-outline btn-block normal-case opacity-80']")[1]
