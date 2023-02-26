@@ -10,6 +10,7 @@
 * [modules](#modules)
 * [download single manga](#download-single-manga)
 * [download mangas of a file](#download-mangas-of-a-file)
+* [download a doujin by it's code](#download-a-doujin-by-its-code)
 * [image merger](#image-merger)
 * [pdf converter](#pdf-converter)
 * [search engine](#search-engine)
@@ -70,6 +71,10 @@
 > - if the "last_downloaded_chapter" is null, all of the chapters will be added to the download list.  
 > - if the "last_downloaded_chapter" has valid value, do_file.py will automatically add the chapters after "last_downloaded_chapter" to the download list.  
 > - and if the "last_downloaded_chapter" is equal to "pass", only the download list which user filled will be downloaded.
+
+## Download a Doujin by It's Code
+> You can download a doujin from an implemented module just by entering its code.  
+> Note: Doujins are still in development.  
 
 ## Image merger
 > You can merge all chapters of a manga, a single chapter or any folder that has images in it.  
