@@ -25,4 +25,9 @@ class Hentaifox(Doujin, Req):
         soup = BeautifulSoup(browser.page_source, 'html.parser')
         divs = soup.find_all('div', {'class': 'gallery_thumb'})
         images = [div.find('img')['data-src'] for div in divs]
-        return images
+        new_images = []
+        for image in images:
+            name = image.rsplit('/', 1)[1]
+            name = name.replace('t.', '.')
+            new_images.append(f'{image.rsplit("/", 1)[0]}/{name}')
+        return new_images
