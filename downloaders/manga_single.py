@@ -38,7 +38,7 @@ def get_name_of_chapters(manga, url, source, is_all, last, ranged, c_chapters):
 def download_manga(manga, url, source, sleep_time, chapters, auto_merge, convert_to_pdf):
     inconsistencies = []
     last_truncated = None
-    fixed_manga = assets.fix_manga_name(manga)
+    fixed_manga = assets.fix_name_for_folder(manga)
     assets.create_folder(fixed_manga)
     while len(chapters) > 0:
         renamed_chapter = source.rename_chapter(chapters[0])

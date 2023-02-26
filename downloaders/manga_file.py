@@ -42,7 +42,7 @@ def download_mangas(json_file, sleep_time, auto_merge, convert_to_pdf):
     last_truncated = None
     valid_mangas = [manga for (manga, detm) in mangas.items() if (detm['include'] and detm['chapters'])]
     for manga in valid_mangas:
-        fixed_manga = assets.fix_manga_name(manga)
+        fixed_manga = assets.fix_name_for_folder(manga)
         assets.create_folder(fixed_manga)
         while len(mangas[manga]['chapters']) > 0:
             chapter = mangas[manga]['chapters'][0]
