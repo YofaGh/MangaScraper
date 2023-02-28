@@ -37,8 +37,8 @@
 >
 > There are various modules implemented so far. They inherit from Base classes.  
 > They're implemented differently based on the website's source code.  
-> Sending requests to the source is done dirctly by the source class itself, in case if using custom user agents or cookies are needed.  
-> To use them, they're included in sources_dict in assets.py file.
+> In case if using custom user agents or cookies are needed, sending requests to the source is done dirctly by the source class itself.
+> To use them, they're imported in modules_contributer.py and can be accesed by contributer function.
 
 ## Download Single Manga
 >
