@@ -36,8 +36,8 @@ def download_doujin(code, source, sleep_time, auto_merge, convert_to_pdf):
                 print(colored(f'\r{doujin_title}: Merged {len(images_path)} images into {len(lists_to_merge)}.', 'green'))
                 if convert_to_pdf:
                     from utils.pdf_converter import convert_folder
-                    convert_folder(f'Merged/{fixed_doujin_name}', f'Merged/{fixed_doujin_name}', f'{fixed_doujin_name}.pdf')
                     sys.stdout.write(f'\r{doujin_title}: Converting to pdf...')
+                    convert_folder(f'Merged/{fixed_doujin_name}', f'Merged/{fixed_doujin_name}', f'{fixed_doujin_name}.pdf')
                     print(colored(f'\r{doujin_title}: Converted to pdf.      ', 'green'))
             break
         except Exception as error:
