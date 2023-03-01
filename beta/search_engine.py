@@ -1,9 +1,8 @@
 import time, sys
 from utils.modules_contributer import contributer
 
-def search_by_title(title):
+def search_by_title(title, sources):
     results = {}
-    sources = ['manhuascan.us', 'skymanga.xyz', 'bibimanga.com', 'manhwa18.com', 'manhwa365.com']
     for source in sources:
         search = contributer(source).search_by_title(title)
         while True:
@@ -18,5 +17,3 @@ def search_by_title(title):
                 results[source] = last
                 break
     return results
-
-print(search_by_title('secret'))
