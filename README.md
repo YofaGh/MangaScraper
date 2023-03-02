@@ -5,12 +5,9 @@
 > - Merge downloaded chapters into one or two images.
 > - And convert them into PDF format.
 
-## Setting Up
-
-> - After cloning the repository use ```pip install -r requirements.txt``` to install requirements.
-> - Lists of implemented modules are available in implemented_modules.txt file.
-
 ## Table of Contents
+
+- [Setup](#setup)
 
 - [Command line interface](#command-line-interface)
 
@@ -27,6 +24,11 @@
 - [PDF converter](#pdf-converter)
 
 - [Search engine](#search-engine)
+
+## Setup
+
+> - After cloning the repository use ```pip install -r requirements.txt``` to install requirements.
+> - Lists of implemented modules are available in implemented_modules.txt file.
 
 ## Command line interface
 >
