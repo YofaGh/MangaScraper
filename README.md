@@ -60,12 +60,13 @@
 > - all chapters after a certian chapter: ```python cli.py -u attack-on-titan -s truemanga.com -l 52```  
 > - all chapters between two chapters: ```python cli.py -u attack-on-titan -s truemanga.com -r 20 30```  
 > - specify chapters: ```python cli.py -u attack-on-titan -s truemanga.com -c 5 10 36```  
+> - e.g. ```python cli.py -u attack-on-titan -s truemanga.com -n "Attack on Titan" -a -g -p```
 
 ## Download mangas of a file
 >
 > When downloading more than one manga using do_file.py you should specify name of a json file.  
 > Json file will be automatically updated after each chapter is downloaded.  
-> Example: ```python cli.py -f mangas.json```
+> Example: ```python cli.py -f mangas.json```  
 > Format of the json file should look like this:
 
 ```json
@@ -105,7 +106,7 @@
 >
 > You can download a doujin from an implemented module just by entering its code.  
 > Note: Doujins are still in development.  
-> Example: ```python cli.py -doujin 000000 -s hentaifox.com```
+> Example: ```python cli.py -doujin 000000 -s hentaifox.com```  
 
 ## Image merger
 >
@@ -113,9 +114,9 @@
 > before starting the merge process, all the images will be validated to avoid any exception.
 > Examples:
 >
-> - mrege an entire manga: ```python cli.py -mergemanga "One Piece"```
-> - mrege a chapter: ```python cli.py -mergechapter "One Piece" -c 20 21 22```
-> - mrege a folder: ```python cli.py -mergechapter "path/to/folder"```
+> - mrege an entire manga: ```python cli.py -mergemanga "One Piece"```  
+> - mrege a chapter: ```python cli.py -mergechapter "One Piece" -c 20 21 22```  
+> - mrege a folder: ```python cli.py -mergechapter "path/to/folder"```  
 
 ## PDF converter
 >
