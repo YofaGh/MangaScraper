@@ -12,23 +12,23 @@
 
 ## Table of Contents
 
-- [command line interface](#command-line-interface)
+- [Command line interface](#command-line-interface)
 
-- [modules](#modules)
+- [Modules](#modules)
 
-- [download single manga](#download-single-manga)
+- [Download single manga](#download-single-manga)
 
-- [download mangas of a file](#download-mangas-of-a-file)
+- [Download mangas of a file](#download-mangas-of-a-file)
 
-- [download a doujin by it's code](#download-a-doujin-by-its-code)
+- [Download a Doujin by it's code](#download-a-doujin-by-its-code)
 
-- [image merger](#image-merger)
+- [Image merger](#image-merger)
 
-- [pdf converter](#pdf-converter)
+- [PDF converter](#pdf-converter)
 
-- [search engine](#search-engine)
+- [Search engine](#search-engine)
 
-## Command Line Interface
+## Command line interface
 >
 > Command center gives you various options like:
 >
@@ -45,19 +45,27 @@
 > In case if using custom user agents or cookies are needed, sending requests to the source is done dirctly by the source class itself.  
 > To use them, they're imported in modules_contributer.py and can be accesed by contributer function.
 
-## Download Single Manga
+## Download single manga
 >
 > When downloading a single manga using do_single.py, following informations should be provided:
 >
 > - source of manga
 > - url of manga
 > - chapters you want to download(which can be set with [-a, -l, -r, -c] arguments)
-> - Name of the Manga and merging args are optional
+> - Name of the Manga and merging args are optional  
+>
+> Examples:
+>
+> - all chapters: ```python cli.py -u attack-on-titan -s truemanga.com -a```  
+> - all chapters after a certian chapter: ```python cli.py -u attack-on-titan -s truemanga.com -l 52```  
+> - all chapters between two chapters: ```python cli.py -u attack-on-titan -s truemanga.com -r 20 30```  
+> - specify chapters: ```python cli.py -u attack-on-titan -s truemanga.com -c 5 10 36```  
 
 ## Download mangas of a file
 >
 > When downloading more than one manga using do_file.py you should specify name of a json file.  
 > Json file will be automatically updated after each chapter is downloaded.  
+> Example: ```python cli.py -f mangas.json```
 > Format of the json file should look like this:
 
 ```json
@@ -93,21 +101,27 @@
 > - if the "last_downloaded_chapter" has valid value, do_file.py will automatically add the chapters after "last_downloaded_chapter" to the download list.  
 > - and if the "last_downloaded_chapter" is equal to "pass", only the download list which user filled will be downloaded.
 
-## Download a Doujin by It's Code
+## Download a Doujin by it's code
 >
 > You can download a doujin from an implemented module just by entering its code.  
 > Note: Doujins are still in development.  
+> Example: ```python cli.py -doujin 000000 -s hentaifox.com```
 
 ## Image merger
 >
-> You can merge all chapters of a manga, a single chapter or any folder that has images in it.  
+> You can merge all chapters of a manga, a single chapter or any folder that has images in it  
 > before starting the merge process, all the images will be validated to avoid any exception.
+> Examples:
+>
+> - mrege an entire manga: ```python cli.py -mergemanga "One Piece"```
+> - mrege a chapter: ```python cli.py -mergechapter "One Piece" -c 20 21 22```
+> - mrege a folder: ```python cli.py -mergechapter "path/to/folder"```
 
-## PDF Converter
+## PDF converter
 >
 > You can also convert the chapters to PDF to read them better.  
 > converting chapters that are merged into fewer images is highly recommended.
 
-## Search Engine
+## Search engine
 >
 > Still in development but allows you to search between available sources.
