@@ -116,7 +116,7 @@
 >
 > - mrege an entire manga: ```python cli.py -mergemanga "One Piece"```  
 > - mrege a chapter: ```python cli.py -mergechapter "One Piece" -c 20 21 22```  
-> - mrege a folder: ```python cli.py -mergechapter "path/to/folder"```  
+> - mrege a folder: ```python cli.py -mergefolder "path/to/folder"```  
 
 ## PDF converter
 >
