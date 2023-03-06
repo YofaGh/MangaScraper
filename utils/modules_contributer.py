@@ -5,7 +5,7 @@ from modules.Mangareader import Mangareader
 from modules.Manhuascan import Manhuascan
 from modules.Manhwa18 import Manhwa18
 from modules.Manhwa365 import Manhwa365
-from modules.NyaHentai import Nyahentai
+from modules.Nyahentai import Nyahentai
 from modules.Readonepiece import Readonepiece
 from modules.Skymanga import Skymanga
 from modules.Truemanga import Truemanga
