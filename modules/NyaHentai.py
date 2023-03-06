@@ -1,15 +1,15 @@
 from utils.Bases import Doujin, Req
 from bs4 import BeautifulSoup
 
-class Nyhentai(Doujin, Req):
+class Nyahentai(Doujin, Req):
     def get_title(code):
-        response = Nyhentai.send_request(f'https://nyahentai.red/g/{code}')
+        response = Nyahentai.send_request(f'https://nyahentai.red/g/{code}')
         soup = BeautifulSoup(response.text, 'html.parser')
         title = soup.find('h1', {'class', 'title'}).find('span').contents[0]
         return title
 
     def get_images(code):
-        response = Nyhentai.send_request(f'https://nyahentai.red/g/{code}/')
+        response = Nyahentai.send_request(f'https://nyahentai.red/g/{code}/')
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find_all('a', {'class': 'gallerythumb'})
         images = [div.find('img')['data-src'] for div in divs]
