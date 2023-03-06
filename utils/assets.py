@@ -69,7 +69,10 @@ def create_path(path):
         create_folder(temp_path)
 
 def fix_name_for_folder(manga):
-    return ''.join([ch for ch in manga if ch not in '\/:*?"><|.'])
+    name = ''.join([ch for ch in manga if ch not in '\/:*?"><|'])
+    while name[-1] == '.':
+        name = name[:-1]
+    return name
 
 def detect_images(path_to_folder):
     images_path = []
