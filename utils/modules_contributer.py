@@ -5,6 +5,7 @@ from modules.Mangareader import Mangareader
 from modules.Manhuascan import Manhuascan
 from modules.Manhwa18 import Manhwa18
 from modules.Manhwa365 import Manhwa365
+from modules.Nhentai import Nhentai
 from modules.Nyahentai import Nyahentai
 from modules.Readonepiece import Readonepiece
 from modules.Skymanga import Skymanga
@@ -18,6 +19,7 @@ sources_dict = {
     'manhuascan.us': Manhuascan,
     'manhwa18.com': Manhwa18,
     'manhwa365.com': Manhwa365,
+    'nhentai.xxx': Nhentai,
     'nyahentai.red': Nyahentai,
     'readonepiece.com': Readonepiece,
     'skymanga.xyz': Skymanga,
