@@ -1,9 +1,8 @@
-import argparse, time, sys, os
-from termcolor import colored
-from utils.modules_contributer import contributer
+import argparse
 
 class SetSource(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
+        from utils.modules_contributer import contributer
         values = contributer(values)
         setattr(namespace, self.dest, values)
 
@@ -59,9 +58,11 @@ def validate_folder(path_to_folder):
     return True
 
 def create_folder(folder):
+    import os
     os.mkdir(folder) if not os.path.exists(folder) else None
 
 def create_path(path):
+    import os
     folders = list(filter(None, path.split('/')))
     temp_path = ''
     for folder in folders:
@@ -75,6 +76,7 @@ def fix_name_for_folder(manga):
     return name
 
 def detect_images(path_to_folder):
+    import os
     images_path = []
     for file in os.listdir(path_to_folder):
         if file.endswith('.jpg') or file.endswith('.png') or file.endswith('.jpeg') or file.endswith('.gif') or file.endswith('.webp'):
@@ -82,6 +84,8 @@ def detect_images(path_to_folder):
     return images_path
 
 def waiter():
+    import time, sys
+    from termcolor import colored
     sys.stdout.write(colored(' Connection lost.\n\rWaiting 1 minute to attempt a fresh connection.', 'red'))
     for i in range(59, 0, -1):
         time.sleep(1)
