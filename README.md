@@ -113,9 +113,9 @@
 
 ## Image merger
 >
-> You can merge all chapters of a manga, a single chapter or any folder that has images in it  
-> before starting the merge process, all the images will be validated to avoid any exception.
-> Examples:
+> You can merge all chapters of a manga, a single chapter or any folder that has images in it vertically.  
+> before starting the merge process, all the images will be validated to avoid any exception.  
+> Examples:  
 >
 > - mrege an entire manga: ```python cli.py -mergemanga "One Piece"```  
 > - mrege a chapter: ```python cli.py -mergechapter "One Piece" -c 20 21 22```  
