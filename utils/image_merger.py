@@ -1,14 +1,14 @@
 import argparse, sys, os
-from utils.assets import validate_folder, detect_images, create_path, CheckChapters, fix_name_for_folder
+from utils import assets
 from termcolor import colored
 from PIL import Image
 
 def merge_folder(path_to_source, path_to_destination):
-    if not validate_folder(path_to_source):
+    if not assets.validate_folder(path_to_source):
         print(colored(f'\rFailed to Merge {path_to_source} because one image is corrupted or truncated.', 'red'))
         return [], []
-    create_path(path_to_destination)
-    images_path = detect_images(path_to_source)
+    assets.create_path(path_to_destination)
+    images_path = assets.detect_images(path_to_source)
     images = [Image.open(image_path) for image_path in images_path]
     lists_to_merge = []
     temp_list = []
@@ -39,17 +39,17 @@ def merge_folder(path_to_source, path_to_destination):
     return images_path, lists_to_merge
 
 def merge_chapter(manga, chapter):
-    fixed_manga = fix_name_for_folder(manga)
-    if not validate_folder(f'{fixed_manga}/{chapter}'):
+    fixed_manga = assets.fix_name_for_folder(manga)
+    if not assets.validate_folder(f'{fixed_manga}/{chapter}'):
         print(colored(f'\r{manga}: Failed to Merge {chapter} because one image is corrupted or truncated.', 'red'))
         return
-    create_path(f'Merged/{fixed_manga}/{chapter}')
+    assets.create_path(f'Merged/{fixed_manga}/{chapter}')
     sys.stdout.write(f'\r{manga}: Merging {chapter}...')
     images_path, lists_to_merge = merge_folder(f'{fixed_manga}/{chapter}', f'Merged/{fixed_manga}/{chapter}')
     print(colored(f'\r{manga}: Merged {len(images_path)} images of {chapter} into {len(lists_to_merge)}.', 'green'))
 
 def merge_manga(manga):
-    chapters = os.listdir(fix_name_for_folder(manga))
+    chapters = os.listdir(assets.fix_name_for_folder(manga))
     for chapter in chapters:
         merge_chapter(manga, chapter)
 
@@ -59,7 +59,7 @@ if __name__ == '__main__':
     merging_options.add_argument('-mergefolder', action='store', help='merges images in given folder')
     merging_options.add_argument('-mergechapter', action='store', help='merges given chapter')
     merging_options.add_argument('-mergemanga', action='store', help='merges all chapters of given manga')
-    parser.add_argument('-c', action=CheckChapters, nargs='+', type=float, help='specifie chapters')
+    parser.add_argument('-c', action=assets.CheckChapters, nargs='+', type=float, help='specifie chapters')
     args = parser.parse_args()
     if args.mergechapter and not args.c:
         parser.error('please specify chapter alongside the manga folder with -c argument')

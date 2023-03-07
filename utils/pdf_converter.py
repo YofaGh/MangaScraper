@@ -1,18 +1,18 @@
 import argparse, img2pdf, sys, os
-from utils.assets import validate_folder, detect_images, create_path, CheckChapters
+from utils import assets
 from termcolor import colored
 
 def convert_folder(path_to_source, path_to_destination, name):
-    if not validate_folder(path_to_source):
+    if not assets.validate_folder(path_to_source):
         print(colored(f'\rFailed to convert {path_to_source} because of a corrupted image.', 'red'))
         return
-    create_path(path_to_destination)
-    images_path = detect_images(path_to_source)
+    assets.create_path(path_to_destination)
+    images_path = assets.detect_images(path_to_source)
     with open(os.path.join(path_to_destination, name), 'wb') as pdf_file:
         pdf_file.write(img2pdf.convert(images_path))
 
 def convert_chapter(path_to_source, manga, chapter, path_to_destination):
-    if not validate_folder(f'{path_to_source}/{manga}/{chapter}'):
+    if not assets.validate_folder(f'{path_to_source}/{manga}/{chapter}'):
         print(colored(f'\rFailed to convert {manga}/{chapter} because of a corrupted image.', 'red'))
         return
     sys.stdout.write(f'\r{manga}: Converting {chapter} to pdf...')
@@ -32,7 +32,7 @@ if __name__ == '__main__':
     parser.add_argument('-dpath', action='store', help='specify a path')
     parser.add_argument('-spath', action='store', required=True, help='specify path of source')
     chapters_to_merge = parser.add_mutually_exclusive_group()
-    chapters_to_merge.add_argument('-c', action=CheckChapters, nargs='+', type=float, help='specifie chapters')
+    chapters_to_merge.add_argument('-c', action=assets.CheckChapters, nargs='+', type=float, help='specifie chapters')
     chapters_to_merge.add_argument('-a', action='store_true', help='converts all chapters')
     parser.add_argument('-n', action='store', help='specify name of pdf')
     args = parser.parse_args()
