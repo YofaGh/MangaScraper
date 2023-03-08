@@ -5,14 +5,18 @@ class Comics8Muses(Manga, Req):
     def get_chapters(manga):
         page = 1
         chapters = []
+        response = Comics8Muses.send_request(f'https://comics.8muses.com/comics/album/{manga}/{page}')
+        soup = BeautifulSoup(response.text, 'html.parser')
+        if not soup.find('div', {'class':'image-title'}):
+            return ['']
         while True:
-            response = Comics8Muses.send_request(f'https://comics.8muses.com/comics/album/{manga}/{page}')
-            soup = BeautifulSoup(response.text, 'html.parser')
             links = soup.find_all('a', {'class': 'c-tile t-hover'}, href=True)
             if not links:
                 break
             chapters += [link.get('href').split('/')[-1] for link in links]
             page += 1
+            response = Comics8Muses.send_request(f'https://comics.8muses.com/comics/album/{manga}/{page}')
+            soup = BeautifulSoup(response.text, 'html.parser')
         return chapters
 
     def get_images(manga, chapter):
