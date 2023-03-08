@@ -30,6 +30,9 @@ if (args.f or args.mergemanga or args.mergefolder) and (args.c or args.n or args
 if (args.u or args.doujin) and not args.s:
     parser.error('argument s is required when using the following arguments [u, doujin]')
 
+if args.u and not(args.c or args.r or args.a or args.l):
+    parser.error('argument -u should be used with at least one these arguments: [c, r, l, a], please specify chapters when using -u')
+
 if args.mergechapter and (args.n or args.r or args.l or args.a or args.s):
     parser.error('arguments: [n, r, l, a, s] can only be used with -u')
 
