@@ -53,7 +53,7 @@ class Mangapark(Manga, Req):
             if ch.isdigit():
                 new_name += ch
                 reached_number = True
-            elif ch in '-.' and reached_number:
+            elif ch in '-.' and reached_number and new_name[-1] != '.':
                 new_name += '.'
         if not reached_number:
             return chapter
