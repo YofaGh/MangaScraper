@@ -48,17 +48,3 @@ def download_doujin(code, source, sleep_time, auto_merge, convert_to_pdf):
                 print(colored(f' {last_truncated} was truncated. trying to download it one more time...', 'red'))
             else:
                 raise error
-
-if __name__ == '__main__':
-    import argparse
-    parser = argparse.ArgumentParser(allow_abbrev=False)
-    parser.add_argument('-c', action='store', required=True, help='code of the doujin')
-    parser.add_argument('-s', action=assets.SetSource, required=True, help='domain to scrap from')
-    parser.add_argument('-p', action='store_true', help='converts merged images to pdf')
-    parser.add_argument('-g', action='store_true', help='if set, merges images vertically')
-    parser.add_argument('-t', action='store', default=0.1, nargs=1, type=float, help='set sleep time between requests')
-
-    args = parser.parse_args()
-    args.t = args.t[0] if type(args.t) is list else args.t
-    os.system('color')
-    download_doujin(args.c, args.s, args.t, args.g, args.p)

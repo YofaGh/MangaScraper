@@ -1,6 +1,6 @@
-import argparse, sys, os
-from utils import assets
+import sys, os
 from termcolor import colored
+from utils import assets
 from PIL import Image
 
 def merge_folder(path_to_source, path_to_destination):
@@ -52,24 +52,3 @@ def merge_manga(manga):
     chapters = os.listdir(assets.fix_name_for_folder(manga))
     for chapter in chapters:
         merge_chapter(manga, chapter)
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(allow_abbrev=False)
-    merging_options = parser.add_mutually_exclusive_group()
-    merging_options.add_argument('-mergefolder', action='store', help='merges images in given folder')
-    merging_options.add_argument('-mergechapter', action='store', help='merges given chapter')
-    merging_options.add_argument('-mergemanga', action='store', help='merges all chapters of given manga')
-    parser.add_argument('-c', action=assets.CheckChapters, nargs='+', type=float, help='specifie chapters')
-    args = parser.parse_args()
-    if args.mergechapter and not args.c:
-        parser.error('please specify chapter alongside the manga folder with -c argument')
-    os.system('color')
-    if args.mergechapter:
-        for chapter in args.c:
-            merge_chapter(args.mergechapter, chapter)
-    elif args.mergemanga:
-        merge_manga(args.mergemanga)
-    elif args.mergefolder:
-        merge_folder(args.mergefolder, f'Merged/{args.mergefolder}')
-    else:
-        parser.error('at least one argument is required')

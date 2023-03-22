@@ -87,27 +87,3 @@ def download_manga(manga, url, source, sleep_time, chapters, auto_merge, convert
                 print(error)
     if inconsistencies:
         print(colored(f'There were some inconsistencies in the following chapters: {", ".join(inconsistencies)}', 'red'))
-
-if __name__ == '__main__':
-    import argparse
-    parser = argparse.ArgumentParser(allow_abbrev=False)
-    parser.add_argument('-u', action='store', required=True, help='url of the manga')
-    parser.add_argument('-s', action=assets.SetSource, required=True, help='domain to scrap from')
-    parser.add_argument('-c', action=assets.CheckChapters, nargs='+', type=float, help='specifie chapters')
-    parser.add_argument('-n', action='store',  help='specifie name of mangas folder')
-    parser.add_argument('-p', action='store_true', help='converts merged images to pdf')
-    parser.add_argument('-g', action='store_true', help='if set, merges images vertically')
-    parser.add_argument('-t', action='store', default=0.1, nargs=1, type=float, help='set sleep time between requests')
-    
-    single_manga_chapters = parser.add_mutually_exclusive_group()
-    single_manga_chapters.add_argument('-a', action='store_true', help='downloads all available chapters')
-    single_manga_chapters.add_argument('-l', action=assets.LastChapter, type=float, help='\
-        downloads all available chapters after the given chapter')
-    single_manga_chapters.add_argument('-r', action=assets.RangeOfChapters, nargs=2, type=float, help='\
-        downloads all available chapters between the given chapters')
-    args = parser.parse_args()
-    if not (args.c or args.a or args.l or args.r):
-        parser.error('specify chapters using arguments: [a, l, r, c]')
-    args.t = args.t[0] if type(args.t) is list else args.t
-    os.system('color')
-    download_single(args.n or args.u, args.s, args.u, args.a, args.l, args.r, args.c, args.g, args.p)

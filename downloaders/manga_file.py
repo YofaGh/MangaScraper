@@ -1,6 +1,6 @@
 import natsort, time, json, sys, os
-from termcolor import colored
 from utils.modules_contributer import contributer
+from termcolor import colored
 from utils import assets
 
 global mangas
@@ -97,16 +97,3 @@ def download_mangas(json_file, sleep_time, auto_merge, convert_to_pdf):
                     raise error
     if inconsistencies:
         print(colored(f'There were some inconsistencies in the following chapters: {", ".join(inconsistencies)}', 'red'))
-
-if __name__ == '__main__':
-    import argparse
-    parser = argparse.ArgumentParser(allow_abbrev=False)
-    parser.add_argument('-f', action='store', required=True, help='downloads chapters specified in given json file')
-    parser.add_argument('-p', action='store_true', help='converts merged images to pdf')
-    parser.add_argument('-g', action='store_true', help='if set, merges images vertically')
-    parser.add_argument('-t', action='store', default=0.1, nargs=1, type=float, help='set sleep time between requests')
-    
-    args = parser.parse_args()
-    args.t = args.t[0] if type(args.t) is list else args.t
-    os.system('color')
-    download_file(args.f, args.t, args.g, args.p)
