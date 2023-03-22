@@ -21,7 +21,7 @@ class Hentaifox(Doujin, Req):
         time.sleep(5)
         view_all_button = browser.find_element(By.XPATH, "//button[@id='load_all']")
         view_all_button.click()
-        time.sleep(1)
+        time.sleep(10)
         soup = BeautifulSoup(browser.page_source, 'html.parser')
         divs = soup.find_all('div', {'class': 'gallery_thumb'})
         images = [div.find('img')['data-src'] for div in divs]
