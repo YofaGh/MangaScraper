@@ -39,6 +39,7 @@
 > - change the time sleep between each request.
 > - merge a downloaded chapter or manga.
 > - set the chapter numbers to download when downloading a single manga.
+> - you can use -t argument to set the sleep time between each request. the default is 0.1 sec.
 
 ## Modules
 >
