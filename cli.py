@@ -1,5 +1,5 @@
 import argparse, os
-from utils.assets import SetSource, CheckChapters, LastChapter, RangeOfChapters
+from utils.assets import SetSource, SetSleepTime, CheckChapters, LastChapter, RangeOfChapters
 
 parser = argparse.ArgumentParser(allow_abbrev=False)
 task = parser.add_mutually_exclusive_group()
@@ -14,15 +14,13 @@ parser.add_argument('-s', action=SetSource, help='domain to scrap from')
 parser.add_argument('-c', action=CheckChapters, nargs='+', type=float, help='specify chapters')
 parser.add_argument('-n', action='store', help='specifie name of mangas folder')
 parser.add_argument('-p', nargs='?', action='store', const='$', help='converts image to pdf to the given path. by default, it creates pdf in each chapter')
-parser.add_argument('-t', action='store', default=0.1, nargs=1, type=float, help='set sleep time between requests')
+parser.add_argument('-t', action=SetSleepTime, default=0.1, nargs=1, type=float, help='set sleep time between requests')
 parser.add_argument('-g', action='store_true', help='if set, merges images vertically')
 single_manga_chapters = parser.add_mutually_exclusive_group()
 single_manga_chapters.add_argument('-a', action='store_true', help='all chapters')
 single_manga_chapters.add_argument('-l', action=LastChapter, type=float, help='all chapters after the given chapter')
 single_manga_chapters.add_argument('-r', action=RangeOfChapters, nargs=2, type=float, help='all chapters between the given chapters')
 args = parser.parse_args()
-
-args.t = args.t[0] if type(args.t) is list else args.t
 
 if (args.f or args.mergemanga or args.mergefolder) and (args.c or args.n or args.r or args.l or args.a or args.s):
     parser.error('arguments: [c, n, r, l, a, s] can only be used with -u')
