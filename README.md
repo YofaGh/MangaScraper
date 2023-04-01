@@ -62,7 +62,7 @@
 >
 > - all chapters: ```python cli.py manga -single attack-on-titan -s truemanga.com -a```  
 > - all chapters after a certian chapter: ```python cli.py manga -single attack-on-titan -s truemanga.com -l 52```  
-> - all chapters between two chapters: ```python cli.py  manga -single attack-on-titan -s truemanga.com -r 20 30```  
+> - all chapters between two chapters: ```python cli.py manga -single attack-on-titan -s truemanga.com -r 20 30```  
 > - specify chapters: ```python cli.py manga -single attack-on-titan -s truemanga.com -c 5 10 36```  
 > - e.g. ```python cli.py manga -single attack-on-titan -s truemanga.com -n "Attack on Titan" -a -m -p```
 
