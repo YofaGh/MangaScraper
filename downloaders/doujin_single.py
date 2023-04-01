@@ -35,11 +35,14 @@ def download_doujin(code, source, sleep_time, auto_merge, convert_to_pdf):
                 sys.stdout.write(f'\r{shorten_doujin_title}: Merging...')
                 images_path, lists_to_merge = merge_folder(fixed_doujin_name, f'Merged/{fixed_doujin_name}')
                 print(colored(f'\r{shorten_doujin_title}: Merged {len(images_path)} images into {len(lists_to_merge)}.', 'green'))
-                if convert_to_pdf:
-                    from utils.pdf_converter import convert_folder
-                    sys.stdout.write(f'\r{shorten_doujin_title}: Converting to pdf...')
-                    convert_folder(f'Merged/{fixed_doujin_name}', f'Merged/{fixed_doujin_name}', f'{fixed_doujin_name}.pdf')
-                    print(colored(f'\r{shorten_doujin_title}: Converted to pdf.      ', 'green'))
+            if convert_to_pdf:
+                from utils.pdf_converter import convert_folder
+                sys.stdout.write(f'\r{shorten_doujin_title}: Converting to pdf...')
+                if convert_to_pdf == '$':
+                    convert_folder(fixed_doujin_name, fixed_doujin_name, f'{fixed_doujin_name}.pdf')
+                else:
+                    convert_folder(fixed_doujin_name, convert_to_pdf, f'{fixed_doujin_name}.pdf')
+                print(colored(f'\r{shorten_doujin_title}: Converted to pdf.      ', 'green'))
             break
         except Exception as error:
             if 'Connection error' in str(error):

@@ -60,17 +60,17 @@
 >
 > Examples:
 >
-> - all chapters: ```python cli.py -u attack-on-titan -s truemanga.com -a```  
-> - all chapters after a certian chapter: ```python cli.py -u attack-on-titan -s truemanga.com -l 52```  
-> - all chapters between two chapters: ```python cli.py -u attack-on-titan -s truemanga.com -r 20 30```  
-> - specify chapters: ```python cli.py -u attack-on-titan -s truemanga.com -c 5 10 36```  
-> - e.g. ```python cli.py -u attack-on-titan -s truemanga.com -n "Attack on Titan" -a -g -p```
+> - all chapters: ```python cli.py manga -single attack-on-titan -s truemanga.com -a```  
+> - all chapters after a certian chapter: ```python cli.py manga -single attack-on-titan -s truemanga.com -l 52```  
+> - all chapters between two chapters: ```python cli.py  manga -single attack-on-titan -s truemanga.com -r 20 30```  
+> - specify chapters: ```python cli.py manga -single attack-on-titan -s truemanga.com -c 5 10 36```  
+> - e.g. ```python cli.py manga -single attack-on-titan -s truemanga.com -n "Attack on Titan" -a -m -p```
 
 ## Download mangas of a file
 >
 > When downloading more than one manga using manga_file.py you should specify name of a json file.  
 > Json file will be automatically updated after each chapter is downloaded.  
-> Example: ```python cli.py -f mangas.json```  
+> Example: ```python cli.py manga -file mangas.json```  
 > Format of the json file should look like this:
 
 ```json
@@ -110,17 +110,16 @@
 >
 > You can download a doujin from an implemented module just by entering its code.  
 > Note: Doujins are still in development.  
-> Example: ```python cli.py -doujin 000000 -s hentaifox.com```  
+> Example: ```python cli.py doujin -code 000000 -s hentaifox.com```  
 
 ## Image merger
 >
-> You can merge all chapters of a manga, a single chapter or any folder that has images in it vertically.  
+> You can merge all chapters of a manga or any folder that has images in it vertically.  
 > before starting the merge process, all the images will be validated to avoid any exception.  
 > Examples:  
 >
-> - mrege an entire manga: ```python cli.py -mergemanga "One Piece"```  
-> - mrege a chapter: ```python cli.py -mergechapter "One Piece" -c 20 21 22```  
-> - mrege a folder: ```python cli.py -mergefolder "path/to/folder"```  
+> - mrege an entire manga: ```python cli.py merge -bulk "One Piece"```  
+> - mrege a folder: ```python cli.py merge -folder "path/to/folder"```  
 
 ## PDF converter
 >

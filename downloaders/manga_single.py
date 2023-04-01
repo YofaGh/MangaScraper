@@ -76,7 +76,10 @@ def download_manga(manga, url, source, sleep_time, chapters, auto_merge, convert
                 merge_chapter(manga, renamed_chapter)
             if convert_to_pdf:
                 from utils.pdf_converter import convert_chapter
-                convert_chapter('Merged', manga, renamed_chapter, f'Merged/{manga}')
+                if convert_to_pdf == '$':
+                    convert_chapter(f'{manga}/{renamed_chapter}', manga, renamed_chapter, manga)
+                else:
+                    convert_chapter(f'{manga}/{renamed_chapter}', manga, renamed_chapter, convert_to_pdf)
             del chapters[0]
         except Exception as error:
             if 'Connection error' in str(error):

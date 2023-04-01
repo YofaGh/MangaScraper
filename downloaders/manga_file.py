@@ -84,7 +84,10 @@ def download_mangas(json_file, sleep_time, auto_merge, convert_to_pdf):
                     merge_chapter(manga, renamed_chapter)
                 if convert_to_pdf:
                     from utils.pdf_converter import convert_chapter
-                    convert_chapter('Merged', manga, renamed_chapter, f'Merged/{manga}')
+                    if convert_to_pdf == '$':
+                        convert_chapter(f'{manga}/{renamed_chapter}', manga, renamed_chapter, manga)
+                    else:
+                        convert_chapter(f'{manga}/{renamed_chapter}', manga, renamed_chapter, convert_to_pdf)
                 del mangas[manga]['chapters'][0]
                 with open(json_file, 'w') as mangas_json:
                     mangas_json.write(json.dumps(mangas, indent=4))
