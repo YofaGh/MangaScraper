@@ -48,20 +48,20 @@ def download_mangas(json_file, sleep_time, auto_merge, convert_to_pdf):
             chapter = mangas[manga]['chapters'][0]
             source = contributer(mangas[manga]['domain'])
             renamed_chapter = source.rename_chapter(chapter)
-            sys.stdout.write(f'\r{manga}: Creating folder for {chapter}...')
+            sys.stdout.write(f'\r{manga}: {chapter}: Creating folder...')
             assets.create_folder(f'{fixed_manga}/{renamed_chapter}')
             try:
-                sys.stdout.write(f'\r{manga}: Getting image links of {chapter}...')
+                sys.stdout.write(f'\r{manga}: {chapter}: Getting image links...')
                 images, save_names = source.get_images(mangas[manga]['url'], chapter)
                 adder = 0
                 for i in range(len(images)):
-                    sys.stdout.write(f'\r{manga}: Downloading {chapter} image {i+adder+1}/{len(images)+adder}...')
+                    sys.stdout.write(f'\r{manga}: {chapter}: Downloading image {i+adder+1}/{len(images)+adder}...')
                     if not save_names:
                         if f'{i+adder+1}' not in images[i].split('/')[-1]:
                             adder += 1
                             inconsistencies.append(f'{manga}/{chapter}/{i+adder:03d}')
                             print(colored(f' Warning: Inconsistency in order of images!!!. Skipped image {i + adder}', 'red'))
-                            sys.stdout.write(f'\r{manga}: Downloading {chapter} image {i+adder+1}/{len(images)+adder}...')
+                            sys.stdout.write(f'\r{manga}: {chapter}: Downloading image {i+adder+1}/{len(images)+adder}...')
                         save_path = f'{fixed_manga}/{renamed_chapter}/{i+adder+1:03d}.{images[i].split(".")[-1]}'
                     else:
                         save_path = f'{fixed_manga}/{renamed_chapter}/{save_names[i]}'
@@ -76,18 +76,18 @@ def download_mangas(json_file, sleep_time, auto_merge, convert_to_pdf):
                             last_truncated = save_path
                             os.remove(save_path)
                             raise Exception('truncated')
-                print(colored(f'\r{manga}: {chapter} is done downloading, {len(images)} images were downloaded.', 'green'))
+                print(colored(f'\r{manga}: {chapter}: Finished downloading, {len(images)} images were downloaded.', 'green'))
                 if source.rename_chapter(chapter) > source.rename_chapter(mangas[manga]['last_downloaded_chapter']):
                     mangas[manga]['last_downloaded_chapter'] = chapter
                 if auto_merge:
-                    from utils.image_merger import merge_chapter
-                    merge_chapter(manga, renamed_chapter)
+                    from utils.image_merger import merge_folder
+                    merge_folder(f'{manga}/{renamed_chapter}', f'Merged/{manga}/{renamed_chapter}', f'{manga}: {chapter}')
                 if convert_to_pdf:
-                    from utils.pdf_converter import convert_chapter
+                    from utils.pdf_converter import convert_folder
                     if convert_to_pdf == '$':
-                        convert_chapter(f'{manga}/{renamed_chapter}', manga, renamed_chapter, manga)
+                        convert_folder(f'{manga}/{renamed_chapter}', manga, f'{manga}_{renamed_chapter}.pdf', f'{manga}: {chapter}')
                     else:
-                        convert_chapter(f'{manga}/{renamed_chapter}', manga, renamed_chapter, convert_to_pdf)
+                        convert_folder(f'{manga}/{renamed_chapter}', convert_to_pdf, f'{manga}_{renamed_chapter}.pdf', f'{manga}: {chapter}')
                 del mangas[manga]['chapters'][0]
                 with open(json_file, 'w') as mangas_json:
                     mangas_json.write(json.dumps(mangas, indent=4))

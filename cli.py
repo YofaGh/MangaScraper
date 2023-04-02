@@ -11,7 +11,7 @@ mc_options.add_argument('-folder', action='store', help='merges or converts imag
 mc_options.add_argument('-bulk', action='store', help='merges or converts images of folders in the given folder')
 parser.add_argument('-s', action=SetSource, help='domain to scrape from')
 parser.add_argument('-c', action=CheckChapters, nargs='+', type=float, help='specify chapters')
-parser.add_argument('-n', action='store', help='specify name of manga\'s folder')
+parser.add_argument('-n', action='store', help='specify a name')
 parser.add_argument('-m', action='store_true', help='if set, merges images vertically')
 parser.add_argument('-p', nargs='?', action='store', const='$', help='converts image to pdf to the given path. by default, it creates pdf in main folder')
 parser.add_argument('-t', action=SetSleepTime, default=0.1, nargs=1, type=float, help='set sleep time between requests')
@@ -54,7 +54,19 @@ match args.task:
             from utils.image_merger import merge_folder
             merge_folder(args.folder, f'Merged/{args.folder}')
         elif args.bulk:
-            from utils.image_merger import merge_manga
-            merge_manga(args.bulk)
+            from utils.image_merger import merge_bulk
+            merge_bulk(args.bulk, f'Merged/{args.bulk}')
+        else:
+            print('please set one of the following arguments: [folder, bulk]')
+
+    case 'c2pdf':
+        if args.folder:
+            if not args.n:
+                parser.error('please specify a name for pdf using -n')
+            from utils.pdf_converter import convert_folder
+            convert_folder(args.folder, args.folder, args.n)
+        elif args.bulk:
+            from utils.pdf_converter import convert_bulk
+            convert_bulk(args.bulk, args.bulk)
         else:
             print('please set one of the following arguments: [folder, bulk]')

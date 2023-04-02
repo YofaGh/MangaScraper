@@ -3,11 +3,13 @@ from termcolor import colored
 from utils import assets
 from PIL import Image
 
-def merge_folder(path_to_source, path_to_destination):
+def merge_folder(path_to_source, path_to_destination, name=None):
+    name = name if name else path_to_source
     if not assets.validate_folder(path_to_source):
         print(colored(f'\rFailed to Merge {path_to_source} because one image is corrupted or truncated.', 'red'))
-        return [], []
+        return
     assets.create_path(path_to_destination)
+    sys.stdout.write(f'\r{name}: Merging...')
     images_path = assets.detect_images(path_to_source)
     images = [Image.open(image_path) for image_path in images_path]
     lists_to_merge = []
@@ -36,19 +38,9 @@ def merge_folder(path_to_source, path_to_destination):
             merged_image.paste(image, (int((max_width - image.size[0])/2), x_offset))
             x_offset += image.size[1]
         merged_image.save(f'{path_to_destination}/{i+1:03d}.jpg')
-    return images_path, lists_to_merge
+    print(colored(f'\r{name}: Merged {len(images_path)} images into {len(lists_to_merge)}.', 'green'))
 
-def merge_chapter(manga, chapter):
-    fixed_manga = assets.fix_name_for_folder(manga)
-    if not assets.validate_folder(f'{fixed_manga}/{chapter}'):
-        print(colored(f'\r{manga}: Failed to Merge {chapter} because one image is corrupted or truncated.', 'red'))
-        return
-    assets.create_path(f'Merged/{fixed_manga}/{chapter}')
-    sys.stdout.write(f'\r{manga}: Merging {chapter}...')
-    images_path, lists_to_merge = merge_folder(f'{fixed_manga}/{chapter}', f'Merged/{fixed_manga}/{chapter}')
-    print(colored(f'\r{manga}: Merged {len(images_path)} images of {chapter} into {len(lists_to_merge)}.', 'green'))
-
-def merge_manga(manga):
-    chapters = os.listdir(assets.fix_name_for_folder(manga))
-    for chapter in chapters:
-        merge_chapter(manga, chapter)
+def merge_bulk(path_to_source, path_to_destination):
+    sub_folders = os.listdir(path_to_source)
+    for sub_folder in sub_folders:
+        merge_folder(f'{path_to_source}/{sub_folder}', f'{path_to_destination}/{sub_folder}', f'{path_to_source}: {sub_folder}')

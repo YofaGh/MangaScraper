@@ -29,20 +29,16 @@ def download_doujin(code, source, sleep_time, auto_merge, convert_to_pdf):
                         last_truncated = save_path
                         os.remove(save_path)
                         raise Exception('truncated')
-            print(colored(f'\r{shorten_doujin_title}: done downloading, {len(images)} images were downloaded.', 'green'))
+            print(colored(f'\r{shorten_doujin_title}: Finished downloading, {len(images)} images were downloaded.', 'green'))
             if auto_merge:
                 from utils.image_merger import merge_folder
-                sys.stdout.write(f'\r{shorten_doujin_title}: Merging...')
-                images_path, lists_to_merge = merge_folder(fixed_doujin_name, f'Merged/{fixed_doujin_name}')
-                print(colored(f'\r{shorten_doujin_title}: Merged {len(images_path)} images into {len(lists_to_merge)}.', 'green'))
+                merge_folder(fixed_doujin_name, f'Merged/{fixed_doujin_name}', shorten_doujin_title)
             if convert_to_pdf:
                 from utils.pdf_converter import convert_folder
-                sys.stdout.write(f'\r{shorten_doujin_title}: Converting to pdf...')
                 if convert_to_pdf == '$':
-                    convert_folder(fixed_doujin_name, fixed_doujin_name, f'{fixed_doujin_name}.pdf')
+                    convert_folder(fixed_doujin_name, fixed_doujin_name, f'{fixed_doujin_name}.pdf', shorten_doujin_title)
                 else:
-                    convert_folder(fixed_doujin_name, convert_to_pdf, f'{fixed_doujin_name}.pdf')
-                print(colored(f'\r{shorten_doujin_title}: Converted to pdf.      ', 'green'))
+                    convert_folder(fixed_doujin_name, convert_to_pdf, f'{fixed_doujin_name}.pdf', shorten_doujin_title)
             break
         except Exception as error:
             if 'Connection error' in str(error):

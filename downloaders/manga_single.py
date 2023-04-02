@@ -42,20 +42,20 @@ def download_manga(manga, url, source, sleep_time, chapters, auto_merge, convert
     assets.create_folder(fixed_manga)
     while len(chapters) > 0:
         renamed_chapter = source.rename_chapter(chapters[0])
-        sys.stdout.write(f'\r{manga}: Creating folder for {chapters[0]}...')
+        sys.stdout.write(f'\r{manga}: {chapters[0]}: Creating folder...')
         assets.create_folder(f'{fixed_manga}/{renamed_chapter}')
         try:
-            sys.stdout.write(f'\r{manga}: Getting image links of {chapters[0]}...')
+            sys.stdout.write(f'\r{manga}: {chapters[0]}: Getting image links...')
             images, save_names = source.get_images(url, chapters[0])
             adder = 0
             for i in range(len(images)):
-                sys.stdout.write(f'\r{manga}: Downloading {chapters[0]} image {i+adder+1}/{len(images)+adder}...')
+                sys.stdout.write(f'\r{manga}: {chapters[0]}: Downloading image {i+adder+1}/{len(images)+adder}...')
                 if not save_names:
                     if f'{i+adder+1}' not in images[i].split('/')[-1]:
                         adder += 1
                         inconsistencies.append(f'{manga}/{chapters[0]}/{i+adder:03d}')
                         print(colored(f' Warning: Inconsistency in order of images!!!. Skipped image {i + adder}', 'red'))
-                        sys.stdout.write(f'\r{manga}: Downloading {chapters[0]} image {i+adder+1}/{len(images)+adder}...')
+                        sys.stdout.write(f'\r{manga}: {chapters[0]}: Downloading  image {i+adder+1}/{len(images)+adder}...')
                     save_path = f'{fixed_manga}/{renamed_chapter}/{i+adder+1:03d}.{images[i].split(".")[-1]}'
                 else:
                     save_path = f'{fixed_manga}/{renamed_chapter}/{save_names[i]}'
@@ -70,16 +70,16 @@ def download_manga(manga, url, source, sleep_time, chapters, auto_merge, convert
                         last_truncated = save_path
                         os.remove(save_path)
                         raise Exception('truncated')
-            print(colored(f'\r{manga}: {chapters[0]} is done downloading, {len(images)} images were downloaded.', 'green'))
+            print(colored(f'\r{manga}: {chapters[0]}: Finished downloading, {len(images)} images were downloaded.', 'green'))
             if auto_merge:
-                from utils.image_merger import merge_chapter
-                merge_chapter(manga, renamed_chapter)
+                from utils.image_merger import merge_folder
+                merge_folder(f'{manga}/{renamed_chapter}', f'Merged/{manga}/{renamed_chapter}', f'{manga}: {chapters[0]}')
             if convert_to_pdf:
-                from utils.pdf_converter import convert_chapter
+                from utils.pdf_converter import convert_folder
                 if convert_to_pdf == '$':
-                    convert_chapter(f'{manga}/{renamed_chapter}', manga, renamed_chapter, manga)
+                    convert_folder(f'{manga}/{renamed_chapter}', manga, f'{manga}_{renamed_chapter}.pdf', f'{manga}: {chapters[0]}')
                 else:
-                    convert_chapter(f'{manga}/{renamed_chapter}', manga, renamed_chapter, convert_to_pdf)
+                    convert_folder(f'{manga}/{renamed_chapter}', convert_to_pdf, f'{manga}_{renamed_chapter}.pdf', f'{manga}: {chapters[0]}')
             del chapters[0]
         except Exception as error:
             if 'Connection error' in str(error):
