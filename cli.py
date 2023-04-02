@@ -1,8 +1,8 @@
-import argparse, os
+import argparse, sys, os
 from utils.assets import SetSource, SetSleepTime, CheckChapters, LastChapter, RangeOfChapters
 
 parser = argparse.ArgumentParser(allow_abbrev=False)
-parser.add_argument('task', help='could be one of the following: [manga, doujin, merge, c2pdf]')
+parser.add_argument('task', choices=['manga', 'doujin', 'merge', 'c2pdf'])
 type = parser.add_argument_group('download').add_mutually_exclusive_group()
 type.add_argument('-single', '-code', action='store', metavar='', help='url of the manga, or code of the doujin')
 type.add_argument('-file', action='store', metavar='', help='downloads everthing in given json file')
@@ -20,7 +20,7 @@ single_manga_chapters = chapters.add_mutually_exclusive_group()
 single_manga_chapters.add_argument('-a', action='store_true', help='all chapters')
 single_manga_chapters.add_argument('-l', action=LastChapter, type=float, metavar='', help='chapters after the given chapter')
 single_manga_chapters.add_argument('-r', action=RangeOfChapters, nargs=2, type=float, metavar=('begin', 'end'), help='chapters between the given chapters')
-args = parser.parse_args()
+args = parser.parse_args(args=(sys.argv[1:] or ['-h']))
 
 if args.single and not args.s:
     parser.error('please specify the source using -s argument')
@@ -38,7 +38,7 @@ match args.task:
             from downloaders.manga_single import download_single
             download_single(args.n or args.single, args.single, args.s, args.t, args.a, args.l, args.r, args.c, args.m, args.p)
         else:
-            parser.error('please use one of the following arguments: [single, file]')
+            parser.error('please use one of the following arguments: [-single, -file]')
 
     case 'doujin':
         if args.file:
@@ -47,7 +47,7 @@ match args.task:
             from downloaders.doujin_single import download_doujin
             download_doujin(args.single, args.s, args.t, args.m, args.p)
         else:
-            parser.error('please use one of the following arguments: [single, file]')
+            parser.error('please use one of the following arguments: [-single, -file]')
 
     case 'merge':
         if args.folder:
@@ -57,7 +57,7 @@ match args.task:
             from utils.image_merger import merge_bulk
             merge_bulk(args.bulk, f'Merged/{args.bulk}')
         else:
-            print('please set one of the following arguments: [folder, bulk]')
+            print('please set one of the following arguments: [-folder, -bulk]')
 
     case 'c2pdf':
         if args.folder:
@@ -69,7 +69,4 @@ match args.task:
             from utils.pdf_converter import convert_bulk
             convert_bulk(args.bulk, args.bulk)
         else:
-            print('please set one of the following arguments: [folder, bulk]')
-
-    case _:
-        parser.error('please specify the task: [manga, doujin, merge, c2pdf]')
+            print('please set one of the following arguments: [-folder, -bulk]')
