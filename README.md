@@ -37,7 +37,7 @@
 > - download a single manga or multiple.
 > - automatically merge them and convert them into pdf.
 > - change the time sleep between each request.
-> - merge a downloaded chapter or manga.
+> - merge a single folder or and entire manga.
 > - set the chapter numbers to download when downloading a single manga.
 > - you can use -t argument to set the sleep time between each request. the default is 0.1 sec.
 
@@ -124,7 +124,12 @@
 ## PDF converter
 >
 > You can also convert the chapters to PDF to read them better.  
-> converting chapters that are merged into fewer images is highly recommended.
+> before starting the merge process, all the images will be validated to avoid any exception.  
+> converting chapters that are merged into fewer images is highly recommended.  
+> Examples:  
+>
+> - convert an entire manga: ```python cli.py c2pdf -bulk "One Piece"```  
+> - convert a folder: ```python cli.py convert -folder "path/to/folder" -n "pdf_name.pdf"```  
 
 ## Search engine
 >
