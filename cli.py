@@ -2,7 +2,7 @@ import argparse, os
 from utils.assets import SetSource, SetSleepTime, CheckChapters, LastChapter, RangeOfChapters
 
 parser = argparse.ArgumentParser(allow_abbrev=False)
-parser.add_argument('task', help='could be one of the following: [manga, doujin, merge]')
+parser.add_argument('task', help='could be one of the following: [manga, doujin, merge, c2pdf]')
 type = parser.add_mutually_exclusive_group()
 type.add_argument('-single', '-code', action='store', help='url of the manga, or code of the doujin')
 type.add_argument('-file', action='store', help='downloads everthing in given json file')
@@ -41,7 +41,7 @@ match args.task:
 
     case 'doujin':
         if args.file:
-            print('doujin file not yet implemented')
+            print('doujin file is not yet implemented')
         elif args.single:
             from downloaders.doujin_single import download_doujin
             download_doujin(args.single, args.s, args.t, args.m, args.p)
@@ -69,3 +69,6 @@ match args.task:
             convert_bulk(args.bulk, args.bulk)
         else:
             print('please set one of the following arguments: [folder, bulk]')
+
+    case _:
+        parser.error('please specify the task: [manga, doujin, merge, c2pdf]')
