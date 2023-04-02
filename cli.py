@@ -13,7 +13,7 @@ parser.add_argument('-s', action=SetSource, help='domain to scrape from')
 parser.add_argument('-c', action=CheckChapters, nargs='+', type=float, help='specify chapters')
 parser.add_argument('-n', action='store', help='specify a name')
 parser.add_argument('-m', action='store_true', help='if set, merges images vertically')
-parser.add_argument('-p', action='store_true', help='if set, converts image to pdf')
+parser.add_argument('-p', action='store_true', help='if set, converts images to a pdf file')
 parser.add_argument('-t', action=SetSleepTime, default=0.1, nargs=1, type=float, help='set sleep time between requests')
 single_manga_chapters = parser.add_mutually_exclusive_group()
 single_manga_chapters.add_argument('-a', action='store_true', help='all chapters')
@@ -24,9 +24,6 @@ args = parser.parse_args()
 if args.single and not args.s:
     parser.error('please specify the source using -s argument')
 
-if args.task=='manga' and args.single and not(args.c or args.r or args.a or args.l):
-    parser.error('please specify chapters using at least one these arguments: [c, r, l, a]')
-
 os.system('color')
 
 match args.task:
@@ -35,6 +32,8 @@ match args.task:
             from downloaders.manga_file import download_file
             download_file(args.file, args.t, args.m, args.p)
         elif args.single:
+            if not(args.c or args.r or args.a or args.l):
+                parser.error('please specify chapters using at least one these arguments: [c, r, l, a]')
             from downloaders.manga_single import download_single
             download_single(args.n or args.single, args.single, args.s, args.t, args.a, args.l, args.r, args.c, args.m, args.p)
         else:
