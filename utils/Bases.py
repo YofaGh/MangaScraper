@@ -37,7 +37,6 @@ class Doujin:
     def search_by_title():
         return []
 
-
 class Req():
     def send_request(url):
         import requests
