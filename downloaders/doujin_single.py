@@ -35,10 +35,7 @@ def download_doujin(code, source, sleep_time, auto_merge, convert_to_pdf):
                 merge_folder(fixed_doujin_name, f'Merged/{fixed_doujin_name}', shorten_doujin_title)
             if convert_to_pdf:
                 from utils.pdf_converter import convert_folder
-                if convert_to_pdf == '$':
-                    convert_folder(fixed_doujin_name, fixed_doujin_name, f'{fixed_doujin_name}.pdf', shorten_doujin_title)
-                else:
-                    convert_folder(fixed_doujin_name, convert_to_pdf, f'{fixed_doujin_name}.pdf', shorten_doujin_title)
+                convert_folder(fixed_doujin_name, fixed_doujin_name, f'{fixed_doujin_name}.pdf', shorten_doujin_title)
             break
         except Exception as error:
             if 'Connection error' in str(error):

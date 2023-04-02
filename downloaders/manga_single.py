@@ -76,10 +76,7 @@ def download_manga(manga, url, source, sleep_time, chapters, auto_merge, convert
                 merge_folder(f'{manga}/{renamed_chapter}', f'Merged/{manga}/{renamed_chapter}', f'{manga}: {chapters[0]}')
             if convert_to_pdf:
                 from utils.pdf_converter import convert_folder
-                if convert_to_pdf == '$':
-                    convert_folder(f'{manga}/{renamed_chapter}', manga, f'{manga}_{renamed_chapter}.pdf', f'{manga}: {chapters[0]}')
-                else:
-                    convert_folder(f'{manga}/{renamed_chapter}', convert_to_pdf, f'{manga}_{renamed_chapter}.pdf', f'{manga}: {chapters[0]}')
+                convert_folder(f'{manga}/{renamed_chapter}', manga, f'{manga}_{renamed_chapter}.pdf', f'{manga}: {chapters[0]}')
             del chapters[0]
         except Exception as error:
             if 'Connection error' in str(error):
