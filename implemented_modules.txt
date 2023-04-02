@@ -1,17 +1,20 @@
-bibimanga.com
-blogmanga.net
-coloredmanga.com
-comics.8muses.com
-hentaifox.com
-mangapark.to
-mangareader.cc
-manhuamanhwa.com
-manhuascan.us
-manhwa18.com
-manhwa365.com
-nhentai.xxx
-nyahentai.red
-readonepiece.com
-simplyhentai.org
-skymanga.xyz
-truemanga.com
+Mangas:
+    bibimanga.com
+    blogmanga.net
+    coloredmanga.com
+    comics.8muses.com
+    mangapark.to
+    mangareader.cc
+    manhuamanhwa.com
+    manhuascan.us
+    manhwa18.com
+    manhwa365.com
+    readonepiece.com
+    skymanga.xyz
+    truemanga.com
+
+Doujins:
+    hentaifox.com
+    nhentai.xxx
+    nyahentai.red
+    simplyhentai.org
