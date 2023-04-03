@@ -17,7 +17,7 @@
 
 - [Download mangas of a file](#download-mangas-of-a-file)
 
-- [Download a Doujin by it's code](#download-a-doujin-by-its-code)
+- [Download a doujin by it's code](#download-a-doujin-by-its-code)
 
 - [Download doujins of a file](#download-doujins-of-a-file)
 
@@ -108,7 +108,7 @@
 > - if the "last_downloaded_chapter" has valid value, do_file.py will automatically add the chapters after "last_downloaded_chapter" to the download list.  
 > - and if the "last_downloaded_chapter" is equal to "pass", only the download list which user filled will be downloaded.
 
-## Download a Doujin by it's code
+## Download a doujin by it's code
 >
 > You can download a doujin from an implemented module just by entering its code.  
 > Note: Doujins are still in development.  
