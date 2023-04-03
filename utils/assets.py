@@ -71,7 +71,7 @@ def create_path(path):
     folders = list(filter(None, path.split('/')))
     temp_path = ''
     for folder in folders:
-        temp_path = os.path.join(temp_path, folder)
+        temp_path = os.path.join(temp_path, fix_name_for_folder(folder))
         create_folder(temp_path)
 
 def fix_name_for_folder(manga):
