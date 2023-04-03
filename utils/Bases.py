@@ -51,6 +51,8 @@ class Req():
             elif response.status_code == 500:
                 raise Exception('Server Error')
             else:
-                raise Exception
+                raise Exception(f'Error code: {response.status_code}')
         except Exception as e:
+            if str(e) in ['Not found', 'Forbidden', 'Server Error']:
+                raise Exception(e)
             raise Exception(f'Connection error: {str(e)}')
