@@ -19,6 +19,8 @@
 
 - [Download a Doujin by it's code](#download-a-doujin-by-its-code)
 
+- [Download doujins of a file](#download-doujins-of-a-file)
+
 - [Image merger](#image-merger)
 
 - [PDF converter](#pdf-converter)
@@ -34,10 +36,10 @@
 >
 > Command center gives you various options like:
 >
-> - download a single manga or multiple.
+> - download a single manga/manhua/doujin or multiple.
 > - automatically merge them and convert them into pdf.
 > - change the time sleep between each request.
-> - merge a single folder or and entire manga.
+> - merge images of a single folder or subfolders of a folder.
 > - set the chapter numbers to download when downloading a single manga.
 > - you can use -t argument to set the sleep time between each request. the default is 0.1 sec.
 
@@ -111,6 +113,30 @@
 > You can download a doujin from an implemented module just by entering its code.  
 > Note: Doujins are still in development.  
 > Example: ```python cli.py doujin -code 000000 -s hentaifox.com```  
+
+## Download doujins of a file
+>
+> When downloading more than one doujin using doujin_file.py you should specify name of a json file.  
+> Json file will be automatically updated after each doujin is downloaded.  
+> Example: ```python cli.py doujin -file doujins.json```  
+> Format of the json file should look like this:
+
+```json
+{
+    "nyahentai.red": {
+        "codes": [
+            000000,
+            111111
+        ]
+    },
+    "hentaifox.com": {
+        "codes": [
+            222222,
+            333333
+        ]
+    }
+}
+```
 
 ## Image merger
 >
