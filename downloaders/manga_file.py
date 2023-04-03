@@ -5,12 +5,12 @@ from utils import assets
 
 global mangas
 
-def download_file(json_file, sleep_time, auto_merge, convert_to_pdf):
+def download_file(json_file, sleep_time, merge, convert_to_pdf):
     global mangas
     with open(json_file) as mangas_json:
         mangas = json.loads(mangas_json.read())
     get_name_of_chapters(json_file, sleep_time)
-    download_mangas(json_file, sleep_time, auto_merge, convert_to_pdf)
+    download_mangas(json_file, sleep_time, merge, convert_to_pdf)
 
 def get_name_of_chapters(json_file, sleep_time):
     global mangas
@@ -36,7 +36,7 @@ def get_name_of_chapters(json_file, sleep_time):
     with open(json_file, 'w') as mangas_json:
         mangas_json.write(json.dumps(mangas, indent=4))
 
-def download_mangas(json_file, sleep_time, auto_merge, convert_to_pdf):
+def download_mangas(json_file, sleep_time, merge, convert_to_pdf):
     global mangas
     inconsistencies = []
     last_truncated = None
@@ -79,7 +79,7 @@ def download_mangas(json_file, sleep_time, auto_merge, convert_to_pdf):
                 print(colored(f'\r{manga}: {chapter}: Finished downloading, {len(images)} images were downloaded.', 'green'))
                 if source.rename_chapter(chapter) > source.rename_chapter(mangas[manga]['last_downloaded_chapter']):
                     mangas[manga]['last_downloaded_chapter'] = chapter
-                if auto_merge:
+                if merge:
                     from utils.image_merger import merge_folder
                     merge_folder(f'{manga}/{renamed_chapter}', f'Merged/{manga}/{renamed_chapter}', f'{manga}: {chapter}')
                 if convert_to_pdf:
@@ -91,7 +91,7 @@ def download_mangas(json_file, sleep_time, auto_merge, convert_to_pdf):
             except Exception as error:
                 if 'Connection error' in str(error):
                     assets.waiter()
-                if str(error) == 'truncated':
+                elif str(error) == 'truncated':
                     print(colored(f' {last_truncated} was truncated. trying to download it one more time...', 'red'))
                 else:
                     raise error

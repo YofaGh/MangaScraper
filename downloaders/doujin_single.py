@@ -2,7 +2,7 @@ import textwrap, time, sys, os
 from termcolor import colored
 from utils import assets
 
-def download_doujin(code, source, sleep_time, auto_merge, convert_to_pdf):
+def download_doujin(code, source, sleep_time, merge, convert_to_pdf):
     last_truncated = None
     while True:
         try:
@@ -30,7 +30,7 @@ def download_doujin(code, source, sleep_time, auto_merge, convert_to_pdf):
                         os.remove(save_path)
                         raise Exception('truncated')
             print(colored(f'\r{shorten_doujin_title}: Finished downloading, {len(images)} images were downloaded.', 'green'))
-            if auto_merge:
+            if merge:
                 from utils.image_merger import merge_folder
                 merge_folder(fixed_doujin_name, f'Merged/{fixed_doujin_name}', shorten_doujin_title)
             if convert_to_pdf:
@@ -40,7 +40,7 @@ def download_doujin(code, source, sleep_time, auto_merge, convert_to_pdf):
         except Exception as error:
             if 'Connection error' in str(error):
                 assets.waiter()
-            if str(error) == 'truncated':
+            elif str(error) == 'truncated':
                 print(colored(f' {last_truncated} was truncated. trying to download it one more time...', 'red'))
             else:
                 raise error

@@ -42,7 +42,8 @@ match args.task:
 
     case 'doujin':
         if args.file:
-            print('doujin file is not yet implemented')
+            from downloaders.doujin_file import download_doujins
+            download_doujins(args.file, args.t, args.m, args.p)
         elif args.single:
             from downloaders.doujin_single import download_doujin
             download_doujin(args.single, args.s, args.t, args.m, args.p)
