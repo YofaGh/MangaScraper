@@ -48,11 +48,11 @@ def download_mangas(json_file, sleep_time, auto_merge, convert_to_pdf):
             chapter = mangas[manga]['chapters'][0]
             source = contributer(mangas[manga]['domain'])
             renamed_chapter = source.rename_chapter(chapter)
-            sys.stdout.write(f'\r{manga}: {chapter}: Creating folder...')
-            assets.create_folder(f'{fixed_manga}/{renamed_chapter}')
             try:
                 sys.stdout.write(f'\r{manga}: {chapter}: Getting image links...')
                 images, save_names = source.get_images(mangas[manga]['url'], chapter)
+                sys.stdout.write(f'\r{manga}: {chapter}: Creating folder...')
+                assets.create_folder(f'{fixed_manga}/{renamed_chapter}')
                 adder = 0
                 for i in range(len(images)):
                     sys.stdout.write(f'\r{manga}: {chapter}: Downloading image {i+adder+1}/{len(images)+adder}...')

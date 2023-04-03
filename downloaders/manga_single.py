@@ -42,11 +42,11 @@ def download_manga(manga, url, source, sleep_time, chapters, auto_merge, convert
     assets.create_folder(fixed_manga)
     while len(chapters) > 0:
         renamed_chapter = source.rename_chapter(chapters[0])
-        sys.stdout.write(f'\r{manga}: {chapters[0]}: Creating folder...')
-        assets.create_folder(f'{fixed_manga}/{renamed_chapter}')
         try:
             sys.stdout.write(f'\r{manga}: {chapters[0]}: Getting image links...')
             images, save_names = source.get_images(url, chapters[0])
+            sys.stdout.write(f'\r{manga}: {chapters[0]}: Creating folder...')
+            assets.create_folder(f'{fixed_manga}/{renamed_chapter}')
             adder = 0
             for i in range(len(images)):
                 sys.stdout.write(f'\r{manga}: {chapters[0]}: Downloading image {i+adder+1}/{len(images)+adder}...')

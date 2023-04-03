@@ -9,11 +9,11 @@ def download_doujin(code, source, sleep_time, auto_merge, convert_to_pdf):
             sys.stdout.write(f'\r{code}: Getting name of doujin...')
             doujin_title = source.get_title(code)
             shorten_doujin_title = textwrap.shorten(doujin_title, width=50)
+            sys.stdout.write(f'\r{shorten_doujin_title}: Getting image links...')
+            images = source.get_images(code)
             sys.stdout.write(f'\r{shorten_doujin_title}: Creating folder...')
             fixed_doujin_name = assets.fix_name_for_folder(doujin_title)
             assets.create_folder(fixed_doujin_name)
-            sys.stdout.write(f'\r{shorten_doujin_title}: Getting image links...')
-            images = source.get_images(code)
             adder = 0
             for i in range(len(images)):
                 sys.stdout.write(f'\r{shorten_doujin_title}: Downloading image {i+adder+1}/{len(images)+adder}...')
