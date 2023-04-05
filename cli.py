@@ -80,4 +80,4 @@ match args.task:
         if not(args.s and args.n):
             parser.error('you should specify source using -s and what you want to search using -n')
         from utils.search_engine import search_by_title
-        search_by_title(args.n, args.s, args.absolute, args.page_limit, args.save_to_file)
+        search_by_title(args.n, args.s, args.t, args.absolute, args.page_limit, args.save_to_file)

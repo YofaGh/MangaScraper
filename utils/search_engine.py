@@ -1,26 +1,26 @@
-import time, sys
+import sys
 from utils.modules_contributer import get_domain
+from termcolor import colored
 
-def search_by_title(title, sources, absolute=False, limit_page=1000, save_to_file=False):
+def search_by_title(title, sources, sleep_time, absolute=False, limit_page=1000, save_to_file=False):
     results = {}
     for source in sources:
         try:
             domain = get_domain(source)
             if not hasattr(source, 'search_by_title'):
                 raise Exception('searching by title is not yet implemented for this domain.')
-            search = source.search_by_title(title, absolute=absolute, limit_page=limit_page)
+            search = source.search_by_title(title, sleep_time, absolute=absolute, limit_page=limit_page)
             while True:
                 is_done, last = next(search)
                 if not is_done:
                     sys.stdout.write(f'\r{domain}: Searching page {last}...')
                     last_page = last
-                    time.sleep(2)
                 else:
-                    print(f'\r{domain}: {len(last)} results were found from {last_page-1} pages.')
+                    print(colored(f'\r{domain}: {len(last)} results were found from {last_page-1} pages.', 'green'))
                     results[domain] = last
                     break
         except Exception as error:
-            sys.stdout.write(f'\r{domain}: Failed to search: {error}\n')
+            sys.stdout.write(colored(f'\r{domain}: Failed to search: {error}\n', 'red'))
     print_output(results)
     if save_to_file:
         save_results(results)

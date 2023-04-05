@@ -19,7 +19,8 @@ class Coloredmanga(Manga, Req):
             save_names.append(f'{i+1:03d}.{images[i].split(".")[-1]}')
         return images, save_names
 
-    def search_by_title(title, absolute=False, limit_page=1000):
+    def search_by_title(title, sleep_time, absolute=False, limit_page=1000):
+        import time
         results = {}
         page = 1
         while True:
@@ -37,6 +38,7 @@ class Coloredmanga(Manga, Req):
                     continue
                 results[manga.find('a')['href'].replace('https://coloredmanga.com/mangas/','')[:-1]] = manga.find('a').contents[0]
             page += 1
+            time.sleep(sleep_time)
         yield True, results
         return
 

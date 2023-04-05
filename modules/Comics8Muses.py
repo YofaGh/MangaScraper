@@ -40,7 +40,8 @@ class Comics8Muses(Manga, Req):
             save_names.append(f'{i+1:03d}.{images[i].split(".")[-1]}')
         return images, save_names
 
-    def search_by_title(title, absolute=False, limit_page=1000):
+    def search_by_title(title, sleep_time, absolute=False, limit_page=1000):
+        import time
         results = {}
         page = 1
         links = []
@@ -53,6 +54,7 @@ class Comics8Muses(Manga, Req):
             if page > limit_page:
                 break
             browser.get(f'https://comics.8muses.com/search?q={title}&page={page}')
+            time.sleep(2)
             soup = BeautifulSoup(browser.page_source, 'html.parser')
             comics = soup.find_all('a', {'class': 'c-tile t-hover'}, href=True)
             if not comics:
@@ -72,6 +74,7 @@ class Comics8Muses(Manga, Req):
                     links.append(url)
                     results[url] = comic.find('span').contents[0]
             page += 1
+            time.sleep(sleep_time)
         yield True, results
         return
 

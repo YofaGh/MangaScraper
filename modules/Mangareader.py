@@ -27,7 +27,8 @@ class Mangareader(Manga, Req):
         images = [image['src'] for image in images]
         return images, False
 
-    def search_by_title(title, absolute=False, limit_page=1000):
+    def search_by_title(title, sleep_time, absolute=False, limit_page=1000):
+        import time
         results = {}
         page = 1
         while True:
@@ -44,5 +45,6 @@ class Mangareader(Manga, Req):
                     continue
                 results[manga.find('a')['href'].split('/')[-1]] = manga.find('a').find('h3').contents[0]
             page += 1
+            time.sleep(sleep_time)
         yield True, results
         return

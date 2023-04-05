@@ -16,7 +16,8 @@ class Manhwa18(Manga, Req):
         images = [image['data-src'] for image in images]
         return images, False
 
-    def search_by_title(title, absolute=False, limit_page=1000):
+    def search_by_title(title, sleep_time, absolute=False, limit_page=1000):
+        import time
         results = {}
         page = 1
         while True:
@@ -33,6 +34,7 @@ class Manhwa18(Manga, Req):
                     continue
                 results[manga.find('a')['href'].split('/')[-1]] = manga.find('a')['title']
             page += 1
+            time.sleep(sleep_time)
         yield True, results
         return
 
