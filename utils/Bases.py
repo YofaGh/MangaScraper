@@ -5,9 +5,6 @@ class Manga:
     def get_images():
         return [], False
 
-    def search_by_title():
-        return []
-
     def rename_chapter(chapter):
         if chapter in ['pass', None]:
             return 'Chapter 000'

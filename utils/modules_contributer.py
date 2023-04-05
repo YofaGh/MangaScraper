@@ -38,3 +38,10 @@ sources_dict = {
 
 def contributer(key):
     return sources_dict[key]
+
+def get_domain(value):
+    for domain, source in sources_dict.items():
+        if source == value:
+            return domain
+    else:
+        return None
