@@ -16,11 +16,11 @@ class Bibimanga(Manga, Req):
         images = [image['data-src'].strip() for image in images]
         return images, False
 
-    def search_by_title(title, limit_page=1000):
+    def search_by_title(title, absolute=False, limit_page=1000):
         results = {}
         page = 1
         while True:
-            yield page
+            yield False, page
             if page > limit_page:
                 break
             response = Bibimanga.send_request(f'https://bibimanga.com/page/{page}?s={title}&post_type=wp-manga')
@@ -31,7 +31,9 @@ class Bibimanga(Manga, Req):
             for manga in mangas:
                 ti = manga.find('div', {'class': 'tab-thumb c-image-hover'}).find('a')['title']
                 link = manga.find('div', {'class': 'tab-thumb c-image-hover'}).find('a')['href'].split('/')[-2]
+                if absolute and title.lower() not in ti.lower():
+                    continue
                 results[link] = ti
             page += 1
-        yield results
+        yield True, results
         return

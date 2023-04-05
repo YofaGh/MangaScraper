@@ -16,11 +16,11 @@ class Truemanga(Manga, Req):
         images = [image['data-src'] for image in images]
         return images, False
 
-    def search_by_title(title, limit_page=1000):
+    def search_by_title(title, absolute=False, limit_page=1000):
         results = {}
         page = 1
         while True:
-            yield page
+            yield False, page
             if page > limit_page:
                 break
             response = Truemanga.send_request(f'https://truemanga.com/search?q={title}&page={page}')
@@ -31,7 +31,9 @@ class Truemanga(Manga, Req):
             for manga in mangas:
                 ti = manga.find('div', {'class': 'title'}).find('a')['title']
                 link = manga.find('div', {'class': 'title'}).find('a')['href'].split('/')[-1]
+                if absolute and title.lower() not in ti.lower():
+                    continue
                 results[link] = ti
             page += 1
-        yield results
+        yield True, results
         return

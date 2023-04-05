@@ -27,11 +27,11 @@ class Mangareader(Manga, Req):
         images = [image['src'] for image in images]
         return images, False
 
-    def search_by_title(title, limit_page=1000):
+    def search_by_title(title, absolute=False, limit_page=1000):
         results = {}
         page = 1
         while True:
-            yield page
+            yield False, page
             if page > limit_page:
                 break
             response = Mangareader.send_request(f'https://mangareader.cc/search?s={title}&page={page}')
@@ -40,7 +40,9 @@ class Mangareader(Manga, Req):
             if len(mangas) == 0:
                 break
             for manga in mangas:
+                if absolute and title.lower() not in manga.find('a').find('h3').contents[0].lower():
+                    continue
                 results[manga.find('a')['href'].split('/')[-1]] = manga.find('a').find('h3').contents[0]
             page += 1
-        yield results
+        yield True, results
         return

@@ -19,11 +19,11 @@ class Coloredmanga(Manga, Req):
             save_names.append(f'{i+1:03d}.{images[i].split(".")[-1]}')
         return images, save_names
 
-    def search_by_title(title, limit_page=1000):
+    def search_by_title(title, absolute=False, limit_page=1000):
         results = {}
         page = 1
         while True:
-            yield page
+            yield False, page
             if page > limit_page:
                 break
             try:
@@ -33,10 +33,11 @@ class Coloredmanga(Manga, Req):
             soup = BeautifulSoup(response.text, 'html.parser')
             mangas = soup.find_all('div', {'class': 'post-title'})
             for manga in mangas:
+                if absolute and title.lower() not in manga.find('a')['href']:
+                    continue
                 results[manga.find('a')['href'].replace('https://coloredmanga.com/mangas/','')[:-1]] = manga.find('a').contents[0]
-            print(results)
             page += 1
-        yield results
+        yield True, results
         return
 
     def rename_chapter(chapter):

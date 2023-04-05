@@ -40,7 +40,7 @@ class Comics8Muses(Manga, Req):
             save_names.append(f'{i+1:03d}.{images[i].split(".")[-1]}')
         return images, save_names
 
-    def search_by_title(title, limit_page=1000):
+    def search_by_title(title, absolute=False, limit_page=1000):
         results = {}
         page = 1
         links = []
@@ -49,7 +49,7 @@ class Comics8Muses(Manga, Req):
         service = Service(executable_path='geckodriver.exe', log_path='NUL')
         browser = webdriver.Firefox(options=options, service=service)
         while True:
-            yield page
+            yield False, page
             if page > limit_page:
                 break
             browser.get(f'https://comics.8muses.com/search?q={title}&page={page}')
@@ -59,6 +59,8 @@ class Comics8Muses(Manga, Req):
                 break
             for comic in comics:
                 if not comic.get('href'):
+                    continue
+                if absolute and title.lower() not in comic.find('span').contents[0].lower():
                     continue
                 url = comic.get('href').replace('https://comics.8muses.com/comics/album/', '')
                 sublink = False
@@ -70,7 +72,7 @@ class Comics8Muses(Manga, Req):
                     links.append(url)
                     results[url] = comic.find('span').contents[0]
             page += 1
-        yield results
+        yield True, results
         return
 
     def rename_chapter(name):
