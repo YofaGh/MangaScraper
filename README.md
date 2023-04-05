@@ -168,6 +168,6 @@
 > Examples:  
 >
 > - search in one module: ```python cli.py search -s manhuascan.us -n "secret"```  
-> - search in multiple modules: ```python cli.py search -s manhuascan.us truemanga.com mangareader.cc -n "secret"```  
+> - search in multiple modules: ```python cli.py search -s truemanga.com mangareader.cc -n "secret"```  
 > - search in all modules: ```python cli.py search -s all -n "secret"```  
 > - e.g.  ```python cli.py search -s manhuascan.us -n "secret" -page-limit 5 -absolute -save-to-file```
