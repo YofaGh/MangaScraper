@@ -2,19 +2,15 @@ import natsort, json, sys
 from utils.modules_contributer import get_class
 from termcolor import colored
 
-global mangas
-
 def download_file(json_file, sleep_time, merge, convert_to_pdf):
-    global mangas
-    with open(json_file) as mangas_json:
-        mangas = json.loads(mangas_json.read())
     get_name_of_chapters(json_file)
     inconsistencies = download_mangas(json_file, sleep_time, merge, convert_to_pdf)
     if inconsistencies:
         print(colored(f'There were some inconsistencies with the following chapters: {", ".join(inconsistencies)}', 'red'))
 
 def get_name_of_chapters(json_file):
-    global mangas
+    with open(json_file) as mangas_json:
+        mangas = json.loads(mangas_json.read())
     valid_mangas = [manga for (manga, detm) in mangas.items() if detm['include']]
     for valid_manga in valid_mangas:
         manga = mangas[valid_manga]
@@ -37,19 +33,23 @@ def get_name_of_chapters(json_file):
         mangas_json.write(json.dumps(mangas, indent=4))
 
 def download_mangas(json_file, sleep_time, merge, convert_to_pdf):
-    global mangas
+    with open(json_file) as mangas_json:
+        mangas = json.loads(mangas_json.read())
     inconsistencies = []
     valid_mangas = [manga for (manga, detm) in mangas.items() if (detm['include'] and detm['chapters'])]
     for manga in valid_mangas:
         while len(mangas[manga]['chapters']) > 0:
-            chapter = mangas[manga]['chapters'][0]
-            source = get_class(mangas[manga]['domain'])
-            from downloaders.manga_single import download_manga
-            ics = download_manga(manga, mangas[manga]['url'], source, sleep_time, [chapter], merge, convert_to_pdf)
-            inconsistencies += ics
-            if source.rename_chapter(chapter) > source.rename_chapter(mangas[manga]['last_downloaded_chapter']):
-                mangas[manga]['last_downloaded_chapter'] = chapter
-            del mangas[manga]['chapters'][0]
-            with open(json_file, 'w') as mangas_json:
-                mangas_json.write(json.dumps(mangas, indent=4))
+            try:
+                chapter = mangas[manga]['chapters'][0]
+                source = get_class(mangas[manga]['domain'])
+                from downloaders.manga_single import download_manga
+                ics = download_manga(manga, mangas[manga]['url'], source, sleep_time, [chapter], merge, convert_to_pdf)
+                inconsistencies += ics
+                if source.rename_chapter(chapter) > source.rename_chapter(mangas[manga]['last_downloaded_chapter']):
+                    mangas[manga]['last_downloaded_chapter'] = chapter
+                del mangas[manga]['chapters'][0]
+                with open(json_file, 'w') as mangas_json:
+                    mangas_json.write(json.dumps(mangas, indent=4))
+            except Exception as error:
+                raise error
     return inconsistencies

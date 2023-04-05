@@ -3,7 +3,8 @@
 > - Download your favorite comics.
 > - Search between sources.
 > - Merge downloaded chapters into one or two images.
-> - And convert them into PDF format.
+> - Convert downloaded chapters into PDF file.
+> - Search and find what you want.
 
 ## Table of Contents
 
@@ -40,6 +41,8 @@
 > - automatically merge them and convert them into pdf.
 > - change the time sleep between each request.
 > - merge images of a single folder or subfolders of a folder.
+> - convert images of a single folder or subfolders of a folder to pdf file.
+> - search in websites using implemented modules
 > - set the chapter numbers to download when downloading a single manga.
 > - you can use -t argument to set the sleep time between each request. the default is 0.1 sec.
 
