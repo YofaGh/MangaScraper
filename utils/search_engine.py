@@ -23,7 +23,7 @@ def search_by_title(title, sources, sleep_time, absolute=False, limit_page=1000,
             sys.stdout.write(colored(f'\r{domain}: Failed to search: {error}\n', 'red'))
     print_output(results)
     if save_to_file:
-        save_results(results)
+        save_results(title, results)
 
 def print_output(results):
     for source in results:
@@ -31,7 +31,7 @@ def print_output(results):
         for result in results[source]:
             print(f'    title: {results[source][result]}, url: {result}')
 
-def save_results(results):
+def save_results(title, results):
     import json
-    with open('output.json', 'w') as output:
+    with open(f'{title}_output.json', 'w') as output:
         output.write(json.dumps(results, indent=4))
