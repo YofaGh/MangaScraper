@@ -4,7 +4,9 @@ from utils import assets
 
 def download_single(manga, url, source, sleep_time, is_all, last, ranged, chapters, merge, convert_to_pdf):
     chapters_to_download = get_name_of_chapters(manga, url, source, is_all, last, ranged, chapters)
-    download_manga(manga, url, source, sleep_time, chapters_to_download, merge, convert_to_pdf)
+    inconsistencies = download_manga(manga, url, source, sleep_time, chapters_to_download, merge, convert_to_pdf)
+    if inconsistencies:
+        print(colored(f'There were some inconsistencies with the following chapters: {", ".join(inconsistencies)}', 'red'))
 
 def get_name_of_chapters(manga, url, source, is_all, last, ranged, c_chapters):
     ctd = []
@@ -53,7 +55,7 @@ def download_manga(manga, url, source, sleep_time, chapters, merge, convert_to_p
                 if not save_names:
                     if f'{i+adder+1}' not in images[i].split('/')[-1]:
                         adder += 1
-                        inconsistencies.append(f'{manga}/{chapters[0]}/{i+adder:03d}')
+                        inconsistencies.append(f'{manga}/{chapters[0]}/{i+adder:03d}.{images[i].split(".")[-1]}')
                         print(colored(f' Warning: Inconsistency in order of images!!!. Skipped image {i + adder}', 'red'))
                         sys.stdout.write(f'\r{manga}: {chapters[0]}: Downloading  image {i+adder+1}/{len(images)+adder}...')
                     save_path = f'{fixed_manga}/{renamed_chapter}/{i+adder+1:03d}.{images[i].split(".")[-1]}'
@@ -85,5 +87,4 @@ def download_manga(manga, url, source, sleep_time, chapters, merge, convert_to_p
                 print(colored(f' {last_truncated} was truncated. trying to download it one more time...', 'red'))
             else:
                 print(error)
-    if inconsistencies:
-        print(colored(f'There were some inconsistencies in the following chapters: {", ".join(inconsistencies)}', 'red'))
+    return inconsistencies
