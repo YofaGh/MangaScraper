@@ -23,8 +23,9 @@ class Skymanga(Manga, Req):
             yield False, page
             if page > limit_page:
                 break
-            response = Skymanga.send_request(f'https://skymanga.xyz/page/{page}/?s={title}&post_type=wp-manga')
-            if response.status_code != 200:
+            try:
+                response = Skymanga.send_request(f'https://skymanga.xyz/page/{page}/?s={title}&post_type=wp-manga')
+            except:
                 break
             soup = BeautifulSoup(response.text, 'html.parser')
             mangas = soup.find_all('div', {'class': 'row c-tabs-item__content'})

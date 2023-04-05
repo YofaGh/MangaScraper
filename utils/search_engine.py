@@ -5,9 +5,9 @@ def search_by_title(title, sources, absolute=False, limit_page=1000, save_to_fil
     results = {}
     for source in sources:
         try:
+            domain = get_domain(source)
             if not hasattr(source, 'search_by_title'):
                 raise Exception('searching by title is not yet implemented for this domain.')
-            domain = get_domain(source)
             search = source.search_by_title(title, absolute=absolute, limit_page=limit_page)
             while True:
                 is_done, last = next(search)

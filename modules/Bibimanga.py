@@ -23,11 +23,12 @@ class Bibimanga(Manga, Req):
             yield False, page
             if page > limit_page:
                 break
-            response = Bibimanga.send_request(f'https://bibimanga.com/page/{page}?s={title}&post_type=wp-manga')
+            try:
+                response = Bibimanga.send_request(f'https://bibimanga.com/page/{page}?s={title}&post_type=wp-manga')
+            except:
+                break
             soup = BeautifulSoup(response.text, 'html.parser')
             mangas = soup.find_all('div', {'class': 'row c-tabs-item__content'})
-            if len(mangas) == 0:
-                break
             for manga in mangas:
                 ti = manga.find('div', {'class': 'tab-thumb c-image-hover'}).find('a')['title']
                 link = manga.find('div', {'class': 'tab-thumb c-image-hover'}).find('a')['href'].split('/')[-2]
