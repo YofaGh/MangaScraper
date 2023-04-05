@@ -25,6 +25,7 @@ def download_doujin(code, source, sleep_time, merge, convert_to_pdf):
                         image.write(response.content)
                     if not assets.validate_corrupted_image(save_path):
                         print(colored(f' Warning: Image {i+adder+1} is corrupted. will not be able to merge this chapter', 'red'))
+                        continue
                     if not assets.validate_truncated_image(save_path) and last_truncated != save_path:
                         last_truncated = save_path
                         os.remove(save_path)
