@@ -16,4 +16,4 @@ def download_doujins(json_file, sleep_time, merge, convert_to_pdf):
                 with open(json_file, 'w') as doujins_json:
                     doujins_json.write(json.dumps(doujins, indent=4))
             except Exception as error:
-                raise error
+                print(error)

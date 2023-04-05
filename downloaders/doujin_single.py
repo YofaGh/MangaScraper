@@ -44,4 +44,4 @@ def download_doujin(code, source, sleep_time, merge, convert_to_pdf):
             elif str(error) == 'truncated':
                 print(colored(f' {last_truncated} was truncated. trying to download it one more time...', 'red'))
             else:
-                raise error
+                print(error)

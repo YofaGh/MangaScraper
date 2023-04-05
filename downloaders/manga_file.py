@@ -51,5 +51,5 @@ def download_mangas(json_file, sleep_time, merge, convert_to_pdf):
                 with open(json_file, 'w') as mangas_json:
                     mangas_json.write(json.dumps(mangas, indent=4))
             except Exception as error:
-                raise error
+                print(error)
     return inconsistencies
