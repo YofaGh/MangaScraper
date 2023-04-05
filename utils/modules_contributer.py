@@ -36,8 +36,11 @@ sources_dict = {
     'truemanga.com': Truemanga
 }
 
-def contributer(key):
-    return sources_dict[key]
+def get_all_domains():
+    return list(sources_dict.keys())
+
+def get_all_classes():
+    return list(sources_dict.values())
 
 def get_domain(value):
     for domain, source in sources_dict.items():
@@ -45,3 +48,6 @@ def get_domain(value):
             return domain
     else:
         return None
+
+def get_class(key):
+    return sources_dict[key]

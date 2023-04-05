@@ -48,7 +48,7 @@
 > There are various modules implemented so far. They inherit from Base classes.  
 > They're implemented differently based on the website's source code.  
 > In case if using custom user agents or cookies are needed, sending requests to the source is done dirctly by the source class itself.  
-> To use them, they're imported in modules_contributer.py and can be accesed by contributer function.
+> To use them, they're imported in modules_contributer.py and can be accesed by get_class function.
 
 ## Download a single manga
 >
@@ -159,4 +159,15 @@
 
 ## Search engine
 >
-> Still in development but allows you to search between available sources.
+> allows you to search between available sources that searching function is implemented for them.  
+> unlike downloading with -single argument you can specify multiple sources when using -s.  
+> you can also use "-s all" to search in all modules.  
+> set page limit with -page-limit argument.  
+> get results output in a file with setting -save-to-file argument.  
+> you can limit the results with setting -absoulte argument.  
+> Examples:  
+>
+> - search in one module: ```python cli.py search -s manhuascan.us -n "secret"```  
+> - search in multiple modules: ```python cli.py search -s manhuascan.us truemanga.com mangareader.cc -n "secret"```  
+> - search in all modules: ```python cli.py search -s all -n "secret"```  
+> - e.g.  ```python cli.py search -s manhuascan.us -n "secret" -page-limit 5 -absolute -save-to-file```

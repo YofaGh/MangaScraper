@@ -1,5 +1,5 @@
 import natsort, time, json, sys, os
-from utils.modules_contributer import contributer
+from utils.modules_contributer import get_class
 from termcolor import colored
 from utils import assets
 
@@ -19,7 +19,7 @@ def get_name_of_chapters(json_file, sleep_time):
         manga = mangas[valid_manga]
         sys.stdout.write(f'\r{valid_manga}: Getting name of chapters...')
         if manga['last_downloaded_chapter'] != 'pass':
-            chapters = contributer(manga['domain']).get_chapters(manga['url'])
+            chapters = get_class(manga['domain']).get_chapters(manga['url'])
             if manga['last_downloaded_chapter'] is None:
                 manga['chapters'] += [chapter for chapter in chapters if chapter not in manga['chapters']]
             else:
@@ -30,7 +30,7 @@ def get_name_of_chapters(json_file, sleep_time):
                         continue
                     if reached_last_downloaded_chapter and chapter not in manga['chapters']:
                         manga['chapters'].append(chapter)
-        manga['chapters'] = sorted(manga['chapters'], key=lambda _: (contributer(manga['domain']).rename_chapter, natsort.os_sorted))
+        manga['chapters'] = sorted(manga['chapters'], key=lambda _: (get_class(manga['domain']).rename_chapter, natsort.os_sorted))
         print(f'\r{valid_manga}: There are totally {len(manga["chapters"])} chapters to download.')
         time.sleep(sleep_time)
     with open(json_file, 'w') as mangas_json:
@@ -46,7 +46,7 @@ def download_mangas(json_file, sleep_time, merge, convert_to_pdf):
         assets.create_folder(fixed_manga)
         while len(mangas[manga]['chapters']) > 0:
             chapter = mangas[manga]['chapters'][0]
-            source = contributer(mangas[manga]['domain'])
+            source = get_class(mangas[manga]['domain'])
             renamed_chapter = source.rename_chapter(chapter)
             try:
                 sys.stdout.write(f'\r{manga}: {chapter}: Getting image links...')

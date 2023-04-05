@@ -2,28 +2,11 @@ import argparse
 
 class SetSource(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
-        from utils.modules_contributer import contributer
+        from utils.modules_contributer import get_all_classes, get_class
         if 'all' in values:
-            values = [
-                'bibimanga.com',
-                'blogmanga.net',
-                'coloredmanga.com',
-                'comics.8muses.com',
-                'hentaifox.com',
-                'mangapark.to',
-                'mangareader.cc',
-                'manhuamanhwa.com',
-                'manhuascan.us',
-                'manhwa18.com',
-                'manhwa365.com',
-                'nhentai.xxx',
-                'nyahentai.red',
-                'readonepiece.com',
-                'simplyhentai.org',
-                'skymanga.xyz',
-                'truemanga.com'
-            ]
-        values = [contributer(value) for value in values]
+            values = get_all_classes()
+        else:
+            values = [get_class(value) for value in values]
         setattr(namespace, self.dest, values)
 
 class SetSleepTime(argparse.Action):
