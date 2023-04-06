@@ -4,6 +4,8 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as ec
 
 class Mangapark(Manga, Req):
     def get_chapters(manga):
@@ -13,11 +15,12 @@ class Mangapark(Manga, Req):
         browser = webdriver.Firefox(options=options, service=service)
         browser.get(f'https://mangapark.to/title/{manga}')
         soup = BeautifulSoup(browser.page_source, 'html.parser')
+        WebDriverWait(browser, 60).until(ec.presence_of_element_located((By.XPATH, '//div[@class="flex flex-col border-l rounded-l odd:border-primary even:border-secondary"]')))
         chapters = [link['href'] for link in soup.find_all('a', {'class': 'link-hover link-primary visited:text-accent'})]
         buttons = browser.find_elements(By.XPATH, "//button[@class='btn btn-xs  btn-primary mr-2 mt-2 btn-outline']")
         for button in buttons:
             button.click()
-            time.sleep(20)
+            WebDriverWait(browser, 60).until(ec.presence_of_element_located((By.XPATH, '//div[@class="flex flex-col border-l rounded-l odd:border-primary even:border-secondary"]')))
             soup = BeautifulSoup(browser.page_source, 'html.parser')
             chapters += [link['href'] for link in soup.find_all('a', {'class': 'link-hover link-primary visited:text-accent'})]
         ctd = [chapters[0].split('/')[-1]]
@@ -42,6 +45,33 @@ class Mangapark(Manga, Req):
         for i in range(len(images)):
             save_names.append(f'{i+1:03d}.{images[i].split(".")[-1].split("?")[0]}')
         return images, save_names
+
+    def search(title, sleep_time, absolute=False, limit_page=1000):
+        results = []
+        page = 1
+        options = webdriver.FirefoxOptions()
+        options.add_argument('--headless')
+        service = Service(executable_path='geckodriver.exe', log_path='NUL')
+        browser = webdriver.Firefox(options=options, service=service)
+        prev_page = []
+        while page <= limit_page:
+            yield False, page
+            browser.get(f'https://mangapark.to/v5x-search?word={title}&page={page}')
+            WebDriverWait(browser, 60).until(ec.presence_of_element_located((By.XPATH, '//div[@class="flex group border-b border-b-base-200 pb-5"]')))
+            soup = BeautifulSoup(browser.page_source, 'html.parser')
+            divs = soup.find_all('div', {'class': 'flex group border-b border-b-base-200 pb-5'})
+            if prev_page == divs:
+                break
+            for div in divs:
+                if absolute and title.lower() not in d.contents[0].lower():
+                    continue
+                d = div.find('h3', {'class': 'font-bold space-x-1 text-lg line-clamp-2'}).find('a')
+                results.append(f'title: {d.contents[0]}, url: {d["href"].split("/")[-1]}')
+            page += 1
+            prev_page = divs
+            time.sleep(sleep_time)
+        yield True, results
+        return
 
     def rename_chapter(chapter):
         if chapter in ['pass', None]:
