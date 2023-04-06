@@ -47,7 +47,10 @@ def get_domain(value):
         if source == value:
             return domain
     else:
-        return None
+        raise Exception('No domain found for the given module')
 
 def get_class(key):
-    return sources_dict[key]
+    try:
+        return sources_dict[key]
+    except:
+        raise Exception('No module found for the given domain')
