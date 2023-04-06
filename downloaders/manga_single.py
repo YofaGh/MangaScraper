@@ -16,20 +16,24 @@ def get_name_of_chapters(manga, url, source, is_all, last, ranged, c_chapters):
         ctd = chapters.copy()
     if last:
         reached_last_downloaded_chapter = False
+        last_downloaded_chapter = source.rename_chapter(str(last))
         for chapter in chapters:
-            if source.rename_chapter(chapter) == source.rename_chapter(str(last)):
+            if source.rename_chapter(chapter) == last_downloaded_chapter:
                 reached_last_downloaded_chapter = True
                 continue
             if reached_last_downloaded_chapter:
                 ctd.append(chapter)
     if ranged:
         reached_beginning_chapter = False
+        beginning_chapter = source.rename_chapter(str(ranged[0]))
+        ending_chapter = source.rename_chapter(str(ranged[1]))
         for chapter in chapters:
-            if source.rename_chapter(chapter) == source.rename_chapter(str(ranged[0])):
+            renamed_chapter = source.rename_chapter(chapter)
+            if renamed_chapter == beginning_chapter:
                 reached_beginning_chapter = True
             if reached_beginning_chapter:
                 ctd.append(chapter)
-            if source.rename_chapter(chapter) == source.rename_chapter(str(ranged[1])):
+            if renamed_chapter == ending_chapter:
                 break
     if c_chapters:
         renamed_chapters = [source.rename_chapter(str(c)) for c in c_chapters]
