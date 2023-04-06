@@ -40,19 +40,17 @@ class Comics8Muses(Manga, Req):
             save_names.append(f'{i+1:03d}.{images[i].split(".")[-1]}')
         return images, save_names
 
-    def search_by_title(title, sleep_time, absolute=False, limit_page=1000):
+    def search(title, sleep_time, absolute=False, limit_page=1000):
         import time
-        results = {}
+        results = []
         page = 1
         links = []
         options = webdriver.FirefoxOptions()
         options.add_argument('--headless')
         service = Service(executable_path='geckodriver.exe', log_path='NUL')
         browser = webdriver.Firefox(options=options, service=service)
-        while True:
+        while page <= limit_page:
             yield False, page
-            if page > limit_page:
-                break
             browser.get(f'https://comics.8muses.com/search?q={title}&page={page}')
             time.sleep(2)
             soup = BeautifulSoup(browser.page_source, 'html.parser')
@@ -72,7 +70,7 @@ class Comics8Muses(Manga, Req):
                         break
                 if not sublink:
                     links.append(url)
-                    results[url] = comic.find('span').contents[0]
+                    results.append(f'title: {comic.find("span").contents[0]}, url:{url}') 
             page += 1
             time.sleep(sleep_time)
         yield True, results

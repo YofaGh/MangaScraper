@@ -27,14 +27,12 @@ class Mangareader(Manga, Req):
         images = [image['src'] for image in images]
         return images, False
 
-    def search_by_title(title, sleep_time, absolute=False, limit_page=1000):
+    def search(title, sleep_time, absolute=False, limit_page=1000):
         import time
-        results = {}
+        results = []
         page = 1
-        while True:
+        while page <= limit_page:
             yield False, page
-            if page > limit_page:
-                break
             response = Mangareader.send_request(f'https://mangareader.cc/search?s={title}&page={page}')
             soup = BeautifulSoup(response.text, 'html.parser')
             mangas = soup.find_all('div', {'class': 'anipost'})
@@ -43,7 +41,7 @@ class Mangareader(Manga, Req):
             for manga in mangas:
                 if absolute and title.lower() not in manga.find('a').find('h3').contents[0].lower():
                     continue
-                results[manga.find('a')['href'].split('/')[-1]] = manga.find('a').find('h3').contents[0]
+                results.append(f'title: {manga.find("a").find("h3").contents[0]}, url: {manga.find("a")["href"].split("/")[-1]}')
             page += 1
             time.sleep(sleep_time)
         yield True, results

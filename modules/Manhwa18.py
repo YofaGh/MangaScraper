@@ -16,14 +16,12 @@ class Manhwa18(Manga, Req):
         images = [image['data-src'] for image in images]
         return images, False
 
-    def search_by_title(title, sleep_time, absolute=False, limit_page=1000):
+    def search(title, sleep_time, absolute=False, limit_page=1000):
         import time
-        results = {}
+        results = []
         page = 1
-        while True:
+        while page <= limit_page:
             yield False, page
-            if page > limit_page:
-                break
             response = Manhwa18.send_request(f'https://manhwa18.com/tim-kiem?q={title}&page={page}')
             soup = BeautifulSoup(response.text, 'html.parser')
             mangas = soup.find_all('div', {'class': 'thumb_attr series-title'})
@@ -32,7 +30,7 @@ class Manhwa18(Manga, Req):
             for manga in mangas:
                 if absolute and title.lower() not in manga.find('a')['title'].lower():
                     continue
-                results[manga.find('a')['href'].split('/')[-1]] = manga.find('a')['title']
+                results.append(f'title: {manga.find("a")["href"].split("/")[-1]}, url: {manga.find("a")["title"]}')
             page += 1
             time.sleep(sleep_time)
         yield True, results

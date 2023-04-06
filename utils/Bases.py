@@ -31,7 +31,7 @@ class Doujin:
     def get_images():
         return [], False
 
-class Req():
+class Req:
     def send_request(url):
         import requests
         try:

@@ -19,14 +19,12 @@ class Coloredmanga(Manga, Req):
             save_names.append(f'{i+1:03d}.{images[i].split(".")[-1]}')
         return images, save_names
 
-    def search_by_title(title, sleep_time, absolute=False, limit_page=1000):
+    def search(title, sleep_time, absolute=False, limit_page=1000):
         import time
-        results = {}
+        results = []
         page = 1
-        while True:
+        while page <= limit_page:
             yield False, page
-            if page > limit_page:
-                break
             try:
                 response = Coloredmanga.send_request(f'https://coloredmanga.com/page/{page}/?s={title}&post_type=wp-manga')
             except:
@@ -36,7 +34,7 @@ class Coloredmanga(Manga, Req):
             for manga in mangas:
                 if absolute and title.lower() not in manga.find('a')['href']:
                     continue
-                results[manga.find('a')['href'].replace('https://coloredmanga.com/mangas/','')[:-1]] = manga.find('a').contents[0]
+                results.append(f'title: {manga.find("a").contents[0]}, url:{manga.find("a")["href"].replace("https://coloredmanga.com/mangas/","")[:-1]}')
             page += 1
             time.sleep(sleep_time)
         yield True, results
