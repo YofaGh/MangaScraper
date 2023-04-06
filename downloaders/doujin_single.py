@@ -7,7 +7,7 @@ def download_doujin(code, source, sleep_time, merge, convert_to_pdf):
     while True:
         try:
             sys.stdout.write(f'\r{code}: Getting name of doujin...')
-            doujin_title = source.get_title(code)
+            doujin_title = f'{code}_{source.get_title(code)}'
             shorten_doujin_title = textwrap.shorten(doujin_title, width=50)
             sys.stdout.write(f'\r{shorten_doujin_title}: Getting image links...')
             images = source.get_images(code)
