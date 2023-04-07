@@ -16,22 +16,18 @@ class Manhuascan(Manga, Req):
         images = [image['src'] for image in images]
         return images, False
 
-    def search(title, sleep_time, absolute=False, limit_page=1000):
-        import time
-        results = []
+    def search(title, absolute=False):
         page = 1
-        while page <= limit_page:
-            yield False, page
+        while True:
             response = Manhuascan.send_request(f'https://manhuascan.us/manga-list?search={title}&page={page}')
             soup = BeautifulSoup(response.text, 'html.parser')
             mangas = soup.find_all('div', {'class': 'bsx'})
             if len(mangas) == 0:
-                break
+                yield []
+            results = []
             for manga in mangas:
                 if absolute and title.lower() not in manga.find('a')['title'].lower():
                     continue
                 results.append(f'title: {manga.find("a")["title"]}, url: {manga.find("a")["href"].split("/")[-1]}')
+            yield results
             page += 1
-            time.sleep(sleep_time)
-        yield True, results
-        return

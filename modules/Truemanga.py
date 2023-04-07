@@ -16,24 +16,20 @@ class Truemanga(Manga, Req):
         images = [image['data-src'] for image in images]
         return images, False
 
-    def search(title, sleep_time, absolute=False, limit_page=1000):
-        import time
-        results = []
+    def search(title, absolute=False):
         page = 1
-        while page <= limit_page:
-            yield False, page
+        while True:
             response = Truemanga.send_request(f'https://truemanga.com/search?q={title}&page={page}')
             soup = BeautifulSoup(response.text, 'html.parser')
             mangas = soup.find_all('div', {'class': 'book-item'})
             if len(mangas) == 0:
-                break
+                yield []
+            results = []
             for manga in mangas:
                 ti = manga.find('div', {'class': 'title'}).find('a')['title']
                 link = manga.find('div', {'class': 'title'}).find('a')['href'].split('/')[-1]
                 if absolute and title.lower() not in ti.lower():
                     continue
                 results.append(f'title: {ti}, url: {link}')
+            yield results
             page += 1
-            time.sleep(sleep_time)
-        yield True, results
-        return

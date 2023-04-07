@@ -26,32 +26,29 @@ class Manhuamanhwa(Manga, Req):
         images = [image['data-src'] for image in images]
         return images, False
 
-    def search(title, sleep_time, absolute=False, limit_page=1000):
+    def search(title, absolute=False):
         import time
-        results = []
-        page = 1
         options = webdriver.FirefoxOptions()
         options.add_argument('--headless')
         service = Service(executable_path='geckodriver.exe', log_path='NUL')
         browser = webdriver.Firefox(options=options, service=service)
         browser.get(f'https://manhuamanhwa.com/?s={title}&post_type=wp-manga')
-        while page <= limit_page:
-            yield False, page
-            if page != 1:
-                try:
-                    load_more_button = browser.find_element(By.XPATH, "//div[@class='load-title']")
-                    load_more_button.click()
-                    time.sleep(1)
-                except:
-                    break
+        found = []
+        while True:
             soup = BeautifulSoup(browser.page_source, 'html.parser')
             mangas = soup.find_all('div', {'class': 'post-title'})
+            results = []
             for manga in mangas:
                 di = manga.find('a')
                 if absolute and title.lower() not in di.contents[0].lower():
                     continue
-                results.append(f'title: {di.contents[0]}, url: {di["href"].split("/")[-2]}')
-            page += 1
-            time.sleep(sleep_time)
-        yield True, results
-        return
+                if manga not in found:
+                    found.append(manga)
+                    results.append(f'title: {di.contents[0]}, url: {di["href"].split("/")[-2]}')
+            yield results
+            try:
+                load_more_button = browser.find_element(By.XPATH, "//div[@class='load-title']")
+                load_more_button.click()
+                time.sleep(1)
+            except:
+                yield []

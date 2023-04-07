@@ -16,25 +16,21 @@ class Bibimanga(Manga, Req):
         images = [image['data-src'].strip() for image in images]
         return images, False
 
-    def search(title, sleep_time, absolute=False, limit_page=1000):
-        import time
-        results = []
+    def search(title, absolute=False):
         page = 1
-        while page <= limit_page:
-            yield False, page
+        while True:
             try:
                 response = Bibimanga.send_request(f'https://bibimanga.com/page/{page}?s={title}&post_type=wp-manga')
             except:
-                break
+                yield []
             soup = BeautifulSoup(response.text, 'html.parser')
             mangas = soup.find_all('div', {'class': 'row c-tabs-item__content'})
+            results = []
             for manga in mangas:
                 ti = manga.find('div', {'class': 'tab-thumb c-image-hover'}).find('a')['title']
                 link = manga.find('div', {'class': 'tab-thumb c-image-hover'}).find('a')['href'].split('/')[-2]
                 if absolute and title.lower() not in ti.lower():
                     continue
                 results.append(f'title: {ti}, url: {link}')
+            yield results
             page += 1
-            time.sleep(sleep_time)
-        yield True, results
-        return
