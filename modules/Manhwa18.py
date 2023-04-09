@@ -17,9 +17,19 @@ class Manhwa18(Manga, Req):
         return images, False
 
     def search(title, absolute):
+        from utils.assets import waiter
+        from requests. exceptions import RequestException, HTTPError, Timeout
         page = 1
         while True:
-            response = Manhwa18.send_request(f'https://manhwa18.com/tim-kiem?q={title}&page={page}')
+            try:
+                response = Manhwa18.send_request(f'https://manhwa18.com/tim-kiem?q={title}&page={page}')
+            except HTTPError:
+                yield []
+            except Timeout as error:
+                raise error
+            except RequestException:
+                waiter()
+                continue
             soup = BeautifulSoup(response.text, 'html.parser')
             mangas = soup.find_all('div', {'class': 'thumb_attr series-title'})
             if len(mangas) == 0:

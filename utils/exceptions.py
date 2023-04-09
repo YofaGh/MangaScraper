@@ -27,7 +27,8 @@ class PDFConverterException(Exception):
         super(PDFConverterException, self).__init__(message)
 
 class MissingFunctionException(Exception):
-    def __init__(self, domain):
+    def __init__(self, domain, function):
         self.domain = domain
-        self.message = f'{self.domain}: Search function is not yet implemented.'
+        self.function = function
+        self.message = f'{self.domain}: {self.function} function is not yet implemented.'
         super(MissingFunctionException, self).__init__(self.message)

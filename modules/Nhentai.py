@@ -21,9 +21,19 @@ class Nhentai(Doujin, Req):
         return new_images
 
     def search(title, absolute):
+        from utils.assets import waiter
+        from requests. exceptions import RequestException, HTTPError, Timeout
         page = 1
         while True:
-            response = Nhentai.send_request(f'https://nhentai.xxx/search?q={title}&page={page}')
+            try:
+                response = Nhentai.send_request(f'https://nhentai.xxx/search?q={title}&page={page}')
+            except HTTPError:
+                yield []
+            except Timeout as error:
+                raise error
+            except RequestException:
+                waiter()
+                continue
             soup = BeautifulSoup(response.text, 'html.parser')
             doujins = soup.find_all('div', {'class': 'gallery'})
             if len(doujins) == 0:

@@ -20,9 +20,19 @@ class Coloredmanga(Manga, Req):
         return images, save_names
 
     def search(title, absolute):
+        from utils.assets import waiter
+        from requests. exceptions import RequestException, HTTPError, Timeout
         page = 1
         while True:
-            response = Coloredmanga.send_request(f'https://coloredmanga.com/page/{page}/?s={title}&post_type=wp-manga')
+            try:
+                response = Coloredmanga.send_request(f'https://coloredmanga.com/page/{page}/?s={title}&post_type=wp-manga')
+            except HTTPError:
+                yield []
+            except Timeout as error:
+                raise error
+            except RequestException:
+                waiter()
+                continue
             soup = BeautifulSoup(response.text, 'html.parser')
             mangas = soup.find_all('div', {'class': 'post-title'})
             results = []

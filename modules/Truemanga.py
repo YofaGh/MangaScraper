@@ -17,9 +17,19 @@ class Truemanga(Manga, Req):
         return images, False
 
     def search(title, absolute):
+        from utils.assets import waiter
+        from requests. exceptions import RequestException, HTTPError, Timeout
         page = 1
         while True:
-            response = Truemanga.send_request(f'https://truemanga.com/search?q={title}&page={page}')
+            try:
+                response = Truemanga.send_request(f'https://truemanga.com/search?q={title}&page={page}')
+            except HTTPError:
+                yield []
+            except Timeout as error:
+                raise error
+            except RequestException:
+                waiter()
+                continue
             soup = BeautifulSoup(response.text, 'html.parser')
             mangas = soup.find_all('div', {'class': 'book-item'})
             if len(mangas) == 0:
