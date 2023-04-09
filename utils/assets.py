@@ -58,6 +58,11 @@ def validate_truncated_image(path_to_image):
     except:
         return False
 
+def save_dict_to_file(file_name, content):
+    import json
+    with open(file_name, 'w') as output:
+        output.write(json.dumps(content, indent=4))
+
 def validate_folder(path_to_folder):
     images_path = detect_images(path_to_folder)
     for image_path in images_path:

@@ -1,6 +1,7 @@
 import time, sys
 from termcolor import colored
 from requests.exceptions import Timeout
+from utils.assets import save_dict_to_file
 from utils.modules_contributer import get_domain
 from utils.exceptions import MissingFunctionException
 
@@ -35,15 +36,10 @@ def search(title, sources, sleep_time, absolute, limit_page, save_to_file):
             print(colored(error, 'red'))
     print_output(results)
     if save_to_file:
-        save_results(title, results)
+        save_dict_to_file(f'{title}_output.json', results)
 
 def print_output(results):
     for source in results:
         print(f'{source}:')
         for result in results[source]:
             print(f'    {result}')
-
-def save_results(title, results):
-    import json
-    with open(f'{title}_output.json', 'w') as output:
-        output.write(json.dumps(results, indent=4))
