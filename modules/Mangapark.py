@@ -1,9 +1,9 @@
 import time
-from utils.Bases import Manga, Req
 from bs4 import BeautifulSoup
 from selenium import webdriver
-from selenium.webdriver.firefox.service import Service
+from utils.Bases import Manga, Req
 from selenium.webdriver.common.by import By
+from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 
@@ -46,7 +46,7 @@ class Mangapark(Manga, Req):
             save_names.append(f'{i+1:03d}.{images[i].split(".")[-1].split("?")[0]}')
         return images, save_names
 
-    def search(title, absolute=False):
+    def search(title, absolute):
         options = webdriver.FirefoxOptions()
         options.add_argument('--headless')
         service = Service(executable_path='geckodriver.exe', log_path='NUL')

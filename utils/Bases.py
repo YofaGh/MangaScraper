@@ -34,19 +34,6 @@ class Doujin:
 class Req:
     def send_request(url):
         import requests
-        try:
-            response = requests.get(url)
-            if response.status_code == 200:
-                return response
-            if response.status_code == 404:
-                raise Exception('Not found')
-            elif response.status_code == 403:
-                raise Exception('Forbidden')
-            elif response.status_code == 500:
-                raise Exception('Server Error')
-            else:
-                raise Exception(f'Error code: {response.status_code}')
-        except Exception as e:
-            if str(e) in ['Not found', 'Forbidden', 'Server Error']:
-                raise Exception(e)
-            raise Exception(f'Connection error: {str(e)}')
+        response = requests.get(url)
+        response.raise_for_status()
+        return response

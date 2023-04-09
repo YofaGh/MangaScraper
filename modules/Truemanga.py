@@ -1,5 +1,5 @@
-from utils.Bases import Manga, Req
 from bs4 import BeautifulSoup
+from utils.Bases import Manga, Req
 
 class Truemanga(Manga, Req):
     def get_chapters(manga):
@@ -16,7 +16,7 @@ class Truemanga(Manga, Req):
         images = [image['data-src'] for image in images]
         return images, False
 
-    def search(title, absolute=False):
+    def search(title, absolute):
         page = 1
         while True:
             response = Truemanga.send_request(f'https://truemanga.com/search?q={title}&page={page}')

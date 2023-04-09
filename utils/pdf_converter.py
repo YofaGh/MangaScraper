@@ -1,6 +1,6 @@
 import img2pdf, sys, os
-from termcolor import colored
 from utils import assets
+from termcolor import colored
 
 def convert_folder(path_to_source, path_to_destination, pdf_name, name=None):
     name = name if name else path_to_source

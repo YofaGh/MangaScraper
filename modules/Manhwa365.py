@@ -1,5 +1,5 @@
-from utils.Bases import Manga, Req
 from bs4 import BeautifulSoup
+from utils.Bases import Manga, Req
 
 class Manhwa365(Manga, Req):
     def get_chapters(manga):
@@ -16,13 +16,10 @@ class Manhwa365(Manga, Req):
         images = [image['data-src'].strip() for image in images]
         return images, False
 
-    def search(title, absolute=False):
+    def search(title, absolute):
         page = 1
         while True:
-            try:
-                response = Manhwa365.send_request(f'https://manhwa365.com/page/{page}/?s={title}&post_type=wp-manga')
-            except:
-                yield []
+            response = Manhwa365.send_request(f'https://manhwa365.com/page/{page}/?s={title}&post_type=wp-manga')
             soup = BeautifulSoup(response.text, 'html.parser')
             mangas = soup.find_all('div', {'class': 'row c-tabs-item__content'})
             results = []

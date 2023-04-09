@@ -1,7 +1,7 @@
 import sys, os
-from termcolor import colored
-from utils import assets
 from PIL import Image
+from utils import assets
+from termcolor import colored
 
 def merge_folder(path_to_source, path_to_destination, name=None):
     name = name if name else path_to_source

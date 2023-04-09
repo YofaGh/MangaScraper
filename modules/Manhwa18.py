@@ -1,5 +1,5 @@
-from utils.Bases import Manga, Req
 from bs4 import BeautifulSoup
+from utils.Bases import Manga, Req
 
 class Manhwa18(Manga, Req):
     def get_chapters(manga):
@@ -16,7 +16,7 @@ class Manhwa18(Manga, Req):
         images = [image['data-src'] for image in images]
         return images, False
 
-    def search(title, absolute=False):
+    def search(title, absolute):
         page = 1
         while True:
             response = Manhwa18.send_request(f'https://manhwa18.com/tim-kiem?q={title}&page={page}')

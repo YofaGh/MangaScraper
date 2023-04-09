@@ -1,5 +1,5 @@
-from utils.Bases import Doujin, Req
 from bs4 import BeautifulSoup
+from utils.Bases import Doujin, Req
 
 class Simplyhentai(Doujin, Req):
     def get_title(code):
@@ -20,7 +20,7 @@ class Simplyhentai(Doujin, Req):
             new_images.append(f'{image.rsplit("/", 1)[0]}/{name}')
         return new_images
 
-    def search(title, absolute=False):
+    def search(title, absolute):
         page = 1
         while True:
             response = Simplyhentai.send_request(f'https://simplyhentai.org/search?q={title}&page={page}')

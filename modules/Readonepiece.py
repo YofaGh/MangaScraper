@@ -1,5 +1,5 @@
-from utils.Bases import Manga, Req
 from bs4 import BeautifulSoup
+from utils.Bases import Manga, Req
 
 class Readonepiece(Manga, Req):
     def get_chapters(manga):

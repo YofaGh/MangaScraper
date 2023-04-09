@@ -2,8 +2,8 @@ import time
 from utils.Bases import Doujin, Req
 from bs4 import BeautifulSoup
 from selenium import webdriver
-from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.common.by import By
+from selenium.webdriver.firefox.service import Service
 
 class Hentaifox(Doujin, Req):
     def get_title(code):
@@ -37,7 +37,7 @@ class Hentaifox(Doujin, Req):
             new_images.append(f'{image.rsplit("/", 1)[0]}/{name}')
         return new_images
 
-    def search(title, absolute=False):
+    def search(title, absolute):
         page = 1
         while True:
             response = Hentaifox.send_request(f'https://hentaifox.com/search/?q={title}&page={page}')

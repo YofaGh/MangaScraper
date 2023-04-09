@@ -1,6 +1,6 @@
-from utils.Bases import Manga, Req
 from bs4 import BeautifulSoup
 from selenium import webdriver
+from utils.Bases import Manga, Req
 from selenium.webdriver.firefox.service import Service
 
 class Comics8Muses(Manga, Req):
@@ -40,7 +40,7 @@ class Comics8Muses(Manga, Req):
             save_names.append(f'{i+1:03d}.{images[i].split(".")[-1]}')
         return images, save_names
 
-    def search(title, absolute=False):
+    def search(title, absolute):
         import time
         page = 1
         links = []

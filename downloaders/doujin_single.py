@@ -1,6 +1,7 @@
 import textwrap, time, sys, os
 from termcolor import colored
-from utils import assets
+from utils import assets, exceptions
+from requests.exceptions import RequestException, HTTPError, Timeout
 
 def download_doujin(code, source, sleep_time, merge, convert_to_pdf):
     last_truncated = None
@@ -14,22 +15,23 @@ def download_doujin(code, source, sleep_time, merge, convert_to_pdf):
             sys.stdout.write(f'\r{shorten_doujin_title}: Creating folder...')
             fixed_doujin_name = assets.fix_name_for_folder(doujin_title)
             assets.create_folder(fixed_doujin_name)
-            adder = 0
             for i in range(len(images)):
-                sys.stdout.write(f'\r{shorten_doujin_title}: Downloading image {i+adder+1}/{len(images)+adder}...')
-                save_path = f'{fixed_doujin_name}/{i+adder+1:03d}.{images[i].split(".")[-1]}'
+                sys.stdout.write(f'\r{shorten_doujin_title}: Downloading image {i+1}/{len(images)}...')
+                save_path = f'{fixed_doujin_name}/{i+1:03d}.{images[i].split(".")[-1]}'
                 if not os.path.exists(save_path):
                     time.sleep(sleep_time)
-                    response = source.send_request(images[i])
+                    try:
+                        response = source.send_request(images[i])
+                    except HTTPError:
+                        print(colored(f'Could not download image {i+1}: {images[i]}', 'red'))
+                        continue
                     with open(save_path, 'wb') as image:
                         image.write(response.content)
                     if not assets.validate_corrupted_image(save_path):
-                        print(colored(f' Warning: Image {i+adder+1} is corrupted. will not be able to merge this chapter', 'red'))
+                        print(colored(f' Warning: Image {i+1} is corrupted. will not be able to merge this chapter', 'red'))
                         continue
                     if not assets.validate_truncated_image(save_path) and last_truncated != save_path:
-                        last_truncated = save_path
-                        os.remove(save_path)
-                        raise Exception('truncated')
+                        raise exceptions.TruncatedException(save_path)
             print(colored(f'\r{shorten_doujin_title}: Finished downloading, {len(images)} images were downloaded.', 'green'))
             if merge:
                 from utils.image_merger import merge_folder
@@ -38,10 +40,12 @@ def download_doujin(code, source, sleep_time, merge, convert_to_pdf):
                 from utils.pdf_converter import convert_folder
                 convert_folder(fixed_doujin_name, fixed_doujin_name, f'{fixed_doujin_name}.pdf', shorten_doujin_title)
             break
-        except Exception as error:
-            if 'Connection error' in str(error):
-                assets.waiter()
-            elif str(error) == 'truncated':
-                print(colored(f' {last_truncated} was truncated. trying to download it one more time...', 'red'))
-            else:
-                print(error)
+        except (Timeout, HTTPError, exceptions.ImageMergerException, exceptions.PDFConverterException) as error:
+            print(colored(error, 'red'))
+            break
+        except RequestException:
+            assets.waiter()
+        except exceptions.TruncatedException as error:
+            last_truncated = error.save_path
+            os.remove(last_truncated)
+            print(colored(error, 'red'))

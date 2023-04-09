@@ -1,9 +1,9 @@
-from utils.Bases import Manga, Req
 from bs4 import BeautifulSoup
 from selenium import webdriver
-from selenium.webdriver.firefox.service import Service
-from selenium.webdriver.support.ui import Select
+from utils.Bases import Manga, Req
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import Select
+from selenium.webdriver.firefox.service import Service
 
 class Mangareader(Manga, Req):
     def get_chapters(manga):
@@ -27,7 +27,7 @@ class Mangareader(Manga, Req):
         images = [image['src'] for image in images]
         return images, False
 
-    def search(title, absolute=False):
+    def search(title, absolute):
         page = 1
         while True:
             response = Mangareader.send_request(f'https://mangareader.cc/search?s={title}&page={page}')

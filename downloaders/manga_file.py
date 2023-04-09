@@ -1,6 +1,7 @@
 import natsort, json, sys
-from utils.modules_contributer import get_class
 from termcolor import colored
+from utils.modules_contributer import get_class
+from utils.exceptions import MissingModuleException
 
 def download_file(json_file, sleep_time, merge, convert_to_pdf):
     get_name_of_chapters(json_file)
@@ -38,8 +39,8 @@ def download_mangas(json_file, sleep_time, merge, convert_to_pdf):
     inconsistencies = []
     valid_mangas = [manga for (manga, detm) in mangas.items() if (detm['include'] and detm['chapters'])]
     for manga in valid_mangas:
-        while len(mangas[manga]['chapters']) > 0:
-            try:
+        try:
+            while len(mangas[manga]['chapters']) > 0:
                 chapter = mangas[manga]['chapters'][0]
                 source = get_class(mangas[manga]['domain'])
                 from downloaders.manga_single import download_manga
@@ -50,6 +51,6 @@ def download_mangas(json_file, sleep_time, merge, convert_to_pdf):
                 del mangas[manga]['chapters'][0]
                 with open(json_file, 'w') as mangas_json:
                     mangas_json.write(json.dumps(mangas, indent=4))
-            except Exception as error:
-                print(error)
+        except MissingModuleException as error:
+            print(colored(error, 'red'))
     return inconsistencies

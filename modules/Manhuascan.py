@@ -1,5 +1,5 @@
-from utils.Bases import Manga, Req
 from bs4 import BeautifulSoup
+from utils.Bases import Manga, Req
 
 class Manhuascan(Manga, Req):
     def get_chapters(manga):
@@ -16,7 +16,7 @@ class Manhuascan(Manga, Req):
         images = [image['src'] for image in images]
         return images, False
 
-    def search(title, absolute=False):
+    def search(title, absolute):
         page = 1
         while True:
             response = Manhuascan.send_request(f'https://manhuascan.us/manga-list?search={title}&page={page}')

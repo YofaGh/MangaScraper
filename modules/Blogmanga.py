@@ -1,6 +1,6 @@
-from utils.Bases import Manga, Req
 from bs4 import BeautifulSoup
 from selenium import webdriver
+from utils.Bases import Manga, Req
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
@@ -26,7 +26,7 @@ class Blogmanga(Manga, Req):
         images = [image['data-src'].strip() for image in images]
         return images, False
 
-    def search(title, absolute=False):
+    def search(title, absolute):
         import time
         options = webdriver.FirefoxOptions()
         options.add_argument('--headless')

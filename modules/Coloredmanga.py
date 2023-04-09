@@ -1,5 +1,5 @@
-from utils.Bases import Manga, Req
 from bs4 import BeautifulSoup
+from utils.Bases import Manga, Req
 
 class Coloredmanga(Manga, Req):
     def get_chapters(manga):
@@ -19,13 +19,10 @@ class Coloredmanga(Manga, Req):
             save_names.append(f'{i+1:03d}.{images[i].split(".")[-1]}')
         return images, save_names
 
-    def search(title, absolute=False):
+    def search(title, absolute):
         page = 1
         while True:
-            try:
-                response = Coloredmanga.send_request(f'https://coloredmanga.com/page/{page}/?s={title}&post_type=wp-manga')
-            except:
-                yield []
+            response = Coloredmanga.send_request(f'https://coloredmanga.com/page/{page}/?s={title}&post_type=wp-manga')
             soup = BeautifulSoup(response.text, 'html.parser')
             mangas = soup.find_all('div', {'class': 'post-title'})
             results = []
