@@ -5,7 +5,7 @@ from utils.modules_contributer import get_domain
 from utils.exceptions import MissingFunctionException
 from requests.exceptions import RequestException, HTTPError, Timeout
 
-def search(title, sources, sleep_time, absolute=False, limit_page=1000, save_to_file=False):
+def search(title, sources, sleep_time, absolute, limit_page, save_to_file):
     results = {}
     for source in sources:
         while True:
