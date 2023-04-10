@@ -1,4 +1,4 @@
-import sys, os
+import shutil, sys
 from PIL import Image
 from utils import assets
 from termcolor import colored
@@ -25,9 +25,8 @@ def merge_folder(path_to_source, path_to_destination, name=None):
             temp_height = image.height
     lists_to_merge.append(temp_list)
     for i in range(len(lists_to_merge)):
-        ## !!!! This condition is yet to be fully tested !!!! ##
         if len(lists_to_merge[i]) == 1:
-            lists_to_merge[i][0].save(f'{path_to_destination}/{i+1:03d}.{lists_to_merge[i][0].filename.split(".")[-1]}')
+            shutil.copy2(lists_to_merge[i][0].filename, f'{path_to_destination}/{i+1:03d}.{lists_to_merge[i][0].filename.split(".")[-1]}')
             continue
         widths, heights = zip(*(image.size for image in lists_to_merge[i]))
         total_height = sum(heights)
@@ -41,6 +40,7 @@ def merge_folder(path_to_source, path_to_destination, name=None):
     print(colored(f'\r{name}: Merged {len(images_path)} images into {len(lists_to_merge)}.', 'green'))
 
 def merge_bulk(path_to_source, path_to_destination):
+    import os
     sub_folders = os.listdir(path_to_source)
     for sub_folder in sub_folders:
         merge_folder(f'{path_to_source}/{sub_folder}', f'{path_to_destination}/{sub_folder}', f'{path_to_source}: {sub_folder}')
