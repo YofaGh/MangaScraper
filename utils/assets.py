@@ -58,6 +58,11 @@ def validate_truncated_image(path_to_image):
     except:
         return False
 
+def load_dict_from_file(file_name):
+    import json
+    with open(file_name) as input:
+        return json.loads(input.read())
+
 def save_dict_to_file(file_name, content):
     import json
     with open(file_name, 'w') as output:
