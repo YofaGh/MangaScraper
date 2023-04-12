@@ -166,11 +166,10 @@
 > unlike downloading with -single argument you can specify multiple sources when using -s.  
 > you can also use "-s all" to search in all modules.  
 > set page limit with -page-limit argument.  
-> get results output in a file with setting -save-to-file argument.  
 > you can limit the results with setting -absoulte argument.  
 > Examples:  
 >
 > - search in one module: ```python cli.py search -s manhuascan.us -n "secret"```  
 > - search in multiple modules: ```python cli.py search -s truemanga.com mangareader.cc -n "secret"```  
 > - search in all modules: ```python cli.py search -s all -n "secret"```  
-> - e.g.  ```python cli.py search -s manhuascan.us -n "secret" -page-limit 5 -absolute -save-to-file -t 1```
+> - e.g.  ```python cli.py search -s manhuascan.us -n "secret" -page-limit 5 -absolute -t 1```
