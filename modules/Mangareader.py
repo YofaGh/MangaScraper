@@ -29,26 +29,29 @@ class Mangareader(Manga, Req):
 
     def search(title, absolute):
         from utils.assets import waiter
-        from requests. exceptions import RequestException, HTTPError, Timeout
+        from requests.exceptions import RequestException, HTTPError, Timeout
         page = 1
         while True:
             try:
                 response = Mangareader.send_request(f'https://mangareader.cc/search?s={title}&page={page}')
+                soup = BeautifulSoup(response.text, 'html.parser')
+                mangas = soup.find_all('div', {'class': 'anipost'})
+                if len(mangas) == 0:
+                    yield {}
+                results = {}
+                for manga in mangas:
+                    ti = manga.find('a').find('h3').contents[0]
+                    if absolute and title.lower() not in ti.lower():
+                        continue
+                    results[ti] = {
+                        'domain': 'mangareader.cc',
+                        'url': manga.find('a')['href'].split('/')[-1]
+                    }
+                yield results
+                page += 1
             except HTTPError:
-                yield []
+                yield {}
             except Timeout as error:
                 raise error
             except RequestException:
                 waiter()
-                continue
-            soup = BeautifulSoup(response.text, 'html.parser')
-            mangas = soup.find_all('div', {'class': 'anipost'})
-            if len(mangas) == 0:
-                yield []
-            results = []
-            for manga in mangas:
-                if absolute and title.lower() not in manga.find('a').find('h3').contents[0].lower():
-                    continue
-                results.append(f'title: {manga.find("a").find("h3").contents[0]}, url: {manga.find("a")["href"].split("/")[-1]}')
-            yield results
-            page += 1

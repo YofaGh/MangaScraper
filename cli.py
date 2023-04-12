@@ -23,7 +23,6 @@ single_manga_chapters.add_argument('-r', action=RangeOfChapters, nargs=2, type=f
 search_args = parser.add_argument_group('customize search results')
 search_args.add_argument('-page-limit', action='store', default=1000, type=int, metavar='', help='specify how many pages should be searched')
 search_args.add_argument('-absolute', action='store_true', help='if set, checks that the name you searched should be in the title')
-search_args.add_argument('-save-to-file', action='store_true', help='if set, saves the results to a json file')
 args = parser.parse_args(args=(sys.argv[1:] or ['-h']))
 
 if args.single and (not args.s or len(args.s) > 1):
@@ -80,4 +79,4 @@ match args.task:
         if not(args.s and args.n):
             parser.error('you should specify source using -s and what you want to search using -n')
         from utils.search_engine import search
-        search(args.n, args.s, args.t, args.absolute, args.page_limit, args.save_to_file)
+        search(args.n, args.s, args.t, args.absolute, args.page_limit)

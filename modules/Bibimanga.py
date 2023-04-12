@@ -18,26 +18,48 @@ class Bibimanga(Manga, Req):
 
     def search(title, absolute):
         from utils.assets import waiter
-        from requests. exceptions import RequestException, HTTPError, Timeout
+        from contextlib import suppress
+        from requests.exceptions import RequestException, HTTPError, Timeout
         page = 1
         while True:
             try:
                 response = Bibimanga.send_request(f'https://bibimanga.com/page/{page}?s={title}&post_type=wp-manga')
+                soup = BeautifulSoup(response.text, 'html.parser')
+                mangas = soup.find_all('div', {'class': 'row c-tabs-item__content'})
+                results = {}
+                for manga in mangas:
+                    ti = manga.find('div', {'class': 'tab-thumb c-image-hover'}).find('a')['title']
+                    if absolute and title.lower() not in ti.lower():
+                        continue
+                    link = manga.find('div', {'class': 'tab-thumb c-image-hover'}).find('a')['href'].split('/')[-2]
+                    latest_chapter, genres, authors, artists, status = '', '', '', '', ''
+                    contents = manga.find_all('div', {'class': 'post-content_item'})
+                    for content in contents:
+                        with suppress(Exception):
+                            head = content.find('h5').contents[0].replace('\n', '').replace(' ', '')
+                            if head == 'Authors':
+                                authors = ', '.join([a.contents[0] for a in content.find_all('a')])
+                            if head == 'Artists':
+                                artists = ', '.join([a.contents[0] for a in content.find_all('a')])
+                            if head == 'Genres':
+                                genres = ', '.join([a.contents[0] for a in content.find_all('a')])
+                            if head == 'Status':
+                                status = content.find('div', {'class': 'summary-content'}).contents[0].replace('\n', '').replace(' ', '')
+                    with suppress(Exception): latest_chapter = manga.find('span', {'class': 'font-meta chapter'}).find('a')['href'].split('/')[-2]
+                    results[ti] = {
+                        'domain': 'bibimanga.com',
+                        'url': link,
+                        'latest_chapter': latest_chapter,
+                        'genres': genres,
+                        'authors': authors,
+                        'artists': artists,
+                        'status': status
+                    }
+                yield results
+                page += 1
             except HTTPError:
-                yield []
+                yield {}
             except Timeout as error:
                 raise error
             except RequestException:
                 waiter()
-                continue
-            soup = BeautifulSoup(response.text, 'html.parser')
-            mangas = soup.find_all('div', {'class': 'row c-tabs-item__content'})
-            results = []
-            for manga in mangas:
-                ti = manga.find('div', {'class': 'tab-thumb c-image-hover'}).find('a')['title']
-                link = manga.find('div', {'class': 'tab-thumb c-image-hover'}).find('a')['href'].split('/')[-2]
-                if absolute and title.lower() not in ti.lower():
-                    continue
-                results.append(f'title: {ti}, url: {link}')
-            yield results
-            page += 1

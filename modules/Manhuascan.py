@@ -18,26 +18,33 @@ class Manhuascan(Manga, Req):
 
     def search(title, absolute):
         from utils.assets import waiter
-        from requests. exceptions import RequestException, HTTPError, Timeout
+        from contextlib import suppress
+        from requests.exceptions import RequestException, HTTPError, Timeout
         page = 1
         while True:
             try:
                 response = Manhuascan.send_request(f'https://manhuascan.us/manga-list?search={title}&page={page}')
+                soup = BeautifulSoup(response.text, 'html.parser')
+                mangas = soup.find_all('div', {'class': 'bsx'})
+                if len(mangas) == 0:
+                    yield {}
+                results = {}
+                for manga in mangas:
+                    ti = manga.find('a')['title']
+                    if absolute and title.lower() not in ti.lower():
+                        continue
+                    latest_chapter = ''
+                    with suppress(Exception): latest_chapter = manga.find('div', {'class': 'adds'}).find('a')['href'].split('/')[-1]
+                    results[ti] = {
+                        'domain': 'manhuascan.us',
+                        'url': manga.find('a')['href'].split('/')[-1],
+                        'latest_chapter': latest_chapter
+                    }
+                yield results
+                page += 1
             except HTTPError:
-                yield []
+                yield {}
             except Timeout as error:
                 raise error
             except RequestException:
                 waiter()
-                continue
-            soup = BeautifulSoup(response.text, 'html.parser')
-            mangas = soup.find_all('div', {'class': 'bsx'})
-            if len(mangas) == 0:
-                yield []
-            results = []
-            for manga in mangas:
-                if absolute and title.lower() not in manga.find('a')['title'].lower():
-                    continue
-                results.append(f'title: {manga.find("a")["title"]}, url: {manga.find("a")["href"].split("/")[-1]}')
-            yield results
-            page += 1

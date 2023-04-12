@@ -47,25 +47,37 @@ class Mangapark(Manga, Req):
         return images, save_names
 
     def search(title, absolute):
+        from contextlib import suppress
         options = webdriver.FirefoxOptions()
         options.add_argument('--headless')
         service = Service(executable_path='geckodriver.exe', log_path='NUL')
         browser = webdriver.Firefox(options=options, service=service)
         page = 1
-        prev_page = []
+        prev_page = {}
         while True:
             browser.get(f'https://mangapark.to/v5x-search?word={title}&page={page}')
             WebDriverWait(browser, 60).until(ec.presence_of_element_located((By.XPATH, '//div[@class="flex group border-b border-b-base-200 pb-5"]')))
             soup = BeautifulSoup(browser.page_source, 'html.parser')
             divs = soup.find_all('div', {'class': 'flex group border-b border-b-base-200 pb-5'})
             if prev_page == divs:
-                yield []
-            results = []
+                yield {}
+            results = {}
             for div in divs:
-                if absolute and title.lower() not in d.contents[0].lower():
+                ti = div.find('h3', {'class': 'font-bold space-x-1 text-lg line-clamp-2'}).find('a')
+                if absolute and title.lower() not in ti.contents[0].lower():
                     continue
-                d = div.find('h3', {'class': 'font-bold space-x-1 text-lg line-clamp-2'}).find('a')
-                results.append(f'title: {d.contents[0]}, url: {d["href"].split("/")[-1]}')
+                latest_chapter, genres = '', ''
+                with suppress(Exception):
+                    genres = div.find('div', {'class': 'flex items-center flex-wrap text-xs opacity-70'}).find_all('a')
+                    genres = ', '.join([genre.find('span').contents[0] for genre in genres])
+                with suppress(Exception):
+                    latest_chapter = div.find('div', {'class': 'flex justify-between text-sm flex-wrap'}).find('a')['href'].split('/')[-1]
+                results[ti.contents[0]] = {
+                    'domain': 'mangapark.to',
+                    'url': ti['href'].split('/')[-1],
+                    'genres': genres,
+                    'latest_chapter': latest_chapter
+                }
             yield results
             page += 1
             prev_page = divs

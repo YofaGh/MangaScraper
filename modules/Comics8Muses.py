@@ -53,13 +53,14 @@ class Comics8Muses(Manga, Req):
             time.sleep(2)
             soup = BeautifulSoup(browser.page_source, 'html.parser')
             comics = soup.find_all('a', {'class': 'c-tile t-hover'}, href=True)
-            results = []
+            results = {}
             if not comics:
-                yield []
+                yield {}
             for comic in comics:
                 if not comic.get('href'):
                     continue
-                if absolute and title.lower() not in comic.find('span').contents[0].lower():
+                ti = comic.find('span').contents[0]
+                if absolute and title.lower() not in ti.lower():
                     continue
                 url = comic.get('href').replace('https://comics.8muses.com/comics/album/', '')
                 sublink = False
@@ -69,7 +70,10 @@ class Comics8Muses(Manga, Req):
                         break
                 if not sublink:
                     links.append(url)
-                    results.append(f'title: {comic.find("span").contents[0]}, url: {url}') 
+                    results[ti] = {
+                        'domain': 'comics.8muses.com',
+                        'url': url 
+                    }
             yield results
             page += 1
 

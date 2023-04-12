@@ -18,28 +18,39 @@ class Truemanga(Manga, Req):
 
     def search(title, absolute):
         from utils.assets import waiter
-        from requests. exceptions import RequestException, HTTPError, Timeout
+        from contextlib import suppress
+        from requests.exceptions import RequestException, HTTPError, Timeout
         page = 1
         while True:
             try:
                 response = Truemanga.send_request(f'https://truemanga.com/search?q={title}&page={page}')
+                soup = BeautifulSoup(response.text, 'html.parser')
+                mangas = soup.find_all('div', {'class': 'book-item'})
+                if len(mangas) == 0:
+                    yield {}
+                results = {}
+                for manga in mangas:
+                    ti = manga.find('div', {'class': 'title'}).find('a')['title']
+                    if absolute and title.lower() not in ti.lower():
+                        continue
+                    latest_chapter, genres, summary = '', '', ''
+                    with suppress(Exception): latest_chapter = manga.find('span', {'class': 'latest-chapter'})['title']
+                    with suppress(Exception):
+                        genres = manga.find('div', {'class': 'genres'}).find_all('span')
+                        genres = ', '.join([genre.contents[0] for genre in genres])
+                    with suppress(Exception): summary = manga.find('div', {'class': 'summary'}).find('p').contents[0]
+                    results[ti] = {
+                        'domain': 'truemanga.com',
+                        'url': manga.find('div', {'class': 'title'}).find('a')['href'].split('/')[-1],
+                        'latest_chapter': latest_chapter,
+                        'genres': genres,
+                        'summary': summary
+                    }
+                yield results
+                page += 1
             except HTTPError:
-                yield []
+                yield {}
             except Timeout as error:
                 raise error
             except RequestException:
                 waiter()
-                continue
-            soup = BeautifulSoup(response.text, 'html.parser')
-            mangas = soup.find_all('div', {'class': 'book-item'})
-            if len(mangas) == 0:
-                yield []
-            results = []
-            for manga in mangas:
-                ti = manga.find('div', {'class': 'title'}).find('a')['title']
-                link = manga.find('div', {'class': 'title'}).find('a')['href'].split('/')[-1]
-                if absolute and title.lower() not in ti.lower():
-                    continue
-                results.append(f'title: {ti}, url: {link}')
-            yield results
-            page += 1

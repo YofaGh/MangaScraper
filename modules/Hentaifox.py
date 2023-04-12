@@ -39,26 +39,31 @@ class Hentaifox(Doujin, Req):
 
     def search(title, absolute):
         from utils.assets import waiter
-        from requests. exceptions import RequestException, HTTPError, Timeout
+        from requests.exceptions import RequestException, HTTPError, Timeout
         page = 1
         while True:
             try:
                 response = Hentaifox.send_request(f'https://hentaifox.com/search/?q={title}&page={page}')
+                soup = BeautifulSoup(response.text, 'html.parser')
+                doujins = soup.find_all('div', {'class': 'thumb'})
+                if len(doujins) == 0:
+                    yield {}
+                results = {}
+                for doujin in doujins:
+                    caption = doujin.find('div', {'class': 'caption'})
+                    ti = caption.find('a').contents[0]
+                    if absolute and title.lower() not in ti.lower():
+                        continue
+                    results[ti] = {
+                        'domain': 'hentaifox.com',
+                        'code': caption.find('a')['href'].split('/')[-2],
+                        'category': doujin.find('a', {'class':'t_cat'}).contents[0]
+                    }
+                yield results
+                page += 1
             except HTTPError:
-                yield []
+                yield {}
             except Timeout as error:
                 raise error
             except RequestException:
                 waiter()
-                continue
-            soup = BeautifulSoup(response.text, 'html.parser')
-            doujins = soup.find_all('div', {'class': 'caption'})
-            if len(doujins) == 0:
-                yield []
-            results = []
-            for doujin in doujins:
-                if absolute and title.lower() not in doujin.find('a').contents[0].lower():
-                    continue
-                results.append(f'title: {doujin.find("a").contents[0]}, code: {doujin.find("a")["href"].split("/")[-2]}')
-            yield results
-            page += 1

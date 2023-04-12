@@ -18,29 +18,33 @@ class Manhwa18(Manga, Req):
 
     def search(title, absolute):
         from utils.assets import waiter
-        from requests. exceptions import RequestException, HTTPError, Timeout
+        from requests.exceptions import RequestException, HTTPError, Timeout
         page = 1
         while True:
             try:
                 response = Manhwa18.send_request(f'https://manhwa18.com/tim-kiem?q={title}&page={page}')
+                soup = BeautifulSoup(response.text, 'html.parser')
+                mangas = soup.find_all('div', {'class': 'thumb-item-flow col-6 col-md-2'})
+                if len(mangas) == 0:
+                    yield {}
+                results = {}
+                for manga in mangas:
+                    ti = manga.find('div', {'class': 'thumb_attr series-title'}).find('a')['title']
+                    if absolute and title.lower() not in ti.lower():
+                        continue
+                    results[ti] = {
+                        'domain': 'manhwa18.com',
+                        'url': manga.find('a')['href'].split('/')[-1],
+                        'latest_chapter': manga.find('div', {'class': 'thumb-detail'}).find('a')['href'].split('/')[-1]
+                    }
+                yield results
+                page += 1
             except HTTPError:
-                yield []
+                yield {}
             except Timeout as error:
                 raise error
             except RequestException:
                 waiter()
-                continue
-            soup = BeautifulSoup(response.text, 'html.parser')
-            mangas = soup.find_all('div', {'class': 'thumb_attr series-title'})
-            if len(mangas) == 0:
-                yield []
-            results = []
-            for manga in mangas:
-                if absolute and title.lower() not in manga.find('a')['title'].lower():
-                    continue
-                results.append(f'title: {manga.find("a")["href"].split("/")[-1]}, url: {manga.find("a")["title"]}')
-            yield results
-            page += 1
 
     def rename_chapter(chapter):
         if chapter in ['pass', None]:

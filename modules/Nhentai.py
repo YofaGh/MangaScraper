@@ -22,28 +22,30 @@ class Nhentai(Doujin, Req):
 
     def search(title, absolute):
         from utils.assets import waiter
-        from requests. exceptions import RequestException, HTTPError, Timeout
+        from requests.exceptions import RequestException, HTTPError, Timeout
         page = 1
         while True:
             try:
                 response = Nhentai.send_request(f'https://nhentai.xxx/search?q={title}&page={page}')
+                soup = BeautifulSoup(response.text, 'html.parser')
+                doujins = soup.find_all('div', {'class': 'gallery'})
+                if len(doujins) == 0:
+                    yield {}
+                results = {}
+                for doujin in doujins:
+                    doj = doujin.find('a')
+                    ti = doj.find('div', {'class': 'caption'}).contents[0]
+                    if absolute and title.lower() not in ti.lower():
+                        continue
+                    results[ti] = {
+                        'domain': 'nhentai.xxx',
+                        'code': doj['href'].split('/')[-2]
+                    }
+                yield results
+                page += 1
             except HTTPError:
-                yield []
+                yield {}
             except Timeout as error:
                 raise error
             except RequestException:
                 waiter()
-                continue
-            soup = BeautifulSoup(response.text, 'html.parser')
-            doujins = soup.find_all('div', {'class': 'gallery'})
-            if len(doujins) == 0:
-                yield []
-            results = []
-            for doujin in doujins:
-                doj = doujin.find('a')
-                ti = doj.find('div', {'class': 'caption'}).contents[0]
-                if absolute and title.lower() not in ti.lower():
-                    continue
-                results.append(f'title: {ti}, code: {doj["href"].split("/")[-2]}')
-            yield results
-            page += 1
