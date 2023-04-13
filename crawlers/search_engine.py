@@ -5,14 +5,14 @@ from utils.assets import save_dict_to_file
 from utils.modules_contributer import get_domain
 from utils.exceptions import MissingFunctionException
 
-def search(title, sources, sleep_time, absolute, limit_page):
+def search(keyword, sources, sleep_time, absolute, limit_page):
     results = {}
     for source in sources:
         try:
             domain = get_domain(source)
             if not hasattr(source, 'search_by_keyword'):
                 raise MissingFunctionException(domain, 'search_by_keyword')
-            search = source.search_by_keyword(title, absolute)
+            search = source.search_by_keyword(keyword, absolute)
             page = 1
             temp_results = {}
             while page <= limit_page:
@@ -35,9 +35,9 @@ def search(title, sources, sleep_time, absolute, limit_page):
             results[domain] = temp_results
         except MissingFunctionException as error:
             print(colored(error, 'red'))
-    save_dict_to_file(f'{title}_output.json', results)
+    save_dict_to_file(f'{keyword}_output.json', results)
     print_output(results)
-    print(colored(f'This was a summary of the search.\nYou can see the full results in {title}_output.json', 'green'))
+    print(colored(f'This was a summary of the search.\nYou can see the full results in {keyword}_output.json', 'green'))
 
 def print_output(results):
     print('Summary:')
