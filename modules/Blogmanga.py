@@ -1,13 +1,13 @@
 from bs4 import BeautifulSoup
-from selenium import webdriver
 from utils.Bases import Manga, Req
-from selenium.webdriver.common.by import By
-from selenium.webdriver.firefox.service import Service
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as ec
 
 class Blogmanga(Manga, Req):
     def get_chapters(manga):
+        from selenium import webdriver
+        from selenium.webdriver.common.by import By
+        from selenium.webdriver.firefox.service import Service
+        from selenium.webdriver.support.ui import WebDriverWait
+        from selenium.webdriver.support import expected_conditions as ec
         options = webdriver.FirefoxOptions()
         options.add_argument('--headless')
         service = Service(executable_path='geckodriver.exe', log_path='NUL')
@@ -27,37 +27,33 @@ class Blogmanga(Manga, Req):
         return images, False
 
     def search(title, absolute):
-        import time
+        from utils.assets import waiter
         from contextlib import suppress
-        options = webdriver.FirefoxOptions()
-        options.add_argument('--headless')
-        service = Service(executable_path='geckodriver.exe', log_path='NUL')
-        browser = webdriver.Firefox(options=options, service=service)
-        browser.get(f'https://blogmanga.net/?s={title}&post_type=wp-manga')
-        found = []
+        from requests.exceptions import RequestException, HTTPError, Timeout
+        page = 1
         while True:
-            soup = BeautifulSoup(browser.page_source, 'html.parser')
-            mangas = soup.find_all('div', {'class': 'row c-tabs-item__content'})
-            results = {}
-            for manga in mangas:
-                ti = manga.find('div', {'class': 'tab-thumb c-image-hover'}).find('a')['title']
-                if absolute and title.lower() not in ti.lower():
-                    continue
-                link = manga.find('div', {'class': 'tab-thumb c-image-hover'}).find('a')['href'].split('/')[-2]
-                latest_chapter, genres, authors, status = '', '', '', ''
-                contents = manga.find_all('div', {'class': 'post-content_item'})
-                for content in contents:
-                    with suppress(Exception):
-                        head = content.find('h5').contents[0].replace('\n', '').replace(' ', '')
-                        if head == 'Authors':
-                            authors = ', '.join([a.contents[0] for a in content.find_all('a')])
-                        if head == 'Genres':
-                            genres = ', '.join([a.contents[0] for a in content.find_all('a')])
-                        if head == 'Status':
-                            status = content.find('div', {'class': 'summary-content'}).contents[0].replace('\n', '').replace(' ', '')
-                with suppress(Exception): latest_chapter = manga.find('span', {'class': 'font-meta chapter'}).find('a')['href'].split('/')[-2]
-                if ti not in found:
-                    found.append(ti)
+            try:
+                response = Blogmanga.send_request(f'https://blogmanga.net/page/{page}?s={title}&post_type=wp-manga')
+                soup = BeautifulSoup(response.text, 'html.parser')
+                mangas = soup.find_all('div', {'class': 'row c-tabs-item__content'})
+                results = {}
+                for manga in mangas:
+                    ti = manga.find('div', {'class': 'tab-thumb c-image-hover'}).find('a')['title']
+                    if absolute and title.lower() not in ti.lower():
+                        continue
+                    link = manga.find('div', {'class': 'tab-thumb c-image-hover'}).find('a')['href'].split('/')[-2]
+                    latest_chapter, genres, authors, status = '', '', '', ''
+                    contents = manga.find_all('div', {'class': 'post-content_item'})
+                    for content in contents:
+                        with suppress(Exception):
+                            head = content.find('h5').contents[0].replace('\n', '').replace(' ', '')
+                            if head == 'Authors':
+                                authors = ', '.join([a.contents[0] for a in content.find_all('a')])
+                            if head == 'Genres':
+                                genres = ', '.join([a.contents[0] for a in content.find_all('a')])
+                            if head == 'Status':
+                                status = content.find('div', {'class': 'summary-content'}).contents[0].replace('\n', '').replace(' ', '')
+                    with suppress(Exception): latest_chapter = manga.find('span', {'class': 'font-meta chapter'}).find('a')['href'].split('/')[-2]
                     results[ti] = {
                         'domain': 'blogmanga.net',
                         'url': link,
@@ -66,10 +62,11 @@ class Blogmanga(Manga, Req):
                         'authors': authors,
                         'status': status
                     }
-            yield results
-            try:
-                load_more_button = browser.find_element(By.XPATH, "//div[@class='load-title']")
-                load_more_button.click()
-                time.sleep(1)
-            except:
+                yield results
+                page += 1
+            except HTTPError:
                 yield {}
+            except Timeout as error:
+                raise error
+            except RequestException:
+                waiter()
