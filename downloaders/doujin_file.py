@@ -10,10 +10,13 @@ def download_doujins(json_file, sleep_time, merge, convert_to_pdf):
     for doujin in valid_doujins:
         try:
             source = get_class(doujin)
-            while len(doujins[doujin]['codes']) > 0:
-                code = doujins[doujin]['codes'][0]
-                download_doujin(code, source, sleep_time, merge, convert_to_pdf)
-                del doujins[doujin]['codes'][0]
-                save_dict_to_file(save_dict_to_file, doujins)
+            i = 0
+            while len(doujins[doujin]['codes']) - i > 0:
+                code = doujins[doujin]['codes'][i]
+                if download_doujin(code, source, sleep_time, merge, convert_to_pdf):
+                    del doujins[doujin]['codes'][i]
+                else:
+                    i += 1
+                save_dict_to_file(json_file, doujins)
         except MissingModuleException as error:
             print(colored(error, 'red'))

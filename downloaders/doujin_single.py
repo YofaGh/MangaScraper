@@ -39,10 +39,10 @@ def download_doujin(code, source, sleep_time, merge, convert_to_pdf):
             if convert_to_pdf:
                 from utils.pdf_converter import convert_folder
                 convert_folder(fixed_doujin_name, fixed_doujin_name, f'{fixed_doujin_name}.pdf', shorten_doujin_title)
-            break
+            return True
         except (Timeout, HTTPError, exceptions.ImageMergerException, exceptions.PDFConverterException) as error:
             print(colored(error, 'red'))
-            break
+            return False
         except RequestException:
             assets.waiter()
         except exceptions.TruncatedException as error:

@@ -34,7 +34,7 @@
 ## Setup
 
 > - After cloning the repository use ```pip install -r requirements.txt``` to install requirements.
-> - Lists of implemented modules are available in implemented_modules.txt file.
+> - List of implemented modules is available in implemented_modules.txt file.
 
 ## Command line interface
 >
