@@ -37,13 +37,13 @@ class Hentaifox(Doujin, Req):
             new_images.append(f'{image.rsplit("/", 1)[0]}/{name}')
         return new_images
 
-    def search(title, absolute):
+    def search_by_keyword(keyword, absolute):
         from utils.assets import waiter
         from requests.exceptions import RequestException, HTTPError, Timeout
         page = 1
         while True:
             try:
-                response = Hentaifox.send_request(f'https://hentaifox.com/search/?q={title}&page={page}')
+                response = Hentaifox.send_request(f'https://hentaifox.com/search/?q={keyword}&page={page}')
                 soup = BeautifulSoup(response.text, 'html.parser')
                 doujins = soup.find_all('div', {'class': 'thumb'})
                 if len(doujins) == 0:
@@ -52,7 +52,7 @@ class Hentaifox(Doujin, Req):
                 for doujin in doujins:
                     caption = doujin.find('div', {'class': 'caption'})
                     ti = caption.find('a').contents[0]
-                    if absolute and title.lower() not in ti.lower():
+                    if absolute and keyword.lower() not in ti.lower():
                         continue
                     results[ti] = {
                         'domain': 'hentaifox.com',

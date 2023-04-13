@@ -46,7 +46,7 @@ class Mangapark(Manga, Req):
             save_names.append(f'{i+1:03d}.{images[i].split(".")[-1].split("?")[0]}')
         return images, save_names
 
-    def search(title, absolute):
+    def search_by_keyword(keyword, absolute):
         from contextlib import suppress
         options = webdriver.FirefoxOptions()
         options.add_argument('--headless')
@@ -55,7 +55,7 @@ class Mangapark(Manga, Req):
         page = 1
         prev_page = {}
         while True:
-            browser.get(f'https://mangapark.to/v5x-search?word={title}&page={page}')
+            browser.get(f'https://mangapark.to/v5x-search?word={keyword}&page={page}')
             WebDriverWait(browser, 60).until(ec.presence_of_element_located((By.XPATH, '//div[@class="flex group border-b border-b-base-200 pb-5"]')))
             soup = BeautifulSoup(browser.page_source, 'html.parser')
             divs = soup.find_all('div', {'class': 'flex group border-b border-b-base-200 pb-5'})
@@ -64,7 +64,7 @@ class Mangapark(Manga, Req):
             results = {}
             for div in divs:
                 ti = div.find('h3', {'class': 'font-bold space-x-1 text-lg line-clamp-2'}).find('a')
-                if absolute and title.lower() not in ti.contents[0].lower():
+                if absolute and keyword.lower() not in ti.contents[0].lower():
                     continue
                 latest_chapter, genres = '', ''
                 with suppress(Exception):
@@ -83,7 +83,7 @@ class Mangapark(Manga, Req):
             prev_page = divs
 
     def get_db():
-        return Mangapark.search('', False)
+        return Mangapark.search_by_keyword('', False)
 
     def rename_chapter(chapter):
         if chapter in ['pass', None]:

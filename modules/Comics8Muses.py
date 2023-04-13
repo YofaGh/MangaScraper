@@ -40,7 +40,7 @@ class Comics8Muses(Manga, Req):
             save_names.append(f'{i+1:03d}.{images[i].split(".")[-1]}')
         return images, save_names
 
-    def search(title, absolute):
+    def search_by_keyword(keyword, absolute):
         import time
         page = 1
         links = []
@@ -49,7 +49,7 @@ class Comics8Muses(Manga, Req):
         service = Service(executable_path='geckodriver.exe', log_path='NUL')
         browser = webdriver.Firefox(options=options, service=service)
         while True:
-            browser.get(f'https://comics.8muses.com/search?q={title}&page={page}')
+            browser.get(f'https://comics.8muses.com/search?q={keyword}&page={page}')
             time.sleep(2)
             soup = BeautifulSoup(browser.page_source, 'html.parser')
             comics = soup.find_all('a', {'class': 'c-tile t-hover'}, href=True)
@@ -60,7 +60,7 @@ class Comics8Muses(Manga, Req):
                 if not comic.get('href'):
                     continue
                 ti = comic.find('span').contents[0]
-                if absolute and title.lower() not in ti.lower():
+                if absolute and keyword.lower() not in ti.lower():
                     continue
                 url = comic.get('href').replace('https://comics.8muses.com/comics/album/', '')
                 sublink = False

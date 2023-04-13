@@ -19,20 +19,20 @@ class Coloredmanga(Manga, Req):
             save_names.append(f'{i+1:03d}.{images[i].split(".")[-1]}')
         return images, save_names
 
-    def search(title, absolute):
+    def search_by_keyword(keyword, absolute):
         from utils.assets import waiter
         from contextlib import suppress
         from requests.exceptions import RequestException, HTTPError, Timeout
         page = 1
         while True:
             try:
-                response = Coloredmanga.send_request(f'https://coloredmanga.com/page/{page}/?s={title}&post_type=wp-manga')
+                response = Coloredmanga.send_request(f'https://coloredmanga.com/page/{page}/?s={keyword}&post_type=wp-manga')
                 soup = BeautifulSoup(response.text, 'html.parser')
                 mangas = soup.find_all('div', {'class': 'row c-tabs-item__content'})
                 results = {}
                 for manga in mangas:
                     tilink = manga.find('div', {'class', 'post-title'})
-                    if absolute and title.lower() not in manga.find('a')['href']:
+                    if absolute and keyword.lower() not in manga.find('a')['href']:
                         continue
                     latest_chapter, authors, artists, genres, status, release_date = '', '', '', '', '', ''
                     contents = manga.find_all('div', {'class': 'post-content_item'})
@@ -70,7 +70,7 @@ class Coloredmanga(Manga, Req):
                 waiter()
 
     def get_db():
-        return Coloredmanga.search('', False)
+        return Coloredmanga.search_by_keyword('', False)
 
     def rename_chapter(chapter):
         chapter = chapter.split('/')[-1]

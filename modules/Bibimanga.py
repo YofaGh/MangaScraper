@@ -16,20 +16,20 @@ class Bibimanga(Manga, Req):
         images = [image['data-src'].strip() for image in images]
         return images, False
 
-    def search(title, absolute):
+    def search_by_keyword(keyword, absolute):
         from utils.assets import waiter
         from contextlib import suppress
         from requests.exceptions import RequestException, HTTPError, Timeout
         page = 1
         while True:
             try:
-                response = Bibimanga.send_request(f'https://bibimanga.com/page/{page}?s={title}&post_type=wp-manga')
+                response = Bibimanga.send_request(f'https://bibimanga.com/page/{page}?s={keyword}&post_type=wp-manga')
                 soup = BeautifulSoup(response.text, 'html.parser')
                 mangas = soup.find_all('div', {'class': 'row c-tabs-item__content'})
                 results = {}
                 for manga in mangas:
                     ti = manga.find('div', {'class': 'tab-thumb c-image-hover'}).find('a')['title']
-                    if absolute and title.lower() not in ti.lower():
+                    if absolute and keyword.lower() not in ti.lower():
                         continue
                     link = manga.find('div', {'class': 'tab-thumb c-image-hover'}).find('a')['href'].split('/')[-2]
                     latest_chapter, genres, authors, artists, status = '', '', '', '', ''
@@ -65,4 +65,4 @@ class Bibimanga(Manga, Req):
                 waiter()
 
     def get_db():
-        return Bibimanga.search('', False)
+        return Bibimanga.search_by_keyword('', False)

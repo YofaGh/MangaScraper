@@ -20,13 +20,13 @@ class Nhentai(Doujin, Req):
             new_images.append(f'{image.rsplit("/", 1)[0]}/{name}')
         return new_images
 
-    def search(title, absolute):
+    def search_by_keyword(keyword, absolute):
         from utils.assets import waiter
         from requests.exceptions import RequestException, HTTPError, Timeout
         page = 1
         while True:
             try:
-                response = Nhentai.send_request(f'https://nhentai.xxx/search?q={title}&page={page}')
+                response = Nhentai.send_request(f'https://nhentai.xxx/search?q={keyword}&page={page}')
                 soup = BeautifulSoup(response.text, 'html.parser')
                 doujins = soup.find_all('div', {'class': 'gallery'})
                 if len(doujins) == 0:
@@ -35,7 +35,7 @@ class Nhentai(Doujin, Req):
                 for doujin in doujins:
                     doj = doujin.find('a')
                     ti = doj.find('div', {'class': 'caption'}).contents[0]
-                    if absolute and title.lower() not in ti.lower():
+                    if absolute and keyword.lower() not in ti.lower():
                         continue
                     results[ti] = {
                         'domain': 'nhentai.xxx',
@@ -51,4 +51,4 @@ class Nhentai(Doujin, Req):
                 waiter()
 
     def get_db():
-        return Nhentai.search('', False)
+        return Nhentai.search_by_keyword('', False)

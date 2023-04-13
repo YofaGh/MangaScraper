@@ -10,9 +10,9 @@ def search(title, sources, sleep_time, absolute, limit_page):
     for source in sources:
         try:
             domain = get_domain(source)
-            if not hasattr(source, 'search'):
-                raise MissingFunctionException(domain, 'search')
-            search = source.search(title, absolute)
+            if not hasattr(source, 'search_by_keyword'):
+                raise MissingFunctionException(domain, 'search_by_keyword')
+            search = source.search_by_keyword(title, absolute)
             page = 1
             temp_results = {}
             while page <= limit_page:

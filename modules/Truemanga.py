@@ -16,11 +16,11 @@ class Truemanga(Manga, Req):
         images = [image['data-src'] for image in images]
         return images, False
 
-    def search(title, absolute):
+    def search_by_keyword(keyword, absolute):
         from utils.assets import waiter
         from contextlib import suppress
         from requests.exceptions import RequestException, HTTPError, Timeout
-        template = f'https://truemanga.com/search?q={title}&page=P_P_P_P' if title else 'https://truemanga.com/az-list?page=P_P_P_P'
+        template = f'https://truemanga.com/search?q={keyword}&page=P_P_P_P' if keyword else 'https://truemanga.com/az-list?page=P_P_P_P'
         page = 1
         while True:
             try:
@@ -32,7 +32,7 @@ class Truemanga(Manga, Req):
                 results = {}
                 for manga in mangas:
                     ti = manga.find('div', {'class': 'title'}).find('a')['title']
-                    if absolute and title.lower() not in ti.lower():
+                    if absolute and keyword.lower() not in ti.lower():
                         continue
                     latest_chapter, genres, summary = '', '', ''
                     with suppress(Exception): latest_chapter = manga.find('span', {'class': 'latest-chapter'})['title']
@@ -57,4 +57,4 @@ class Truemanga(Manga, Req):
                 waiter()
 
     def get_db():
-        return Truemanga.search('', False)
+        return Truemanga.search_by_keyword('', False)

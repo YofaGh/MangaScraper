@@ -26,20 +26,20 @@ class Manhuamanhwa(Manga, Req):
         images = [image['data-src'] for image in images]
         return images, False
 
-    def search(title, absolute):
+    def search_by_keyword(keyword, absolute):
         from utils.assets import waiter
         from contextlib import suppress
         from requests.exceptions import RequestException, HTTPError, Timeout
         page = 1
         while True:
             try:
-                response = Manhuamanhwa.send_request(f'https://manhuamanhwa.com/page/{page}?s={title}&post_type=wp-manga')
+                response = Manhuamanhwa.send_request(f'https://manhuamanhwa.com/page/{page}?s={keyword}&post_type=wp-manga')
                 soup = BeautifulSoup(response.text, 'html.parser')
                 mangas = soup.find_all('div', {'class': 'row c-tabs-item__content'})
                 results = {}
                 for manga in mangas:
                     ti = manga.find('div', {'class': 'tab-thumb c-image-hover'}).find('a')['title']
-                    if absolute and title.lower() not in ti.lower():
+                    if absolute and keyword.lower() not in ti.lower():
                         continue
                     link = manga.find('div', {'class': 'tab-thumb c-image-hover'}).find('a')['href'].split('/')[-2]
                     latest_chapter, genres, authors, artists, status = '', '', '', '', ''
@@ -75,4 +75,4 @@ class Manhuamanhwa(Manga, Req):
                 waiter()
 
     def get_db():
-        return Manhuamanhwa.search('', False)
+        return Manhuamanhwa.search_by_keyword('', False)
