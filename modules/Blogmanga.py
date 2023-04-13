@@ -70,3 +70,6 @@ class Blogmanga(Manga, Req):
                 raise error
             except RequestException:
                 waiter()
+
+    def get_db():
+        return Blogmanga.search('', False)

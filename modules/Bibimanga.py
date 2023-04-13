@@ -63,3 +63,6 @@ class Bibimanga(Manga, Req):
                 raise error
             except RequestException:
                 waiter()
+
+    def get_db():
+        return Bibimanga.search('', False)

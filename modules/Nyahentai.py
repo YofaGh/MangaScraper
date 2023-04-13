@@ -49,3 +49,6 @@ class Nyahentai(Doujin, Req):
                 raise error
             except RequestException:
                 waiter()
+
+    def get_db():
+        return Nyahentai.search('', False)

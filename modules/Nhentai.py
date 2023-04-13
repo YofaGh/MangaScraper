@@ -49,3 +49,6 @@ class Nhentai(Doujin, Req):
                 raise error
             except RequestException:
                 waiter()
+
+    def get_db():
+        return Nhentai.search('', False)

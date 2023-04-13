@@ -69,6 +69,9 @@ class Coloredmanga(Manga, Req):
             except RequestException:
                 waiter()
 
+    def get_db():
+        return Coloredmanga.search('', False)
+
     def rename_chapter(chapter):
         chapter = chapter.split('/')[-1]
         beginner = 'Chapter'

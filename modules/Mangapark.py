@@ -82,6 +82,9 @@ class Mangapark(Manga, Req):
             page += 1
             prev_page = divs
 
+    def get_db():
+        return Mangapark.search('', False)
+
     def rename_chapter(chapter):
         if chapter in ['pass', None]:
             return 'Chapter 000'

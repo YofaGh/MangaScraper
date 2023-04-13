@@ -2,7 +2,7 @@ import argparse, sys, os
 from utils.assets import SetSource, SetSleepTime, CheckChapters, LastChapter, RangeOfChapters
 
 parser = argparse.ArgumentParser(allow_abbrev=False)
-parser.add_argument('task', choices=['manga', 'doujin', 'merge', 'c2pdf', 'search'])
+parser.add_argument('task', choices=['manga', 'doujin', 'merge', 'c2pdf', 'search', 'db'])
 type = parser.add_argument_group('download').add_mutually_exclusive_group()
 type.add_argument('-single', '-code', action='store', metavar='', help='url of the manga, or code of the doujin')
 type.add_argument('-file', action='store', metavar='', help='downloads everthing in given json file')
@@ -25,8 +25,8 @@ search_args.add_argument('-page-limit', action='store', default=1000, type=int, 
 search_args.add_argument('-absolute', action='store_true', help='if set, checks that the name you searched should be in the title')
 args = parser.parse_args(args=(sys.argv[1:] or ['-h']))
 
-if args.single and (not args.s or len(args.s) > 1):
-    parser.error('please specify one source using -s argument.\nyou can only set one source when trying to download manga or doujin.')
+if (args.single or args.task == 'db') and (not args.s or len(args.s) > 1):
+    parser.error('please specify one source using -s argument.\nyou can only set one source when downloading or getting database.')
 
 os.system('color')
 
@@ -78,5 +78,9 @@ match args.task:
     case 'search':
         if not(args.s and args.n):
             parser.error('you should specify source using -s and what you want to search using -n')
-        from utils.search_engine import search
+        from crawlers.search_engine import search
         search(args.n, args.s, args.t, args.absolute, args.page_limit)
+
+    case 'db':
+        from crawlers.datebase_crawler import crawl
+        crawl(args.s[0], args.t)

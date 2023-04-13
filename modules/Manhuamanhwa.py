@@ -73,3 +73,6 @@ class Manhuamanhwa(Manga, Req):
                 raise error
             except RequestException:
                 waiter()
+
+    def get_db():
+        return Manhuamanhwa.search('', False)

@@ -20,10 +20,11 @@ class Truemanga(Manga, Req):
         from utils.assets import waiter
         from contextlib import suppress
         from requests.exceptions import RequestException, HTTPError, Timeout
+        template = f'https://truemanga.com/search?q={title}&page=P_P_P_P' if title else 'https://truemanga.com/az-list?page=P_P_P_P'
         page = 1
         while True:
             try:
-                response = Truemanga.send_request(f'https://truemanga.com/search?q={title}&page={page}')
+                response = Truemanga.send_request(template.replace('P_P_P_P', str(page)))
                 soup = BeautifulSoup(response.text, 'html.parser')
                 mangas = soup.find_all('div', {'class': 'book-item'})
                 if len(mangas) == 0:
@@ -54,3 +55,6 @@ class Truemanga(Manga, Req):
                 raise error
             except RequestException:
                 waiter()
+
+    def get_db():
+        return Truemanga.search('', False)

@@ -48,3 +48,6 @@ class Manhuascan(Manga, Req):
                 raise error
             except RequestException:
                 waiter()
+
+    def get_db():
+        return Manhuascan.search('', False)

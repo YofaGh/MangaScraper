@@ -49,3 +49,6 @@ class Simplyhentai(Doujin, Req):
                 raise error
             except RequestException:
                 waiter()
+
+    def get_db():
+        return Simplyhentai.search('', False)

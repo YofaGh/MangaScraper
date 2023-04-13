@@ -5,6 +5,7 @@
 > - Merge downloaded chapters into one or two images.
 > - Convert downloaded chapters into PDF file.
 > - Search and find what you want.
+> - Download full database of a website.
 
 ## Table of Contents
 
@@ -27,6 +28,8 @@
 - [PDF converter](#pdf-converter)
 
 - [Search engine](#search-engine)
+
+- [Database crawler](#database-crawler)
 
 ## Setup
 
@@ -173,3 +176,10 @@
 > - search in multiple modules: ```python cli.py search -s truemanga.com mangareader.cc -n "secret"```  
 > - search in all modules: ```python cli.py search -s all -n "secret"```  
 > - e.g.  ```python cli.py search -s manhuascan.us -n "secret" -page-limit 5 -absolute -t 1```
+
+## Database crawler
+>
+> allows you to download databse of sources that get_db function is implemented for them.  
+> you can only get database of one module at a time.  
+> result of the crawling will be saved to a json file with module name on it.  
+> Examples:  ```python cli.py db -s manhuascan.us```

@@ -67,3 +67,38 @@ class Hentaifox(Doujin, Req):
                 raise error
             except RequestException:
                 waiter()
+
+    def get_db():
+        from utils.assets import waiter
+        from requests.exceptions import RequestException, HTTPError, Timeout
+        response = Hentaifox.send_request('https://hentaifox.com/categories/')
+        soup = BeautifulSoup(response.text, 'html.parser')
+        categories = soup.find('div', {'class': 'list_tags'}).find_all('a')
+        categories = [a['href'] for a in categories]
+        for category in categories:
+            page = 1
+            while True:
+                try:
+                    response = Hentaifox.send_request(f'https://hentaifox.com{category}pag/{page}/')
+                    soup = BeautifulSoup(response.text, 'html.parser')
+                    doujins = soup.find_all('div', {'class': 'thumb'})
+                    if len(doujins) == 0:
+                        break
+                    results = {}
+                    for doujin in doujins:
+                        caption = doujin.find('div', {'class': 'caption'})
+                        ti = caption.find('a').contents[0]
+                        results[ti] = {
+                            'domain': 'hentaifox.com',
+                            'code': caption.find('a')['href'].split('/')[-2],
+                            'category': doujin.find('a', {'class':'t_cat'}).contents[0]
+                        }
+                    yield results
+                    page += 1
+                except HTTPError:
+                    break
+                except Timeout as error:
+                    raise error
+                except RequestException:
+                    waiter()
+        yield {}

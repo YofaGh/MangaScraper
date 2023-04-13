@@ -102,10 +102,10 @@ def detect_images(path_to_folder):
     return images_path
 
 def waiter():
-    import time, sys
+    import shutil, time, sys
     from termcolor import colored
     sys.stdout.write(colored(' Connection lost.\n\rWaiting 1 minute to attempt a fresh connection.', 'red'))
     for i in range(59, 0, -1):
         time.sleep(1)
         sys.stdout.write(colored(f'\rWaiting {i} seconds to attempt a fresh connection. ', 'red'))
-    return
+    sys.stdout.write('\r' + ' ' * shutil.get_terminal_size()[0])

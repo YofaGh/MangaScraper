@@ -26,7 +26,7 @@ class Manga:
 
 class Doujin:
     def get_title():
-        return
+        return ''
 
     def get_images():
         return [], False

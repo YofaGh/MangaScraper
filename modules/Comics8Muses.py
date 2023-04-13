@@ -77,5 +77,22 @@ class Comics8Muses(Manga, Req):
             yield results
             page += 1
 
+    def get_db():
+        options = webdriver.FirefoxOptions()
+        options.add_argument('--headless')
+        service = Service(executable_path='geckodriver.exe', log_path='NUL')
+        browser = webdriver.Firefox(options=options, service=service)
+        browser.get('https://comics.8muses.com/sitemap/1.xml')
+        soup = BeautifulSoup(browser.page_source, 'xml')
+        results = {}
+        urls = soup.find_all('loc')
+        for url in urls:
+            results[url.get_text().split('/')[-1].replace('-', ' ')] = {
+                'domain': 'comics.8muses.com',
+                'url': url.get_text().replace('https://comics.8muses.com/comics/album/', '')
+            }
+        yield results
+        yield {}
+
     def rename_chapter(name):
         return name.replace('-', ' ')

@@ -46,6 +46,9 @@ class Manhwa18(Manga, Req):
             except RequestException:
                 waiter()
 
+    def get_db():
+        return Manhwa18.search('', False)
+
     def rename_chapter(chapter):
         if chapter in ['pass', None]:
             return 'Chapter 000'
