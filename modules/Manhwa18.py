@@ -51,7 +51,7 @@ class Manhwa18(Manga, Req):
 
     def rename_chapter(chapter):
         if chapter in ['pass', None]:
-            return 'Chapter 000'
+            return ''
         new_name = ''
         reached_number = False
         for ch in chapter:

@@ -87,7 +87,7 @@ class Mangapark(Manga, Req):
 
     def rename_chapter(chapter):
         if chapter in ['pass', None]:
-            return 'Chapter 000'
+            return ''
         chapter = chapter.split('-')[-1]
         new_name = ''
         reached_number = False
