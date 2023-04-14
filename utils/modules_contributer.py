@@ -3,6 +3,7 @@ from modules.Blogmanga import Blogmanga
 from modules.Coloredmanga import Coloredmanga
 from modules.Comics8Muses import Comics8Muses
 from modules.Hentaifox import Hentaifox
+from modules.Manga18h import Manga18h
 from modules.Mangapark import Mangapark
 from modules.Mangareader import Mangareader
 from modules.Manhuamanhwa import Manhuamanhwa
@@ -20,6 +21,7 @@ sources_dict = {
     'coloredmanga.com': Coloredmanga,
     'comics.8muses.com': Comics8Muses,
     'hentaifox.com': Hentaifox,
+    'manga18h.com': Manga18h,
     'mangapark.to': Mangapark,
     'mangareader.cc': Mangareader,
     'manhuamanhwa.com': Manhuamanhwa,
