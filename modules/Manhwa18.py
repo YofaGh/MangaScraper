@@ -35,7 +35,8 @@ class Manhwa18(Manga, Req):
                     results[ti] = {
                         'domain': 'manhwa18.com',
                         'url': manga.find('a')['href'].split('/')[-1],
-                        'latest_chapter': manga.find('div', {'class': 'thumb-detail'}).find('a')['href'].split('/')[-1]
+                        'latest_chapter': manga.find('div', {'class': 'thumb-detail'}).find('a')['href'].split('/')[-1],
+                        'page': page
                     }
                 yield results
                 page += 1

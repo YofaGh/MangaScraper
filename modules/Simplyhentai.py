@@ -39,7 +39,8 @@ class Simplyhentai(Doujin, Req):
                         continue
                     results[ti] = {
                         'domain': 'simplyhentai.org',
-                        'code': doj['href'].split('/')[-2]
+                        'code': doj['href'].split('/')[-2],
+                        'page': page
                     }
                 yield results
                 page += 1

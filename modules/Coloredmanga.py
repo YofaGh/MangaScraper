@@ -58,7 +58,8 @@ class Coloredmanga(Manga, Req):
                         'authors': authors,
                         'artists': artists,
                         'status': status,
-                        'release_date': release_date
+                        'release_date': release_date,
+                        'page': page
                     }
                 yield results
                 page += 1

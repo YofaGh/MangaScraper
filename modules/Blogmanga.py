@@ -60,7 +60,8 @@ class Blogmanga(Manga, Req):
                         'latest_chapter': latest_chapter,
                         'genres': genres,
                         'authors': authors,
-                        'status': status
+                        'status': status,
+                        'page': page
                     }
                 yield results
                 page += 1

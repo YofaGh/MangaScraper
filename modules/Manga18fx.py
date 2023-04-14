@@ -41,6 +41,7 @@ class Manga18fx(Manga, Req):
                         'domain': 'bibimanga.com',
                         'url': link,
                         'latest_chapter': latest_chapter,
+                        'page': page
                     }
                 prev_page = mangas
                 yield results

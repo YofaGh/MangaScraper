@@ -53,7 +53,8 @@ class Manga18h(Manga, Req):
                         'genres': genres,
                         'authors': authors,
                         'artists': artists,
-                        'status': status
+                        'status': status,
+                        'page': page
                     }
                 yield results
                 page += 1

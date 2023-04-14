@@ -45,7 +45,8 @@ class Mangareader(Manga, Req):
                         continue
                     results[ti] = {
                         'domain': 'mangareader.cc',
-                        'url': manga.find('a')['href'].split('/')[-1]
+                        'url': manga.find('a')['href'].split('/')[-1],
+                        'page': page
                     }
                 yield results
                 page += 1

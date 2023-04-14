@@ -57,7 +57,8 @@ class Hentaifox(Doujin, Req):
                     results[ti] = {
                         'domain': 'hentaifox.com',
                         'code': caption.find('a')['href'].split('/')[-2],
-                        'category': doujin.find('a', {'class':'t_cat'}).contents[0]
+                        'category': doujin.find('a', {'class':'t_cat'}).contents[0],
+                        'page': page
                     }
                 yield results
                 page += 1

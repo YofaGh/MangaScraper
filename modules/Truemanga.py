@@ -45,7 +45,8 @@ class Truemanga(Manga, Req):
                         'url': manga.find('div', {'class': 'title'}).find('a')['href'].split('/')[-1],
                         'latest_chapter': latest_chapter,
                         'genres': genres,
-                        'summary': summary
+                        'summary': summary,
+                        'page': page
                     }
                 yield results
                 page += 1

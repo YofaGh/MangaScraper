@@ -76,7 +76,8 @@ class Mangapark(Manga, Req):
                     'domain': 'mangapark.to',
                     'url': ti['href'].split('/')[-1],
                     'genres': genres,
-                    'latest_chapter': latest_chapter
+                    'latest_chapter': latest_chapter,
+                    'page': page
                 }
             yield results
             page += 1

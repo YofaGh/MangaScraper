@@ -38,7 +38,8 @@ class Manhuascan(Manga, Req):
                     results[ti] = {
                         'domain': 'manhuascan.us',
                         'url': manga.find('a')['href'].split('/')[-1],
-                        'latest_chapter': latest_chapter
+                        'latest_chapter': latest_chapter,
+                        'page': page
                     }
                 yield results
                 page += 1

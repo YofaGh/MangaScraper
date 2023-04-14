@@ -72,7 +72,8 @@ class Comics8Muses(Manga, Req):
                     links.append(url)
                     results[ti] = {
                         'domain': 'comics.8muses.com',
-                        'url': url 
+                        'url': url,
+                        'page': page
                     }
             yield results
             page += 1
