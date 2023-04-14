@@ -97,7 +97,7 @@ def detect_images(path_to_folder):
     import os
     images_path = []
     for file in os.listdir(path_to_folder):
-        if file.endswith('.jpg') or file.endswith('.png') or file.endswith('.jpeg') or file.endswith('.gif') or file.endswith('.webp'):
+        if file.split('.')[-1] in ['jpg', 'png', 'jpeg', 'gif', 'webp']:
             images_path.append(f'{path_to_folder}/{file}')
     return images_path
 
