@@ -25,7 +25,6 @@ class Manga18h(Manga, Req):
             try:
                 response = Manga18h.send_request(f'https://manga18h.com/page/{page}/?s={keyword}&post_type=wp-manga')
                 soup = BeautifulSoup(response.text, 'html.parser')
-                soup = BeautifulSoup(response.text, 'html.parser')
                 mangas = soup.find_all('div', {'class': 'row c-tabs-item__content'})
                 results = {}
                 for manga in mangas:
@@ -58,8 +57,6 @@ class Manga18h(Manga, Req):
                     }
                 yield results
                 page += 1
-                if page == 4:
-                    yield {}
             except HTTPError:
                 yield {}
             except Timeout as error:
