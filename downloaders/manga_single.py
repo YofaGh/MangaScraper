@@ -54,6 +54,7 @@ def download_manga(manga, url, source, sleep_time, chapters, merge, convert_to_p
             sys.stdout.write(f'\r{manga}: {chapter}: Getting image links...')
             images, save_names = source.get_images(url, chapter)
             sys.stdout.write(f'\r{manga}: {chapter}: Creating folder...')
+            path = f'{fixed_manga}/{renamed_chapter}'
             assets.create_folder(f'{fixed_manga}/{renamed_chapter}')
             adder = 0
             for i in range(len(images)):
@@ -64,31 +65,31 @@ def download_manga(manga, url, source, sleep_time, chapters, merge, convert_to_p
                         inconsistencies.append(f'{manga}/{chapter}/{i+adder:03d}.{images[i].split(".")[-1]}')
                         print(colored(f' Warning: Inconsistency in order of images!!!. Skipped image {i + adder}', 'red'))
                         sys.stdout.write(f'\r{manga}: {chapter}: Downloading  image {i+adder+1}/{len(images)+adder}...')
-                    save_path = f'{fixed_manga}/{renamed_chapter}/{i+adder+1:03d}.{images[i].split(".")[-1]}'
+                    name = f'{i+adder+1:03d}.{images[i].split(".")[-1]}'
                 else:
-                    save_path = f'{fixed_manga}/{renamed_chapter}/{save_names[i]}'
-                if not os.path.exists(save_path):
+                    name = save_names[i]
+                if not os.path.exists(f'{path}/{name}'):
                     time.sleep(sleep_time)
                     try:
                         response = source.send_request(images[i])
                     except HTTPError:
                         print(f'Could not download image {i+adder+1}: {images[i]}')
                         continue
-                    with open(save_path, 'wb') as image:
+                    with open(f'{path}/{name}', 'wb') as image:
                         image.write(response.content)
-                    if not assets.validate_corrupted_image(save_path):
+                    if not assets.validate_corrupted_image(f'{path}/{name}'):
                         print(colored(f' Warning: Image {i+adder+1} is corrupted. will not be able to merge this chapter', 'red'))
                         continue
-                    if not assets.validate_truncated_image(save_path) and last_truncated != save_path:
-                        raise exceptions.TruncatedException(save_path)
+                    if not assets.validate_truncated_image(f'{path}/{name}') and last_truncated != f'{path}/{name}':
+                        raise exceptions.TruncatedException(f'{path}/{name}')
             print(colored(f'\r{manga}: {chapter}: Finished downloading, {len(images)} images were downloaded.', 'green'))
             del chapters[0]
             if merge:
                 from utils.image_merger import merge_folder
-                merge_folder(f'{manga}/{renamed_chapter}', f'Merged/{manga}/{renamed_chapter}', f'{manga}: {chapter}')
+                merge_folder(path, f'Merged/{path}', f'{manga}: {chapter}')
             if convert_to_pdf:
                 from utils.pdf_converter import convert_folder
-                convert_folder(f'{manga}/{renamed_chapter}', manga, f'{manga}_{renamed_chapter}.pdf', f'{manga}: {chapter}')
+                convert_folder(path, fixed_manga, f'{manga}_{renamed_chapter}.pdf', f'{manga}: {chapter}')
         except (Timeout, HTTPError, exceptions.ImageMergerException, exceptions.PDFConverterException) as error:
             print(colored(error, 'red'))
         except RequestException:
