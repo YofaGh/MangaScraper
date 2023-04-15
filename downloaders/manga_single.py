@@ -3,18 +3,16 @@ from termcolor import colored
 from utils import assets, exceptions
 from requests.exceptions import RequestException, HTTPError, Timeout
 
-def download_single(manga, url, source, sleep_time, is_all, last, ranged, chapters, merge, convert_to_pdf):
-    chapters_to_download = get_name_of_chapters(manga, url, source, is_all, last, ranged, chapters)
+def download_single(manga, url, source, sleep_time, last, ranged, chapters, merge, convert_to_pdf):
+    chapters_to_download = get_name_of_chapters(manga, url, source, last, ranged, chapters)
     inconsistencies = download_manga(manga, url, source, sleep_time, chapters_to_download, merge, convert_to_pdf)
     if inconsistencies:
         print(colored(f'There were some inconsistencies with the following chapters: {", ".join(inconsistencies)}', 'red'))
 
-def get_name_of_chapters(manga, url, source, is_all, last, ranged, c_chapters):
+def get_name_of_chapters(manga, url, source, last, ranged, c_chapters):
     ctd = []
     sys.stdout.write(f'\r{manga}: Getting name of chapters...')
     chapters = source.get_chapters(url)
-    if is_all:
-        ctd = chapters.copy()
     if last:
         reached_last_downloaded_chapter = False
         last_downloaded_chapter = source.rename_chapter(str(last))
@@ -24,7 +22,7 @@ def get_name_of_chapters(manga, url, source, is_all, last, ranged, c_chapters):
                 continue
             if reached_last_downloaded_chapter:
                 ctd.append(chapter)
-    if ranged:
+    elif ranged:
         reached_beginning_chapter = False
         beginning_chapter = source.rename_chapter(str(ranged[0]))
         ending_chapter = source.rename_chapter(str(ranged[1]))
@@ -36,9 +34,11 @@ def get_name_of_chapters(manga, url, source, is_all, last, ranged, c_chapters):
                 ctd.append(chapter)
             if renamed_chapter == ending_chapter:
                 break
-    if c_chapters:
+    elif c_chapters:
         renamed_chapters = [source.rename_chapter(str(c)) for c in c_chapters]
-        ctd += [chapter for chapter in chapters if (source.rename_chapter(chapter) in renamed_chapters and chapter not in ctd)]
+        ctd = [chapter for chapter in chapters if (source.rename_chapter(chapter) in renamed_chapters)]
+    else:
+        ctd = chapters.copy()
     print(f'\r{manga}: There are totally {len(ctd)} chapters to download.')
     return sorted(ctd, key=lambda _: (source.rename_chapter, natsort.os_sorted))
 

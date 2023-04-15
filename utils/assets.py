@@ -108,4 +108,4 @@ def waiter():
     for i in range(59, 0, -1):
         time.sleep(1)
         sys.stdout.write(colored(f'\rWaiting {i} seconds to attempt a fresh connection. ', 'red'))
-    sys.stdout.write('\r' + ' ' * shutil.get_terminal_size()[0])
+    sys.stdout.write(f'\r{" " * shutil.get_terminal_size()[0]}')

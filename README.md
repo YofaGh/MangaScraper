@@ -58,21 +58,18 @@
 
 ## Download a single manga
 >
-> When downloading a single manga using manga_single.py, the following informations should be provided:
->
-> - source of manga
-> - url of manga
-> - chapters you want to download(which can be set with [-a, -l, -r, -c] arguments)
->
+> When downloading a single manga using manga -single, a module and a url should be provided.  
+> You can specify which chapters to download using [-l, -r, -c] arguments.  
+> By default all chapters will be downloaded.  
 > Name of the Manga and merging args are optional  
 >
 > Examples:
 >
-> - all chapters: ```python cli.py manga -single attack-on-titan -s truemanga.com -a```  
+> - all chapters: ```python cli.py manga -single attack-on-titan -s truemanga.com```  
 > - chapters after a certian chapter: ```python cli.py manga -single attack-on-titan -s truemanga.com -l 52```  
 > - chapters between two chapters: ```python cli.py manga -single attack-on-titan -s truemanga.com -r 20 30```  
 > - specify chapters: ```python cli.py manga -single attack-on-titan -s truemanga.com -c 5 10 36```  
-> - e.g. ```python cli.py manga -single attack-on-titan -s truemanga.com -n "Attack on Titan" -a -m -p```
+> - e.g. ```python cli.py manga -single attack-on-titan -s truemanga.com -n "Attack on Titan" -m -p```
 
 ## Download mangas of a file
 >

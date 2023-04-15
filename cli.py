@@ -14,12 +14,10 @@ parser.add_argument('-n', action='store', metavar='str', help='specify a name')
 parser.add_argument('-m', action='store_true', help='if set, merges images vertically')
 parser.add_argument('-p', action='store_true', help='if set, converts images to a pdf file')
 parser.add_argument('-t', action=SetSleepTime, default=0.1, nargs=1, type=float, metavar='', help='set sleep time between requests')
-chapters = parser.add_argument_group('specify chapters')
+chapters = parser.add_argument_group('specify chapters').add_mutually_exclusive_group()
 chapters.add_argument('-c', action=CheckChapters, nargs='+', type=float, metavar='', help='specify chapters')
-single_manga_chapters = chapters.add_mutually_exclusive_group()
-single_manga_chapters.add_argument('-a', action='store_true', help='all chapters')
-single_manga_chapters.add_argument('-l', action=LastChapter, type=float, metavar='', help='chapters after the given chapter')
-single_manga_chapters.add_argument('-r', action=RangeOfChapters, nargs=2, type=float, metavar=('begin', 'end'), help='chapters between the given chapters')
+chapters.add_argument('-l', action=LastChapter, type=float, metavar='', help='chapters after the given chapter')
+chapters.add_argument('-r', action=RangeOfChapters, nargs=2, type=float, metavar=('begin', 'end'), help='chapters between the given chapters')
 search_args = parser.add_argument_group('customize search results')
 search_args.add_argument('-page-limit', action='store', default=1000, type=int, metavar='', help='specify how many pages should be searched')
 search_args.add_argument('-absolute', action='store_true', help='if set, checks that the name you searched should be in the title')
@@ -36,10 +34,8 @@ match args.task:
             from downloaders.manga_file import download_file
             download_file(args.file, args.t, args.m, args.p)
         elif args.single:
-            if not(args.c or args.r or args.a or args.l):
-                parser.error('please specify chapters using at least one these arguments: [c, r, l, a]')
             from downloaders.manga_single import download_single
-            download_single(args.n or args.single, args.single, args.s[0], args.t, args.a, args.l, args.r, args.c, args.m, args.p)
+            download_single(args.n or args.single, args.single, args.s[0], args.t, args.l, args.r, args.c, args.m, args.p)
         else:
             parser.error('please use one of the following arguments: [-single, -file]')
 
