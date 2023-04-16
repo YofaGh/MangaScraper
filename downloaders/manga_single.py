@@ -1,4 +1,4 @@
-import natsort, time, sys, os
+import time, sys, os
 from termcolor import colored
 from utils import assets, exceptions
 from requests.exceptions import RequestException, HTTPError, Timeout
@@ -11,7 +11,7 @@ def download_single(manga, url, source, sleep_time, last, ranged, chapters, merg
 
 def get_name_of_chapters(manga, url, source, last, ranged, c_chapters):
     ctd = []
-    sys.stdout.write(f'\r{manga}: Getting name of chapters...')
+    sys.stdout.write(f'\r{manga}: Getting chapters...')
     chapters = source.get_chapters(url)
     if last:
         reached_last_downloaded_chapter = False
@@ -38,9 +38,9 @@ def get_name_of_chapters(manga, url, source, last, ranged, c_chapters):
         renamed_chapters = [source.rename_chapter(str(c)) for c in c_chapters]
         ctd = [chapter for chapter in chapters if (source.rename_chapter(chapter) in renamed_chapters)]
     else:
-        ctd = chapters.copy()
-    print(f'\r{manga}: There are totally {len(ctd)} chapters to download.')
-    return sorted(ctd, key=lambda _: (source.rename_chapter, natsort.os_sorted))
+        ctd = chapters
+    print(f'\r{manga}: {len(ctd)} chapters to download.')
+    return ctd
 
 def download_manga(manga, url, source, sleep_time, chapters, merge, convert_to_pdf):
     inconsistencies = []
@@ -73,7 +73,7 @@ def download_manga(manga, url, source, sleep_time, chapters, merge, convert_to_p
                     try:
                         response = source.send_request(images[i])
                     except HTTPError:
-                        print(f'Could not download image {i+adder+1}: {images[i]}')
+                        print(f' Could not download image {i+adder+1}: {images[i]}')
                         continue
                     with open(f'{path}/{name}', 'wb') as image:
                         image.write(response.content)
