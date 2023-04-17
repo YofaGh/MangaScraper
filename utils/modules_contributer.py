@@ -15,6 +15,7 @@ from modules.Nyahentai import Nyahentai
 from modules.Readonepiece import Readonepiece
 from modules.Simplyhentai import Simplyhentai
 from modules.Truemanga import Truemanga
+from modules.Xoxocomics import Xoxocomics
 
 sources_dict = {
     'bibimanga.com': Bibimanga,
@@ -33,7 +34,8 @@ sources_dict = {
     'nyahentai.red': Nyahentai,
     'readonepiece.com': Readonepiece,
     'simplyhentai.org': Simplyhentai,
-    'truemanga.com': Truemanga
+    'truemanga.com': Truemanga,
+    'xoxocomics.com': Xoxocomics
 }
 
 def get_all_domains():

@@ -71,12 +71,10 @@ def download_manga(manga, url, source, sleep_time, chapters, merge, convert_to_p
                 if not os.path.exists(f'{path}/{name}'):
                     time.sleep(sleep_time)
                     try:
-                        response = source.send_request(images[i])
+                        source.download_image(images[i], path, name)
                     except HTTPError:
                         print(f' Could not download image {i+adder+1}: {images[i]}')
                         continue
-                    with open(f'{path}/{name}', 'wb') as image:
-                        image.write(response.content)
                     if not assets.validate_corrupted_image(f'{path}/{name}'):
                         print(colored(f' Warning: Image {i+adder+1} is corrupted. will not be able to merge this chapter', 'red'))
                         continue

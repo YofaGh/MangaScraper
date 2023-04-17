@@ -21,12 +21,10 @@ def download_doujin(code, source, sleep_time, merge, convert_to_pdf):
                 if not os.path.exists(save_path):
                     time.sleep(sleep_time)
                     try:
-                        response = source.send_request(images[i])
+                        source.download_image(images[i], fixed_doujin_name, f'{i+1:03d}.{images[i].split(".")[-1]}')
                     except HTTPError:
                         print(colored(f'Could not download image {i+1}: {images[i]}', 'red'))
                         continue
-                    with open(save_path, 'wb') as image:
-                        image.write(response.content)
                     if not assets.validate_corrupted_image(save_path):
                         print(colored(f' Warning: Image {i+1} is corrupted. will not be able to merge this chapter', 'red'))
                         continue

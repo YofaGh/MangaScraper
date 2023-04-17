@@ -2,9 +2,9 @@ import argparse, sys, os
 from utils.assets import SetSource, SetSleepTime, CheckChapters, LastChapter, RangeOfChapters
 
 parser = argparse.ArgumentParser(allow_abbrev=False)
-parser.add_argument('task', choices=['manga', 'doujin', 'merge', 'c2pdf', 'search', 'db'])
+parser.add_argument('task', choices=['manga', 'comic', 'doujin', 'merge', 'c2pdf', 'search', 'db'])
 type = parser.add_argument_group('download').add_mutually_exclusive_group()
-type.add_argument('-single', '-code', action='store', metavar='', help='url of the manga, or code of the doujin')
+type.add_argument('-single', '-code', action='store', metavar='', help='url of the manga/comic, or code of the doujin')
 type.add_argument('-file', action='store', metavar='', help='downloads everthing in given json file')
 mc_options = parser.add_argument_group('merge or convert').add_mutually_exclusive_group()
 mc_options.add_argument('-folder', action='store', metavar='', help='merges or converts images in given folder')
@@ -29,7 +29,7 @@ if (args.single or args.task == 'db') and (not args.s or len(args.s) > 1):
 os.system('color')
 
 match args.task:
-    case 'manga':
+    case 'manga' | 'comic':
         if args.file:
             from downloaders.manga_file import download_file
             download_file(args.file, args.t, args.m, args.p)
