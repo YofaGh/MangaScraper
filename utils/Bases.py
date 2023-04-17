@@ -1,9 +1,16 @@
-class Manga:
-    def get_chapters():
-        return []
+class Module:
+    def send_request(url):
+        import requests
+        response = requests.get(url)
+        response.raise_for_status()
+        return response
 
     def get_images():
         return [], False
+
+class Manga(Module):
+    def get_chapters():
+        return []
 
     def rename_chapter(chapter):
         if chapter in ['pass', None]:
@@ -24,16 +31,6 @@ class Manga:
         except:
             return f'Chapter {new_name.split(".", 1)[0].zfill(3)}.{new_name.split(".", 1)[1]}'
 
-class Doujin:
+class Doujin(Module):
     def get_title():
         return ''
-
-    def get_images():
-        return [], False
-
-class Req:
-    def send_request(url):
-        import requests
-        response = requests.get(url)
-        response.raise_for_status()
-        return response

@@ -10,7 +10,7 @@ def convert_folder(path_to_source, path_to_destination, pdf_name, name=None):
     assets.create_path(path_to_destination)
     sys.stdout.write(f'\r{name}: Converting to pdf...')
     images_path = assets.detect_images(path_to_source)
-    with open(f'{path_to_destination}/{pdf_name}', 'wb') as pdf_file:
+    with open(f'{path_to_destination}/{pdf_name}.pdf', 'wb') as pdf_file:
         pdf_file.write(img2pdf.convert(images_path))
     print(colored(f'\r{name}: Converted to pdf.      ', 'green'))
 
@@ -18,4 +18,4 @@ def convert_bulk(path_to_source, path_to_destination):
     import os
     sub_folders = os.listdir(path_to_source)
     for sub_folder in sub_folders:
-        convert_folder(f'{path_to_source}/{sub_folder}', path_to_destination, f'{path_to_source}_{sub_folder}.pdf', f'{path_to_source}: {sub_folder}')
+        convert_folder(f'{path_to_source}/{sub_folder}', path_to_destination, f'{path_to_source}_{sub_folder}', f'{path_to_source}: {sub_folder}')

@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
-from utils.Bases import Manga, Req
+from utils.Bases import Manga
 
-class Manga18fx(Manga, Req):
+class Manga18fx(Manga):
     def get_chapters(manga):
         response = Manga18fx.send_request(f'https://manga18fx.com/manga/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')

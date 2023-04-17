@@ -1,11 +1,11 @@
 import time
-from utils.Bases import Doujin, Req
+from utils.Bases import Doujin
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.service import Service
 
-class Hentaifox(Doujin, Req):
+class Hentaifox(Doujin):
     def get_title(code):
         response = Hentaifox.send_request(f'https://hentaifox.com/gallery/{code}')
         soup = BeautifulSoup(response.text, 'html.parser')

@@ -1,11 +1,11 @@
 from bs4 import BeautifulSoup
 from selenium import webdriver
-from utils.Bases import Manga, Req
+from utils.Bases import Manga
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.firefox.service import Service
 
-class Mangareader(Manga, Req):
+class Mangareader(Manga):
     def get_chapters(manga):
         response = Mangareader.send_request(f'https://mangareader.cc/manga/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')

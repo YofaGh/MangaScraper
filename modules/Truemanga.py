@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
-from utils.Bases import Manga, Req
+from utils.Bases import Manga
 
-class Truemanga(Manga, Req):
+class Truemanga(Manga):
     def get_chapters(manga):
         response = Truemanga.send_request(f'https://truemanga.com/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')

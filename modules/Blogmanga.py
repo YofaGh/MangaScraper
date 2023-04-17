@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
-from utils.Bases import Manga, Req
+from utils.Bases import Manga
 
-class Blogmanga(Manga, Req):
+class Blogmanga(Manga):
     def get_chapters(manga):
         from selenium import webdriver
         from selenium.webdriver.common.by import By

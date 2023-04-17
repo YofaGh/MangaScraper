@@ -89,7 +89,7 @@ def download_manga(manga, url, source, sleep_time, chapters, merge, convert_to_p
                 merge_folder(path, f'Merged/{path}', f'{manga}: {chapter}')
             if convert_to_pdf:
                 from utils.pdf_converter import convert_folder
-                convert_folder(path, fixed_manga, f'{manga}_{renamed_chapter}.pdf', f'{manga}: {chapter}')
+                convert_folder(path, fixed_manga, f'{manga}_{renamed_chapter}', f'{manga}: {chapter}')
         except (Timeout, HTTPError, exceptions.ImageMergerException, exceptions.PDFConverterException) as error:
             print(colored(error, 'red'))
         except RequestException:

@@ -1,9 +1,9 @@
 from bs4 import BeautifulSoup
 from selenium import webdriver
-from utils.Bases import Manga, Req
+from utils.Bases import Manga
 from selenium.webdriver.firefox.service import Service
 
-class Comics8Muses(Manga, Req):
+class Comics8Muses(Manga):
     def get_chapters(manga):
         page = 1
         chapters = []

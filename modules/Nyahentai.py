@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
-from utils.Bases import Doujin, Req
+from utils.Bases import Doujin
 
-class Nyahentai(Doujin, Req):
+class Nyahentai(Doujin):
     def get_title(code):
         response = Nyahentai.send_request(f'https://nyahentai.red/g/{code}')
         soup = BeautifulSoup(response.text, 'html.parser')

@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
-from utils.Bases import Doujin, Req
+from utils.Bases import Doujin
 
-class Simplyhentai(Doujin, Req):
+class Simplyhentai(Doujin):
     def get_title(code):
         response = Simplyhentai.send_request(f'https://simplyhentai.org/g/{code}')
         soup = BeautifulSoup(response.text, 'html.parser')
