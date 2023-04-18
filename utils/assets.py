@@ -9,11 +9,6 @@ class SetSource(argparse.Action):
             values = [get_class(value) for value in values]
         setattr(namespace, self.dest, values)
 
-class SetSleepTime(argparse.Action):
-    def __call__(self, parser, namespace, values, option_string=None):
-        values = values[0]
-        setattr(namespace, self.dest, values)
-
 class LastChapter(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
         if values < 0:
