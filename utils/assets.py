@@ -77,7 +77,8 @@ def validate_folder(path_to_folder):
 
 def create_folder(folder):
     import os
-    os.mkdir(folder) if not os.path.exists(folder) else None
+    if not os.path.exists(folder):
+        os.mkdir(folder)
 
 def create_path(path):
     import os
