@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-from utils.Bases import Doujin
+from utils.models import Doujin
 
 class Nhentai(Doujin):
     def get_title(code):

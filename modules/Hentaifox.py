@@ -1,5 +1,5 @@
 import time
-from utils.Bases import Doujin
+from utils.models import Doujin
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By

@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-from utils.Bases import Manga
+from utils.models import Manga
 
 class Manhuamanhwa(Manga):
     def get_chapters(manga):

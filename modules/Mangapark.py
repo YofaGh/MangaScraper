@@ -1,7 +1,7 @@
 import time
 from bs4 import BeautifulSoup
 from selenium import webdriver
-from utils.Bases import Manga
+from utils.models import Manga
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
