@@ -1,7 +1,7 @@
 # Manga/Manhua Scraper
 
-> - Download your favorite comics.
-> - Search between sources.
+> - Download your favorite Webtoons.
+> - Search between varoius websites.
 > - Merge downloaded chapters into one or two images.
 > - Convert downloaded chapters into PDF file.
 > - Search and find what you want.
@@ -53,7 +53,7 @@
 >
 > There are various modules implemented so far. They inherit from models.  
 > They're implemented differently based on the website's source code.  
-> In case if using custom user agents or cookies are needed, sending requests to the source is done dirctly by the source class itself.  
+> In case if using custom user agents or cookies are required, sending requests to the webiste is done dirctly by the module itself.  
 > To use them, they're imported in modules_contributer.py and can be accesed by get_class function.
 
 ## Download a single manga
