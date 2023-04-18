@@ -2,6 +2,9 @@ from bs4 import BeautifulSoup
 from utils.models import Manga
 
 class Coloredmanga(Manga):
+    def get_domain():
+        return 'coloredmanga.com'
+
     def get_chapters(manga):
         response = Coloredmanga.send_request(f'https://coloredmanga.com/mangas/{manga}/')
         soup = BeautifulSoup(response.text, 'html.parser')
@@ -51,7 +54,7 @@ class Coloredmanga(Manga):
                                 release_date = content.find('a').contents[0]
                     with suppress(Exception): latest_chapter = manga.find('span', {'class': 'font-meta chapter'}).find('a')['href'].split('/')[-2]
                     results[tilink.find('a').contents[0]] = {
-                        'domain': 'coloredmanga.com',
+                        'domain': Coloredmanga.get_domain(),
                         'url': tilink.find('a')['href'].replace('https://coloredmanga.com/mangas/','')[:-1],
                         'latest_chapter': latest_chapter,
                         'genres': genres,

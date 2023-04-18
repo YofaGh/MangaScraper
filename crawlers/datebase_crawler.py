@@ -2,12 +2,11 @@ import time, sys
 from termcolor import colored
 from requests.exceptions import Timeout
 from utils.assets import save_dict_to_file
-from utils.modules_contributer import get_domain
 from utils.exceptions import MissingFunctionException
 
 def crawl(source, sleep_time):
     try:
-        domain = get_domain(source)
+        domain = source.get_domain()
         if not hasattr(source, 'get_db'):
             raise MissingFunctionException(domain, 'get_db')
         results = {}

@@ -39,18 +39,10 @@ sources_dict = {
 def get_all_domains():
     return list(sources_dict.keys())
 
-def get_all_classes():
+def get_all_modules():
     return list(sources_dict.values())
 
-def get_domain(value):
-    for domain, source in sources_dict.items():
-        if source == value:
-            return domain
-    else:
-        from utils.exceptions import UnknownModuleException
-        raise UnknownModuleException(value)
-
-def get_class(key):
+def get_module(key):
     try:
         return sources_dict[key]
     except:

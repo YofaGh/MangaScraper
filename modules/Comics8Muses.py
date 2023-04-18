@@ -4,6 +4,9 @@ from utils.models import Manga
 from selenium.webdriver.firefox.service import Service
 
 class Comics8Muses(Manga):
+    def get_domain():
+        return 'comics.8muses.com'
+
     def get_chapters(manga):
         page = 1
         chapters = []
@@ -71,7 +74,7 @@ class Comics8Muses(Manga):
                 if not sublink:
                     links.append(url)
                     results[ti] = {
-                        'domain': 'comics.8muses.com',
+                        'domain': Comics8Muses.get_domain(),
                         'url': url,
                         'page': page
                     }
@@ -89,7 +92,7 @@ class Comics8Muses(Manga):
         urls = soup.find_all('loc')
         for url in urls:
             results[url.get_text().split('/')[-1].replace('-', ' ')] = {
-                'domain': 'comics.8muses.com',
+                'domain': Comics8Muses.get_domain(),
                 'url': url.get_text().replace('https://comics.8muses.com/comics/album/', '')
             }
         yield results

@@ -2,11 +2,11 @@ import argparse
 
 class SetSource(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
-        from utils.modules_contributer import get_all_classes, get_class
+        from utils.modules_contributer import get_all_modules, get_module
         if 'all' in values:
-            values = get_all_classes()
+            values = get_all_modules()
         else:
-            values = [get_class(value) for value in values]
+            values = [get_module(value) for value in values]
         setattr(namespace, self.dest, values)
 
 class LastChapter(argparse.Action):

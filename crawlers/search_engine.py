@@ -2,14 +2,13 @@ import time, sys
 from termcolor import colored
 from requests.exceptions import Timeout
 from utils.assets import save_dict_to_file
-from utils.modules_contributer import get_domain
 from utils.exceptions import MissingFunctionException
 
 def search(keyword, sources, sleep_time, absolute, limit_page):
     results = {}
     for source in sources:
         try:
-            domain = get_domain(source)
+            domain = source.get_domain()
             if not hasattr(source, 'search_by_keyword'):
                 raise MissingFunctionException(domain, 'search_by_keyword')
             search = source.search_by_keyword(keyword, absolute)

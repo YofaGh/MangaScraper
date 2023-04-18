@@ -1,6 +1,6 @@
 import natsort, sys
 from termcolor import colored
-from utils.modules_contributer import get_class
+from utils.modules_contributer import get_module
 from utils.exceptions import MissingModuleException
 from utils.assets import save_dict_to_file, load_dict_from_file
 
@@ -17,7 +17,7 @@ def get_name_of_chapters(json_file):
         manga = mangas[valid_manga]
         sys.stdout.write(f'\r{valid_manga}: Getting chapters...')
         if manga['last_downloaded_chapter'] != 'pass':
-            chapters = get_class(manga['domain']).get_chapters(manga['url'])
+            chapters = get_module(manga['domain']).get_chapters(manga['url'])
             if manga['last_downloaded_chapter'] is None:
                 manga['chapters'] += [chapter for chapter in chapters if chapter not in manga['chapters']]
             else:
@@ -28,7 +28,7 @@ def get_name_of_chapters(json_file):
                         continue
                     if reached_last_downloaded_chapter and chapter not in manga['chapters']:
                         manga['chapters'].append(chapter)
-        manga['chapters'] = sorted(manga['chapters'], key=lambda _: (get_class(manga['domain']).rename_chapter, natsort.os_sorted))
+        manga['chapters'] = sorted(manga['chapters'], key=lambda _: (get_module(manga['domain']).rename_chapter, natsort.os_sorted))
         print(f'\r{valid_manga}: {len(manga["chapters"])} chapters to download.')
     save_dict_to_file(json_file, mangas)
 
@@ -41,7 +41,7 @@ def download_mangas(json_file, sleep_time, merge, convert_to_pdf):
         try:
             while len(mangas[manga]['chapters']) > 0:
                 chapter = mangas[manga]['chapters'][0]
-                source = get_class(mangas[manga]['domain'])
+                source = get_module(mangas[manga]['domain'])
                 ics = download_manga(manga, mangas[manga]['url'], source, sleep_time, [chapter], merge, convert_to_pdf)
                 inconsistencies += ics
                 if source.rename_chapter(chapter) > source.rename_chapter(mangas[manga]['last_downloaded_chapter']):

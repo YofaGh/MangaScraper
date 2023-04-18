@@ -1,4 +1,7 @@
 class Module:
+    def get_domain():
+        return ''
+
     def send_request(url):
         import requests
         response = requests.get(url)

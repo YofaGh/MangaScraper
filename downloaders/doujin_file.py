@@ -1,5 +1,5 @@
 from termcolor import colored
-from utils.modules_contributer import get_class
+from utils.modules_contributer import get_module
 from utils.exceptions import MissingModuleException
 from downloaders.doujin_single import download_doujin
 from utils.assets import save_dict_to_file, load_dict_from_file
@@ -9,7 +9,7 @@ def download_doujins(json_file, sleep_time, merge, convert_to_pdf):
     valid_doujins = [doujin for (doujin, detm) in doujins.items() if detm['codes']]
     for doujin in valid_doujins:
         try:
-            source = get_class(doujin)
+            source = get_module(doujin)
             i = 0
             while len(doujins[doujin]['codes']) - i > 0:
                 code = doujins[doujin]['codes'][i]

@@ -10,12 +10,6 @@ class MissingModuleException(Exception):
         self.message = f'No module found for the given domain: {self.domain}'
         super(MissingModuleException, self).__init__(self.message)
 
-class UnknownModuleException(Exception):
-    def __init__(self, module):
-        self.module = module
-        self.message = f'No domain found for the given module: {self.module}'
-        super(UnknownModuleException, self).__init__(self.message)
-
 class ImageMergerException(Exception):
     def __init__(self, message):
         self.message = message

@@ -2,6 +2,9 @@ from bs4 import BeautifulSoup
 from utils.models import Doujin
 
 class Hentaifox(Doujin):
+    def get_domain():
+        return 'hentaifox.com'
+
     def get_title(code):
         response = Hentaifox.send_request(f'https://hentaifox.com/gallery/{code}')
         soup = BeautifulSoup(response.text, 'html.parser')
@@ -36,7 +39,7 @@ class Hentaifox(Doujin):
                     if absolute and keyword.lower() not in ti.lower():
                         continue
                     results[ti] = {
-                        'domain': 'hentaifox.com',
+                        'domain': Hentaifox.get_domain(),
                         'code': caption.find('a')['href'].split('/')[-2],
                         'category': doujin.find('a', {'class':'t_cat'}).contents[0],
                         'page': page
@@ -71,7 +74,7 @@ class Hentaifox(Doujin):
                         caption = doujin.find('div', {'class': 'caption'})
                         ti = caption.find('a').contents[0]
                         results[ti] = {
-                            'domain': 'hentaifox.com',
+                            'domain': Hentaifox.get_domain(),
                             'code': caption.find('a')['href'].split('/')[-2],
                             'category': doujin.find('a', {'class':'t_cat'}).contents[0]
                         }

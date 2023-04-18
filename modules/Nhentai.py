@@ -2,6 +2,9 @@ from bs4 import BeautifulSoup
 from utils.models import Doujin
 
 class Nhentai(Doujin):
+    def get_domain():
+        return 'nhentai.xxx'
+
     def get_title(code):
         response = Nhentai.send_request(f'https://nhentai.xxx/g/{code}')
         soup = BeautifulSoup(response.text, 'html.parser')
@@ -38,7 +41,7 @@ class Nhentai(Doujin):
                     if absolute and keyword.lower() not in ti.lower():
                         continue
                     results[ti] = {
-                        'domain': 'nhentai.xxx',
+                        'domain': Nhentai.get_domain(),
                         'code': doj['href'].split('/')[-2],
                         'page': page
                     }

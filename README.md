@@ -45,7 +45,7 @@
 > - change the time sleep between each request.
 > - merge images of a single folder or subfolders of a folder.
 > - convert images of a single folder or subfolders of a folder to pdf file.
-> - search in websites using implemented modules
+> - search in websites using implemented modules.
 > - set the chapter numbers to download when downloading a single manga.
 > - you can use -t argument to set the sleep time between each request. the default is 0.1 sec.
 
@@ -54,14 +54,14 @@
 > There are various modules implemented so far. They inherit from models.  
 > They're implemented differently based on the website's source code.  
 > In case if using custom user agents or cookies are required, sending requests to the webiste is done dirctly by the module itself.  
-> To use them, they're imported in modules_contributer.py and can be accesed by get_class function.
+> To use them, they're imported in modules_contributer.py and can be accesed by get_module function.  
 
 ## Download a single manga
 >
 > When downloading a single manga using manga -single, a module and a url should be provided.  
 > You can specify which chapters to download using [-l, -r, -c] arguments.  
 > By default all chapters will be downloaded.  
-> Name of the Manga and merging args are optional  
+> Name of the Manga and merging args are optional.  
 >
 > Examples:
 >

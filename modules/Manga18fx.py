@@ -2,6 +2,9 @@ from bs4 import BeautifulSoup
 from utils.models import Manga
 
 class Manga18fx(Manga):
+    def get_domain():
+        return 'manga18fx.com'
+
     def get_chapters(manga):
         response = Manga18fx.send_request(f'https://manga18fx.com/manga/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
@@ -38,7 +41,7 @@ class Manga18fx(Manga):
                     link = contents[0]['href'].split('/')[-1]
                     latest_chapter = contents[1]['href'].split('/')[-1]
                     results[ti] = {
-                        'domain': 'bibimanga.com',
+                        'domain': Manga18fx.get_domain(),
                         'url': link,
                         'latest_chapter': latest_chapter,
                         'page': page
