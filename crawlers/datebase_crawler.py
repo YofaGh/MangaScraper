@@ -6,15 +6,14 @@ from utils.exceptions import MissingFunctionException
 
 def crawl(source, sleep_time):
     try:
-        domain = source.get_domain()
         if not hasattr(source, 'get_db'):
-            raise MissingFunctionException(domain, 'get_db')
+            raise MissingFunctionException(source.domain, 'get_db')
         results = {}
         search = source.get_db()
         page = 1
         while True:
             try:
-                sys.stdout.write(f'\r{domain}: Crawling page {page}...')
+                sys.stdout.write(f'\r{source.domain}: Crawling page {page}...')
                 last = next(search)
                 if len(last) == 0:
                     break
@@ -25,10 +24,10 @@ def crawl(source, sleep_time):
                 print(colored(error, 'red'))
                 break
             except Exception as error:
-                print(colored(f'\r{domain}: Failed to crawl: {error}', 'red'))
+                print(colored(f'\r{source.domain}: Failed to crawl: {error}', 'red'))
                 break
-        print(colored(f'\r{domain}: {len(results)} results were crawled from {page-1} pages.', 'green' if len(results) > 0 else 'yellow'))
-        save_dict_to_file(f'{domain}_database.json', results)
-        print(colored(f'\r{domain}: Results were saved to {domain}_database.json', 'green'))
+        print(colored(f'\r{source.domain}: {len(results)} results were crawled from {page-1} pages.', 'green' if len(results) > 0 else 'yellow'))
+        save_dict_to_file(f'{source.domain}_database.json', results)
+        print(colored(f'\r{source.domain}: Results were saved to {source.domain}_database.json', 'green'))
     except MissingFunctionException as error:
         print(colored(error, 'red'))

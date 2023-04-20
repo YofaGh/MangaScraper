@@ -2,8 +2,7 @@ from bs4 import BeautifulSoup
 from utils.models import Manga
 
 class Truemanga(Manga):
-    def get_domain():
-        return 'truemanga.com'
+    domain = 'truemanga.com'
 
     def get_chapters(manga):
         response = Truemanga.send_request(f'https://truemanga.com/{manga}')
@@ -44,7 +43,7 @@ class Truemanga(Manga):
                         genres = ', '.join([genre.contents[0] for genre in genres])
                     with suppress(Exception): summary = manga.find('div', {'class': 'summary'}).find('p').contents[0]
                     results[ti] = {
-                        'domain': Truemanga.get_domain(),
+                        'domain': Truemanga.domain,
                         'url': manga.find('div', {'class': 'title'}).find('a')['href'].split('/')[-1],
                         'latest_chapter': latest_chapter,
                         'genres': genres,

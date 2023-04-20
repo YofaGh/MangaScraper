@@ -2,8 +2,7 @@ from bs4 import BeautifulSoup
 from utils.models import Manga
 
 class Manga18h(Manga):
-    def get_domain():
-        return 'manga18h.com'
+    domain = 'manga18h.com'
 
     def get_chapters(manga):
         response = Manga18h.send_request(f'https://manga18h.com/manga/{manga}')
@@ -50,7 +49,7 @@ class Manga18h(Manga):
                                 status = content.find('div', {'class': 'summary-content'}).contents[0].replace('\n', '').replace(' ', '').replace('\t', '')
                     with suppress(Exception): latest_chapter = manga.find('span', {'class': 'font-meta chapter'}).find('a')['href'].split('/')[-2]
                     results[ti] = {
-                        'domain': Manga18h.get_domain(),
+                        'domain': Manga18h.domain,
                         'url': link,
                         'latest_chapter': latest_chapter,
                         'genres': genres,

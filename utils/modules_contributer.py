@@ -5,9 +5,11 @@ from modules.Comics8Muses import Comics8Muses
 from modules.Hentaifox import Hentaifox
 from modules.Manga18fx import Manga18fx
 from modules.Manga18h import Manga18h
+from modules.Mangaforfree import Mangaforfree
 from modules.Mangapark import Mangapark
 from modules.Mangareader import Mangareader
 from modules.Manhuamanhwa import Manhuamanhwa
+from modules.Manhuamix import Manhuamix
 from modules.Manhuascan import Manhuascan
 from modules.Manhwa18 import Manhwa18
 from modules.Nhentai import Nhentai
@@ -24,9 +26,11 @@ sources_dict = {
     'hentaifox.com': Hentaifox,
     'manga18fx.com': Manga18fx,
     'manga18h.com': Manga18h,
+    'mangaforfree.net': Mangaforfree,
     'mangapark.to': Mangapark,
     'mangareader.cc': Mangareader,
     'manhuamanhwa.com': Manhuamanhwa,
+    'manhuamix.com': Manhuamix,
     'manhuascan.us': Manhuascan,
     'manhwa18.com': Manhwa18,
     'nhentai.xxx': Nhentai,

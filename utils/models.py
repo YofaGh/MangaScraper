@@ -1,6 +1,5 @@
 class Module:
-    def get_domain():
-        return ''
+    domain = ''
 
     def send_request(url):
         import requests

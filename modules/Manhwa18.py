@@ -2,8 +2,7 @@ from bs4 import BeautifulSoup
 from utils.models import Manga
 
 class Manhwa18(Manga):
-    def get_domain():
-        return 'manhwa18.com'
+    domain = 'manhwa18.com'
 
     def get_chapters(manga):
         response = Manhwa18.send_request(f'https://manhwa18.com/manga/{manga}')
@@ -36,7 +35,7 @@ class Manhwa18(Manga):
                     if absolute and keyword.lower() not in ti.lower():
                         continue
                     results[ti] = {
-                        'domain': Manhwa18.get_domain(),
+                        'domain': Manhwa18.domain,
                         'url': manga.find('a')['href'].split('/')[-1],
                         'latest_chapter': manga.find('div', {'class': 'thumb-detail'}).find('a')['href'].split('/')[-1],
                         'page': page

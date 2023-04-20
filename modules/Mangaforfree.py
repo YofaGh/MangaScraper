@@ -1,25 +1,32 @@
 from bs4 import BeautifulSoup
 from utils.models import Manga
 
-class Coloredmanga(Manga):
-    domain = 'coloredmanga.com'
+class Mangaforfree(Manga):
+    domain = 'mangaforfree.net'
 
     def get_chapters(manga):
-        response = Coloredmanga.send_request(f'https://coloredmanga.com/mangas/{manga}/')
-        soup = BeautifulSoup(response.text, 'html.parser')
-        divs = soup.find_all('li', {'class':'wp-manga-chapter'})
-        chapters = [div.find('a')['href'].replace(f'https://coloredmanga.com/mangas/{manga}/', '')[:-1] for div in divs[::-1]]
+        from selenium import webdriver
+        from selenium.webdriver.common.by import By
+        from selenium.webdriver.firefox.service import Service
+        from selenium.webdriver.support.ui import WebDriverWait
+        from selenium.webdriver.support import expected_conditions as ec
+        options = webdriver.FirefoxOptions()
+        options.add_argument('--headless')
+        service = Service(executable_path='geckodriver.exe', log_path='NUL')
+        browser = webdriver.Firefox(options=options, service=service)
+        browser.get(f'https://mangaforfree.net/manga/{manga}')
+        WebDriverWait(browser, 60).until(ec.presence_of_element_located((By.XPATH, '//li[@class="wp-manga-chapter  "]')))
+        soup = BeautifulSoup(browser.page_source, 'html.parser')
+        divs = soup.find_all('li', {'class': 'wp-manga-chapter'})
+        chapters = [div.find('a')['href'].split('/')[-2] for div in divs[::-1]]
         return chapters
 
     def get_images(manga, chapter):
-        response = Coloredmanga.send_request(f'https://coloredmanga.com/mangas/{manga}/{chapter}/')
+        response = Mangaforfree.send_request(f'https://mangaforfree.net/manga/{manga}/{chapter}/')
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'class': 'reading-content'}).find_all('img')
         images = [image['src'].strip() for image in images]
-        save_names = []
-        for i in range(len(images)):
-            save_names.append(f'{i+1:03d}.{images[i].split(".")[-1]}')
-        return images, save_names
+        return images, False
 
     def search_by_keyword(keyword, absolute):
         from utils.assets import waiter
@@ -28,19 +35,20 @@ class Coloredmanga(Manga):
         page = 1
         while True:
             try:
-                response = Coloredmanga.send_request(f'https://coloredmanga.com/page/{page}/?s={keyword}&post_type=wp-manga')
+                response = Mangaforfree.send_request(f'https://mangaforfree.net/page/{page}?s={keyword}&post_type=wp-manga')
                 soup = BeautifulSoup(response.text, 'html.parser')
                 mangas = soup.find_all('div', {'class': 'row c-tabs-item__content'})
                 results = {}
                 for manga in mangas:
-                    tilink = manga.find('div', {'class', 'post-title'})
-                    if absolute and keyword.lower() not in manga.find('a')['href']:
+                    ti = manga.find('div', {'class': 'tab-thumb c-image-hover'}).find('a')['title']
+                    if absolute and keyword.lower() not in ti.lower():
                         continue
-                    latest_chapter, authors, artists, genres, status, release_date = '', '', '', '', '', ''
+                    link = manga.find('div', {'class': 'tab-thumb c-image-hover'}).find('a')['href'].split('/')[-2]
+                    latest_chapter, genres, authors, artists, status = '', '', '', '', ''
                     contents = manga.find_all('div', {'class': 'post-content_item'})
                     for content in contents:
                         with suppress(Exception):
-                            head = content.find('h5').contents[0].replace('\n', '').replace(' ', '')
+                            head = content.find('h5').contents[0].replace('\n', '').replace(' ', '').replace('\t', '')
                             if head == 'Authors':
                                 authors = ', '.join([a.contents[0] for a in content.find_all('a')])
                             if head == 'Artists':
@@ -48,19 +56,16 @@ class Coloredmanga(Manga):
                             if head == 'Genres':
                                 genres = ', '.join([a.contents[0] for a in content.find_all('a')])
                             if head == 'Status':
-                                status = content.find('div', {'class': 'summary-content'}).contents[0].replace('\n', '').replace(' ', '')
-                            if head == 'Release':
-                                release_date = content.find('a').contents[0]
+                                status = content.find('div', {'class': 'summary-content'}).contents[0].replace('\n', '').replace(' ', '').replace('\t', '')
                     with suppress(Exception): latest_chapter = manga.find('span', {'class': 'font-meta chapter'}).find('a')['href'].split('/')[-2]
-                    results[tilink.find('a').contents[0]] = {
-                        'domain': Coloredmanga.domain,
-                        'url': tilink.find('a')['href'].replace('https://coloredmanga.com/mangas/','')[:-1],
+                    results[ti] = {
+                        'domain': Mangaforfree.domain,
+                        'url': link,
                         'latest_chapter': latest_chapter,
                         'genres': genres,
                         'authors': authors,
                         'artists': artists,
                         'status': status,
-                        'release_date': release_date,
                         'page': page
                     }
                 yield results
@@ -73,28 +78,24 @@ class Coloredmanga(Manga):
                 waiter()
 
     def get_db():
-        return Coloredmanga.search_by_keyword('', False)
+        return Mangaforfree.search_by_keyword('', False)
 
     def rename_chapter(chapter):
         if chapter in ['pass', None]:
             return ''
-        beginner = 'Chapter'
-        if 'volume' in chapter:
-            beginner = 'Volume'
-        elif 'number' in chapter:
-            beginner = 'Number'
+        tail = ' Raw' if 'raw' in chapter else ''
         new_name = ''
         reached_number = False
         for ch in chapter:
             if ch.isdigit():
                 new_name += ch
                 reached_number = True
-            elif ch in '-._' and reached_number and new_name[-1] != '.':
+            elif ch in '-.' and reached_number and new_name[-1] != '.':
                 new_name += '.'
         if not reached_number:
             return chapter
         new_name = new_name[:-1] if new_name[-1] == '.' else new_name
         try:
-            return f'{beginner} {int(new_name):03d}'
+            return f'Chapter {int(new_name):03d}{tail}'
         except:
-            return f'{beginner} {new_name.split(".", 1)[0].zfill(3)}.{new_name.split(".", 1)[1]}'
+            return f'Chapter {new_name.split(".", 1)[0].zfill(3)}.{new_name.split(".", 1)[1]}{tail}'

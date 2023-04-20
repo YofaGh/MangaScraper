@@ -8,8 +8,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 
 class Mangapark(Manga):
-    def get_domain():
-        return 'mangapark.to'
+    domain = 'mangapark.to'
 
     def get_chapters(manga):
         options = webdriver.FirefoxOptions()
@@ -76,7 +75,7 @@ class Mangapark(Manga):
                 with suppress(Exception):
                     latest_chapter = div.find('div', {'class': 'flex justify-between text-sm flex-wrap'}).find('a')['href'].split('/')[-1]
                 results[ti.contents[0]] = {
-                    'domain': Mangapark.get_domain(),
+                    'domain': Mangapark.domain,
                     'url': ti['href'].split('/')[-1],
                     'genres': genres,
                     'latest_chapter': latest_chapter,

@@ -6,8 +6,7 @@ from selenium.webdriver.support.ui import Select
 from selenium.webdriver.firefox.service import Service
 
 class Mangareader(Manga):
-    def get_domain():
-        return 'mangareader.cc'
+    domain = 'mangareader.cc'
 
     def get_chapters(manga):
         response = Mangareader.send_request(f'https://mangareader.cc/manga/{manga}')
@@ -47,7 +46,7 @@ class Mangareader(Manga):
                     if absolute and keyword.lower() not in ti.lower():
                         continue
                     results[ti] = {
-                        'domain': Mangareader.get_domain(),
+                        'domain': Mangareader.domain,
                         'url': manga.find('a')['href'].split('/')[-1],
                         'page': page
                     }

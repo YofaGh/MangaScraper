@@ -2,8 +2,7 @@ from bs4 import BeautifulSoup
 from utils.models import Manga
 
 class Readonepiece(Manga):
-    def get_domain():
-        return 'readonepiece.com'
+    domain = 'readonepiece.com'
 
     def get_chapters(manga):
         response = Readonepiece.send_request(f'https://ww9.readonepiece.com/manga/{manga}/')

@@ -1,8 +1,8 @@
 from bs4 import BeautifulSoup
 from utils.models import Manga
 
-class Manhuamanhwa(Manga):
-    domain = 'manhuamanhwa.com'
+class Manhuamix(Manga):
+    domain = 'manhuamix.com'
 
     def get_chapters(manga):
         from selenium import webdriver
@@ -14,18 +14,18 @@ class Manhuamanhwa(Manga):
         options.add_argument('--headless')
         service = Service(executable_path='geckodriver.exe', log_path='NUL')
         browser = webdriver.Firefox(options=options, service=service)
-        browser.get(f'https://manhuamanhwa.com/manga/{manga}/')
+        browser.get(f'https://manhuamix.com/manhua/{manga}')
         WebDriverWait(browser, 60).until(ec.presence_of_element_located((By.XPATH, '//li[@class="wp-manga-chapter    "]')))
         soup = BeautifulSoup(browser.page_source, 'html.parser')
-        divs = soup.find_all('li', {'class':'wp-manga-chapter'})
+        divs = soup.find_all('li', {'class': 'wp-manga-chapter'})
         chapters = [div.find('a')['href'].split('/')[-2] for div in divs[::-1]]
         return chapters
 
     def get_images(manga, chapter):
-        response = Manhuamanhwa.send_request(f'https://manhuamanhwa.com/manga/{manga}/{chapter}/')
+        response = Manhuamix.send_request(f'https://manhuamix.com/manhua/{manga}/{chapter}/')
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'class': 'reading-content'}).find_all('img')
-        images = [image['data-src'] for image in images]
+        images = [image['src'].strip() for image in images]
         return images, False
 
     def search_by_keyword(keyword, absolute):
@@ -35,7 +35,7 @@ class Manhuamanhwa(Manga):
         page = 1
         while True:
             try:
-                response = Manhuamanhwa.send_request(f'https://manhuamanhwa.com/page/{page}?s={keyword}&post_type=wp-manga')
+                response = Manhuamix.send_request(f'https://manhuamix.com/page/{page}?s={keyword}&post_type=wp-manga')
                 soup = BeautifulSoup(response.text, 'html.parser')
                 mangas = soup.find_all('div', {'class': 'row c-tabs-item__content'})
                 results = {}
@@ -48,7 +48,7 @@ class Manhuamanhwa(Manga):
                     contents = manga.find_all('div', {'class': 'post-content_item'})
                     for content in contents:
                         with suppress(Exception):
-                            head = content.find('h5').contents[0].replace('\n', '').replace(' ', '')
+                            head = content.find('h5').contents[0].replace('\n', '').replace(' ', '').replace('\t', '')
                             if head == 'Authors':
                                 authors = ', '.join([a.contents[0] for a in content.find_all('a')])
                             if head == 'Artists':
@@ -56,10 +56,10 @@ class Manhuamanhwa(Manga):
                             if head == 'Genres':
                                 genres = ', '.join([a.contents[0] for a in content.find_all('a')])
                             if head == 'Status':
-                                status = content.find('div', {'class': 'summary-content'}).contents[0].replace('\n', '').replace(' ', '')
+                                status = content.find('div', {'class': 'summary-content'}).contents[0].replace('\n', '').replace(' ', '').replace('\t', '')
                     with suppress(Exception): latest_chapter = manga.find('span', {'class': 'font-meta chapter'}).find('a')['href'].split('/')[-2]
                     results[ti] = {
-                        'domain': Manhuamanhwa.domain,
+                        'domain': Manhuamix.domain,
                         'url': link,
                         'latest_chapter': latest_chapter,
                         'genres': genres,
@@ -78,4 +78,4 @@ class Manhuamanhwa(Manga):
                 waiter()
 
     def get_db():
-        return Manhuamanhwa.search_by_keyword('', False)
+        return Manhuamix.search_by_keyword('', False)
