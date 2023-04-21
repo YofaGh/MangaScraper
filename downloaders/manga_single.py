@@ -59,15 +59,15 @@ def download_manga(manga, url, source, sleep_time, chapters, merge, convert_to_p
             adder = 0
             for i in range(len(images)):
                 sys.stdout.write(f'\r{manga}: {chapter}: Downloading image {i+adder+1}/{len(images)+adder}...')
-                if not save_names:
+                if save_names:
+                    name = save_names[i]
+                else:
                     if f'{i+adder+1}' not in images[i].split('/')[-1]:
                         adder += 1
                         inconsistencies.append(f'{manga}/{chapter}/{i+adder:03d}.{images[i].split(".")[-1]}')
                         print(colored(f' Warning: Inconsistency in order of images!!!. Skipped image {i + adder}', 'red'))
-                        sys.stdout.write(f'\r{manga}: {chapter}: Downloading  image {i+adder+1}/{len(images)+adder}...')
+                        sys.stdout.write(f'\r{manga}: {chapter}: Downloading image {i+adder+1}/{len(images)+adder}...')
                     name = f'{i+adder+1:03d}.{images[i].split(".")[-1]}'
-                else:
-                    name = save_names[i]
                 if not os.path.exists(f'{path}/{name}'):
                     time.sleep(sleep_time)
                     try:
