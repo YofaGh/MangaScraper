@@ -8,12 +8,12 @@ def crawl(source, sleep_time):
         if not hasattr(source, 'get_db'):
             raise MissingFunctionException(source.domain, 'get_db')
         results = {}
-        search = source.get_db()
+        crawler = source.get_db()
         page = 1
         while True:
             try:
                 sys.stdout.write(f'\r{source.domain}: Crawling page {page}...')
-                last = next(search)
+                last = next(crawler)
                 if len(last) == 0:
                     break
                 results.update(last)
