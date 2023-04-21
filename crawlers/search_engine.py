@@ -1,6 +1,5 @@
 import time, sys
 from termcolor import colored
-from requests.exceptions import Timeout
 from utils.assets import save_dict_to_file
 from utils.exceptions import MissingFunctionException
 
@@ -23,9 +22,6 @@ def search(keyword, sources, sleep_time, absolute, limit_page):
                     page += 1
                     if page < limit_page:
                         time.sleep(sleep_time)
-                except Timeout as error:
-                    print(colored(error, 'red'))
-                    break
                 except Exception as error:
                     print(colored(f'\r{source.domain}: Failed to search: {error}', 'red'))
                     break

@@ -1,6 +1,5 @@
 import time, sys
 from termcolor import colored
-from requests.exceptions import Timeout
 from utils.assets import save_dict_to_file
 from utils.exceptions import MissingFunctionException
 
@@ -20,9 +19,6 @@ def crawl(source, sleep_time):
                 results.update(last)
                 page += 1
                 time.sleep(sleep_time)
-            except Timeout as error:
-                print(colored(error, 'red'))
-                break
             except Exception as error:
                 print(colored(f'\r{source.domain}: Failed to crawl: {error}', 'red'))
                 break
