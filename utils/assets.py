@@ -60,8 +60,8 @@ def load_dict_from_file(file_name):
 
 def save_dict_to_file(file_name, content):
     import json
-    with open(file_name, 'w') as output:
-        output.write(json.dumps(content, indent=4))
+    with open(file_name, 'w', encoding='utf8') as output:
+        json.dump(content, output, indent=4, ensure_ascii=False)
 
 def validate_folder(path_to_folder):
     images_path = detect_images(path_to_folder)
