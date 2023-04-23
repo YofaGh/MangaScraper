@@ -9,6 +9,7 @@ type.add_argument('-file', help='downloads everthing in given json file')
 mc_options = parser.add_argument_group('merge or convert').add_mutually_exclusive_group()
 mc_options.add_argument('-folder', help='merges or converts images in given folder')
 mc_options.add_argument('-bulk', help='merges or converts images of folders in the given folder')
+mc_options.add_argument('-bulkone', help='converts images of folders in the given folder into one pdf file')
 parser.add_argument('-s', action=SetSource, nargs='+', metavar='sources', help='specify domains to scrape from')
 parser.add_argument('-n', metavar='str', help='specify a name')
 parser.add_argument('-m', action='store_true', help='if set, merges images vertically')
@@ -68,6 +69,9 @@ match args.task:
         elif args.bulk:
             from utils.pdf_converter import convert_bulk
             convert_bulk(args.bulk, args.bulk)
+        elif args.bulkone:
+            from utils.pdf_converter import convert_bulkone
+            convert_bulkone(args.bulkone, args.bulkone)
         else:
             print('please set one of the following arguments: [-folder, -bulk]')
 

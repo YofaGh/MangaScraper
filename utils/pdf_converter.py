@@ -20,3 +20,19 @@ def convert_bulk(path_to_source, path_to_destination):
     sub_folders = os.listdir(path_to_source)
     for sub_folder in sub_folders:
         convert_folder(f'{path_to_source}/{sub_folder}', path_to_destination, f'{path_to_source}_{sub_folder}', f'{path_to_source}: {sub_folder}')
+
+def convert_bulkone(path_to_source, path_to_destination):
+    import os
+    sub_folders = os.listdir(path_to_source)
+    images = []
+    sys.stdout.write(f'\r{path_to_source}: Detecting images...')
+    for sub_folder in sub_folders:
+        if not assets.validate_folder(f'{path_to_source}/{sub_folder}'):
+            print(colored(f'\rFailed to convert {path_to_source}/{sub_folder} because of a corrupted image.', 'red'))
+            return
+        images_path = assets.detect_images(f'{path_to_source}/{sub_folder}')
+        images += images_path
+    sys.stdout.write(f'\r{path_to_source}: Creating pdf...    ')
+    with open(f'{path_to_destination}/{path_to_source}.pdf', 'wb') as pdf_file:
+        pdf_file.write(img2pdf.convert(images))
+    print(colored(f'\r{path_to_source}: Converted all subfolders to one pdf.      ', 'green'))
