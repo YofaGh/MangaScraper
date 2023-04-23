@@ -26,7 +26,10 @@ class Sarrast(Manga):
         soup = BeautifulSoup(browser.page_source, 'html.parser')
         images = soup.find('div', {'class': 'episode w-full flex flex-col items-center'}).find_all('img')
         images = [f'https://sarrast.com{image["src"]}' for image in images]
-        return images, False
+        save_names = []
+        for i in range(len(images)):
+            save_names.append(f'{i+1:03d}.{images[i].split(".")[-1]}')
+        return images, save_names
 
     def search_by_keyword(keyword, absolute):
         import json
