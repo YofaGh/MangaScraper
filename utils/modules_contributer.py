@@ -15,6 +15,7 @@ from modules.Manhwa18 import Manhwa18
 from modules.Nhentai import Nhentai
 from modules.Nyahentai import Nyahentai
 from modules.Readonepiece import Readonepiece
+from modules.Sarrast import Sarrast
 from modules.Simplyhentai import Simplyhentai
 from modules.Truemanga import Truemanga
 
@@ -36,6 +37,7 @@ sources_dict = {
     'nhentai.xxx': Nhentai,
     'nyahentai.red': Nyahentai,
     'readonepiece.com': Readonepiece,
+    'sarrast.com': Sarrast,
     'simplyhentai.org': Simplyhentai,
     'truemanga.com': Truemanga
 }
