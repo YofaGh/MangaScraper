@@ -15,7 +15,8 @@ def download_doujin(code, source, sleep_time, merge, convert_to_pdf):
             sys.stdout.write(f'\r{shorten_doujin_title}: Creating folder...')
             fixed_doujin_name = assets.fix_name_for_folder(doujin_title)
             assets.create_folder(fixed_doujin_name)
-            for i in range(len(images)):
+            i = 0
+            while i < len(images):
                 sys.stdout.write(f'\r{shorten_doujin_title}: Downloading image {i+1}/{len(images)}...')
                 save_path = f'{fixed_doujin_name}/{i+1:03d}.{images[i].split(".")[-1]}'
                 if not os.path.exists(save_path):
@@ -23,7 +24,7 @@ def download_doujin(code, source, sleep_time, merge, convert_to_pdf):
                     try:
                         response = source.send_request(images[i])
                     except HTTPError:
-                        print(colored(f'Could not download image {i+1}: {images[i]}', 'red'))
+                        print(colored(f' Warning: Could not download image {i+1}: {images[i]}', 'red'))
                         continue
                     with open(save_path, 'wb') as image:
                         image.write(response.content)
@@ -31,7 +32,11 @@ def download_doujin(code, source, sleep_time, merge, convert_to_pdf):
                         print(colored(f' Warning: Image {i+1} is corrupted. will not be able to merge this chapter', 'red'))
                         continue
                     if not assets.validate_truncated_image(save_path) and last_truncated != save_path:
-                        raise exceptions.TruncatedException(save_path)
+                        last_truncated = save_path
+                        os.remove(save_path)
+                        print(colored(f' Warning: Image {i+1} was truncated. trying to download it one more time...', 'red'))
+                        i -= 1
+                i += 1
             print(colored(f'\r{shorten_doujin_title}: Finished downloading, {len(images)} images were downloaded.', 'green'))
             if merge:
                 from utils.image_merger import merge_folder
@@ -45,7 +50,3 @@ def download_doujin(code, source, sleep_time, merge, convert_to_pdf):
             return False
         except RequestException:
             assets.waiter()
-        except exceptions.TruncatedException as error:
-            last_truncated = error.save_path
-            os.remove(last_truncated)
-            print(colored(error, 'red'))

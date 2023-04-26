@@ -1,9 +1,3 @@
-class TruncatedException(Exception):
-    def __init__(self, save_path):
-        self.save_path = save_path
-        self.message = f' {save_path} was truncated. trying to download it one more time...'
-        super(TruncatedException, self).__init__(self.message)
-
 class MissingModuleException(Exception):
     def __init__(self, domain):
         self.domain = domain
