@@ -20,13 +20,14 @@ def download_doujin(code, source, sleep_time, merge, convert_to_pdf):
             save_path = f'{fixed_doujin_name}/{i+1:03d}.{images[i].split(".")[-1]}'
             if not os.path.exists(save_path):
                 time.sleep(sleep_time)
-                source.download_image(images[i], save_path, i+1)
-                if not assets.validate_corrupted_image(save_path):
+                saved_path = source.download_image(images[i], save_path, i+1)
+                if not assets.validate_corrupted_image(saved_path):
                     print(colored(f' Warning: Image {i+1} is corrupted. will not be able to merge this chapter.', 'red'))
+                    i += 1
                     continue
-                if not assets.validate_truncated_image(save_path) and last_truncated != save_path:
-                    last_truncated = save_path
-                    os.remove(save_path)
+                if not assets.validate_truncated_image(saved_path) and last_truncated != saved_path:
+                    last_truncated = saved_path
+                    os.remove(saved_path)
                     print(colored(f' Warning: Image {i+1} was truncated. trying to download it one more time...', 'red'))
                     i -= 1
             i += 1

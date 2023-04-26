@@ -49,3 +49,37 @@ class Imhentai(Doujin):
 
     def get_db():
         return Imhentai.search_by_keyword('', False)
+    
+    def download_image(url, image_name, log_num):
+        import requests
+        from termcolor import colored
+        from utils.assets import waiter
+        while True:
+            try:
+                response = requests.get(url)
+                response.raise_for_status()
+                with open(image_name, 'wb') as image:
+                    image.write(response.content)
+                return image_name
+            except (requests.exceptions.HTTPError) as error:
+                break
+            except (requests.exceptions.Timeout) as error:
+                raise error
+            except requests.exceptions.RequestException:
+                waiter()
+        for format in ['png', 'jpg', 'jpeg', 'gif', 'tif', 'webp']:
+            while True:
+                try:
+                    response = requests.get(f'{url.rsplit(".", 1)[0]}.{format}')
+                    response.raise_for_status()
+                    with open(f'{image_name.rsplit(".", 1)[0]}.{format}', 'wb') as image:
+                        image.write(response.content)
+                    return f'{image_name.rsplit(".", 1)[0]}.{format}'
+                except (requests.exceptions.HTTPError) as error:
+                    break
+                except (requests.exceptions.Timeout) as error:
+                    raise error
+                except requests.exceptions.RequestException:
+                    waiter()
+        print(colored(f' Warning: Could not download image {log_num}: {url}', 'red'))
+        return ''

@@ -24,10 +24,10 @@ class Module:
                 response.raise_for_status()
                 with open(image_name, 'wb') as image:
                     image.write(response.content)
-                return
+                return image_name
             except (requests.exceptions.HTTPError) as error:
                 print(colored(f' Warning: Could not download image {log_num}: {url}', 'red'))
-                return
+                return ''
             except (requests.exceptions.Timeout) as error:
                 raise error
             except requests.exceptions.RequestException:
