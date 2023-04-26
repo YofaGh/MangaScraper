@@ -1,7 +1,7 @@
 import time, sys, os
 from termcolor import colored
 from utils import assets, exceptions
-from requests.exceptions import RequestException, HTTPError, Timeout
+from requests.exceptions import HTTPError, Timeout
 
 def download_single(manga, url, source, sleep_time, last, ranged, chapters, merge, convert_to_pdf):
     chapters_to_download = get_name_of_chapters(manga, url, source, last, ranged, chapters)
@@ -71,13 +71,7 @@ def download_manga(manga, url, source, sleep_time, chapters, merge, convert_to_p
                     save_path = f'{path}/{i+adder+1:03d}.{images[i].split(".")[-1]}'
                 if not os.path.exists(save_path):
                     time.sleep(sleep_time)
-                    try:
-                        response = source.send_request(images[i])
-                    except HTTPError:
-                        print(f' Warning: Could not download image {i+adder+1}: {images[i]}')
-                        continue
-                    with open(save_path, 'wb') as image:
-                        image.write(response.content)
+                    source.download_image(images[i], save_path, i+adder+1)
                     if not assets.validate_corrupted_image(save_path):
                         print(colored(f' Warning: Image {i+adder+1} is corrupted. will not be able to merge this chapter', 'red'))
                         continue
@@ -97,6 +91,4 @@ def download_manga(manga, url, source, sleep_time, chapters, merge, convert_to_p
                 convert_folder(path, fixed_manga, f'{manga}_{renamed_chapter}', f'{manga}: {chapter}')
         except (Timeout, HTTPError, exceptions.ImageMergerException, exceptions.PDFConverterException) as error:
             print(colored(error, 'red'))
-        except RequestException:
-            assets.waiter()
     return inconsistencies

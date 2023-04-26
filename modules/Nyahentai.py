@@ -23,35 +23,30 @@ class Nyahentai(Doujin):
         return new_images
 
     def search_by_keyword(keyword, absolute):
-        from utils.assets import waiter
-        from requests.exceptions import RequestException, HTTPError, Timeout
+        from requests.exceptions import HTTPError
         page = 1
         while True:
             try:
                 response = Nyahentai.send_request(f'https://nyahentai.red/search?q={keyword}&page={page}')
-                soup = BeautifulSoup(response.text, 'html.parser')
-                doujins = soup.find_all('div', {'class': 'gallery'})
-                if len(doujins) == 0:
-                    yield {}
-                results = {}
-                for doujin in doujins:
-                    doj = doujin.find('a')
-                    ti = doj.find('div', {'class': 'caption'}).contents[0]
-                    if absolute and keyword.lower() not in ti.lower():
-                        continue
-                    results[ti] = {
-                        'domain': Nyahentai.domain,
-                        'code': doj['href'].split('/')[-2],
-                        'page': page
-                    }
-                yield results
-                page += 1
             except HTTPError:
                 yield {}
-            except Timeout as error:
-                raise error
-            except RequestException:
-                waiter()
+            soup = BeautifulSoup(response.text, 'html.parser')
+            doujins = soup.find_all('div', {'class': 'gallery'})
+            if len(doujins) == 0:
+                yield {}
+            results = {}
+            for doujin in doujins:
+                doj = doujin.find('a')
+                ti = doj.find('div', {'class': 'caption'}).contents[0]
+                if absolute and keyword.lower() not in ti.lower():
+                    continue
+                results[ti] = {
+                    'domain': Nyahentai.domain,
+                    'code': doj['href'].split('/')[-2],
+                    'page': page
+                }
+            yield results
+            page += 1
 
     def get_db():
         return Nyahentai.search_by_keyword('', False)

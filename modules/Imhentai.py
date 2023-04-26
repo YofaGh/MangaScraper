@@ -21,36 +21,31 @@ class Imhentai(Doujin):
         return images
 
     def search_by_keyword(keyword, absolute):
-        from utils.assets import waiter
-        from requests.exceptions import RequestException, HTTPError, Timeout
+        from requests.exceptions import HTTPError
         page = 1
         while True:
             try:
                 response = Imhentai.send_request(f'https://imhentai.xxx/search/?key={keyword}&page={page}')
-                soup = BeautifulSoup(response.text, 'html.parser')
-                doujins = soup.find_all('div', {'class': 'thumb'})
-                if len(doujins) == 0:
-                    yield {}
-                results = {}
-                for doujin in doujins:
-                    caption = doujin.find('div', {'class': 'caption'})
-                    ti = caption.find('a').contents[0]
-                    if absolute and keyword.lower() not in ti.lower():
-                        continue
-                    results[ti] = {
-                        'domain': Imhentai.domain,
-                        'code': caption.find('a')['href'].split('/')[-2],
-                        'category': doujin.find('a', {'class':'thumb_cat'}).contents[0],
-                        'page': page
-                    }
-                yield results
-                page += 1
             except HTTPError:
                 yield {}
-            except Timeout as error:
-                raise error
-            except RequestException:
-                waiter()
+            soup = BeautifulSoup(response.text, 'html.parser')
+            doujins = soup.find_all('div', {'class': 'thumb'})
+            if len(doujins) == 0:
+                yield {}
+            results = {}
+            for doujin in doujins:
+                caption = doujin.find('div', {'class': 'caption'})
+                ti = caption.find('a').contents[0]
+                if absolute and keyword.lower() not in ti.lower():
+                    continue
+                results[ti] = {
+                    'domain': Imhentai.domain,
+                    'code': caption.find('a')['href'].split('/')[-2],
+                    'category': doujin.find('a', {'class':'thumb_cat'}).contents[0],
+                    'page': page
+                }
+            yield results
+            page += 1
 
     def get_db():
         return Imhentai.search_by_keyword('', False)

@@ -19,38 +19,33 @@ class Manhuascan(Manga):
         return images, False
 
     def search_by_keyword(keyword, absolute):
-        from utils.assets import waiter
         from contextlib import suppress
-        from requests.exceptions import RequestException, HTTPError, Timeout
+        from requests.exceptions import HTTPError
         page = 1
         while True:
             try:
                 response = Manhuascan.send_request(f'https://manhuascan.us/manga-list?search={keyword}&page={page}')
-                soup = BeautifulSoup(response.text, 'html.parser')
-                mangas = soup.find_all('div', {'class': 'bsx'})
-                if len(mangas) == 0:
-                    yield {}
-                results = {}
-                for manga in mangas:
-                    ti = manga.find('a')['title']
-                    if absolute and keyword.lower() not in ti.lower():
-                        continue
-                    latest_chapter = ''
-                    with suppress(Exception): latest_chapter = manga.find('div', {'class': 'adds'}).find('a')['href'].split('/')[-1]
-                    results[ti] = {
-                        'domain': Manhuascan.domain,
-                        'url': manga.find('a')['href'].split('/')[-1],
-                        'latest_chapter': latest_chapter,
-                        'page': page
-                    }
-                yield results
-                page += 1
             except HTTPError:
                 yield {}
-            except Timeout as error:
-                raise error
-            except RequestException:
-                waiter()
+            soup = BeautifulSoup(response.text, 'html.parser')
+            mangas = soup.find_all('div', {'class': 'bsx'})
+            if len(mangas) == 0:
+                yield {}
+            results = {}
+            for manga in mangas:
+                ti = manga.find('a')['title']
+                if absolute and keyword.lower() not in ti.lower():
+                    continue
+                latest_chapter = ''
+                with suppress(Exception): latest_chapter = manga.find('div', {'class': 'adds'}).find('a')['href'].split('/')[-1]
+                results[ti] = {
+                    'domain': Manhuascan.domain,
+                    'url': manga.find('a')['href'].split('/')[-1],
+                    'latest_chapter': latest_chapter,
+                    'page': page
+                }
+            yield results
+            page += 1
 
     def get_db():
         return Manhuascan.search_by_keyword('', False)

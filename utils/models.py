@@ -3,9 +3,35 @@ class Module:
 
     def send_request(url):
         import requests
-        response = requests.get(url)
-        response.raise_for_status()
-        return response
+        from utils.assets import waiter
+        while True:
+            try:
+                response = requests.get(url)
+                response.raise_for_status()
+                return response
+            except (requests.exceptions.HTTPError, requests.exceptions.Timeout) as error:
+                raise error
+            except requests.exceptions.RequestException:
+                waiter()
+
+    def download_image(url, image_name, log_num):
+        import requests
+        from termcolor import colored
+        from utils.assets import waiter
+        while True:
+            try:
+                response = requests.get(url)
+                response.raise_for_status()
+                with open(image_name, 'wb') as image:
+                    image.write(response.content)
+                return
+            except (requests.exceptions.HTTPError) as error:
+                print(colored(f' Warning: Could not download image {log_num}: {url}', 'red'))
+                return
+            except (requests.exceptions.Timeout) as error:
+                raise error
+            except requests.exceptions.RequestException:
+                waiter()
 
     def get_images():
         return [], False

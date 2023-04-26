@@ -11,50 +11,63 @@ class Hentaifox(Doujin):
         return title
 
     def get_images(code):
-        response = Hentaifox.send_request(f'https://hentaifox.com/gallery/{code}')
-        soup = BeautifulSoup(response.text, 'html.parser')
-        sample = soup.find('div', {'class': 'gallery_thumb'}).find('img')['data-src'] 
-        sample_path = sample.rsplit('/', 1)[0]
-        sample_format = sample.rsplit('.', 1)[1]
-        pages = int(soup.find('span', {'class': 'i_text pages'}).contents[0].split(' ')[-1])
-        images = [f'{sample_path}/{i}.{sample_format}' for i in range(1, pages+1)]
-        return images
+        import time
+        from selenium import webdriver
+        from selenium.webdriver.firefox.service import Service
+        from selenium.webdriver.common.by import By
+        options = webdriver.FirefoxOptions()
+        options.add_argument('--headless')
+        service = Service(executable_path='geckodriver.exe', log_path='NUL')
+        browser = webdriver.Firefox(options=options, service=service)
+        browser.get(f'https://hentaifox.com/gallery/{code}/')
+        time.sleep(5)
+        view_all_button = browser.find_element(By.XPATH, "//button[@id='load_all']")
+        view_all_button.click()
+        soup = BeautifulSoup(browser.page_source, 'html.parser')
+        divs = soup.find_all('div', {'class': 'gallery_thumb'})
+        for _ in range(21):
+            if len(divs) != 10:
+                break
+            time.sleep(1)
+            soup = BeautifulSoup(browser.page_source, 'html.parser')
+            divs = soup.find_all('div', {'class': 'gallery_thumb'})
+        images = [div.find('img')['data-src'] for div in divs]
+        new_images = []
+        for image in images:
+            name = image.rsplit('/', 1)[1]
+            name = name.replace('t.', '.')
+            new_images.append(f'{image.rsplit("/", 1)[0]}/{name}')
+        return new_images
 
     def search_by_keyword(keyword, absolute):
-        from utils.assets import waiter
-        from requests.exceptions import RequestException, HTTPError, Timeout
+        from requests.exceptions import HTTPError
         page = 1
         while True:
             try:
                 response = Hentaifox.send_request(f'https://hentaifox.com/search/?q={keyword}&page={page}')
-                soup = BeautifulSoup(response.text, 'html.parser')
-                doujins = soup.find_all('div', {'class': 'thumb'})
-                if len(doujins) == 0:
-                    yield {}
-                results = {}
-                for doujin in doujins:
-                    caption = doujin.find('div', {'class': 'caption'})
-                    ti = caption.find('a').contents[0]
-                    if absolute and keyword.lower() not in ti.lower():
-                        continue
-                    results[ti] = {
-                        'domain': Hentaifox.domain,
-                        'code': caption.find('a')['href'].split('/')[-2],
-                        'category': doujin.find('a', {'class':'t_cat'}).contents[0],
-                        'page': page
-                    }
-                yield results
-                page += 1
             except HTTPError:
                 yield {}
-            except Timeout as error:
-                raise error
-            except RequestException:
-                waiter()
+            soup = BeautifulSoup(response.text, 'html.parser')
+            doujins = soup.find_all('div', {'class': 'thumb'})
+            if len(doujins) == 0:
+                yield {}
+            results = {}
+            for doujin in doujins:
+                caption = doujin.find('div', {'class': 'caption'})
+                ti = caption.find('a').contents[0]
+                if absolute and keyword.lower() not in ti.lower():
+                    continue
+                results[ti] = {
+                    'domain': Hentaifox.domain,
+                    'code': caption.find('a')['href'].split('/')[-2],
+                    'category': doujin.find('a', {'class':'t_cat'}).contents[0],
+                    'page': page
+                }
+            yield results
+            page += 1
 
     def get_db():
-        from utils.assets import waiter
-        from requests.exceptions import RequestException, HTTPError, Timeout
+        from requests.exceptions import HTTPError
         response = Hentaifox.send_request('https://hentaifox.com/categories/')
         soup = BeautifulSoup(response.text, 'html.parser')
         categories = soup.find('div', {'class': 'list_tags'}).find_all('a')
@@ -64,25 +77,21 @@ class Hentaifox(Doujin):
             while True:
                 try:
                     response = Hentaifox.send_request(f'https://hentaifox.com{category}pag/{page}/')
-                    soup = BeautifulSoup(response.text, 'html.parser')
-                    doujins = soup.find_all('div', {'class': 'thumb'})
-                    if len(doujins) == 0:
-                        break
-                    results = {}
-                    for doujin in doujins:
-                        caption = doujin.find('div', {'class': 'caption'})
-                        ti = caption.find('a').contents[0]
-                        results[ti] = {
-                            'domain': Hentaifox.domain,
-                            'code': caption.find('a')['href'].split('/')[-2],
-                            'category': doujin.find('a', {'class':'t_cat'}).contents[0]
-                        }
-                    yield results
-                    page += 1
                 except HTTPError:
                     break
-                except Timeout as error:
-                    raise error
-                except RequestException:
-                    waiter()
+                soup = BeautifulSoup(response.text, 'html.parser')
+                doujins = soup.find_all('div', {'class': 'thumb'})
+                if len(doujins) == 0:
+                    break
+                results = {}
+                for doujin in doujins:
+                    caption = doujin.find('div', {'class': 'caption'})
+                    ti = caption.find('a').contents[0]
+                    results[ti] = {
+                        'domain': Hentaifox.domain,
+                        'code': caption.find('a')['href'].split('/')[-2],
+                        'category': doujin.find('a', {'class':'t_cat'}).contents[0]
+                    }
+                yield results
+                page += 1
         yield {}

@@ -33,8 +33,7 @@ class Sarrast(Manga):
 
     def search_by_keyword(keyword, absolute):
         import json
-        from utils.assets import waiter
-        from requests.exceptions import RequestException, HTTPError, Timeout
+        from requests.exceptions import HTTPError
         try:
             options = webdriver.FirefoxOptions()
             options.add_argument('--headless')
@@ -53,10 +52,6 @@ class Sarrast(Manga):
             yield results
         except HTTPError:
             yield {}
-        except Timeout as error:
-            raise error
-        except RequestException:
-            waiter()
         yield {}
 
     def get_db():

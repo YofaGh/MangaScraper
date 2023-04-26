@@ -22,55 +22,50 @@ class Coloredmanga(Manga):
         return images, save_names
 
     def search_by_keyword(keyword, absolute):
-        from utils.assets import waiter
         from contextlib import suppress
-        from requests.exceptions import RequestException, HTTPError, Timeout
+        from requests.exceptions import HTTPError
         page = 1
         while True:
             try:
                 response = Coloredmanga.send_request(f'https://coloredmanga.com/page/{page}/?s={keyword}&post_type=wp-manga')
-                soup = BeautifulSoup(response.text, 'html.parser')
-                mangas = soup.find_all('div', {'class': 'row c-tabs-item__content'})
-                results = {}
-                for manga in mangas:
-                    tilink = manga.find('div', {'class', 'post-title'})
-                    if absolute and keyword.lower() not in manga.find('a')['href']:
-                        continue
-                    latest_chapter, authors, artists, genres, status, release_date = '', '', '', '', '', ''
-                    contents = manga.find_all('div', {'class': 'post-content_item'})
-                    for content in contents:
-                        with suppress(Exception):
-                            head = content.find('h5').contents[0].replace('\n', '').replace(' ', '')
-                            if head == 'Authors':
-                                authors = ', '.join([a.contents[0] for a in content.find_all('a')])
-                            if head == 'Artists':
-                                artists = ', '.join([a.contents[0] for a in content.find_all('a')])
-                            if head == 'Genres':
-                                genres = ', '.join([a.contents[0] for a in content.find_all('a')])
-                            if head == 'Status':
-                                status = content.find('div', {'class': 'summary-content'}).contents[0].replace('\n', '').replace(' ', '')
-                            if head == 'Release':
-                                release_date = content.find('a').contents[0]
-                    with suppress(Exception): latest_chapter = manga.find('span', {'class': 'font-meta chapter'}).find('a')['href'].split('/')[-2]
-                    results[tilink.find('a').contents[0]] = {
-                        'domain': Coloredmanga.domain,
-                        'url': tilink.find('a')['href'].replace('https://coloredmanga.com/mangas/','')[:-1],
-                        'latest_chapter': latest_chapter,
-                        'genres': genres,
-                        'authors': authors,
-                        'artists': artists,
-                        'status': status,
-                        'release_date': release_date,
-                        'page': page
-                    }
-                yield results
-                page += 1
             except HTTPError:
                 yield {}
-            except Timeout as error:
-                raise error
-            except RequestException:
-                waiter()
+            soup = BeautifulSoup(response.text, 'html.parser')
+            mangas = soup.find_all('div', {'class': 'row c-tabs-item__content'})
+            results = {}
+            for manga in mangas:
+                tilink = manga.find('div', {'class', 'post-title'})
+                if absolute and keyword.lower() not in manga.find('a')['href']:
+                    continue
+                latest_chapter, authors, artists, genres, status, release_date = '', '', '', '', '', ''
+                contents = manga.find_all('div', {'class': 'post-content_item'})
+                for content in contents:
+                    with suppress(Exception):
+                        head = content.find('h5').contents[0].replace('\n', '').replace(' ', '')
+                        if head == 'Authors':
+                            authors = ', '.join([a.contents[0] for a in content.find_all('a')])
+                        if head == 'Artists':
+                            artists = ', '.join([a.contents[0] for a in content.find_all('a')])
+                        if head == 'Genres':
+                            genres = ', '.join([a.contents[0] for a in content.find_all('a')])
+                        if head == 'Status':
+                            status = content.find('div', {'class': 'summary-content'}).contents[0].replace('\n', '').replace(' ', '')
+                        if head == 'Release':
+                            release_date = content.find('a').contents[0]
+                with suppress(Exception): latest_chapter = manga.find('span', {'class': 'font-meta chapter'}).find('a')['href'].split('/')[-2]
+                results[tilink.find('a').contents[0]] = {
+                    'domain': Coloredmanga.domain,
+                    'url': tilink.find('a')['href'].replace('https://coloredmanga.com/mangas/','')[:-1],
+                    'latest_chapter': latest_chapter,
+                    'genres': genres,
+                    'authors': authors,
+                    'artists': artists,
+                    'status': status,
+                    'release_date': release_date,
+                    'page': page
+                }
+            yield results
+            page += 1
 
     def get_db():
         return Coloredmanga.search_by_keyword('', False)
