@@ -2,10 +2,11 @@ import argparse
 
 class SetSource(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
-        from utils.modules_contributer import get_all_modules, get_module
         if 'all' in values:
+            from utils.modules_contributer import get_all_modules
             values = get_all_modules()
         else:
+            from utils.modules_contributer import get_module
             values = [get_module(value) for value in values]
         setattr(namespace, self.dest, values)
 
