@@ -1,66 +1,66 @@
 def get_module(key):
     match key:
-        case'bibimanga.com':
+        case 'bibimanga.com':
             from modules.Bibimanga import Bibimanga
             return Bibimanga
-        case'blogmanga.net':
+        case 'blogmanga.net':
             from modules.Blogmanga import Blogmanga
             return Blogmanga
-        case'coloredmanga.com':
+        case 'coloredmanga.com':
             from modules.Coloredmanga import Coloredmanga
             return Coloredmanga
-        case'comics.8muses.com':
+        case 'comics.8muses.com':
             from modules.Comics8Muses import Comics8Muses
             return Comics8Muses
-        case'hentaifox.com':
+        case 'hentaifox.com':
             from modules.Hentaifox import Hentaifox
             return Hentaifox
-        case'imhentai.xxx':
+        case 'imhentai.xxx':
             from modules.Imhentai import Imhentai
             return Imhentai
-        case'manga18fx.com':
+        case 'manga18fx.com':
             from modules.Manga18fx import Manga18fx
             return Manga18fx
-        case'manga18h.com':
+        case 'manga18h.com':
             from modules.Manga18h import Manga18h
             return Manga18h
-        case'mangaforfree.net':
+        case 'mangaforfree.net':
             from modules.Mangaforfree import Mangaforfree
             return Mangaforfree
-        case'mangapark.to':
+        case 'mangapark.to':
             from modules.Mangapark import Mangapark
             return Mangapark
-        case'mangareader.cc':
+        case 'mangareader.cc':
             from modules.Mangareader import Mangareader
             return Mangareader
-        case'manhuamanhwa.com':
+        case 'manhuamanhwa.com':
             from modules.Manhuamanhwa import Manhuamanhwa
             return Manhuamanhwa
-        case'manhuamix.com':
+        case 'manhuamix.com':
             from modules.Manhuamix import Manhuamix
             return Manhuamix
-        case'manhuascan.us':
+        case 'manhuascan.us':
             from modules.Manhuascan import Manhuascan
             return Manhuascan
-        case'manhwa18.com':
+        case 'manhwa18.com':
             from modules.Manhwa18 import Manhwa18
             return Manhwa18
-        case'nhentai.xxx':
+        case 'nhentai.xxx':
             from modules.Nhentai import Nhentai
             return Nhentai
-        case'nyahentai.red':
+        case 'nyahentai.red':
             from modules.Nyahentai import Nyahentai
             return Nyahentai
-        case'readonepiece.com':
+        case 'readonepiece.com':
             from modules.Readonepiece import Readonepiece
             return Readonepiece
-        case'sarrast.com':
+        case 'sarrast.com':
             from modules.Sarrast import Sarrast
             return Sarrast
-        case'simplyhentai.org':
+        case 'simplyhentai.org':
             from modules.Simplyhentai import Simplyhentai
             return Simplyhentai
-        case'truemanga.com':
+        case 'truemanga.com':
             from modules.Truemanga import Truemanga
             return Truemanga
         case _:
