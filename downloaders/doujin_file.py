@@ -12,8 +12,7 @@ def download_doujins(json_file, sleep_time, merge, convert_to_pdf):
             source = get_module(doujin)
             i = 0
             while len(doujins[doujin]['codes']) - i > 0:
-                code = doujins[doujin]['codes'][i]
-                if download_doujin(code, source, sleep_time, merge, convert_to_pdf):
+                if download_doujin(doujins[doujin]['codes'][i], source, sleep_time, merge, convert_to_pdf):
                     del doujins[doujin]['codes'][i]
                 else:
                     i += 1
