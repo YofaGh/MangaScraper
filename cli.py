@@ -20,7 +20,7 @@ chapters.add_argument('-c', action=CheckChapters, nargs='+', type=float, help='s
 chapters.add_argument('-l', action=LastChapter, type=float, help='chapters after the given chapter')
 chapters.add_argument('-r', action=RangeOfChapters, nargs=2, type=float, metavar=('begin', 'end'), help='chapters between the given chapters')
 search_args = parser.add_argument_group('customize search results')
-search_args.add_argument('-page-limit', default=1000, type=int, help='specify how many pages should be searched')
+search_args.add_argument('-page-limit', default=10, type=int, help='specify how many pages should be searched')
 search_args.add_argument('-absolute', action='store_true', help='if set, checks that the name you searched should be in the title')
 args = parser.parse_args(args=(sys.argv[1:] or ['-h']))
 
