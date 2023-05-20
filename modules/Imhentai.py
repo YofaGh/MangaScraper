@@ -49,7 +49,7 @@ class Imhentai(Doujin):
 
     def get_db():
         return Imhentai.search_by_keyword('', False)
-    
+
     def download_image(url, image_name, log_num):
         import requests
         from termcolor import colored

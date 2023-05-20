@@ -24,6 +24,9 @@ def get_module(key):
         case 'manga18h.com':
             from modules.Manga18h import Manga18h
             return Manga18h
+        case 'manga68.com':
+            from modules.Manga68 import Manga68
+            return Manga68
         case 'mangaforfree.net':
             from modules.Mangaforfree import Mangaforfree
             return Mangaforfree
@@ -76,6 +79,7 @@ def get_all_modules():
     from modules.Imhentai import Imhentai
     from modules.Manga18fx import Manga18fx
     from modules.Manga18h import Manga18h
+    from modules.Manga68 import Manga68
     from modules.Mangaforfree import Mangaforfree
     from modules.Mangapark import Mangapark
     from modules.Mangareader import Mangareader
@@ -98,6 +102,7 @@ def get_all_modules():
         Imhentai,
         Manga18fx,
         Manga18h,
+        Manga68,
         Mangaforfree,
         Mangapark,
         Mangareader,
@@ -123,6 +128,7 @@ def get_all_domains():
         'imhentai.xxx',
         'manga18fx.com',
         'manga18h.com',
+        'manga68.com',
         'mangaforfree.net',
         'mangapark.to',
         'mangareader.cc',

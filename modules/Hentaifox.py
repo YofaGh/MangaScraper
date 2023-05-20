@@ -76,7 +76,7 @@ class Hentaifox(Doujin):
                 yield results
                 page += 1
         yield {}
-    
+
     def download_image(url, image_name, log_num):
         import requests
         from termcolor import colored
