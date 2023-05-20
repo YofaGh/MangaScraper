@@ -73,6 +73,7 @@
 
 ## Download mangas of a file
 >
+> Let's say you read a couple of mangas that are updated on weekly basis and you want to download all new chapters, then you should go with -file option.  
 > When downloading more than one manga using manga_file.py you should specify name of a json file.  
 > Json file will be automatically updated after each chapter is downloaded.  
 > Example: ```python cli.py manga -file mangas.json```  
@@ -119,6 +120,7 @@
 
 ## Download doujins of a file
 >
+> If you have a couple of codes and want to download all of them at once you can put them in a json file like the one down below and use -file option.  
 > When downloading more than one doujin using doujin_file.py you should specify name of a json file.  
 > Json file will be automatically updated after each doujin is downloaded.  
 > Example: ```python cli.py doujin -file doujins.json```  
