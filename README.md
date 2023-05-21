@@ -65,11 +65,11 @@
 >
 > Examples:
 >
-> - all chapters: ```python cli.py manga -single attack-on-titan -s truemanga.com```  
-> - chapters after a certian chapter: ```python cli.py manga -single attack-on-titan -s truemanga.com -l 52```  
-> - chapters between two chapters: ```python cli.py manga -single attack-on-titan -s truemanga.com -r 20 30```  
-> - specify chapters: ```python cli.py manga -single attack-on-titan -s truemanga.com -c 5 10 36```  
-> - e.g. ```python cli.py manga -single attack-on-titan -s truemanga.com -n "Attack on Titan" -m -p```
+> - all chapters: ```python cli.py manga -single 11643-attack-on-titan -s mangapark.to```  
+> - chapters after a certian chapter: ```python cli.py manga -single secret-class -s manhuscan.us -l 52```  
+> - chapters between two chapters: ```python cli.py manga -single secret-class -s manhuscan.us -r 20 30```  
+> - specify chapters: ```python cli.py manga -single secret-class -s manhuscan.us -c 5 10 36```  
+> - e.g. ```python cli.py manga -single secret-class -s manhuscan.us -n "Secret Class" -m -p```
 
 ## Download mangas of a file
 >
@@ -83,8 +83,8 @@
 {
     "Attck on Titan": {
         "include": true,
-        "domain": "truemanga.com",
-        "url": "attack-on-titan",
+        "domain": "mangapark.to",
+        "url": "11643-attack-on-titan",
         "last_downloaded_chapter": null,
         "chapters": []
     },
@@ -95,9 +95,9 @@
         "last_downloaded_chapter": "chapter-100",
         "chapters": []
     },
-    "One Piece": {
+    "Solo Leveling": {
         "include": true,
-        "domain": "truemanga.com",
+        "domain": "manga68.com",
         "url": "one-piece",
         "last_downloaded_chapter": "pass",
         "chapters": [
@@ -172,7 +172,7 @@
 > Examples:  
 >
 > - search in one module: ```python cli.py search -s manhuascan.us -n "secret"```  
-> - search in multiple modules: ```python cli.py search -s truemanga.com mangareader.cc -n "secret"```  
+> - search in multiple modules: ```python cli.py search -s mangapark.to manga68.com -n "secret"```  
 > - search in all modules: ```python cli.py search -s all -n "secret"```  
 > - e.g.  ```python cli.py search -s manhuascan.us -n "secret" -page-limit 5 -absolute -t 1```
 
