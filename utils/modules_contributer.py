@@ -36,9 +36,6 @@ def get_module(key):
         case 'mangareader.cc':
             from modules.Mangareader import Mangareader
             return Mangareader
-        case 'manhuamanhwa.com':
-            from modules.Manhuamanhwa import Manhuamanhwa
-            return Manhuamanhwa
         case 'manhuamix.com':
             from modules.Manhuamix import Manhuamix
             return Manhuamix
@@ -80,7 +77,6 @@ def get_all_modules():
     from modules.Mangaforfree import Mangaforfree
     from modules.Mangapark import Mangapark
     from modules.Mangareader import Mangareader
-    from modules.Manhuamanhwa import Manhuamanhwa
     from modules.Manhuamix import Manhuamix
     from modules.Manhuascan import Manhuascan
     from modules.Manhwa18 import Manhwa18
@@ -102,7 +98,6 @@ def get_all_modules():
         Mangaforfree,
         Mangapark,
         Mangareader,
-        Manhuamanhwa,
         Manhuamix,
         Manhuascan,
         Manhwa18,
@@ -127,7 +122,6 @@ def get_all_domains():
         'mangaforfree.net',
         'mangapark.to',
         'mangareader.cc',
-        'manhuamanhwa.com',
         'manhuamix.com',
         'manhuascan.us',
         'manhwa18.com',
