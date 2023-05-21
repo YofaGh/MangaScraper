@@ -63,9 +63,6 @@ def get_module(key):
         case 'simplyhentai.org':
             from modules.Simplyhentai import Simplyhentai
             return Simplyhentai
-        case 'truemanga.com':
-            from modules.Truemanga import Truemanga
-            return Truemanga
         case _:
             from utils.exceptions import MissingModuleException
             raise MissingModuleException(key)
@@ -92,7 +89,6 @@ def get_all_modules():
     from modules.Readonepiece import Readonepiece
     from modules.Sarrast import Sarrast
     from modules.Simplyhentai import Simplyhentai
-    from modules.Truemanga import Truemanga
     return [
         Bibimanga,
         Blogmanga,
@@ -114,8 +110,7 @@ def get_all_modules():
         Nyahentai,
         Readonepiece,
         Sarrast,
-        Simplyhentai,
-        Truemanga
+        Simplyhentai
     ]
 
 def get_all_domains():
@@ -140,6 +135,5 @@ def get_all_domains():
         'nyahentai.red' ,
         'readonepiece.com',
         'sarrast.com',
-        'simplyhentai.org',
-        'truemanga.com'
+        'simplyhentai.org'
     ]
