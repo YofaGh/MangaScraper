@@ -58,7 +58,7 @@ match args.task:
             from utils.image_merger import merge_bulk
             merge_bulk(args.bulk, f'Merged/{args.bulk}')
         else:
-            print('please set one of the following arguments: [-folder, -bulk]')
+            parser.error('please set one of the following arguments: [-folder, -bulk]')
 
     case 'c2pdf':
         if args.folder:
@@ -73,7 +73,7 @@ match args.task:
             from utils.pdf_converter import convert_bulkone
             convert_bulkone(args.bulkone, args.bulkone)
         else:
-            print('please set one of the following arguments: [-folder, -bulk]')
+            parser.error('please set one of the following arguments: [-folder, -bulk]')
 
     case 'search':
         if not(args.s and args.n):
