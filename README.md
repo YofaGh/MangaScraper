@@ -31,6 +31,8 @@
 
 - [Database crawler](#database-crawler)
 
+- [Modules Checker](#modules-checker)
+
 ## Setup
 
 > - After cloning the repository use ```pip install -r requirements.txt``` to install requirements.
@@ -182,3 +184,11 @@
 > you can only get database of one module at a time.  
 > result of the crawling will be saved to a json file with module name on it.  
 > Examples:  ```python cli.py db -s manhuascan.us```
+
+## Modules Checker
+>
+> To check if a module is funtional or not you can use check option.  
+> Examples:  
+>
+> - check on module: ```python cli.py check -s manhuascan.us```
+> - check all modules: ```python cli.py check -s all```  
