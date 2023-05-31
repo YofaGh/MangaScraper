@@ -41,10 +41,10 @@ def download_mangas(json_file, sleep_time, merge, convert_to_pdf):
         try:
             while len(mangas[manga]['chapters']) > 0:
                 chapter = mangas[manga]['chapters'][0]
-                source = get_module(mangas[manga]['domain'])
-                ics = download_manga(manga, mangas[manga]['url'], source, sleep_time, [chapter], merge, convert_to_pdf)
+                module = get_module(mangas[manga]['domain'])
+                ics = download_manga(manga, mangas[manga]['url'], module, sleep_time, [chapter], merge, convert_to_pdf)
                 inconsistencies += ics
-                if source.rename_chapter(chapter) > source.rename_chapter(mangas[manga]['last_downloaded_chapter']):
+                if module.rename_chapter(chapter) > module.rename_chapter(mangas[manga]['last_downloaded_chapter']):
                     mangas[manga]['last_downloaded_chapter'] = chapter
                 del mangas[manga]['chapters'][0]
                 save_dict_to_file(json_file, mangas)

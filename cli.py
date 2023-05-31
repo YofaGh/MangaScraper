@@ -1,5 +1,5 @@
 import argparse, sys, os
-from utils.assets import SetSource, CheckChapters, LastChapter, RangeOfChapters
+from utils.assets import SetModule, CheckChapters, LastChapter, RangeOfChapters
 
 parser = argparse.ArgumentParser(allow_abbrev=False)
 parser.add_argument('task', choices=['manga', 'doujin', 'merge', 'c2pdf', 'search', 'db', 'check'])
@@ -10,7 +10,7 @@ mc_options = parser.add_argument_group('merge or convert').add_mutually_exclusiv
 mc_options.add_argument('-folder', help='merges or converts images in given folder')
 mc_options.add_argument('-bulk', help='merges or converts images of folders in the given folder')
 mc_options.add_argument('-bulkone', help='converts images of folders in the given folder into one pdf file')
-parser.add_argument('-s', action=SetSource, nargs='+', metavar='sources', help='specify domains to scrape from')
+parser.add_argument('-s', action=SetModule, nargs='+', metavar='modules', help='specify domains to scrape from')
 parser.add_argument('-n', metavar='str', help='specify a name')
 parser.add_argument('-m', action='store_true', help='if set, merges images vertically')
 parser.add_argument('-p', action='store_true', help='if set, converts images to a pdf file')
@@ -25,7 +25,7 @@ search_args.add_argument('-absolute', action='store_true', help='if set, checks 
 args = parser.parse_args(args=(sys.argv[1:] or ['-h']))
 
 if (args.single or args.task == 'db') and (not args.s or len(args.s) > 1):
-    parser.error('please specify one source using -s argument.\nyou can only set one source when downloading or getting database.')
+    parser.error('please specify one module using -s argument.\nyou can only set one module when downloading or getting database.')
 
 os.system('color')
 
@@ -77,7 +77,7 @@ match args.task:
 
     case 'search':
         if not(args.s and args.n):
-            parser.error('you should specify at least one source using -s and what you want to search using -n')
+            parser.error('you should specify at least one module using -s and what you want to search using -n')
         from crawlers.search_engine import search
         search(args.n, args.s, args.t, args.absolute, args.page_limit)
 
@@ -87,6 +87,6 @@ match args.task:
 
     case 'check':
         if not args.s:
-            parser.error('you should specify at least one source using -s')
+            parser.error('you should specify at least one module using -s')
         from utils.module_checker import check_modules
         check_modules(args.s)

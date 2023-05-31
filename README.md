@@ -54,7 +54,7 @@
 ## Modules
 >
 > There are various modules implemented so far. They inherit from models.  
-> They're implemented differently based on the website's source code.  
+> They're implemented differently based on how the website is develpoed.  
 > In case if using custom user agents or cookies are required, sending requests to the webiste is done dirctly by the module itself.  
 > To use them, they're imported in modules_contributer.py and can be accesed by get_module function.  
 
@@ -166,8 +166,8 @@
 
 ## Search engine
 >
-> allows you to search between available sources that searching function is implemented for them.  
-> unlike downloading with -single argument you can specify multiple sources when using -s.  
+> allows you to search between available modules that searching function is implemented for them.  
+> unlike downloading with -single argument you can specify multiple modules when using -s.  
 > you can also use "-s all" to search in all modules.  
 > set page limit with -page-limit argument.  
 > you can limit the results with setting -absoulte argument.  
@@ -180,7 +180,7 @@
 
 ## Database crawler
 >
-> allows you to download databse of sources that get_db function is implemented for them.  
+> allows you to download databse of modules that get_db function is implemented for them.  
 > you can only get database of one module at a time.  
 > result of the crawling will be saved to a json file with module name on it.  
 > Examples:  ```python cli.py db -s manhuascan.us```

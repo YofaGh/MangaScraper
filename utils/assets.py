@@ -1,6 +1,6 @@
 import argparse
 
-class SetSource(argparse.Action):
+class SetModule(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
         if 'all' in values:
             from utils.modules_contributer import get_all_modules

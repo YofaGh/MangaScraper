@@ -9,10 +9,10 @@ def download_doujins(json_file, sleep_time, merge, convert_to_pdf):
     valid_doujins = [doujin for (doujin, detm) in doujins.items() if detm['codes']]
     for doujin in valid_doujins:
         try:
-            source = get_module(doujin)
+            module = get_module(doujin)
             i = 0
             while len(doujins[doujin]['codes']) - i > 0:
-                if download_doujin(doujins[doujin]['codes'][i], source, sleep_time, merge, convert_to_pdf):
+                if download_doujin(doujins[doujin]['codes'][i], module, sleep_time, merge, convert_to_pdf):
                     del doujins[doujin]['codes'][i]
                 else:
                     i += 1

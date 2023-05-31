@@ -3,31 +3,31 @@ from termcolor import colored
 from utils import assets, exceptions
 from requests.exceptions import HTTPError, Timeout
 
-def download_single(manga, url, source, sleep_time, last, ranged, chapters, merge, convert_to_pdf):
-    chapters_to_download = get_name_of_chapters(manga, url, source, last, ranged, chapters)
-    inconsistencies = download_manga(manga, url, source, sleep_time, chapters_to_download, merge, convert_to_pdf)
+def download_single(manga, url, module, sleep_time, last, ranged, chapters, merge, convert_to_pdf):
+    chapters_to_download = get_name_of_chapters(manga, url, module, last, ranged, chapters)
+    inconsistencies = download_manga(manga, url, module, sleep_time, chapters_to_download, merge, convert_to_pdf)
     if inconsistencies:
         print(colored(f'There were some inconsistencies with the following chapters: {", ".join(inconsistencies)}', 'red'))
 
-def get_name_of_chapters(manga, url, source, last, ranged, c_chapters):
+def get_name_of_chapters(manga, url, module, last, ranged, c_chapters):
     ctd = []
     sys.stdout.write(f'\r{manga}: Getting chapters...')
-    chapters = source.get_chapters(url)
+    chapters = module.get_chapters(url)
     if last:
         reached_last_downloaded_chapter = False
-        last_downloaded_chapter = source.rename_chapter(str(last))
+        last_downloaded_chapter = module.rename_chapter(str(last))
         for chapter in chapters:
-            if source.rename_chapter(chapter) == last_downloaded_chapter:
+            if module.rename_chapter(chapter) == last_downloaded_chapter:
                 reached_last_downloaded_chapter = True
                 continue
             if reached_last_downloaded_chapter:
                 ctd.append(chapter)
     elif ranged:
         reached_beginning_chapter = False
-        beginning_chapter = source.rename_chapter(str(ranged[0]))
-        ending_chapter = source.rename_chapter(str(ranged[1]))
+        beginning_chapter = module.rename_chapter(str(ranged[0]))
+        ending_chapter = module.rename_chapter(str(ranged[1]))
         for chapter in chapters:
-            renamed_chapter = source.rename_chapter(chapter)
+            renamed_chapter = module.rename_chapter(chapter)
             if renamed_chapter == beginning_chapter:
                 reached_beginning_chapter = True
             if reached_beginning_chapter:
@@ -35,24 +35,24 @@ def get_name_of_chapters(manga, url, source, last, ranged, c_chapters):
             if renamed_chapter == ending_chapter:
                 break
     elif c_chapters:
-        renamed_chapters = [source.rename_chapter(str(c)) for c in c_chapters]
-        ctd = [chapter for chapter in chapters if (source.rename_chapter(chapter) in renamed_chapters)]
+        renamed_chapters = [module.rename_chapter(str(c)) for c in c_chapters]
+        ctd = [chapter for chapter in chapters if (module.rename_chapter(chapter) in renamed_chapters)]
     else:
         ctd = chapters
     print(f'\r{manga}: {len(ctd)} chapters to download.')
     return ctd
 
-def download_manga(manga, url, source, sleep_time, chapters, merge, convert_to_pdf):
+def download_manga(manga, url, module, sleep_time, chapters, merge, convert_to_pdf):
     inconsistencies = []
     last_truncated = None
     fixed_manga = assets.fix_name_for_folder(manga)
     assets.create_folder(fixed_manga)
     while len(chapters) > 0:
         chapter = chapters[0]
-        renamed_chapter = source.rename_chapter(chapter)
+        renamed_chapter = module.rename_chapter(chapter)
         try:
             sys.stdout.write(f'\r{manga}: {chapter}: Getting image links...')
-            images, save_names = source.get_images(url, chapter)
+            images, save_names = module.get_images(url, chapter)
             sys.stdout.write(f'\r{manga}: {chapter}: Creating folder...')
             path = f'{fixed_manga}/{renamed_chapter}'
             assets.create_folder(f'{fixed_manga}/{renamed_chapter}')
@@ -71,7 +71,7 @@ def download_manga(manga, url, source, sleep_time, chapters, merge, convert_to_p
                     save_path = f'{path}/{i+adder+1:03d}.{images[i].split(".")[-1]}'
                 if not os.path.exists(save_path):
                     time.sleep(sleep_time)
-                    saved_path = source.download_image(images[i], save_path, i+adder+1)
+                    saved_path = module.download_image(images[i], save_path, i+adder+1)
                     if not assets.validate_corrupted_image(saved_path):
                         print(colored(f' Warning: Image {i+adder+1} is corrupted. will not be able to merge this chapter', 'red'))
                         i += 1

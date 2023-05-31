@@ -3,14 +3,14 @@ from termcolor import colored
 from utils import assets, exceptions
 from requests.exceptions import HTTPError, Timeout
 
-def download_doujin(code, source, sleep_time, merge, convert_to_pdf):
+def download_doujin(code, module, sleep_time, merge, convert_to_pdf):
     last_truncated = None
     try:
         sys.stdout.write(f'\r{code}: Getting name of doujin...')
-        doujin_title = f'{code}_{source.get_title(code)}'
+        doujin_title = f'{code}_{module.get_title(code)}'
         shorten_doujin_title = textwrap.shorten(doujin_title, width=50)
         sys.stdout.write(f'\r{shorten_doujin_title}: Getting image links...')
-        images = source.get_images(code)
+        images = module.get_images(code)
         sys.stdout.write(f'\r{shorten_doujin_title}: Creating folder...')
         fixed_doujin_name = assets.fix_name_for_folder(doujin_title)
         assets.create_folder(fixed_doujin_name)
@@ -20,7 +20,7 @@ def download_doujin(code, source, sleep_time, merge, convert_to_pdf):
             save_path = f'{fixed_doujin_name}/{i+1:03d}.{images[i].split(".")[-1]}'
             if not os.path.exists(save_path):
                 time.sleep(sleep_time)
-                saved_path = source.download_image(images[i], save_path, i+1)
+                saved_path = module.download_image(images[i], save_path, i+1)
                 if not assets.validate_corrupted_image(saved_path):
                     print(colored(f' Warning: Image {i+1} is corrupted. will not be able to merge this chapter.', 'red'))
                     i += 1
