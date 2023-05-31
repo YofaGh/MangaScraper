@@ -2,7 +2,7 @@ import argparse, sys, os
 from utils.assets import SetSource, CheckChapters, LastChapter, RangeOfChapters
 
 parser = argparse.ArgumentParser(allow_abbrev=False)
-parser.add_argument('task', choices=['manga', 'doujin', 'merge', 'c2pdf', 'search', 'db'])
+parser.add_argument('task', choices=['manga', 'doujin', 'merge', 'c2pdf', 'search', 'db', 'check'])
 type = parser.add_argument_group('download').add_mutually_exclusive_group()
 type.add_argument('-single', '-code', help='url of the manga, or code of the doujin')
 type.add_argument('-file', help='downloads everthing in given json file')
@@ -77,10 +77,16 @@ match args.task:
 
     case 'search':
         if not(args.s and args.n):
-            parser.error('you should specify source using -s and what you want to search using -n')
+            parser.error('you should specify at least one source using -s and what you want to search using -n')
         from crawlers.search_engine import search
         search(args.n, args.s, args.t, args.absolute, args.page_limit)
 
     case 'db':
         from crawlers.datebase_crawler import crawl
         crawl(args.s[0], args.t)
+
+    case 'check':
+        if not args.s:
+            parser.error('you should specify at least one source using -s')
+        from utils.module_checker import check_modules
+        check_modules(args.s)
