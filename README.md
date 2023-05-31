@@ -187,7 +187,7 @@
 
 ## Modules Checker
 >
-> To check if a module is funtional or not you can use check option.  
+> To check if a module is functional or not you can use check option.  
 > Examples:  
 >
 > - check on module: ```python cli.py check -s manhuascan.us```
