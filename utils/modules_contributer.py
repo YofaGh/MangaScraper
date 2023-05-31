@@ -18,6 +18,9 @@ def get_module(key):
         case 'imhentai.xxx':
             from modules.Imhentai import Imhentai
             return Imhentai
+        case 'manga18.club':
+            from modules.Manga18 import Manga18
+            return Manga18
         case 'manga18fx.com':
             from modules.Manga18fx import Manga18fx
             return Manga18fx
@@ -71,6 +74,7 @@ def get_all_modules():
     from modules.Comics8Muses import Comics8Muses
     from modules.Hentaifox import Hentaifox
     from modules.Imhentai import Imhentai
+    from modules.Manga18 import Manga18
     from modules.Manga18fx import Manga18fx
     from modules.Manga18h import Manga18h
     from modules.Manga68 import Manga68
@@ -92,6 +96,7 @@ def get_all_modules():
         Comics8Muses,
         Hentaifox,
         Imhentai,
+        Manga18,
         Manga18fx,
         Manga18h,
         Manga68,
@@ -116,6 +121,7 @@ def get_all_domains():
         'comics.8muses.com',
         'hentaifox.com',
         'imhentai.xxx',
+        'manga18.club',
         'manga18fx.com',
         'manga18h.com',
         'manga68.com',
