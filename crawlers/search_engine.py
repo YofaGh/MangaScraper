@@ -1,4 +1,5 @@
 import time, sys
+from itertools import islice
 from termcolor import colored
 from utils.assets import save_dict_to_file
 from utils.exceptions import MissingFunctionException
@@ -37,6 +38,6 @@ def print_output(results):
     print('Summary:')
     for source in results:
         print(f'{source}:')
-        for result, value in results[source].items():
+        for result, value in islice(results[source].items(), 5):
             refer = 'url' if 'url' in value else 'code'
             print(f'    title: {result}, {refer}: {value[refer]}')
