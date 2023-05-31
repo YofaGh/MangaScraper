@@ -4,18 +4,18 @@ from termcolor import colored
 from utils.assets import save_dict_to_file
 from utils.exceptions import MissingFunctionException
 
-def search(keyword, sources, sleep_time, absolute, limit_page):
+def search(keyword, modules, sleep_time, absolute, limit_page):
     results = {}
-    for source in sources:
+    for module in modules:
         try:
-            if not hasattr(source, 'search_by_keyword'):
-                raise MissingFunctionException(source.domain, 'search_by_keyword')
-            search = source.search_by_keyword(keyword, absolute)
+            if not hasattr(module, 'search_by_keyword'):
+                raise MissingFunctionException(module.domain, 'search_by_keyword')
+            search = module.search_by_keyword(keyword, absolute)
             page = 1
             temp_results = {}
             while page <= limit_page:
                 try:
-                    sys.stdout.write(f'\r{source.domain}: Searching page {page}...')
+                    sys.stdout.write(f'\r{module.domain}: Searching page {page}...')
                     last = next(search)
                     if len(last) == 0:
                         break
@@ -24,10 +24,10 @@ def search(keyword, sources, sleep_time, absolute, limit_page):
                     if page < limit_page:
                         time.sleep(sleep_time)
                 except Exception as error:
-                    print(colored(f'\r{source.domain}: Failed to search: {error}', 'red'))
+                    print(colored(f'\r{module.domain}: Failed to search: {error}', 'red'))
                     break
-            print(colored(f'\r{source.domain}: {len(temp_results)} results were found from {page-1} pages.', 'green' if len(temp_results) > 0 else 'yellow'))
-            results[source.domain] = temp_results
+            print(colored(f'\r{module.domain}: {len(temp_results)} results were found from {page-1} pages.', 'green' if len(temp_results) > 0 else 'yellow'))
+            results[module.domain] = temp_results
         except MissingFunctionException as error:
             print(colored(error, 'red'))
     save_dict_to_file(f'{keyword}_output.json', results)
@@ -36,8 +36,8 @@ def search(keyword, sources, sleep_time, absolute, limit_page):
 
 def print_output(results):
     print('Summary:')
-    for source in results:
-        print(f'{source}:')
-        for result, value in islice(results[source].items(), 5):
+    for module in results:
+        print(f'{module}:')
+        for result, value in islice(results[module].items(), 5):
             refer = 'url' if 'url' in value else 'code'
             print(f'    title: {result}, {refer}: {value[refer]}')

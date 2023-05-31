@@ -3,16 +3,16 @@ from termcolor import colored
 from utils.assets import save_dict_to_file
 from utils.exceptions import MissingFunctionException
 
-def crawl(source, sleep_time):
+def crawl(module, sleep_time):
     try:
-        if not hasattr(source, 'get_db'):
-            raise MissingFunctionException(source.domain, 'get_db')
+        if not hasattr(module, 'get_db'):
+            raise MissingFunctionException(module.domain, 'get_db')
         results = {}
-        crawler = source.get_db()
+        crawler = module.get_db()
         page = 1
         while True:
             try:
-                sys.stdout.write(f'\r{source.domain}: Crawling page {page}...')
+                sys.stdout.write(f'\r{module.domain}: Crawling page {page}...')
                 last = next(crawler)
                 if len(last) == 0:
                     break
@@ -20,10 +20,10 @@ def crawl(source, sleep_time):
                 page += 1
                 time.sleep(sleep_time)
             except Exception as error:
-                print(colored(f'\r{source.domain}: Failed to crawl: {error}', 'red'))
+                print(colored(f'\r{module.domain}: Failed to crawl: {error}', 'red'))
                 break
-        print(colored(f'\r{source.domain}: {len(results)} results were crawled from {page-1} pages.', 'green' if len(results) > 0 else 'yellow'))
-        save_dict_to_file(f'{source.domain}_database.json', results)
-        print(colored(f'\r{source.domain}: Results were saved to {source.domain}_database.json', 'green'))
+        print(colored(f'\r{module.domain}: {len(results)} results were crawled from {page-1} pages.', 'green' if len(results) > 0 else 'yellow'))
+        save_dict_to_file(f'{module.domain}_database.json', results)
+        print(colored(f'\r{module.domain}: Results were saved to {module.domain}_database.json', 'green'))
     except MissingFunctionException as error:
         print(colored(error, 'red'))
