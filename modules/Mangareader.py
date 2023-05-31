@@ -21,7 +21,7 @@ class Mangareader(Manga):
         options.add_argument('--headless')
         service = Service(executable_path='geckodriver.exe', log_path='NUL')
         browser = webdriver.Firefox(options=options, service=service)
-        browser.get(f'https://mangareader.cc/chapter/{manga}-{chapter}')
+        browser.get(f'https://mangareader.cc/read/{manga}-{chapter}')
         select = Select(browser.find_element(By.XPATH, '//select[@class="loadImgType pull-left"]'))
         select.select_by_value('1')
         soup = BeautifulSoup(browser.page_source, 'html.parser')

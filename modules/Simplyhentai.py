@@ -14,7 +14,7 @@ class Simplyhentai(Doujin):
         response = Simplyhentai.send_request(f'https://simplyhentai.org/g/{code}/')
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find_all('a', {'class': 'gallerythumb'})
-        images = [div.find('img')['data-src'] for div in divs]
+        images = [div.find('img')['src'] for div in divs]
         new_images = []
         for image in images:
             name = image.rsplit('/', 1)[1]
