@@ -39,7 +39,7 @@ def get_name_of_chapters(manga, url, module, last, ranged, c_chapters):
         ctd = [chapter for chapter in chapters if (module.rename_chapter(chapter) in renamed_chapters)]
     else:
         ctd = chapters
-    print(f'\r{manga}: {len(ctd)} chapters to download.')
+    print(f'\r{manga}: {len(ctd)} chapter{"" if len(ctd) == 1 else "s"} to download.')
     return ctd
 
 def download_manga(manga, url, module, sleep_time, chapters, merge, convert_to_pdf):
