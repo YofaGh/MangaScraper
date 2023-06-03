@@ -1,5 +1,8 @@
 def get_module(key):
     match key:
+        case 'bato.to':
+            from modules.Bato import Bato
+            return Bato
         case 'bibimanga.com':
             from modules.Bibimanga import Bibimanga
             return Bibimanga
@@ -68,6 +71,7 @@ def get_module(key):
             raise MissingModuleException(key)
 
 def get_all_modules():
+    from modules.Bato import Bato
     from modules.Bibimanga import Bibimanga
     from modules.Blogmanga import Blogmanga
     from modules.Coloredmanga import Coloredmanga
@@ -90,6 +94,7 @@ def get_all_modules():
     from modules.Sarrast import Sarrast
     from modules.Simplyhentai import Simplyhentai
     return [
+        Bato,
         Bibimanga,
         Blogmanga,
         Coloredmanga,
@@ -115,6 +120,7 @@ def get_all_modules():
 
 def get_all_domains():
     return [
+        'bato.to',
         'bibimanga.com',
         'blogmanga.net',
         'coloredmanga.com',

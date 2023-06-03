@@ -1,4 +1,5 @@
 Mangas:
+    bato.to
     bibimanga.com
     blogmanga.net
     coloredmanga.com
