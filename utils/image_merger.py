@@ -3,15 +3,23 @@ from PIL import Image
 from utils import assets
 from termcolor import colored
 
-def merge_folder(path_to_source, path_to_destination, name=None):
+def merge_folder(path_to_source, path_to_destination, resize, name=None):
     name = name if name else path_to_source
     if not assets.validate_folder(path_to_source):
         print(colored(f'\rFailed to Merge {path_to_source} because one image is corrupted or truncated.', 'red'))
         return
     assets.create_path(path_to_destination)
-    sys.stdout.write(f'\r{name}: Merging...')
     images_path = assets.detect_images(path_to_source)
     images = [Image.open(image_path) for image_path in images_path]
+    if resize:
+        sys.stdout.write(f'\r{name}: Merging with resizing enabled, overall quality might get reduced during the proccess...')
+        results = merge_folder_r(images, path_to_destination)
+    else:
+        sys.stdout.write(f'\r{name}: Merging without resizing, You might see white spaces around some images...')
+        results = merge_folder_w(images, path_to_destination)
+    print(colored(f'\r{name}: Merged {len(images_path)} images into {results}.', 'green'))
+
+def merge_folder_w(images, path_to_destination):
     lists_to_merge = []
     temp_list = []
     temp_height = 0
@@ -37,10 +45,56 @@ def merge_folder(path_to_source, path_to_destination, name=None):
             merged_image.paste(image, (int((max_width - image.size[0])/2), x_offset))
             x_offset += image.size[1]
         merged_image.save(f'{path_to_destination}/{i+1:03d}.jpg')
-    print(colored(f'\r{name}: Merged {len(images_path)} images into {len(lists_to_merge)}.', 'green'))
+    return len(lists_to_merge)
 
-def merge_bulk(path_to_source, path_to_destination):
+def merge_folder_r(images, path_to_destination):
+    def _cal(start_index, images):
+        min_width = images[0].size[0]
+        current_height = 0
+        for index, image in enumerate(images):
+            if index < start_index:
+                continue
+            image_width = image.size[0]
+            image_height = image.size[1]
+            if image_width < min_width:
+                current_height = current_height * image_width / min_width + image_height
+                min_width = image_width
+            elif image_width > min_width:
+                current_height = current_height + image_height * min_width / image_width
+            else:
+                current_height = current_height + image_height
+            if current_height >= 65500:
+                return index - 1
+        return index
+
+    import math
+    lists_to_merge = []
+    i = 0
+    index = -1
+    while index < len(images) - 1:
+        index = _cal(index + 1, images)
+        lists_to_merge.append(images[i:index+1])
+        i = index + 1
+    for i in range(len(lists_to_merge)):
+        if len(lists_to_merge[i]) == 1:
+            shutil.copy2(lists_to_merge[i][0].filename, f'{path_to_destination}/{i+1:03d}.{lists_to_merge[i][0].filename.split(".")[-1]}')
+            continue
+        widths = [image.size[0] for image in lists_to_merge[i]]
+        min_width = min(widths)
+        total_height = 0
+        for image in lists_to_merge[i]:
+            total_height += image.size[1] * min_width / image.size[0]
+        merged_image = Image.new('RGB', (min_width, math.ceil(total_height)), color=(255, 255, 255))
+        x_offset = 0
+        for image in lists_to_merge[i]:
+            image.thumbnail((image.size[0]*(min_width/image.size[0]), image.size[1]*(min_width/image.size[0])), Image.Resampling.LANCZOS)
+            merged_image.paste(image, (0, x_offset))
+            x_offset += image.size[1]
+        merged_image.save(f'{path_to_destination}/{i+1:03d}.jpg')
+    return len(lists_to_merge)
+
+def merge_bulk(path_to_source, path_to_destination, resize):
     import os
     sub_folders = os.listdir(path_to_source)
     for sub_folder in sub_folders:
-        merge_folder(f'{path_to_source}/{sub_folder}', f'{path_to_destination}/{sub_folder}', f'{path_to_source}: {sub_folder}')
+        merge_folder(f'{path_to_source}/{sub_folder}', f'{path_to_destination}/{sub_folder}', resize, f'{path_to_source}: {sub_folder}')

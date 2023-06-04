@@ -13,6 +13,7 @@ mc_options.add_argument('-bulkone', help='converts images of folders in the give
 parser.add_argument('-s', action=SetModule, nargs='+', metavar='modules', help='specify domains to scrape from')
 parser.add_argument('-n', metavar='str', help='specify a name')
 parser.add_argument('-m', action='store_true', help='if set, merges images vertically')
+parser.add_argument('-rS', action='store_true', help='if set, resizes the images to the same width')
 parser.add_argument('-p', action='store_true', help='if set, converts images to a pdf file')
 parser.add_argument('-t', default=0.1, type=float, help='set sleep time between requests')
 chapters = parser.add_argument_group('specify chapters').add_mutually_exclusive_group()
@@ -33,30 +34,30 @@ match args.task:
     case 'manga':
         if args.file:
             from downloaders.manga_file import download_file
-            download_file(args.file, args.t, args.m, args.p)
+            download_file(args.file, args.t, args.m, args.p, args.rS)
         elif args.single:
             from downloaders.manga_single import download_single
-            download_single(args.n or args.single, args.single, args.s[0], args.t, args.l, args.r, args.c, args.m, args.p)
+            download_single(args.n or args.single, args.single, args.s[0], args.t, args.l, args.r, args.c, args.m, args.p, args.rS)
         else:
             parser.error('please use one of the following arguments: [-single, -file]')
 
     case 'doujin':
         if args.file:
             from downloaders.doujin_file import download_doujins
-            download_doujins(args.file, args.t, args.m, args.p)
+            download_doujins(args.file, args.t, args.m, args.p, args.rS)
         elif args.single:
             from downloaders.doujin_single import download_doujin
-            download_doujin(args.single, args.s[0], args.t, args.m, args.p)
+            download_doujin(args.single, args.s[0], args.t, args.m, args.p, args.rS)
         else:
             parser.error('please use one of the following arguments: [-single, -file]')
 
     case 'merge':
         if args.folder:
             from utils.image_merger import merge_folder
-            merge_folder(args.folder, f'Merged/{args.folder}')
+            merge_folder(args.folder, f'Merged/{args.folder}', args.rS)
         elif args.bulk:
             from utils.image_merger import merge_bulk
-            merge_bulk(args.bulk, f'Merged/{args.bulk}')
+            merge_bulk(args.bulk, f'Merged/{args.bulk}', args.rS)
         else:
             parser.error('please set one of the following arguments: [-folder, -bulk]')
 
