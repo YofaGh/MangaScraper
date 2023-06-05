@@ -48,33 +48,42 @@ def merge_folder_w(images, path_to_destination):
     return len(lists_to_merge)
 
 def merge_folder_r(images, path_to_destination):
-    def _cal(start_index, images):
-        min_width = images[0].size[0]
-        current_height = 0
-        for index, image in enumerate(images):
-            if index < start_index:
-                continue
-            image_width = image.size[0]
-            image_height = image.size[1]
-            if image_width < min_width:
-                current_height = current_height * image_width / min_width + image_height
-                min_width = image_width
-            elif image_width > min_width:
-                current_height = current_height + image_height * min_width / image_width
-            else:
-                current_height = current_height + image_height
-            if current_height >= 65500:
-                return index - 1
-        return index
-
     import math
     lists_to_merge = []
-    i = 0
-    index = -1
-    while index < len(images) - 1:
-        index = _cal(index + 1, images)
-        lists_to_merge.append(images[i:index+1])
-        i = index + 1
+    min_width = images[0].size[0]
+    current_height = 0
+    temp_list = []
+    for image in images:
+        image_width = image.size[0]
+        image_height = image.size[1]
+        if image_width == min_width:
+            if (current_height + image_height) < 65500:
+                temp_list.append(image)
+                current_height = current_height + image_height
+            else:
+                lists_to_merge.append(temp_list)
+                temp_list = [image]
+                current_height = image_height
+        elif image_width > min_width:
+            if (current_height + image_height * min_width / image_width) < 65500:
+                temp_list.append(image)
+                current_height = current_height + image_height * min_width / image_width
+            else:
+                lists_to_merge.append(temp_list)
+                temp_list = [image]
+                min_width = image_width
+                current_height = image_height
+        else:
+            if (current_height * image_width / min_width + image_height) < 65500:
+                temp_list.append(image)
+                current_height = current_height * image_width / min_width + image_height
+                min_width = image_width
+            else:
+                lists_to_merge.append(temp_list)
+                temp_list = [image]
+                min_width = image_width
+                current_height = image_height
+    lists_to_merge.append(temp_list)
     for i in range(len(lists_to_merge)):
         if len(lists_to_merge[i]) == 1:
             shutil.copy2(lists_to_merge[i][0].filename, f'{path_to_destination}/{i+1:03d}.{lists_to_merge[i][0].filename.split(".")[-1]}')
