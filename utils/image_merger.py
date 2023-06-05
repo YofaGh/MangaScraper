@@ -3,7 +3,7 @@ from PIL import Image
 from utils import assets
 from termcolor import colored
 
-def merge_folder(path_to_source, path_to_destination, resize, name=None):
+def merge_folder(path_to_source, path_to_destination, fit_merge, name=None):
     name = name if name else path_to_source
     if not assets.validate_folder(path_to_source):
         print(colored(f'\rFailed to Merge {path_to_source} because one image is corrupted or truncated.', 'red'))
@@ -11,15 +11,16 @@ def merge_folder(path_to_source, path_to_destination, resize, name=None):
     assets.create_path(path_to_destination)
     images_path = assets.detect_images(path_to_source)
     images = [Image.open(image_path) for image_path in images_path]
-    if resize:
+    if fit_merge:
         sys.stdout.write(f'\r{name}: Merging with resizing enabled, overall quality might get reduced during the proccess...')
-        results = merge_folder_r(images, path_to_destination)
+        results = merge_fit(images, path_to_destination)
     else:
         sys.stdout.write(f'\r{name}: Merging without resizing, You might see white spaces around some images...')
-        results = merge_folder_w(images, path_to_destination)
+        results = merge(images, path_to_destination)
+    sys.stdout.write(f'\r{" " * shutil.get_terminal_size()[0]}')
     print(colored(f'\r{name}: Merged {len(images_path)} images into {results}.', 'green'))
 
-def merge_folder_w(images, path_to_destination):
+def merge(images, path_to_destination):
     lists_to_merge = []
     temp_list = []
     temp_height = 0
@@ -47,7 +48,7 @@ def merge_folder_w(images, path_to_destination):
         merged_image.save(f'{path_to_destination}/{i+1:03d}.jpg')
     return len(lists_to_merge)
 
-def merge_folder_r(images, path_to_destination):
+def merge_fit(images, path_to_destination):
     import math
     lists_to_merge = []
     min_width = images[0].size[0]
@@ -102,8 +103,8 @@ def merge_folder_r(images, path_to_destination):
         merged_image.save(f'{path_to_destination}/{i+1:03d}.jpg')
     return len(lists_to_merge)
 
-def merge_bulk(path_to_source, path_to_destination, resize):
+def merge_bulk(path_to_source, path_to_destination, fit_merge):
     import os
     sub_folders = os.listdir(path_to_source)
     for sub_folder in sub_folders:
-        merge_folder(f'{path_to_source}/{sub_folder}', f'{path_to_destination}/{sub_folder}', resize, f'{path_to_source}: {sub_folder}')
+        merge_folder(f'{path_to_source}/{sub_folder}', f'{path_to_destination}/{sub_folder}', fit_merge, f'{path_to_source}: {sub_folder}')

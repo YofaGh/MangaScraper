@@ -4,7 +4,7 @@ from utils.exceptions import MissingModuleException
 from downloaders.doujin_single import download_doujin
 from utils.assets import save_dict_to_file, load_dict_from_file
 
-def download_doujins(json_file, sleep_time, merge, convert_to_pdf, resize):
+def download_doujins(json_file, sleep_time, merge, convert_to_pdf, fit_merge):
     doujins = load_dict_from_file(json_file)
     valid_doujins = [doujin for (doujin, detm) in doujins.items() if detm['codes']]
     for doujin in valid_doujins:
@@ -12,7 +12,7 @@ def download_doujins(json_file, sleep_time, merge, convert_to_pdf, resize):
             module = get_module(doujin)
             i = 0
             while len(doujins[doujin]['codes']) - i > 0:
-                if download_doujin(doujins[doujin]['codes'][i], module, sleep_time, merge, convert_to_pdf, resize):
+                if download_doujin(doujins[doujin]['codes'][i], module, sleep_time, merge, convert_to_pdf, fit_merge):
                     del doujins[doujin]['codes'][i]
                 else:
                     i += 1

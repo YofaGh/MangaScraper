@@ -3,9 +3,9 @@ from termcolor import colored
 from utils import assets, exceptions
 from requests.exceptions import HTTPError, Timeout
 
-def download_single(manga, url, module, sleep_time, last, ranged, chapters, merge, convert_to_pdf, resize):
+def download_single(manga, url, module, sleep_time, last, ranged, chapters, merge, convert_to_pdf, fit_merge):
     chapters_to_download = get_name_of_chapters(manga, url, module, last, ranged, chapters)
-    inconsistencies = download_manga(manga, url, module, sleep_time, chapters_to_download, merge, convert_to_pdf, resize)
+    inconsistencies = download_manga(manga, url, module, sleep_time, chapters_to_download, merge, convert_to_pdf, fit_merge)
     if inconsistencies:
         print(colored(f'There were some inconsistencies with the following chapters: {", ".join(inconsistencies)}', 'red'))
 
@@ -42,7 +42,7 @@ def get_name_of_chapters(manga, url, module, last, ranged, c_chapters):
     print(f'\r{manga}: {len(ctd)} chapter{"" if len(ctd) == 1 else "s"} to download.')
     return ctd
 
-def download_manga(manga, url, module, sleep_time, chapters, merge, convert_to_pdf, resize):
+def download_manga(manga, url, module, sleep_time, chapters, merge, convert_to_pdf, fit_merge):
     inconsistencies = []
     last_truncated = None
     fixed_manga = assets.fix_name_for_folder(manga)
@@ -86,7 +86,7 @@ def download_manga(manga, url, module, sleep_time, chapters, merge, convert_to_p
             del chapters[0]
             if merge:
                 from utils.image_merger import merge_folder
-                merge_folder(path, f'Merged/{path}', resize, f'{manga}: {chapter}')
+                merge_folder(path, f'Merged/{path}', fit_merge, f'{manga}: {chapter}')
             if convert_to_pdf:
                 from utils.pdf_converter import convert_folder
                 convert_folder(path, fixed_manga, f'{manga}_{renamed_chapter}', f'{manga}: {chapter}')

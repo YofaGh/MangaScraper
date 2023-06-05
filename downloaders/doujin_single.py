@@ -3,7 +3,7 @@ from termcolor import colored
 from utils import assets, exceptions
 from requests.exceptions import HTTPError, Timeout
 
-def download_doujin(code, module, sleep_time, merge, convert_to_pdf, resize):
+def download_doujin(code, module, sleep_time, merge, convert_to_pdf, fit_merge):
     last_truncated = None
     try:
         sys.stdout.write(f'\r{code}: Getting name of doujin...')
@@ -34,7 +34,7 @@ def download_doujin(code, module, sleep_time, merge, convert_to_pdf, resize):
         print(colored(f'\r{shorten_doujin_title}: Finished downloading, {len(images)} images were downloaded.', 'green'))
         if merge:
             from utils.image_merger import merge_folder
-            merge_folder(fixed_doujin_name, f'Merged/{fixed_doujin_name}', resize, shorten_doujin_title)
+            merge_folder(fixed_doujin_name, f'Merged/{fixed_doujin_name}', fit_merge, shorten_doujin_title)
         if convert_to_pdf:
             from utils.pdf_converter import convert_folder
             convert_folder(fixed_doujin_name, fixed_doujin_name, fixed_doujin_name, shorten_doujin_title)
