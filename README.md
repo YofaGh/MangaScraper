@@ -44,7 +44,7 @@
 >
 > - download a single manga/manhua/doujin or multiple.
 > - automatically merge them and convert them into pdf using -m.
-> - if you also set -rS, images will get merged and resized so the overall width will be equal and no white space will abe added to final images.
+> - if you also set -fit, images will get merged and resized so the overall width will be equal and no white space will abe added to final images.
 > - change the time sleep between each request.
 > - merge images of a single folder or subfolders of a folder.
 > - convert images of a single folder or subfolders of a folder to pdf file.
@@ -154,7 +154,7 @@
 >
 > - mrege an entire manga: ```python cli.py merge -bulk "One Piece"```  
 > - mrege a folder: ```python cli.py merge -folder "path/to/folder"```  
-> - mrege a folder and resize it: ```python cli.py merge -folder "path/to/folder" -rS```  
+> - mrege a folder and resize it: ```python cli.py merge -folder "path/to/folder" -fit```  
 
 ## PDF converter
 >
