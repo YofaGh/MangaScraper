@@ -28,6 +28,9 @@ args = parser.parse_args(args=(sys.argv[1:] or ['-h']))
 if (args.single or args.task == 'db') and (not args.s or len(args.s) > 1):
     parser.error('please specify one module using -s argument.\nyou can only set one module when downloading or getting database.')
 
+if (args.task in ['search', 'check']) and not args.s:
+    parser.error('you should specify at least one module using -s')
+
 os.system('color')
 
 match args.task:
@@ -77,8 +80,8 @@ match args.task:
             parser.error('please set one of the following arguments: [-folder, -bulk]')
 
     case 'search':
-        if not(args.s and args.n):
-            parser.error('you should specify at least one module using -s and what you want to search using -n')
+        if not args.n:
+            parser.error('you should specify what you want to search using -n')
         from crawlers.search_engine import search
         search(args.n, args.s, args.t, args.absolute, args.page_limit)
 
@@ -87,7 +90,5 @@ match args.task:
         crawl(args.s[0], args.t)
 
     case 'check':
-        if not args.s:
-            parser.error('you should specify at least one module using -s')
         from utils.module_checker import check_modules
         check_modules(args.s)

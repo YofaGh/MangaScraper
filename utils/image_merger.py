@@ -97,7 +97,7 @@ def merge_fit(images, path_to_destination):
         merged_image = Image.new('RGB', (min_width, math.ceil(total_height)), color=(255, 255, 255))
         x_offset = 0
         for image in lists_to_merge[i]:
-            image.thumbnail((image.size[0]*(min_width/image.size[0]), image.size[1]*(min_width/image.size[0])), Image.Resampling.LANCZOS)
+            image.thumbnail((min_width, image.size[1]*(min_width/image.size[0])), Image.Resampling.LANCZOS)
             merged_image.paste(image, (0, x_offset))
             x_offset += image.size[1]
         merged_image.save(f'{path_to_destination}/{i+1:03d}.jpg')
