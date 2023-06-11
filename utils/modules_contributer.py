@@ -60,6 +60,9 @@ def get_module(key):
         case 'manytoon.com':
             from modules.Manytoon import Manytoon
             return Manytoon
+        case 'myreadingmanga.to':
+            from modules.Myreadingmanga import Myreadingmanga
+            return Myreadingmanga
         case 'nhentai.xxx':
             from modules.Nhentai import Nhentai
             return Nhentai
@@ -100,6 +103,7 @@ def get_all_modules():
     from modules.Manhuascan import Manhuascan
     from modules.Manhwa18 import Manhwa18
     from modules.Manytoon import Manytoon
+    from modules.Myreadingmanga import Myreadingmanga
     from modules.Nhentai import Nhentai
     from modules.Nyahentai import Nyahentai
     from modules.Readonepiece import Readonepiece
@@ -126,6 +130,7 @@ def get_all_modules():
         Manhuascan,
         Manhwa18,
         Manytoon,
+        Myreadingmanga,
         Nhentai,
         Nyahentai,
         Readonepiece,
@@ -155,6 +160,7 @@ def get_all_domains():
         'manhuascan.us',
         'manhwa18.com',
         'manytoon.com',
+        'myreadingmanga.to',
         'nhentai.xxx',
         'nyahentai.red' ,
         'readonepiece.com',
