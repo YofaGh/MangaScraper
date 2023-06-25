@@ -86,7 +86,7 @@ match args.task:
         search(args.n, args.s, args.t, args.absolute, args.page_limit)
 
     case 'db':
-        from crawlers.datebase_crawler import crawl
+        from crawlers.database_crawler import crawl
         crawl(args.s[0], args.t)
 
     case 'check':
