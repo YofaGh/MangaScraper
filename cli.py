@@ -3,9 +3,9 @@ from utils.assets import SetModule, CheckChapters, LastChapter, RangeOfChapters
 
 parser = argparse.ArgumentParser(allow_abbrev=False)
 parser.add_argument('task', choices=['manga', 'doujin', 'merge', 'c2pdf', 'search', 'db', 'check'])
-type = parser.add_argument_group('download').add_mutually_exclusive_group()
-type.add_argument('-single', '-code', help='url of the manga, or code of the doujin')
-type.add_argument('-file', help='downloads webtoons based on the given json file')
+webtoon_type = parser.add_argument_group('download').add_mutually_exclusive_group()
+webtoon_type.add_argument('-single', '-code', help='url of the manga, or code of the doujin')
+webtoon_type.add_argument('-file', help='downloads webtoons based on the given json file')
 mc_options = parser.add_argument_group('merge or convert').add_mutually_exclusive_group()
 mc_options.add_argument('-folder', help='merges or converts images in given folder')
 mc_options.add_argument('-bulk', help='merges or converts images of folders in the given folder')
