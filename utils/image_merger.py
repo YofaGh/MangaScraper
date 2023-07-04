@@ -1,15 +1,15 @@
 import shutil, sys
 from PIL import Image
-from utils import assets
 from termcolor import colored
+from utils.assets import validate_folder, detect_images, create_path
 
 def merge_folder(path_to_source, path_to_destination, fit_merge, name=None):
     name = name if name else path_to_source
-    if not assets.validate_folder(path_to_source):
+    if not validate_folder(path_to_source):
         print(colored(f'\rFailed to Merge {path_to_source} because one image is corrupted or truncated.', 'red'))
         return
-    assets.create_path(path_to_destination)
-    images_path = assets.detect_images(path_to_source)
+    create_path(path_to_destination)
+    images_path = detect_images(path_to_source)
     images = [Image.open(image_path) for image_path in images_path]
     if fit_merge:
         sys.stdout.write(f'\r{name}: Merging with resizing enabled, overall quality might get reduced during the proccess...')
