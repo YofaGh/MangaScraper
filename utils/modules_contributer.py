@@ -45,7 +45,7 @@ def get_module(key):
         case 'mangapark.to':
             from modules.Mangapark import Mangapark
             return Mangapark
-        case 'mangareader.cc':
+        case 'mangareader.mobi':
             from modules.Mangareader import Mangareader
             return Mangareader
         case 'manhuamix.com':
@@ -155,7 +155,7 @@ def get_all_domains():
         'mangaforfree.net',
         'mangahentai.me',
         'mangapark.to',
-        'mangareader.cc',
+        'mangareader.mobi',
         'manhuamix.com',
         'manhuascan.us',
         'manhwa18.com',
