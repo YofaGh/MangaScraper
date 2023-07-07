@@ -1,16 +1,16 @@
 import img2pdf, sys
-from utils import assets
+from utils.assets import validate_folder, create_path, detect_images
 from termcolor import colored
 
 def convert_folder(path_to_source, path_to_destination, pdf_name, name=None):
     name = name if name else path_to_source
     pdf_name = pdf_name if pdf_name.endswith('.pdf') else f'{pdf_name}.pdf'
-    if not assets.validate_folder(path_to_source):
+    if not validate_folder(path_to_source):
         print(colored(f'\rFailed to convert {path_to_source} because of a corrupted image.', 'red'))
         return
-    assets.create_path(path_to_destination)
+    create_path(path_to_destination)
     sys.stdout.write(f'\r{name}: Converting to pdf...')
-    images_path = assets.detect_images(path_to_source)
+    images_path = detect_images(path_to_source)
     with open(f'{path_to_destination}/{pdf_name}', 'wb') as pdf_file:
         pdf_file.write(img2pdf.convert(images_path))
     print(colored(f'\r{name}: Converted to pdf.      ', 'green'))
@@ -27,10 +27,10 @@ def convert_bulkone(path_to_source, path_to_destination):
     images = []
     sys.stdout.write(f'\r{path_to_source}: Detecting images...')
     for sub_folder in sub_folders:
-        if not assets.validate_folder(f'{path_to_source}/{sub_folder}'):
+        if not validate_folder(f'{path_to_source}/{sub_folder}'):
             print(colored(f'\rFailed to convert {path_to_source}/{sub_folder} because of a corrupted image.', 'red'))
             return
-        images_path = assets.detect_images(f'{path_to_source}/{sub_folder}')
+        images_path = detect_images(f'{path_to_source}/{sub_folder}')
         images += images_path
     sys.stdout.write(f'\r{path_to_source}: Creating pdf...    ')
     with open(f'{path_to_destination}/{path_to_source}.pdf', 'wb') as pdf_file:
