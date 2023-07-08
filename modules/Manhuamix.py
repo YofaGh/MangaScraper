@@ -5,24 +5,14 @@ class Manhuamix(Manga):
     domain = 'manhuamix.com'
 
     def get_chapters(manga):
-        from selenium import webdriver
-        from selenium.webdriver.common.by import By
-        from selenium.webdriver.firefox.service import Service
-        from selenium.webdriver.support.ui import WebDriverWait
-        from selenium.webdriver.support import expected_conditions as ec
-        options = webdriver.FirefoxOptions()
-        options.add_argument('--headless')
-        service = Service(executable_path='geckodriver.exe', log_path='NUL')
-        browser = webdriver.Firefox(options=options, service=service)
-        browser.get(f'https://manhuamix.com/manhua/{manga}')
-        WebDriverWait(browser, 60).until(ec.presence_of_element_located((By.XPATH, '//li[@class="wp-manga-chapter    "]')))
-        soup = BeautifulSoup(browser.page_source, 'html.parser')
+        response = Manhuamix.send_request(f'https://manhuamix.com/manhua/{manga}/ajax/chapters/', 'post')
+        soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find_all('li', {'class': 'wp-manga-chapter'})
         chapters = [div.find('a')['href'].split('/')[-2] for div in divs[::-1]]
         return chapters
 
     def get_images(manga, chapter):
-        response = Manhuamix.send_request(f'https://manhuamix.com/manhua/{manga}/{chapter}/')
+        response = Manhuamix.send_request(f'https://manhuamix.com/manhua/{manga}/{chapter}/', 'get')
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'class': 'reading-content'}).find_all('img')
         images = [image['src'].strip() for image in images]
@@ -34,7 +24,7 @@ class Manhuamix(Manga):
         page = 1
         while True:
             try:
-                response = Manhuamix.send_request(f'https://manhuamix.com/page/{page}?s={keyword}&post_type=wp-manga')
+                response = Manhuamix.send_request(f'https://manhuamix.com/page/{page}?s={keyword}&post_type=wp-manga', 'get')
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -74,3 +64,16 @@ class Manhuamix(Manga):
 
     def get_db():
         return Manhuamix.search_by_keyword('', False)
+
+    def send_request(url, method):
+        import requests
+        from utils.assets import waiter
+        while True:
+            try:
+                response = requests.get(url) if method == 'get' else requests.post(url)
+                response.raise_for_status()
+                return response
+            except (requests.exceptions.HTTPError, requests.exceptions.Timeout) as error:
+                raise error
+            except requests.exceptions.RequestException:
+                waiter()
