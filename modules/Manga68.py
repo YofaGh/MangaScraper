@@ -5,18 +5,8 @@ class Manga68(Manga):
     domain = 'manga68.com'
 
     def get_chapters(manga):
-        from selenium import webdriver
-        from selenium.webdriver.firefox.service import Service
-        from selenium.webdriver.common.by import By
-        from selenium.webdriver.support.ui import WebDriverWait
-        from selenium.webdriver.support import expected_conditions as ec
-        options = webdriver.FirefoxOptions()
-        options.add_argument('--headless')
-        service = Service(executable_path='geckodriver.exe', log_path='NUL')
-        browser = webdriver.Firefox(options=options, service=service)
-        browser.get(f'https://manga68.com/manga/{manga}/')
-        WebDriverWait(browser, 60).until(ec.presence_of_element_located((By.XPATH, '//li[@class="wp-manga-chapter    "]')))
-        soup = BeautifulSoup(browser.page_source, 'html.parser')
+        response = Manga68.send_request(f'https://manga68.com/manga/{manga}/ajax/chapters/', method='POST')
+        soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find_all('li', {'class':'wp-manga-chapter'})
         chapters = [div.find('a')['href'].split('/')[-2] for div in divs[::-1]]
         return chapters

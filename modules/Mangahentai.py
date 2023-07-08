@@ -5,14 +5,8 @@ class Mangahentai(Manga):
     domain = 'mangahentai.me'
 
     def get_chapters(manga):
-        from selenium import webdriver
-        from selenium.webdriver.firefox.service import Service
-        options = webdriver.FirefoxOptions()
-        options.add_argument('--headless')
-        service = Service(executable_path='geckodriver.exe', log_path='NUL')
-        browser = webdriver.Firefox(options=options, service=service)
-        browser.get(f'https://mangahentai.me/manga-hentai/{manga}/')
-        soup = BeautifulSoup(browser.page_source, 'html.parser')
+        response = Mangahentai.send_request(f'https://mangahentai.me/manga-hentai/{manga}/ajax/chapters/', method='POST')
+        soup = BeautifulSoup(response.text, 'html.parser')
         lis = soup.find_all('li', {'class': 'wp-manga-chapter'})
         chapters = [li.find('a')['href'].split('/')[-2] for li in lis[::-1]]
         return chapters

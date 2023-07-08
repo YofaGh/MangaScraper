@@ -5,14 +5,8 @@ class Manytoon(Manga):
     domain = 'manytoon.com'
 
     def get_chapters(manga):
-        from selenium import webdriver
-        from selenium.webdriver.firefox.service import Service
-        options = webdriver.FirefoxOptions()
-        options.add_argument('--headless')
-        service = Service(executable_path='geckodriver.exe', log_path='NUL')
-        browser = webdriver.Firefox(options=options, service=service)
-        browser.get(f'https://manytoon.com/comic/{manga}/')
-        soup = BeautifulSoup(browser.page_source, 'html.parser')
+        response = Manytoon.send_request(f'https://manytoon.com/comic/{manga}/ajax/chapters/', method='POST')
+        soup = BeautifulSoup(response.text, 'html.parser')
         lis = soup.find_all('li', {'class': 'wp-manga-chapter'})
         chapters = [li.find('a')['href'].split('/')[-2] for li in lis[::-1]]
         return chapters
