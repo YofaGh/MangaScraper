@@ -8,7 +8,7 @@ class Bato(Manga):
         response = Bato.send_request(f'https://bato.to/title/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         links = soup.find('div', {'class': 'group flex flex-col-reverse'}).find_all('a', {'class': 'link-hover link-primary visited:text-accent'})
-        chapters = [link['href'].split('/')[-1] for link in links[::-1]]
+        chapters = [link['href'].split('/')[-1] for link in links]
         return chapters
 
     def get_images(manga, chapter):
