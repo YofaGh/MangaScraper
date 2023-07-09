@@ -74,7 +74,7 @@ class Mangareader(Manga):
     def get_db():
         return Mangareader.search_by_keyword('', False)
 
-    def send_request(url):
+    def send_request(url, method='GET'):
         import requests, warnings
         from urllib3.exceptions import InsecureRequestWarning
         from utils.assets import waiter
@@ -84,7 +84,7 @@ class Mangareader(Manga):
         warnings.warn = warn
         while True:
             try:
-                response = requests.get(url, verify=False)
+                response = requests.get(url, verify=False) if method == 'GET' else requests.post(url, verify=False)
                 response.raise_for_status()
                 return response
             except (requests.exceptions.HTTPError, requests.exceptions.Timeout) as error:
