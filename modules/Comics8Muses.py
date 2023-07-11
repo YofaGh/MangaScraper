@@ -1,7 +1,5 @@
 from bs4 import BeautifulSoup
-from selenium import webdriver
 from utils.models import Manga
-from selenium.webdriver.firefox.service import Service
 
 class Comics8Muses(Manga):
     domain = 'comics.8muses.com'
@@ -9,12 +7,8 @@ class Comics8Muses(Manga):
     def get_chapters(manga):
         page = 1
         chapters = []
-        options = webdriver.FirefoxOptions()
-        options.add_argument('--headless')
-        service = Service(executable_path='geckodriver.exe', log_path='NUL')
-        browser = webdriver.Firefox(options=options, service=service)
-        browser.get(f'https://comics.8muses.com/comics/album/{manga}/{page}')
-        soup = BeautifulSoup(browser.page_source, 'html.parser')
+        response = Comics8Muses.send_request(f'https://comics.8muses.com/comics/album/{manga}/{page}')
+        soup = BeautifulSoup(response.text, 'html.parser')
         if not soup.find('div', {'class':'image-title'}):
             return ['']
         while True:
@@ -23,17 +17,13 @@ class Comics8Muses(Manga):
                 break
             chapters += [link.get('href').split('/')[-1] for link in links]
             page += 1
-            browser.get(f'https://comics.8muses.com/comics/album/{manga}/{page}')
-            soup = BeautifulSoup(browser.page_source, 'html.parser')
+            response = Comics8Muses.send_request(f'https://comics.8muses.com/comics/album/{manga}/{page}')
+            soup = BeautifulSoup(response.text, 'html.parser')
         return chapters
 
     def get_images(manga, chapter):
-        options = webdriver.FirefoxOptions()
-        options.add_argument('--headless')
-        service = Service(executable_path='geckodriver.exe', log_path='NUL')
-        browser = webdriver.Firefox(options=options, service=service)
-        browser.get(f'https://comics.8muses.com/comics/album/{manga}/{chapter}')
-        soup = BeautifulSoup(browser.page_source, 'html.parser')
+        response = Comics8Muses.send_request(f'https://comics.8muses.com/comics/album/{manga}/{chapter}')
+        soup = BeautifulSoup(response.text, 'html.parser')
         links = soup.find_all('a', {'class': 'c-tile t-hover'})
         images = [link.find('img').get('data-src') for link in links]
         images = [f'https://comics.8muses.com/image/fm/{image.split("/")[-1]}' for image in images]
@@ -46,14 +36,10 @@ class Comics8Muses(Manga):
         import time
         page = 1
         links = []
-        options = webdriver.FirefoxOptions()
-        options.add_argument('--headless')
-        service = Service(executable_path='geckodriver.exe', log_path='NUL')
-        browser = webdriver.Firefox(options=options, service=service)
         while True:
-            browser.get(f'https://comics.8muses.com/search?q={keyword}&page={page}')
+            response = Comics8Muses.send_request(f'https://comics.8muses.com/search?q={keyword}&page={page}')
             time.sleep(2)
-            soup = BeautifulSoup(browser.page_source, 'html.parser')
+            soup = BeautifulSoup(response.text, 'html.parser')
             comics = soup.find_all('a', {'class': 'c-tile t-hover'}, href=True)
             results = {}
             if not comics:
@@ -81,12 +67,8 @@ class Comics8Muses(Manga):
             page += 1
 
     def get_db():
-        options = webdriver.FirefoxOptions()
-        options.add_argument('--headless')
-        service = Service(executable_path='geckodriver.exe', log_path='NUL')
-        browser = webdriver.Firefox(options=options, service=service)
-        browser.get('https://comics.8muses.com/sitemap/1.xml')
-        soup = BeautifulSoup(browser.page_source, 'xml')
+        response = Comics8Muses.send_request('https://comics.8muses.com/sitemap/1.xml')
+        soup = BeautifulSoup(response.text, 'xml')
         results = {}
         urls = soup.find_all('loc')
         for url in urls:
