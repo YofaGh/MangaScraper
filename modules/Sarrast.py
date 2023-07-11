@@ -1,29 +1,19 @@
 from bs4 import BeautifulSoup
 from utils.models import Manga
-from selenium import webdriver
-from selenium.webdriver.firefox.service import Service
 
 class Sarrast(Manga):
     domain = 'sarrast.com'
 
     def get_chapters(manga):
-        options = webdriver.FirefoxOptions()
-        options.add_argument('--headless')
-        service = Service(executable_path='geckodriver.exe', log_path='NUL')
-        browser = webdriver.Firefox(options=options, service=service)
-        browser.get(f'https://sarrast.com/series/{manga}')
-        soup = BeautifulSoup(browser.page_source, 'html.parser')
+        response = Sarrast.send_request(f'https://sarrast.com/series/{manga}')
+        soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find('div', {'class': 'text-white mb-20 mt-8 relative px-4'}).find_all('a')
         chapters = [div['href'].split('/')[-1] for div in divs[::-1]]
         return chapters
 
     def get_images(manga, chapter):
-        options = webdriver.FirefoxOptions()
-        options.add_argument('--headless')
-        service = Service(executable_path='geckodriver.exe', log_path='NUL')
-        browser = webdriver.Firefox(options=options, service=service)
-        browser.get(f'https://sarrast.com/series/{manga}/{chapter}')
-        soup = BeautifulSoup(browser.page_source, 'html.parser')
+        response = Sarrast.send_request(f'https://sarrast.com/series/{manga}/{chapter}')
+        soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'class': 'episode w-full flex flex-col items-center'}).find_all('img')
         images = [f'https://sarrast.com{image["src"]}' for image in images]
         save_names = []
@@ -35,14 +25,8 @@ class Sarrast(Manga):
         import json
         from requests.exceptions import HTTPError
         try:
-            options = webdriver.FirefoxOptions()
-            options.add_argument('--headless')
-            service = Service(executable_path='geckodriver.exe', log_path='NUL')
-            browser = webdriver.Firefox(options=options, service=service)
-            browser.get(f'https://sarrast.com/search?value={keyword}')
-            soup = BeautifulSoup(browser.page_source, 'html.parser')
-            mangas = soup.find('div', {'id': 'json'}).contents[0]
-            mangas = json.loads(mangas)
+            response = Sarrast.send_request(f'https://sarrast.com/search?value={keyword}')
+            mangas = json.loads(response.text)
             results = {}
             for manga in mangas:
                 results[manga['title']] = {
