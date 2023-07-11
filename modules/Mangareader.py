@@ -1,9 +1,5 @@
 from bs4 import BeautifulSoup
-from selenium import webdriver
 from utils.models import Manga
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import Select
-from selenium.webdriver.firefox.service import Service
 
 class Mangareader(Manga):
     domain = 'mangareader.mobi'
@@ -17,16 +13,10 @@ class Mangareader(Manga):
         return chapters
 
     def get_images(manga, chapter):
-        options = webdriver.FirefoxOptions()
-        options.add_argument('--headless')
-        service = Service(executable_path='geckodriver.exe', log_path='NUL')
-        browser = webdriver.Firefox(options=options, service=service)
-        browser.get(f'https://mangareader.mobi/chapter/{manga}-{chapter}')
-        select = Select(browser.find_element(By.XPATH, '//select[@class="loadImgType pull-left"]'))
-        select.select_by_value('1')
-        soup = BeautifulSoup(browser.page_source, 'html.parser')
-        images = soup.find('div', {'class': 'comic_wraCon text-center'}).find_all('img')
-        images = [image['src'] for image in images]
+        response = Mangareader.send_request(f'https://mangareader.mobi/chapter/{manga}-{chapter}')
+        soup = BeautifulSoup(response.text, 'html.parser')
+        images = soup.find('div', {'id':'readerarea'}).find('p').text
+        images = images.split(',')
         save_names = []
         for i in range(len(images)):
             save_names.append(f'{i+1:03d}.{images[i].split(".")[-1]}')
