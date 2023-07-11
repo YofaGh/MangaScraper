@@ -1,12 +1,15 @@
 class Module:
     domain = ''
 
-    def send_request(url, method='GET'):
+    def send_request(url, method='GET', headers=None, json=None, data=None):
         import requests
         from utils.assets import waiter
         while True:
             try:
-                response = requests.get(url) if method == 'GET' else requests.post(url)
+                if method == 'GET':
+                    response = requests.get(url, headers=headers, json=json, data=data)
+                elif method == 'POST':
+                    response = requests.post(url, headers=headers, json=json, data=data)
                 response.raise_for_status()
                 return response
             except (requests.exceptions.HTTPError, requests.exceptions.Timeout) as error:

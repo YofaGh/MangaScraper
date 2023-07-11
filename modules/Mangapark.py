@@ -15,14 +15,14 @@ class Mangapark(Manga):
             },
             'operationName': 'get_chapters'
         }
-        response = Mangapark.send_request('https://mangapark.to/apo/', headers={'content-type': 'application/json'}, data_json=data_json, method='POST')
+        response = Mangapark.send_request('https://mangapark.to/apo/', method='POST', headers={'content-type': 'application/json'}, json=data_json)
         response_raw = json.loads(response.text)
         end = response_raw['data']['get_content_comicChapterRangeList']['pager'][0]['x']
         begin = response_raw['data']['get_content_comicChapterRangeList']['pager'][-1]['y']
         data_json['variables']['select']['range'] = {'x': begin, 'y': end}
         data_json['query'] = '''query get_chapters($select: Content_ComicChapterRangeList_Select) 
             { get_content_comicChapterRangeList( select: $select ) { items{ chapterNodes { data {urlPath} } } } } '''
-        response = Mangapark.send_request('https://mangapark.to/apo/', headers={'content-type': 'application/json'}, data_json=data_json, method='POST')
+        response = Mangapark.send_request('https://mangapark.to/apo/', method='POST', headers={'content-type': 'application/json'}, json=data_json)
         response_raw = json.loads(response.text)
         items = response_raw['data']['get_content_comicChapterRangeList']['items']
         chapters = [item['chapterNodes'][0]['data']['urlPath'].split('/')[-1] for item in items[::-1]]
@@ -56,7 +56,7 @@ class Mangapark(Manga):
                 },
                 'operationName':'get_content_browse_search'
             }
-            response = Mangapark.send_request('https://mangapark.to/apo/', method='POST', headers={'content-type': 'application/json'}, data_json=data_json)
+            response = Mangapark.send_request('https://mangapark.to/apo/', method='POST', headers={'content-type': 'application/json'}, json=data_json)
             res_raw = json.loads(response.text)
             mangas = res_raw['data']['get_content_browse_search']['items']
             if mangas == prev_page:
@@ -111,16 +111,3 @@ class Mangapark(Manga):
             return f'Chapter {int(new_name):03d}'
         except:
             return f'Chapter {new_name.split(".", 1)[0].zfill(3)}.{new_name.split(".", 1)[1]}'
-
-    def send_request(url, method='GET', headers={}, data_json={}):
-        import requests
-        from utils.assets import waiter
-        while True:
-            try:
-                response = requests.get(url) if method == 'GET' else requests.post(url, headers=headers, json=data_json)
-                response.raise_for_status()
-                return response
-            except (requests.exceptions.HTTPError, requests.exceptions.Timeout) as error:
-                raise error
-            except requests.exceptions.RequestException:
-                waiter()
