@@ -65,13 +65,9 @@ class Mangareader(Manga):
         return Mangareader.search_by_keyword('', False)
 
     def send_request(url, method='GET'):
-        import requests, warnings
-        from urllib3.exceptions import InsecureRequestWarning
+        import requests
         from utils.assets import waiter
-        def warn(*args, **kwargs):
-            if args[1] is InsecureRequestWarning:
-                pass
-        warnings.warn = warn
+        requests.packages.urllib3.disable_warnings(requests.packages.urllib3.exceptions.InsecureRequestWarning)
         while True:
             try:
                 response = requests.get(url, verify=False) if method == 'GET' else requests.post(url, verify=False)
