@@ -33,18 +33,23 @@ class Hentaifox(Doujin):
             try:
                 response = Hentaifox.send_request(f'https://hentaifox.com/search/?q={keyword}&page={page}')
             except HTTPError:
-                yield []
+                yield {}
             soup = BeautifulSoup(response.text, 'html.parser')
             doujins = soup.find_all('div', {'class': 'thumb'})
             if len(doujins) == 0:
-                yield []
-            results = []
+                yield {}
+            results = {}
             for doujin in doujins:
                 caption = doujin.find('div', {'class': 'caption'})
                 ti = caption.find('a').contents[0]
                 if absolute and keyword.lower() not in ti.lower():
                     continue
-                results.append(caption.find('a')['href'].split('/')[-2])
+                results[ti] = {
+                    'domain': Hentaifox.domain,
+                    'code': caption.find('a')['href'].split('/')[-2],
+                    'category': doujin.find('a', {'class':'t_cat'}).contents[0],
+                    'page': page
+                }
             yield results
             page += 1
 
