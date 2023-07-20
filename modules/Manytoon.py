@@ -31,10 +31,10 @@ class Manytoon(Manga):
             mangas = soup.find_all('div', {'class': 'row c-tabs-item__content'})
             results = {}
             for manga in mangas:
-                ti = manga.find('div', {'class': 'tab-thumb c-image-hover'}).find('a')['title']
+                ti = manga.find('div', {'class': 'post-title'}).find('a').text
                 if absolute and keyword.lower() not in ti.lower():
                     continue
-                link = manga.find('div', {'class': 'tab-thumb c-image-hover'}).find('a')['href'].split('/')[-2]
+                link = manga.find('div', {'class': 'post-title'}).find('a')['href'].split('/')[-2]
                 latest_chapter, genres, authors, status = '', '', '', ''
                 contents = manga.find_all('div', {'class': 'post-content_item'})
                 for content in contents:
