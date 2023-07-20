@@ -20,7 +20,7 @@ class Toonily(Manga):
         images = [image['data-src'].strip() for image in images]
         save_names = []
         for i in range(len(images)):
-            save_names.append(f'{i+1:03d}.{images[i].split(".")[-1].split("?")[0]}')
+            save_names.append(f'{i+1:03d}.{images[i].split(".")[-1]}')
         return images, save_names
 
     def search_by_keyword(keyword, absolute):
