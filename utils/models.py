@@ -1,15 +1,17 @@
 class Module:
     domain = ''
 
-    def send_request(url, method='GET', headers=None, json=None, data=None):
+    def send_request(url, method='GET', headers=None, json=None, data=None, verify=None):
         import requests
         from utils.assets import waiter
+        if verify is False:
+            requests.packages.urllib3.disable_warnings(requests.packages.urllib3.exceptions.InsecureRequestWarning)
         while True:
             try:
                 if method == 'GET':
-                    response = requests.get(url, headers=headers, json=json, data=data)
+                    response = requests.get(url, headers=headers, json=json, data=data, verify=verify)
                 elif method == 'POST':
-                    response = requests.post(url, headers=headers, json=json, data=data)
+                    response = requests.post(url, headers=headers, json=json, data=data, verify=verify)
                 response.raise_for_status()
                 return response
             except (requests.exceptions.HTTPError, requests.exceptions.Timeout) as error:

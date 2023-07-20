@@ -5,7 +5,7 @@ class Mangareader(Manga):
     domain = 'mangareader.mobi'
 
     def get_chapters(manga):
-        response = Mangareader.send_request(f'https://mangareader.mobi/manga/{manga}')
+        response = Mangareader.send_request(f'https://mangareader.mobi/manga/{manga}', verify=False)
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find('div', {'class':'cl'}).find_all('a')
         chapters = [div['href'].split('/')[-1] for div in divs[::-1]]
@@ -13,7 +13,7 @@ class Mangareader(Manga):
         return chapters
 
     def get_images(manga, chapter):
-        response = Mangareader.send_request(f'https://mangareader.mobi/chapter/{manga}-{chapter}')
+        response = Mangareader.send_request(f'https://mangareader.mobi/chapter/{manga}-{chapter}', verify=False)
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'id':'readerarea'}).find('p').text
         images = images.split(',')
@@ -28,7 +28,7 @@ class Mangareader(Manga):
         page = 1
         while True:
             try:
-                response = Mangareader.send_request(f'https://mangareader.mobi/search?s={keyword}&page={page}')
+                response = Mangareader.send_request(f'https://mangareader.mobi/search?s={keyword}&page={page}', verify=False)
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -63,17 +63,3 @@ class Mangareader(Manga):
 
     def get_db():
         return Mangareader.search_by_keyword('', False)
-
-    def send_request(url, method='GET'):
-        import requests
-        from utils.assets import waiter
-        requests.packages.urllib3.disable_warnings(requests.packages.urllib3.exceptions.InsecureRequestWarning)
-        while True:
-            try:
-                response = requests.get(url, verify=False) if method == 'GET' else requests.post(url, verify=False)
-                response.raise_for_status()
-                return response
-            except (requests.exceptions.HTTPError, requests.exceptions.Timeout) as error:
-                raise error
-            except requests.exceptions.RequestException:
-                waiter()
