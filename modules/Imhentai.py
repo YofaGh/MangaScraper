@@ -3,6 +3,12 @@ from utils.models import Doujin
 
 class Imhentai(Doujin):
     domain = 'imhentai.xxx'
+    image_formats = {
+        'j': 'jpg',
+        'p': 'png',
+        'b': 'bmp',
+        'g': 'gif'
+    }
 
     def get_title(code):
         response = Imhentai.send_request(f'https://imhentai.xxx/gallery/{code}')
@@ -11,13 +17,13 @@ class Imhentai(Doujin):
         return title
 
     def get_images(code):
+        import json
         response = Imhentai.send_request(f'https://imhentai.xxx/gallery/{code}')
         soup = BeautifulSoup(response.text, 'html.parser')
-        sample = soup.find('div', {'id': 'append_thumbs'}).find('img')['data-src']
-        sample_path = sample.rsplit('/', 1)[0]
-        sample_format = sample.rsplit('.', 1)[1]
-        pages = int(soup.find('li', {'class': 'pages'}).contents[0].split(' ')[-1])
-        images = [f'{sample_path}/{i}.{sample_format}' for i in range(1, pages+1)]
+        path = soup.find('div', {'id': 'append_thumbs'}).find('img')['data-src'].rsplit('/', 1)[0]
+        script = soup.find(lambda tag:tag.name == 'script' and 'var g_th' in tag.text).text
+        images = json.loads(script.replace("var g_th = $.parseJSON('", '')[:-4])
+        images = [f'{path}/{image}.{Imhentai.image_formats[images[image][0]]}' for image in images]
         return images
 
     def search_by_keyword(keyword, absolute):
@@ -49,37 +55,3 @@ class Imhentai(Doujin):
 
     def get_db():
         return Imhentai.search_by_keyword('', False)
-
-    def download_image(url, image_name, log_num):
-        import requests
-        from termcolor import colored
-        from utils.assets import waiter
-        while True:
-            try:
-                response = requests.get(url)
-                response.raise_for_status()
-                with open(image_name, 'wb') as image:
-                    image.write(response.content)
-                return image_name
-            except (requests.exceptions.HTTPError) as error:
-                break
-            except (requests.exceptions.Timeout) as error:
-                raise error
-            except requests.exceptions.RequestException:
-                waiter()
-        for format in ['png', 'jpg', 'jpeg', 'gif', 'tif', 'webp']:
-            while True:
-                try:
-                    response = requests.get(f'{url.rsplit(".", 1)[0]}.{format}')
-                    response.raise_for_status()
-                    with open(f'{image_name.rsplit(".", 1)[0]}.{format}', 'wb') as image:
-                        image.write(response.content)
-                    return f'{image_name.rsplit(".", 1)[0]}.{format}'
-                except (requests.exceptions.HTTPError) as error:
-                    break
-                except (requests.exceptions.Timeout) as error:
-                    raise error
-                except requests.exceptions.RequestException:
-                    waiter()
-        print(colored(f' Warning: Could not download image {log_num}: {url}', 'red'))
-        return ''

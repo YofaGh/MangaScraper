@@ -3,6 +3,12 @@ from utils.models import Doujin
 
 class Hentaifox(Doujin):
     domain = 'hentaifox.com'
+    image_formats = {
+        'j': 'jpg',
+        'p': 'png',
+        'b': 'bmp',
+        'g': 'gif'
+    }
 
     def get_title(code):
         response = Hentaifox.send_request(f'https://hentaifox.com/gallery/{code}')
@@ -11,13 +17,13 @@ class Hentaifox(Doujin):
         return title
 
     def get_images(code):
+        import json
         response = Hentaifox.send_request(f'https://hentaifox.com/gallery/{code}')
         soup = BeautifulSoup(response.text, 'html.parser')
-        sample = soup.find('div', {'class': 'gallery_thumb'}).find('img')['data-src'] 
-        sample_path = sample.rsplit('/', 1)[0]
-        sample_format = sample.rsplit('.', 1)[1]
-        pages = int(soup.find('span', {'class': 'i_text pages'}).contents[0].split(' ')[-1])
-        images = [f'{sample_path}/{i}.{sample_format}' for i in range(1, pages+1)]
+        path = soup.find('div', {'class': 'gallery_thumb'}).find('img')['data-src'].rsplit('/', 1)[0]
+        script = soup.find(lambda tag:tag.name == 'script' and 'var g_th' in tag.text).text
+        images = json.loads(script.replace("var g_th = $.parseJSON('", '')[:-4])
+        images = [f'{path}/{image}.{Hentaifox.image_formats[images[image][0]]}' for image in images]
         return images
 
     def search_by_keyword(keyword, absolute):
@@ -27,23 +33,18 @@ class Hentaifox(Doujin):
             try:
                 response = Hentaifox.send_request(f'https://hentaifox.com/search/?q={keyword}&page={page}')
             except HTTPError:
-                yield {}
+                yield []
             soup = BeautifulSoup(response.text, 'html.parser')
             doujins = soup.find_all('div', {'class': 'thumb'})
             if len(doujins) == 0:
-                yield {}
-            results = {}
+                yield []
+            results = []
             for doujin in doujins:
                 caption = doujin.find('div', {'class': 'caption'})
                 ti = caption.find('a').contents[0]
                 if absolute and keyword.lower() not in ti.lower():
                     continue
-                results[ti] = {
-                    'domain': Hentaifox.domain,
-                    'code': caption.find('a')['href'].split('/')[-2],
-                    'category': doujin.find('a', {'class':'t_cat'}).contents[0],
-                    'page': page
-                }
+                results.append(caption.find('a')['href'].split('/')[-2])
             yield results
             page += 1
 
@@ -76,37 +77,3 @@ class Hentaifox(Doujin):
                 yield results
                 page += 1
         yield {}
-
-    def download_image(url, image_name, log_num):
-        import requests
-        from termcolor import colored
-        from utils.assets import waiter
-        while True:
-            try:
-                response = requests.get(url)
-                response.raise_for_status()
-                with open(image_name, 'wb') as image:
-                    image.write(response.content)
-                return image_name
-            except (requests.exceptions.HTTPError) as error:
-                break
-            except (requests.exceptions.Timeout) as error:
-                raise error
-            except requests.exceptions.RequestException:
-                waiter()
-        for format in ['png', 'jpg', 'jpeg', 'gif', 'tif', 'webp']:
-            while True:
-                try:
-                    response = requests.get(f'{url.rsplit(".", 1)[0]}.{format}')
-                    response.raise_for_status()
-                    with open(f'{image_name.rsplit(".", 1)[0]}.{format}', 'wb') as image:
-                        image.write(response.content)
-                    return f'{image_name.rsplit(".", 1)[0]}.{format}'
-                except (requests.exceptions.HTTPError) as error:
-                    break
-                except (requests.exceptions.Timeout) as error:
-                    raise error
-                except requests.exceptions.RequestException:
-                    waiter()
-        print(colored(f' Warning: Could not download image {log_num}: {url}', 'red'))
-        return ''
