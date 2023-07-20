@@ -22,11 +22,10 @@ class Sarrast(Manga):
         return images, save_names
 
     def search_by_keyword(keyword, absolute):
-        import json
         from requests.exceptions import HTTPError
         try:
             response = Sarrast.send_request(f'https://sarrast.com/search?value={keyword}')
-            mangas = json.loads(response.text)
+            mangas = response.json()
             results = {}
             for manga in mangas:
                 results[manga['title']] = {
