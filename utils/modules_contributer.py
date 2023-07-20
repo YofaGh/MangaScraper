@@ -84,6 +84,9 @@ def get_module(key):
         case 'toonily.com':
             from modules.Toonily import Toonily
             return Toonily
+        case 'truemanga.com':
+            from modules.Truemanga import Truemanga
+            return Truemanga
         case _:
             from utils.exceptions import MissingModuleException
             raise MissingModuleException(key)
@@ -117,6 +120,7 @@ def get_all_modules():
     from modules.Sarrast import Sarrast
     from modules.Simplyhentai import Simplyhentai
     from modules.Toonily import Toonily
+    from modules.Truemanga import Truemanga
     return [
         Bato,
         Bibimanga,
@@ -145,7 +149,8 @@ def get_all_modules():
         Readonepiece,
         Sarrast,
         Simplyhentai,
-        Toonily
+        Toonily,
+        Truemanga
     ]
 
 def get_all_domains():
@@ -177,5 +182,6 @@ def get_all_domains():
         'readonepiece.com',
         'sarrast.com',
         'simplyhentai.org',
-        'toonily.com'
+        'toonily.com',
+        'truemanga.com'
     ]
