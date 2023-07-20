@@ -18,6 +18,7 @@ Mangas:
     manhwa18.com
     readonepiece.com
     sarrast.com
+    toonily.com
 
 Doujins:
     ehentai.to
