@@ -65,17 +65,24 @@ class Comics8Muses(Manga):
             page += 1
 
     def get_db():
-        response = Comics8Muses.send_request('https://comics.8muses.com/sitemap/1.xml')
-        soup = BeautifulSoup(response.text, 'xml')
-        results = {}
-        urls = soup.find_all('loc')
-        for url in urls:
-            results[url.get_text().split('/')[-1].replace('-', ' ')] = {
-                'domain': Comics8Muses.domain,
-                'url': url.get_text().replace('https://comics.8muses.com/comics/album/', '')
-            }
-        yield results
-        yield {}
+        from requests.exceptions import HTTPError
+        page = 1
+        while True:
+            try:
+                response = Comics8Muses.send_request(f'https://comics.8muses.com/sitemap/{page}.xml')
+            except HTTPError:
+                yield {}
+            soup = BeautifulSoup(response.text, 'xml')
+            results = {}
+            urls = soup.find_all('loc')
+            for url in urls:
+                results[url.get_text().split('/')[-1].replace('-', ' ')] = {
+                    'domain': Comics8Muses.domain,
+                    'url': url.get_text().replace('https://comics.8muses.com/comics/album/', ''),
+                    'page': page
+                }
+            yield results
+            page += 1
 
     def rename_chapter(name):
         return name.replace('-', ' ')
