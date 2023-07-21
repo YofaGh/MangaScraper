@@ -33,12 +33,10 @@ class Comics8Muses(Manga):
         return images, save_names
 
     def search_by_keyword(keyword, absolute):
-        import time
         page = 1
         links = []
         while True:
             response = Comics8Muses.send_request(f'https://comics.8muses.com/search?q={keyword}&page={page}')
-            time.sleep(2)
             soup = BeautifulSoup(response.text, 'html.parser')
             comics = soup.find_all('a', {'class': 'c-tile t-hover'}, href=True)
             results = {}
