@@ -20,7 +20,7 @@ def download_doujin(code, module, sleep_time, merge, convert_to_pdf, fit_merge):
             save_path = f'{fixed_doujin_name}/{i+1:03d}.{images[i].split(".")[-1]}'
             if not os.path.exists(save_path):
                 time.sleep(sleep_time)
-                saved_path = module.download_image(images[i], save_path, i+1)
+                saved_path = module.download_image(images[i], save_path, i+1, module.download_images_headers)
                 if not assets.validate_corrupted_image(saved_path):
                     print(colored(f' Warning: Image {i+1} is corrupted. will not be able to merge this chapter.', 'red'))
                     i += 1

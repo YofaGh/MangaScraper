@@ -60,22 +60,3 @@ class Truemanga(Manga):
 
     def get_db():
         return Truemanga.search_by_keyword('', False)
-
-    def download_image(url, image_name, log_num):
-        import requests
-        from termcolor import colored
-        from utils.assets import waiter
-        while True:
-            try:
-                response = requests.get(url, headers=Truemanga.download_images_headers)
-                response.raise_for_status()
-                with open(image_name, 'wb') as image:
-                    image.write(response.content)
-                return image_name
-            except (requests.exceptions.HTTPError) as error:
-                print(colored(f' Warning: Could not download image {log_num}: {url}', 'red'))
-                return ''
-            except (requests.exceptions.Timeout) as error:
-                raise error
-            except requests.exceptions.RequestException:
-                waiter()

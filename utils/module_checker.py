@@ -81,7 +81,7 @@ def doujin_images_checker(module, code):
 def download_checker(module, url, name):
     sys.stdout.write(f'\r{module.domain}: Running download checker...')
     try:
-        saved_path = module.download_image(url, name, f'{module.domain}_test')
+        saved_path = module.download_image(url, name, f'{module.domain}_test', module.download_images_headers)
         if validate_corrupted_image(saved_path) and validate_truncated_image(saved_path):
             os.remove(saved_path)
             print(colored(f'\r{module.domain}: Downloaded an image successfully', 'green'))

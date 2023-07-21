@@ -7,6 +7,7 @@ class Manhuamanhwa(Manga):
         'User-Agent': 'Leech/1051 CFNetwork/454.9.4 Darwin/10.3.0 (i386) (MacPro1%2C1)',
         "Referer": "https://manhuamanhwa.com/"
     }
+    download_images_headers = headers
 
     def get_chapters(manga):
         response = Manhuamanhwa.send_request(f'https://manhuamanhwa.com/manga/{manga}/ajax/chapters/', method='POST', headers=Manhuamanhwa.headers)
@@ -68,22 +69,3 @@ class Manhuamanhwa(Manga):
 
     def get_db():
         return Manhuamanhwa.search_by_keyword('', False)
-
-    def download_image(url, image_name, log_num):
-        import requests
-        from termcolor import colored
-        from utils.assets import waiter
-        while True:
-            try:
-                response = requests.get(url, headers=Manhuamanhwa.headers)
-                response.raise_for_status()
-                with open(image_name, 'wb') as image:
-                    image.write(response.content)
-                return image_name
-            except (requests.exceptions.HTTPError) as error:
-                print(colored(f' Warning: Could not download image {log_num}: {url}', 'red'))
-                return ''
-            except (requests.exceptions.Timeout) as error:
-                raise error
-            except requests.exceptions.RequestException:
-                waiter()

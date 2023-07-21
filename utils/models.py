@@ -1,5 +1,6 @@
 class Module:
     domain = ''
+    download_images_headers = None
 
     def send_request(url, method='GET', headers=None, json=None, data=None, verify=None):
         import requests
@@ -19,13 +20,13 @@ class Module:
             except requests.exceptions.RequestException:
                 waiter()
 
-    def download_image(url, image_name, log_num):
+    def download_image(url, image_name, log_num, headers=None):
         import requests
         from termcolor import colored
         from utils.assets import waiter
         while True:
             try:
-                response = requests.get(url)
+                response = requests.get(url, headers=headers)
                 response.raise_for_status()
                 with open(image_name, 'wb') as image:
                     image.write(response.content)
