@@ -1,4 +1,3 @@
-import json
 from bs4 import BeautifulSoup
 from utils.models import Manga
 
@@ -15,25 +14,24 @@ class Mangapark(Manga):
             },
             'operationName': 'get_chapters'
         }
-        response = Mangapark.send_request('https://mangapark.to/apo/', method='POST', headers={'content-type': 'application/json'}, json=data_json)
-        response_raw = json.loads(response.text)
-        end = response_raw['data']['get_content_comicChapterRangeList']['pager'][0]['x']
-        begin = response_raw['data']['get_content_comicChapterRangeList']['pager'][-1]['y']
+        response = Mangapark.send_request('https://mangapark.to/apo/', method='POST', headers={'content-type': 'application/json'}, json=data_json).json()
+        end = response['data']['get_content_comicChapterRangeList']['pager'][0]['x']
+        begin = response['data']['get_content_comicChapterRangeList']['pager'][-1]['y']
         data_json['variables']['select']['range'] = {'x': begin, 'y': end}
         data_json['query'] = '''query get_chapters($select: Content_ComicChapterRangeList_Select) 
             { get_content_comicChapterRangeList( select: $select ) { items{ chapterNodes { data {urlPath} } } } } '''
-        response = Mangapark.send_request('https://mangapark.to/apo/', method='POST', headers={'content-type': 'application/json'}, json=data_json)
-        response_raw = json.loads(response.text)
-        items = response_raw['data']['get_content_comicChapterRangeList']['items']
+        response = Mangapark.send_request('https://mangapark.to/apo/', method='POST', headers={'content-type': 'application/json'}, json=data_json).json()
+        items = response['data']['get_content_comicChapterRangeList']['items']
         chapters = [item['chapterNodes'][0]['data']['urlPath'].split('/')[-1] for item in items[::-1]]
         return chapters
 
     def get_images(manga, chapter):
+        import json
         response = Mangapark.send_request(f'https://mangapark.to/title/{manga}/{chapter}')
         soup = BeautifulSoup(response.text, 'html.parser')
         script = soup.find('script', {'id': '__NEXT_DATA__'})
         data = json.loads(script.text)
-        images_raw = (data['props']['pageProps']['dehydratedState']['queries'][0]['state']['data']['data']['imageSet'])
+        images_raw = data['props']['pageProps']['dehydratedState']['queries'][0]['state']['data']['data']['imageSet']
         images = [f'{url}?{tail}' for url, tail in zip(images_raw['httpLis'], images_raw['wordLis'])]
         save_names = []
         for i in range(len(images)):
@@ -56,9 +54,8 @@ class Mangapark(Manga):
                 },
                 'operationName':'get_content_browse_search'
             }
-            response = Mangapark.send_request('https://mangapark.to/apo/', method='POST', headers={'content-type': 'application/json'}, json=data_json)
-            res_raw = json.loads(response.text)
-            mangas = res_raw['data']['get_content_browse_search']['items']
+            response = Mangapark.send_request('https://mangapark.to/apo/', method='POST', headers={'content-type': 'application/json'}, json=data_json).json()
+            mangas = response['data']['get_content_browse_search']['items']
             if mangas == prev_page:
                 yield {}
             results = {}
