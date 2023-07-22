@@ -13,7 +13,7 @@ class Hentaifox(Doujin):
     def get_title(code):
         response = Hentaifox.send_request(f'https://hentaifox.com/gallery/{code}')
         soup = BeautifulSoup(response.text, 'html.parser')
-        title = soup.find('div', {'class', 'info'}).find('h1').contents[0]
+        title = soup.find('div', {'class', 'info'}).find('h1').get_text(strip=True)
         return title
 
     def get_images(code):
@@ -41,13 +41,13 @@ class Hentaifox(Doujin):
             results = {}
             for doujin in doujins:
                 caption = doujin.find('div', {'class': 'caption'})
-                ti = caption.find('a').contents[0]
+                ti = caption.find('a').get_text()
                 if absolute and keyword.lower() not in ti.lower():
                     continue
                 results[ti] = {
                     'domain': Hentaifox.domain,
                     'code': caption.find('a')['href'].split('/')[-2],
-                    'category': doujin.find('a', {'class':'t_cat'}).contents[0],
+                    'category': doujin.find('a', {'class':'t_cat'}).get_text(),
                     'page': page
                 }
             yield results
@@ -73,11 +73,11 @@ class Hentaifox(Doujin):
                 results = {}
                 for doujin in doujins:
                     caption = doujin.find('div', {'class': 'caption'})
-                    ti = caption.find('a').contents[0]
+                    ti = caption.find('a').get_text()
                     results[ti] = {
                         'domain': Hentaifox.domain,
                         'code': caption.find('a')['href'].split('/')[-2],
-                        'category': doujin.find('a', {'class':'t_cat'}).contents[0]
+                        'category': doujin.find('a', {'class':'t_cat'}).get_text()
                     }
                 yield results
                 page += 1

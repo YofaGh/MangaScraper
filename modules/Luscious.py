@@ -7,7 +7,7 @@ class Luscious(Doujin):
     def get_title(code):
         response = Luscious.send_request(f'https://www.luscious.net/albums/{code}')
         soup = BeautifulSoup(response.text, 'html.parser')
-        title = soup.find('h1', {'class', 'o-h1 album-heading'}).text
+        title = soup.find('h1', {'class', 'o-h1 album-heading'}).get_text(strip=True)
         return title
 
     def get_images(code):

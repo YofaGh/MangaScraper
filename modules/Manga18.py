@@ -34,11 +34,11 @@ class Manga18(Manga):
             results = {}
             for manga in mangas:
                 ti = manga.find('div', {'class': 'mg_name'}).find('a')
-                if absolute and keyword.lower() not in ti.contents[0].lower():
+                if absolute and keyword.lower() not in ti.get_text(strip=True).lower():
                     continue
                 latest_chapter = ''
                 with suppress(Exception): latest_chapter = manga.find('div', {'class': 'mg_chapter'}).find('a')['href'].split('/')[-1]
-                results[ti.contents[0]] = {
+                results[ti.get_text(strip=True)] = {
                     'domain': Manga18.domain,
                     'url': ti['href'].split('/')[-1],
                     'latest_chapter': latest_chapter,

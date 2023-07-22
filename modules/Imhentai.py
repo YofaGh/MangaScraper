@@ -13,7 +13,7 @@ class Imhentai(Doujin):
     def get_title(code):
         response = Imhentai.send_request(f'https://imhentai.xxx/gallery/{code}')
         soup = BeautifulSoup(response.text, 'html.parser')
-        title = soup.find('div', {'class', 'col-md-7 col-sm-7 col-lg-8 right_details'}).find('h1').contents[0]
+        title = soup.find('div', {'class', 'col-md-7 col-sm-7 col-lg-8 right_details'}).find('h1').get_text(strip=True)
         return title
 
     def get_images(code):
@@ -41,13 +41,13 @@ class Imhentai(Doujin):
             results = {}
             for doujin in doujins:
                 caption = doujin.find('div', {'class': 'caption'})
-                ti = caption.find('a').contents[0]
+                ti = caption.find('a').get_text()
                 if absolute and keyword.lower() not in ti.lower():
                     continue
                 results[ti] = {
                     'domain': Imhentai.domain,
                     'code': caption.find('a')['href'].split('/')[-2],
-                    'category': doujin.find('a', {'class':'thumb_cat'}).contents[0],
+                    'category': doujin.find('a', {'class':'thumb_cat'}).get_text(),
                     'page': page
                 }
             yield results

@@ -41,19 +41,18 @@ class Coloredmanga(Manga):
                 contents = manga.find_all('div', {'class': 'post-content_item'})
                 for content in contents:
                     with suppress(Exception):
-                        head = content.find('h5').contents[0].replace('\n', '').replace(' ', '')
-                        if head == 'Authors':
-                            authors = ', '.join([a.contents[0] for a in content.find_all('a')])
-                        if head == 'Artists':
-                            artists = ', '.join([a.contents[0] for a in content.find_all('a')])
-                        if head == 'Genres':
-                            genres = ', '.join([a.contents[0] for a in content.find_all('a')])
-                        if head == 'Status':
-                            status = content.find('div', {'class': 'summary-content'}).contents[0].replace('\n', '').replace(' ', '')
-                        if head == 'Release':
-                            release_date = content.find('a').contents[0]
+                        if 'Authors' in content.text:
+                            authors = content.find('div', {'class': 'summary-content'}).get_text(strip=True)
+                        if 'Artists' in content.text:
+                            artists = content.find('div', {'class': 'summary-content'}).get_text(strip=True)
+                        if 'Genres' in content.text:
+                            genres = content.find('div', {'class': 'summary-content'}).get_text(strip=True)
+                        if 'Status' in content.text:
+                            status = content.find('div', {'class': 'summary-content'}).get_text(strip=True)
+                        if 'Release' in content.text:
+                            release_date = content.find('div', {'class': 'summary-content'}).get_text(strip=True)
                 with suppress(Exception): latest_chapter = manga.find('span', {'class': 'font-meta chapter'}).find('a')['href'].split('/')[-2]
-                results[tilink.find('a').contents[0]] = {
+                results[tilink.get_text(strip=True)] = {
                     'domain': Coloredmanga.domain,
                     'url': tilink.find('a')['href'].replace('https://coloredmanga.com/mangas/','')[:-1],
                     'latest_chapter': latest_chapter,

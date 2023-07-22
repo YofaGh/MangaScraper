@@ -7,7 +7,7 @@ class Nyahentai(Doujin):
     def get_title(code):
         response = Nyahentai.send_request(f'https://nyahentai.red/g/{code}')
         soup = BeautifulSoup(response.text, 'html.parser')
-        title = soup.find('h1', {'class', 'title'}).find('span').contents[0]
+        title = soup.find('h1', {'class', 'title'}).find('span').get_text(strip=True)
         return title
 
     def get_images(code):
@@ -36,13 +36,11 @@ class Nyahentai(Doujin):
                 yield {}
             results = {}
             for doujin in doujins:
-                doj = doujin.find('a')
-                ti = doj.find('div', {'class': 'caption'}).contents[0]
-                if absolute and keyword.lower() not in ti.lower():
+                if absolute and keyword.lower() not in doujin.get_text(strip=True).lower():
                     continue
-                results[ti] = {
+                results[doujin.get_text(strip=True)] = {
                     'domain': Nyahentai.domain,
-                    'code': doj['href'].split('/')[-2],
+                    'code': doujin.find('a')['href'].split('/')[-2],
                     'page': page
                 }
             yield results

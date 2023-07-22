@@ -7,7 +7,7 @@ class Myreadingmanga(Doujin):
     def get_title(code):
         response = Myreadingmanga.send_request(f'https://myreadingmanga.to/g/{code}')
         soup = BeautifulSoup(response.text, 'html.parser')
-        title = soup.find('div', {'class', 'container'}).find('h1').text
+        title = soup.find('div', {'class', 'container'}).find('h1').get_text(strip=True)
         return title
 
     def get_images(code):
@@ -36,13 +36,11 @@ class Myreadingmanga(Doujin):
                 yield {}
             results = {}
             for doujin in doujins:
-                doj = doujin.find('a')
-                ti = doj.find('div', {'class': 'caption'}).contents[0]
-                if absolute and keyword.lower() not in ti.lower():
+                if absolute and keyword.lower() not in doujin.get_text(strip=True).lower():
                     continue
-                results[ti] = {
+                results[doujin.get_text(strip=True)] = {
                     'domain': Myreadingmanga.domain,
-                    'code': doj['href'].split('/')[-2],
+                    'code': doujin.find('a')['href'].split('/')[-2],
                     'page': page
                 }
             yield results

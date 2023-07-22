@@ -7,7 +7,7 @@ class Ehentai(Doujin):
     def get_title(code):
         response = Ehentai.send_request(f'https://ehentai.to/g/{code}')
         soup = BeautifulSoup(response.text, 'html.parser')
-        title = soup.find('div', {'class', 'container'}).find('h1').text
+        title = soup.find('div', {'class', 'container'}).find('h1').get_text(strip=True)
         return title
 
     def get_images(code):
@@ -37,7 +37,7 @@ class Ehentai(Doujin):
             results = {}
             for doujin in doujins:
                 doj = doujin.find('a')
-                ti = doj.find('div', {'class': 'caption'}).contents[0]
+                ti = doj.find('div', {'class': 'caption'}).get_text(strip=True)
                 if absolute and keyword.lower() not in ti.lower():
                     continue
                 results[ti] = {

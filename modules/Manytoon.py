@@ -31,7 +31,7 @@ class Manytoon(Manga):
             mangas = soup.find_all('div', {'class': 'row c-tabs-item__content'})
             results = {}
             for manga in mangas:
-                ti = manga.find('div', {'class': 'post-title'}).find('a').text
+                ti = manga.find('div', {'class': 'post-title'}).find('a').get_text(strip=True)
                 if absolute and keyword.lower() not in ti.lower():
                     continue
                 link = manga.find('div', {'class': 'post-title'}).find('a')['href'].split('/')[-2]
@@ -39,13 +39,12 @@ class Manytoon(Manga):
                 contents = manga.find_all('div', {'class': 'post-content_item'})
                 for content in contents:
                     with suppress(Exception):
-                        head = content.find('h5').contents[0].replace('\n', '').replace(' ', '')
-                        if head == 'Authors':
-                            authors = ', '.join([a.contents[0] for a in content.find_all('a')])
-                        if head == 'Genres':
-                            genres = ', '.join([a.contents[0] for a in content.find_all('a')])
-                        if head == 'Status':
-                            status = content.find('div', {'class': 'summary-content'}).contents[0].replace('\n', '').replace(' ', '')
+                        if 'Authors' in content.text:
+                            authors = content.find('div', {'class': 'summary-content'}).get_text(strip=True)
+                        if 'Genres' in content.text:
+                            genres = content.find('div', {'class': 'summary-content'}).get_text(strip=True)
+                        if 'Status' in content.text:
+                            status = content.find('div', {'class': 'summary-content'}).get_text(strip=True)
                 with suppress(Exception): latest_chapter = manga.find('span', {'class': 'font-meta chapter'}).find('a')['href'].split('/')[-2]
                 results[ti] = {
                     'domain': Manytoon.domain,

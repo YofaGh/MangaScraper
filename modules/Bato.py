@@ -44,13 +44,13 @@ class Bato(Manga):
             results = {}
             for index, manga in enumerate(mangas):
                 ti = manga.find('h3').find('a')
-                if absolute and keyword.lower() not in ti.text.lower():
+                if absolute and keyword.lower() not in ti.get_text(strip=True).lower():
                     continue
                 alias, genres, latest_chapter = '', '', ''
-                with suppress(Exception): alias = manga.find('div', {'data-hk': f'0-0-3-{index}-4-0'}).text
-                with suppress(Exception): genres = manga.find('div', {'data-hk': f'0-0-3-{index}-6-0'}).text
+                with suppress(Exception): alias = manga.find('div', {'data-hk': f'0-0-3-{index}-4-0'}).get_text(strip=True)
+                with suppress(Exception): genres = manga.find('div', {'data-hk': f'0-0-3-{index}-6-0'}).get_text(strip=True)
                 with suppress(Exception): latest_chapter = manga.find('div', {'data-hk': f'0-0-3-{index}-7-1-0-0'}).find('a')['href'].split('/')[-1]
-                results[ti.text] = {
+                results[ti.get_text(strip=True)] = {
                     'domain': Bato.domain,
                     'url': ti['href'].replace('/title/', ''),
                     'latest_chapter': latest_chapter,

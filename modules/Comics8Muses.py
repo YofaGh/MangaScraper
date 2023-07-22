@@ -45,7 +45,7 @@ class Comics8Muses(Manga):
             for comic in comics:
                 if not comic.get('href'):
                     continue
-                ti = comic.find('span').contents[0]
+                ti = comic.find('span').text
                 if absolute and keyword.lower() not in ti.lower():
                     continue
                 url = comic.get('href').replace('https://comics.8muses.com/comics/album/', '')

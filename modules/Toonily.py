@@ -36,12 +36,12 @@ class Toonily(Manga):
             mangas = soup.find_all('div', {'class': 'item-summary'})
             results = {}
             for manga in mangas:
-                ti = manga.find('a').text
-                if absolute and keyword.lower() not in ti.lower():
+                tilink = manga.find('a')
+                if absolute and keyword.lower() not in tilink.get_text(strip=True).lower():
                     continue
-                results[ti] = {
+                results[tilink.get_text(strip=True)] = {
                     'domain': Toonily.domain,
-                    'url': manga.find('a')['href'].split('/')[-2],
+                    'url': tilink['href'].split('/')[-2],
                     'page': page
                 }
             yield results

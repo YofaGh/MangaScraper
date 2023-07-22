@@ -43,10 +43,8 @@ class Truemanga(Manga):
                     continue
                 latest_chapter, genres, summary = '', '', ''
                 with suppress(Exception): latest_chapter = manga.find('span', {'class': 'latest-chapter'})['title']
-                with suppress(Exception):
-                    genres = manga.find('div', {'class': 'genres'}).find_all('span')
-                    genres = ', '.join([genre.contents[0] for genre in genres])
-                with suppress(Exception): summary = manga.find('div', {'class': 'summary'}).find('p').contents[0]
+                with suppress(Exception): genres = manga.find('div', {'class': 'genres'}).get_text(strip=True, separator=', ')
+                with suppress(Exception): summary = manga.find('div', {'class': 'summary'}).get_text(strip=True)
                 results[ti] = {
                     'domain': Truemanga.domain,
                     'url': manga.find('div', {'class': 'title'}).find('a')['href'].split('/')[-1],

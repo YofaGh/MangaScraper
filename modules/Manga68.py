@@ -34,25 +34,24 @@ class Manga68(Manga):
             results = {}
             for manga in mangas:
                 tilink = manga.find('div', {'class', 'post-title'})
-                if absolute and keyword.lower() not in manga.find('a')['href']:
+                if absolute and keyword.lower() not in tilink.get_text(strip=True).lower():
                     continue
                 latest_chapter, authors, artists, genres, status, release_date = '', '', '', '', '', ''
                 contents = manga.find_all('div', {'class': 'post-content_item'})
                 for content in contents:
                     with suppress(Exception):
-                        head = content.find('h5').contents[0].replace('\n', '').replace(' ', '')
-                        if head == 'Authors':
-                            authors = ', '.join([a.contents[0] for a in content.find_all('a')])
-                        if head == 'Artists':
-                            artists = ', '.join([a.contents[0] for a in content.find_all('a')])
-                        if head == 'Genres':
-                            genres = ', '.join([a.contents[0] for a in content.find_all('a')])
-                        if head == 'Status':
-                            status = content.find('div', {'class': 'summary-content'}).contents[0].replace('\n', '').replace(' ', '')
-                        if head == 'Release':
-                            release_date = content.find('a').contents[0]
+                        if 'Authors' in content.text:
+                            authors = content.find('div', {'class': 'summary-content'}).get_text(strip=True)
+                        if 'Artists' in content.text:
+                            artists = content.find('div', {'class': 'summary-content'}).get_text(strip=True)
+                        if 'Genres' in content.text:
+                            genres = content.find('div', {'class': 'summary-content'}).get_text(strip=True)
+                        if 'Status' in content.text:
+                            status = content.find('div', {'class': 'summary-content'}).get_text(strip=True)
+                        if 'Release' in content.text:
+                            release_date = content.find('a').get_text(strip=True)
                 with suppress(Exception): latest_chapter = manga.find('span', {'class': 'font-meta chapter'}).find('a')['href'].split('/')[-2]
-                results[tilink.find('a').contents[0]] = {
+                results[tilink.get_text(strip=True)] = {
                     'domain': Manga68.domain,
                     'url': tilink.find('a')['href'].split('/')[-2],
                     'latest_chapter': latest_chapter,

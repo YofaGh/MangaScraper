@@ -38,19 +38,18 @@ class Mangareader(Manga):
             results = {}
             for manga in mangas:
                 ti = manga.find('div', {'class': 'left'}).find('a')
-                if absolute and keyword.lower() not in ti.text.lower():
+                if absolute and keyword.lower() not in ti.get_text(strip=True).lower():
                     continue
                 latest_chapter, genres, status = '', '', ''
                 contents = manga.find('div', {'class': 'info'}).findChildren('span', recursive=False)
                 for content in contents:
                     if content.has_attr('class'):
-                        genres_list = [genre.text.strip() for genre in content.find_all('a')]
-                        genres = ', '.join(genres_list)
+                        genres = content.get_text(strip=True)
                     elif content.find('b'):
-                        status = content.text.replace('Status: ', '').strip()
+                        status = content.get_text().replace('Status: ', '').strip()
                     else:
                         with suppress(Exception): latest_chapter = content.find('a')['href'].split('/')[-1]
-                results[ti.text.strip()] = {
+                results[ti.get_text(strip=True)] = {
                     'domain': Mangareader.domain,
                     'url': ti['href'].split('/')[-1],
                     'latest_chapter': latest_chapter,
