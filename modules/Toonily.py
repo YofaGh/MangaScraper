@@ -33,15 +33,14 @@ class Toonily(Manga):
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')
-            mangas = soup.find_all('div', {'class': 'item-summary'})
+            mangas = soup.find_all('div', {'class': 'post-title font-title'})
             results = {}
             for manga in mangas:
-                tilink = manga.find('a')
-                if absolute and keyword.lower() not in tilink.get_text(strip=True).lower():
+                if absolute and keyword.lower() not in manga.get_text(strip=True).lower():
                     continue
-                results[tilink.get_text(strip=True)] = {
+                results[manga.get_text(strip=True)] = {
                     'domain': Toonily.domain,
-                    'url': tilink['href'].split('/')[-2],
+                    'url': manga.find('a')['href'].split('/')[-2],
                     'page': page
                 }
             yield results

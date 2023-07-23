@@ -45,8 +45,7 @@ class Comics8Muses(Manga):
             for comic in comics:
                 if not comic.get('href'):
                     continue
-                ti = comic.find('span').text
-                if absolute and keyword.lower() not in ti.lower():
+                if absolute and keyword.lower() not in comic.get_text(strip=True).lower():
                     continue
                 url = comic.get('href').replace('https://comics.8muses.com/comics/album/', '')
                 sublink = False
@@ -56,7 +55,7 @@ class Comics8Muses(Manga):
                         break
                 if not sublink:
                     links.append(url)
-                    results[ti] = {
+                    results[comic.get_text(strip=True)] = {
                         'domain': Comics8Muses.domain,
                         'url': url,
                         'page': page
