@@ -91,8 +91,11 @@ def get_module(key):
             from modules.Simplyhentai import Simplyhentai
             return Simplyhentai
         case 'toonily.com':
-            from modules.Toonily import Toonily
-            return Toonily
+            from modules.Toonily import Toonily_Com
+            return Toonily_Com
+        case 'toonily.me':
+            from modules.Toonily import Toonily_Me
+            return Toonily_Me
         case 'truemanga.com':
             from modules.Truemanga import Truemanga
             return Truemanga
@@ -134,7 +137,8 @@ def get_all_modules():
     from modules.Readonepiece import Readonepiece
     from modules.Sarrast import Sarrast
     from modules.Simplyhentai import Simplyhentai
-    from modules.Toonily import Toonily
+    from modules.Toonily import Toonily_Com
+    from modules.Toonily import Toonily_Me
     from modules.Truemanga import Truemanga
     from modules.WMangairo import WMangairo
     return [
@@ -168,7 +172,8 @@ def get_all_modules():
         Readonepiece,
         Sarrast,
         Simplyhentai,
-        Toonily,
+        Toonily_Com,
+        Toonily_Me,
         Truemanga,
         WMangairo
     ]
@@ -206,6 +211,7 @@ def get_all_domains():
         'sarrast.com',
         'simplyhentai.org',
         'toonily.com',
+        'toonily.me',
         'truemanga.com',
         'w.mangairo.com'
     ]
