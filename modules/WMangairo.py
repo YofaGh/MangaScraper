@@ -1,19 +1,19 @@
 from bs4 import BeautifulSoup
 from utils.models import Manga
 
-class Mangairo(Manga):
+class WMangairo(Manga):
     domain = 'w.mangairo.com'
     download_images_headers = {'Referer': 'https://chap.mangairo.com/'}
 
     def get_chapters(manga):
-        response = Mangairo.send_request(f'https://chap.mangairo.com/{manga}')
+        response = WMangairo.send_request(f'https://chap.mangairo.com/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         lis = soup.find('div', {'class': 'chapter_list'}).find_all('li')
         chapters = [li.find('a')['href'].split('/')[-1] for li in lis[::-1]]
         return chapters
 
     def get_images(manga, chapter):
-        response = Mangairo.send_request(f'https://chap.mangairo.com/{manga}/{chapter}')
+        response = WMangairo.send_request(f'https://chap.mangairo.com/{manga}/{chapter}')
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'class': 'panel-read-story'}).find_all('img')
         images = [image['src'].strip() for image in images]
@@ -30,7 +30,7 @@ class Mangairo(Manga):
         prev_page = []
         while True:
             try:
-                response = Mangairo.send_request(template.replace('P_P_P_P', str(page)))
+                response = WMangairo.send_request(template.replace('P_P_P_P', str(page)))
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -48,7 +48,7 @@ class Mangairo(Manga):
                 with suppress(Exception): latest_chapter = manga.find('a', {'class': 'chapter-name'})['href'].split('/')[-1]
                 with suppress(Exception): authors = manga.find(lambda tag:tag.name == 'span' and 'Author' in tag.text).get_text(strip=True)
                 results[ti.get_text(strip=True)] = {
-                    'domain': Mangairo.domain,
+                    'domain': WMangairo.domain,
                     'url': ti.find('a')['href'].split('/')[-1],
                     'Authors': authors.replace('Author : ', '').replace('Author(s) : ', ''),
                     'latest_chapter': latest_chapter,
@@ -59,4 +59,4 @@ class Mangairo(Manga):
             page += 1
 
     def get_db():
-        return Mangairo.search_by_keyword('', False)
+        return WMangairo.search_by_keyword('', False)

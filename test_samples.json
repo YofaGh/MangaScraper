@@ -16,7 +16,6 @@
     "manga68.com":{"manga":"solo-leveling", "keyword":"a"},
     "mangaforfree.net":{"manga":"circles-a3", "keyword":"a"},
     "mangahentai.me":{"manga":"new-flavors-2", "keyword":"a"},
-    "w.mangairo.com":{"manga":"story-cw292504", "keyword":"a"},
     "mangapark.to":{"manga":"77478-sakamoto-days", "keyword":"a"},
     "mangareader.mobi":{"manga":"evangelines-sword", "keyword":"a"},
     "manhuamanhwa.com":{"manga":"the-boy-out-of-my-reach", "keyword":"a"},
@@ -31,5 +30,6 @@
     "sarrast.com":{"manga":"she-is-working-out", "keyword":"%D9%85%D9%86"},
     "simplyhentai.org":{"doujin":1, "keyword":"a"},
     "toonily.com":{"manga":"peerless-dad", "keyword":"a"},
-    "truemanga.com":{"manga":"blind-play", "keyword":"play"}
+    "truemanga.com":{"manga":"blind-play", "keyword":"play"},
+    "w.mangairo.com":{"manga":"story-cw292504", "keyword":"a"}
 }

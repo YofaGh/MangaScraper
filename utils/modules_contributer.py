@@ -97,8 +97,8 @@ def get_module(key):
             from modules.Truemanga import Truemanga
             return Truemanga
         case 'w.mangairo.com':
-            from modules.Mangairo import Mangairo
-            return Mangairo
+            from modules.WMangairo import WMangairo
+            return WMangairo
         case _:
             from utils.exceptions import MissingModuleException
             raise MissingModuleException(key)
@@ -136,7 +136,7 @@ def get_all_modules():
     from modules.Simplyhentai import Simplyhentai
     from modules.Toonily import Toonily
     from modules.Truemanga import Truemanga
-    from modules.Mangairo import Mangairo
+    from modules.WMangairo import WMangairo
     return [
         Bato,
         Bibimanga,
@@ -170,7 +170,7 @@ def get_all_modules():
         Simplyhentai,
         Toonily,
         Truemanga,
-        Mangairo
+        WMangairo
     ]
 
 def get_all_domains():
