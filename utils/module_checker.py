@@ -15,12 +15,12 @@ def check_modules(modules):
 
 def check_manga(module, sample):
     chapters = chapter_checker(module, sample['manga'])
-    if len(chapters) > 0:
+    if chapters:
         images, save_names = manga_images_checker(module, sample['manga'], chapters[0])
     else:
         images = []
         print(colored(f'\r{module.domain}: {sample["manga"]}: Skipped images_checker due to chapter_checker failure', 'red'))
-    if len(images) > 0:
+    if images:
         if save_names:
             download_checker(module, images[0], save_names[0])
         else:
@@ -32,9 +32,12 @@ def check_manga(module, sample):
 
 def check_doujin(module, sample):
     title_checker(module, sample['doujin'])
-    images = doujin_images_checker(module, sample['doujin'])
-    if len(images) > 0:
-        download_checker(module, images[0], f'{module.domain}_test.{images[0].split(".")[-1]}')
+    images, save_names = doujin_images_checker(module, sample['doujin'])
+    if images:
+        if save_names:
+            download_checker(module, images[0], save_names[0])
+        else:
+            download_checker(module, images[0], f'{module.domain}_test.{images[0].split(".")[-1]}')
     else:
         print(colored(f'\r{module.domain}: {sample["doujin"]}: Skipped download_checker due to images_checker failure', 'red'))
     search_by_keyword_checker(module, sample['keyword'])
@@ -44,7 +47,7 @@ def chapter_checker(module, manga):
     chapters = []
     sys.stdout.write(f'\r{module.domain}: {manga}: Getting chapters...')
     with suppress(Exception): chapters = module.get_chapters(manga)
-    if len(chapters) > 0:
+    if chapters:
         print(colored(f'\r{module.domain}: {manga}: Recieved chapters successfully', 'green'))
     else:
         print(colored(f'\r{module.domain}: {manga}: Recieving chapters was a failure', 'red'))
@@ -62,21 +65,21 @@ def manga_images_checker(module, manga, chapter):
     images, save_names = [], []
     sys.stdout.write(f'\r{module.domain}: {manga}: {chapter}: Getting images...')
     with suppress(Exception): images, save_names = module.get_images(manga, chapter)
-    if len(images) > 0:
+    if images:
         print(colored(f'\r{module.domain}: {manga}: {chapter}: Recieved images links successfully', 'green'))
     else:
         print(colored(f'\r{module.domain}: {manga}: {chapter}: Recieving images links was a failure', 'red'))
     return images, save_names
 
 def doujin_images_checker(module, code):
-    images = []
+    images, save_names = [], []
     sys.stdout.write(f'\r{module.domain}: {code}: Getting images...')
-    with suppress(Exception): images = module.get_images(code)
-    if len(images) > 0:
+    with suppress(Exception): images, save_names = module.get_images(code)
+    if images:
         print(colored(f'\r{module.domain}: {code}: Recieved images links successfully', 'green'))
     else:
         print(colored(f'\r{module.domain}: {code}: Recieving images links was a failure', 'red'))
-    return images
+    return images, save_names
 
 def download_checker(module, url, name):
     sys.stdout.write(f'\r{module.domain}: Running download checker...')

@@ -24,7 +24,7 @@ class Imhentai(Doujin):
         script = soup.find(lambda tag:tag.name == 'script' and 'var g_th' in tag.text).text
         images = json.loads(script.replace("var g_th = $.parseJSON('", '')[:-4])
         images = [f'{path}/{image}.{Imhentai.image_formats[images[image][0]]}' for image in images]
-        return images
+        return images, False
 
     def search_by_keyword(keyword, absolute):
         from requests.exceptions import HTTPError

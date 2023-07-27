@@ -20,7 +20,7 @@ class Simplyhentai(Doujin):
             name = image.rsplit('/', 1)[1]
             name = name.replace('t.', '.')
             new_images.append(f'{image.rsplit("/", 1)[0]}/{name}')
-        return new_images
+        return new_images, False
 
     def search_by_keyword(keyword, absolute):
         from requests.exceptions import HTTPError

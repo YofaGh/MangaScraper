@@ -10,6 +10,9 @@ def merge_folder(path_to_source, path_to_destination, fit_merge, name=None):
         return
     create_path(path_to_destination)
     images_path = detect_images(path_to_source)
+    if not images_path:
+        print(colored(f'\rFailed to Merge {path_to_source} because there was no image in the given folder.', 'red'))
+        return
     images = [Image.open(image_path) for image_path in images_path]
     if fit_merge:
         sys.stdout.write(f'\r{name}: Merging with resizing enabled, overall quality might get reduced during the proccess...')

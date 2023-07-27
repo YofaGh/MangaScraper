@@ -10,14 +10,17 @@ def download_doujin(code, module, sleep_time, merge, convert_to_pdf, fit_merge):
         doujin_title = f'{code}_{module.get_title(code)}'
         shorten_doujin_title = textwrap.shorten(doujin_title, width=50)
         sys.stdout.write(f'\r{shorten_doujin_title}: Getting image links...')
-        images = module.get_images(code)
+        images, save_names = module.get_images(code)
         sys.stdout.write(f'\r{shorten_doujin_title}: Creating folder...')
         fixed_doujin_name = assets.fix_name_for_folder(doujin_title)
         assets.create_folder(fixed_doujin_name)
         i = 0
         while i < len(images):
             sys.stdout.write(f'\r{shorten_doujin_title}: Downloading image {i+1}/{len(images)}...')
-            save_path = f'{fixed_doujin_name}/{i+1:03d}.{images[i].split(".")[-1]}'
+            if save_names:
+                save_path = f'{fixed_doujin_name}/{save_names[i]}'
+            else:
+                save_path = f'{fixed_doujin_name}/{i+1:03d}.{images[i].split(".")[-1]}'
             if not os.path.exists(save_path):
                 time.sleep(sleep_time)
                 saved_path = module.download_image(images[i], save_path, i+1, module.download_images_headers)

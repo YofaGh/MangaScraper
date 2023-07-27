@@ -16,10 +16,10 @@ class Luscious(Doujin):
         total_pages = response['data']['picture']['list']['info']['total_pages']
         images = [item['url_to_original'] for item in response['data']['picture']['list']['items']]
         for page in range(2,total_pages + 1):
-            response = Luscious.send_request(data.replace('__album__id__', code).replace('__page__number__', str(page))).json()
+            response = Luscious.send_request(data.replace('__album__id__', str(code)).replace('__page__number__', str(page))).json()
             new_images = [item['url_to_original'] for item in response['data']['picture']['list']['items']]
             images.extend(new_images)
-        return images
+        return images, False
 
     def search_by_keyword(keyword, absolute):
         from contextlib import suppress
