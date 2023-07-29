@@ -4,4 +4,3 @@ natsort==8.2.0
 Pillow==10.0.0
 pycryptodome==3.18.0
 requests==2.31.0
-termcolor==2.3.0
