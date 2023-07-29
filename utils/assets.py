@@ -97,12 +97,3 @@ def detect_images(path_to_folder):
         if file.split('.')[-1] in ['jpg', 'png', 'jpeg', 'gif', 'webp']:
             images_path.append(f'{path_to_folder}/{file}')
     return images_path
-
-def waiter():
-    import shutil, time, sys
-    from termcolor import colored
-    sys.stdout.write(colored(' Connection lost.\n\rWaiting 1 minute to attempt a fresh connection.', 'red'))
-    for i in range(59, 0, -1):
-        time.sleep(1)
-        sys.stdout.write(colored(f'\rWaiting {i} seconds to attempt a fresh connection. ', 'red'))
-    sys.stdout.write(f'\r{" " * shutil.get_terminal_size()[0]}')

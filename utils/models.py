@@ -2,9 +2,9 @@ class Module:
     domain = ''
     download_images_headers = None
 
-    def send_request(url, method='GET', headers=None, json=None, data=None, verify=None):
+    @classmethod
+    def send_request(self, url, method='GET', headers=None, json=None, data=None, verify=None):
         import requests
-        from utils.assets import waiter
         if verify is False:
             requests.packages.urllib3.disable_warnings(requests.packages.urllib3.exceptions.InsecureRequestWarning)
         while True:
@@ -18,26 +18,32 @@ class Module:
             except (requests.exceptions.HTTPError, requests.exceptions.Timeout) as error:
                 raise error
             except requests.exceptions.RequestException:
-                waiter()
+                self._waiter()
 
-    def download_image(url, image_name, log_num, headers=None):
-        import requests
+    @classmethod
+    def download_image(self, url, image_name, log_num, headers=None):
+        from requests.exceptions import HTTPError, Timeout
         from termcolor import colored
-        from utils.assets import waiter
         while True:
             try:
-                response = requests.get(url, headers=headers)
-                response.raise_for_status()
+                response = self.send_request(url, headers=headers)
                 with open(image_name, 'wb') as image:
                     image.write(response.content)
                 return image_name
-            except (requests.exceptions.HTTPError) as error:
+            except HTTPError as error:
                 print(colored(f' Warning: Could not download image {log_num}: {url}', 'red'))
                 return ''
-            except (requests.exceptions.Timeout) as error:
+            except Timeout as error:
                 raise error
-            except requests.exceptions.RequestException:
-                waiter()
+
+    def _waiter():
+        import shutil, time, sys
+        from termcolor import colored
+        sys.stdout.write(colored(' Connection lost.\n\rWaiting 1 minute to attempt a fresh connection.', 'red'))
+        for i in range(59, 0, -1):
+            time.sleep(1)
+            sys.stdout.write(colored(f'\rWaiting {i} seconds to attempt a fresh connection. ', 'red'))
+        sys.stdout.write(f'\r{" " * shutil.get_terminal_size()[0]}')
 
     def get_images():
         return [], False
