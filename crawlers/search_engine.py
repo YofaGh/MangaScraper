@@ -1,6 +1,6 @@
-import time, sys
+import time
 from itertools import islice
-from termcolor import colored
+from utils.logger import log_over, log
 from utils.assets import save_dict_to_file
 from utils.exceptions import MissingFunctionException
 
@@ -15,7 +15,7 @@ def search(keyword, modules, sleep_time, absolute, limit_page):
             temp_results = {}
             while page <= limit_page:
                 try:
-                    sys.stdout.write(f'\r{module.domain}: Searching page {page}...')
+                    log_over(f'\r{module.domain}: Searching page {page}...')
                     last = next(search)
                     if len(last) == 0:
                         break
@@ -24,20 +24,20 @@ def search(keyword, modules, sleep_time, absolute, limit_page):
                     if page < limit_page:
                         time.sleep(sleep_time)
                 except Exception as error:
-                    print(colored(f'\r{module.domain}: Failed to search: {error}', 'red'))
+                    log(f'\r{module.domain}: Failed to search: {error}', 'red')
                     break
-            print(colored(f'\r{module.domain}: {len(temp_results)} results were found from {page-1} pages.', 'green' if len(temp_results) > 0 else 'yellow'))
+            log(f'\r{module.domain}: {len(temp_results)} results were found from {page-1} pages.', 'green' if len(temp_results) > 0 else 'yellow')
             results[module.domain] = temp_results
         except MissingFunctionException as error:
-            print(colored(error, 'red'))
+            log(error, 'red')
     save_dict_to_file(f'{keyword}_output.json', results)
     print_output(results)
-    print(colored(f'This was a summary of the search.\nYou can see the full results in {keyword}_output.json', 'green'))
+    log(f'This was a summary of the search.\nYou can see the full results in {keyword}_output.json', 'green')
 
 def print_output(results):
-    print('Summary:')
+    log('Summary:')
     for module in results:
-        print(f'{module}:')
+        log(f'{module}:')
         for result, value in islice(results[module].items(), 5):
             refer = 'url' if 'url' in value else 'code'
-            print(f'    title: {result}, {refer}: {value[refer]}')
+            log(f'    title: {result}, {refer}: {value[refer]}')

@@ -1,4 +1,4 @@
-from termcolor import colored
+from utils.logger import log
 from utils.modules_contributer import get_module
 from utils.exceptions import MissingModuleException
 from downloaders.doujin_single import download_doujin
@@ -18,4 +18,4 @@ def download_doujins(json_file, sleep_time, merge, convert_to_pdf, fit_merge):
                     i += 1
                 save_dict_to_file(json_file, doujins)
         except MissingModuleException as error:
-            print(colored(error, 'red'))
+            log(error, 'red')

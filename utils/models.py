@@ -23,7 +23,7 @@ class Module:
     @classmethod
     def download_image(self, url, image_name, log_num, headers=None):
         from requests.exceptions import HTTPError, Timeout
-        from termcolor import colored
+        from utils.logger import log
         while True:
             try:
                 response = self.send_request(url, headers=headers)
@@ -31,19 +31,19 @@ class Module:
                     image.write(response.content)
                 return image_name
             except HTTPError as error:
-                print(colored(f' Warning: Could not download image {log_num}: {url}', 'red'))
+                log(f' Warning: Could not download image {log_num}: {url}', 'red')
                 return ''
             except Timeout as error:
                 raise error
 
     def _waiter():
-        import shutil, time, sys
-        from termcolor import colored
-        sys.stdout.write(colored(' Connection lost.\n\rWaiting 1 minute to attempt a fresh connection.', 'red'))
+        import time
+        from utils.logger import clean, log_over
+        log_over(' Connection lost.\n\rWaiting 1 minute to attempt a fresh connection.', 'red')
         for i in range(59, 0, -1):
             time.sleep(1)
-            sys.stdout.write(colored(f'\rWaiting {i} seconds to attempt a fresh connection. ', 'red'))
-        sys.stdout.write(f'\r{" " * shutil.get_terminal_size()[0]}')
+            log_over(f'\rWaiting {i} seconds to attempt a fresh connection. ', 'red')
+        clean()
 
     def get_images():
         return [], False

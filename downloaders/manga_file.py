@@ -1,5 +1,5 @@
-import natsort, sys
-from termcolor import colored
+import natsort
+from utils.logger import log_over, log
 from utils.modules_contributer import get_module
 from utils.exceptions import MissingModuleException
 from utils.assets import save_dict_to_file, load_dict_from_file
@@ -8,14 +8,14 @@ def download_file(json_file, sleep_time, merge, convert_to_pdf, fit_merge):
     get_name_of_chapters(json_file)
     inconsistencies = download_mangas(json_file, sleep_time, merge, convert_to_pdf, fit_merge)
     if inconsistencies:
-        print(colored(f'There were some inconsistencies with the following chapters: {", ".join(inconsistencies)}', 'red'))
+        log(f'There were some inconsistencies with the following chapters: {", ".join(inconsistencies)}', 'red')
 
 def get_name_of_chapters(json_file):
     mangas = load_dict_from_file(json_file)
     valid_mangas = [manga for (manga, detm) in mangas.items() if detm['include']]
     for valid_manga in valid_mangas:
         manga = mangas[valid_manga]
-        sys.stdout.write(f'\r{valid_manga}: Getting chapters...')
+        log_over(f'\r{valid_manga}: Getting chapters...')
         if manga['last_downloaded_chapter'] != 'pass':
             chapters = get_module(manga['domain']).get_chapters(manga['url'])
             if manga['last_downloaded_chapter'] is None:
@@ -29,7 +29,7 @@ def get_name_of_chapters(json_file):
                     if reached_last_downloaded_chapter and chapter not in manga['chapters']:
                         manga['chapters'].append(chapter)
         manga['chapters'] = sorted(manga['chapters'], key=lambda _: (get_module(manga['domain']).rename_chapter, natsort.os_sorted))
-        print(f'\r{valid_manga}: {len(manga["chapters"])} chapter{"" if len(manga["chapters"]) == 1 else "s"} to download.')
+        log(f'\r{valid_manga}: {len(manga["chapters"])} chapter{"" if len(manga["chapters"]) == 1 else "s"} to download.')
     save_dict_to_file(json_file, mangas)
 
 def download_mangas(json_file, sleep_time, merge, convert_to_pdf, fit_merge):
@@ -49,5 +49,5 @@ def download_mangas(json_file, sleep_time, merge, convert_to_pdf, fit_merge):
                 del mangas[manga]['chapters'][0]
                 save_dict_to_file(json_file, mangas)
         except MissingModuleException as error:
-            print(colored(error, 'red'))
+            log(error, 'red')
     return inconsistencies

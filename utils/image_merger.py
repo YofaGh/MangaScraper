@@ -1,27 +1,27 @@
-import shutil, sys
+import shutil
 from PIL import Image
-from termcolor import colored
+from utils.logger import log_over, log, clean
 from utils.assets import validate_folder, detect_images, create_path
 
 def merge_folder(path_to_source, path_to_destination, fit_merge, name=None):
     name = name if name else path_to_source
     if not validate_folder(path_to_source):
-        print(colored(f'\rFailed to Merge {path_to_source} because one image is corrupted or truncated.', 'red'))
+        log(f'\rFailed to Merge {path_to_source} because one image is corrupted or truncated.', 'red')
         return
     create_path(path_to_destination)
     images_path = detect_images(path_to_source)
     if not images_path:
-        print(colored(f'\rFailed to Merge {path_to_source} because there was no image in the given folder.', 'red'))
+        log(f'\rFailed to Merge {path_to_source} because there was no image in the given folder.', 'red')
         return
     images = [Image.open(image_path) for image_path in images_path]
     if fit_merge:
-        sys.stdout.write(f'\r{name}: Merging with resizing enabled, overall quality might get reduced during the proccess...')
+        log_over(f'\r{name}: Merging with resizing enabled, overall quality might get reduced during the proccess...')
         results = merge_fit(images, path_to_destination)
     else:
-        sys.stdout.write(f'\r{name}: Merging without resizing, You might see white spaces around some images...')
+        log_over(f'\r{name}: Merging without resizing, You might see white spaces around some images...')
         results = merge(images, path_to_destination)
-    sys.stdout.write(f'\r{" " * shutil.get_terminal_size()[0]}')
-    print(colored(f'\r{name}: Merged {len(images_path)} images into {results}.', 'green'))
+    clean()
+    log(f'\r{name}: Merged {len(images_path)} images into {results}.', 'green')
 
 def merge(images, path_to_destination):
     lists_to_merge = []
