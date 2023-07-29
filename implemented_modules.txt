@@ -27,6 +27,7 @@ Mangas:
     w.mangairo.com
 
 Doujins:
+    doujins.com
     ehentai.to
     hentaifox.com
     imhentai.xxx

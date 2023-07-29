@@ -15,6 +15,9 @@ def get_module(key):
         case 'comics.8muses.com':
             from modules.Comics8Muses import Comics8Muses
             return Comics8Muses
+        case 'doujins.com':
+            from modules.Doujins import Doujins
+            return Doujins
         case 'ehentai.to':
             from modules.Ehentai import Ehentai
             return Ehentai
@@ -112,6 +115,7 @@ def get_all_modules():
     from modules.Blogmanga import Blogmanga
     from modules.Coloredmanga import Coloredmanga
     from modules.Comics8Muses import Comics8Muses
+    from modules.Doujins import Doujins
     from modules.Ehentai import Ehentai
     from modules.Hentaifox import Hentaifox
     from modules.Hentaixcomic import Hentaixcomic
@@ -147,6 +151,7 @@ def get_all_modules():
         Blogmanga,
         Coloredmanga,
         Comics8Muses,
+        Doujins,
         Ehentai,
         Hentaifox,
         Hentaixcomic,
@@ -185,6 +190,7 @@ def get_all_domains():
         'blogmanga.net',
         'coloredmanga.com',
         'comics.8muses.com',
+        'doujins.com',
         'ehentai.to',
         'hentaifox.com',
         'hentaixcomic.com',
