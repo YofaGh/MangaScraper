@@ -1,9 +1,17 @@
+from utils import logger
+
 class Module:
     domain = ''
     download_images_headers = None
 
-    @classmethod
-    def send_request(self, url, method='GET', headers=None, json=None, data=None, verify=None):
+    def send_request(url, method='GET', headers=None, json=None, data=None, verify=None):
+        def _waiter():
+            import time
+            logger.log_over(' Connection lost.\n\rWaiting 1 minute to attempt a fresh connection.', 'red')
+            for i in range(59, 0, -1):
+                time.sleep(1)
+                logger.log_over(f'\rWaiting {i} seconds to attempt a fresh connection. ', 'red')
+            logger.clean()
         import requests
         if verify is False:
             requests.packages.urllib3.disable_warnings(requests.packages.urllib3.exceptions.InsecureRequestWarning)
@@ -18,12 +26,11 @@ class Module:
             except (requests.exceptions.HTTPError, requests.exceptions.Timeout) as error:
                 raise error
             except requests.exceptions.RequestException:
-                self._waiter()
+                _waiter()
 
     @classmethod
     def download_image(self, url, image_name, log_num, headers=None):
         from requests.exceptions import HTTPError, Timeout
-        from utils.logger import log
         while True:
             try:
                 response = self.send_request(url, headers=headers)
@@ -31,19 +38,10 @@ class Module:
                     image.write(response.content)
                 return image_name
             except HTTPError as error:
-                log(f' Warning: Could not download image {log_num}: {url}', 'red')
+                logger.log(f' Warning: Could not download image {log_num}: {url}', 'red')
                 return ''
             except Timeout as error:
                 raise error
-
-    def _waiter():
-        import time
-        from utils.logger import clean, log_over
-        log_over(' Connection lost.\n\rWaiting 1 minute to attempt a fresh connection.', 'red')
-        for i in range(59, 0, -1):
-            time.sleep(1)
-            log_over(f'\rWaiting {i} seconds to attempt a fresh connection. ', 'red')
-        clean()
 
     def get_images():
         return [], False
