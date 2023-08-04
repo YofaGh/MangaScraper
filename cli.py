@@ -2,7 +2,7 @@ import argparse, sys, os
 from utils.assets import SetModule, CheckChapters, LastChapter, RangeOfChapters
 
 parser = argparse.ArgumentParser(allow_abbrev=False)
-parser.add_argument('task', choices=['manga', 'doujin', 'merge', 'c2pdf', 'search', 'db', 'check'])
+parser.add_argument('task', choices=['manga', 'doujin', 'merge', 'c2pdf', 'search', 'db', 'check', 'sauce'])
 webtoon_type = parser.add_argument_group('download').add_mutually_exclusive_group()
 webtoon_type.add_argument('-single', '-code', help='url of the manga, or code of the doujin')
 webtoon_type.add_argument('-file', help='downloads webtoons based on the given json file')
@@ -23,6 +23,9 @@ chapters.add_argument('-r', action=RangeOfChapters, nargs=2, type=float, metavar
 search_args = parser.add_argument_group('customize search results')
 search_args.add_argument('-page-limit', default=10, type=int, help='specify how many pages should be searched')
 search_args.add_argument('-absolute', action='store_true', help='if set, checks that the name you searched should be in the title')
+saucer = parser.add_argument_group('find source of an image').add_mutually_exclusive_group()
+saucer.add_argument('-url', help='url of the image')
+saucer.add_argument('-image', help='specify a downloaded image path')
 args = parser.parse_args(args=(sys.argv[1:] or ['-h']))
 
 if (args.single or args.task == 'db') and (not args.s or len(args.s) > 1):
@@ -92,3 +95,13 @@ match args.task:
     case 'check':
         from utils.module_checker import check_modules
         check_modules(args.s)
+
+    case 'sauce':
+        if args.image:
+            from utils.saucer import sauce_file
+            sauce_file(args.image)
+        elif args.url:
+            from utils.saucer import sauce_url
+            sauce_url(args.url)
+        else:
+            parser.error('please use one of the following arguments: [-url, -image]')

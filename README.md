@@ -6,6 +6,7 @@
 > - Convert downloaded Webtoons into PDF file.
 > - Search and find what you want.
 > - Download full database of a website.
+> - find sauce of an image.
 
 ## Table of Contents
 
@@ -30,6 +31,8 @@
 - [Search engine](#search-engine)
 
 - [Database crawler](#database-crawler)
+
+- [Saucer](#saucer)
 
 - [Modules Checker](#modules-checker)
 
@@ -186,6 +189,14 @@
 > you can only get database of one module at a time.  
 > result of the crawling will be saved to a json file with module name on it.  
 > Examples:  ```python cli.py db -s manhuascan.us```
+
+## Saucer
+>
+> if you don't know sauce of an image you can find it using saucer
+> Examples:
+>
+> - find the sauce using an image file: ```python cli.py sauce -image "path/to/image"```
+> - find the sauce using url of an image: ```python cli.py sauce -url "url/to/image"```
 
 ## Modules Checker
 >
