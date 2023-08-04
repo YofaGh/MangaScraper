@@ -26,8 +26,9 @@ def search(keyword, modules, sleep_time, absolute, limit_page):
                 except Exception as error:
                     log(f'\r{module.domain}: Failed to search: {error}', 'red')
                     break
-            log(f'\r{module.domain}: {len(temp_results)} results were found from {page-1} pages.', 'green' if len(temp_results) > 0 else 'yellow')
-            results[module.domain] = temp_results
+            log(f'\r{module.domain}: {len(temp_results)} results were found from {page-1} pages.', 'green' if temp_results else 'yellow')
+            if temp_results:
+                results[module.domain] = temp_results
         except MissingFunctionException as error:
             log(error, 'red')
     save_dict_to_file(f'{keyword}_output.json', results)
