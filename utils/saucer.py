@@ -63,6 +63,7 @@ def sauce_file(path_to_file):
 def sauce_url(url):
     results = {}
     for site in sites:
+        temp_results = []
         log_over(f'\r{site}: searching image')
         with suppress(Exception): temp_results = sites[site](url)
         log(f'\r{site}: {len(temp_results)} results were found.', 'green' if temp_results else 'yellow')
