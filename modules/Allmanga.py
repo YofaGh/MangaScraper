@@ -37,7 +37,7 @@ class Allmanga(Manga):
         return chapters
 
     def get_images(manga, chapter):
-        response = Allmanga.send_request(f'https://allmanga.to/read/{manga}/{chapter}',)
+        response = Allmanga.send_request(f'https://allmanga.to/read/{manga}/{chapter}')
         soup = BeautifulSoup(response.text, 'html.parser')
         script = soup.find(lambda tag: tag.name == 'script' and 'selectedPicturesServer' in tag.text).get_text(strip=True)
         inputs = script.split('function(', 1)[1].split(')')[0].split(',')
@@ -115,8 +115,6 @@ class Allmanga(Manga):
         }'''
         page = 1
         while True:
-            if page == 10:
-                yield {}
             response = Allmanga.send_request(query.replace('P_P_P_P', str(page)), headers=Allmanga.get_db_headers)
             mangas = response.json()['data']['mangas']['edges']
             if len(mangas) == 0:
