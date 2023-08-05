@@ -15,6 +15,9 @@ def get_module(key):
         case 'comics.8muses.com':
             from modules.Comics8Muses import Comics8Muses
             return Comics8Muses
+        case 'constellarcomic.com':
+            from modules.Constellarcomic import Constellarcomic
+            return Constellarcomic
         case 'doujins.com':
             from modules.Doujins import Doujins
             return Doujins
@@ -90,6 +93,9 @@ def get_module(key):
         case 'nyahentai.red':
             from modules.Nyahentai import Nyahentai
             return Nyahentai
+        case 'omegascans.org':
+            from modules.Omegascans import Omegascans
+            return Omegascans
         case 'readonepiece.com':
             from modules.Readonepiece import Readonepiece
             return Readonepiece
@@ -121,6 +127,7 @@ def get_all_modules():
     from modules.Blogmanga import Blogmanga
     from modules.Coloredmanga import Coloredmanga
     from modules.Comics8Muses import Comics8Muses
+    from modules.Constellarcomic import Constellarcomic
     from modules.Doujins import Doujins
     from modules.Ehentai import Ehentai
     from modules.Hentaifox import Hentaifox
@@ -146,6 +153,7 @@ def get_all_modules():
     from modules.Myrockmanga import Myrockmanga
     from modules.Nhentai import Nhentai
     from modules.Nyahentai import Nyahentai
+    from modules.Omegascans import Omegascans
     from modules.Readonepiece import Readonepiece
     from modules.Sarrast import Sarrast
     from modules.Simplyhentai import Simplyhentai
@@ -159,6 +167,7 @@ def get_all_modules():
         Blogmanga,
         Coloredmanga,
         Comics8Muses,
+        Constellarcomic,
         Doujins,
         Ehentai,
         Hentaifox,
@@ -184,6 +193,7 @@ def get_all_modules():
         Myrockmanga,
         Nhentai,
         Nyahentai,
+        Omegascans,
         Readonepiece,
         Sarrast,
         Simplyhentai,
@@ -200,6 +210,7 @@ def get_all_domains():
         'blogmanga.net',
         'coloredmanga.com',
         'comics.8muses.com',
+        'constellar.com',
         'doujins.com',
         'ehentai.to',
         'hentaifox.com',
@@ -224,7 +235,8 @@ def get_all_domains():
         'myreadingmanga.to',
         'myrockmanga.com',
         'nhentai.xxx',
-        'nyahentai.red' ,
+        'nyahentai.red',
+        'omegascans.org',
         'readonepiece.com',
         'sarrast.com',
         'simplyhentai.org',
