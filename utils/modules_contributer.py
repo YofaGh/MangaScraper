@@ -15,6 +15,9 @@ def get_module(key):
         case 'coloredmanga.com':
             from modules.Coloredmanga import Coloredmanga
             return Coloredmanga
+        case 'comick.app':
+            from modules.Comick import Comick
+            return Comick
         case 'comics.8muses.com':
             from modules.Comics8Muses import Comics8Muses
             return Comics8Muses
@@ -131,6 +134,7 @@ def get_all_modules():
     from modules.Blogmanga import Blogmanga
     from modules.Coloredmanga import Coloredmanga
     from modules.Comics8Muses import Comics8Muses
+    from modules.Comick import Comick
     from modules.Constellarcomic import Constellarcomic
     from modules.Doujins import Doujins
     from modules.Ehentai import Ehentai
@@ -171,6 +175,7 @@ def get_all_modules():
         Bibimanga,
         Blogmanga,
         Coloredmanga,
+        Comick,
         Comics8Muses,
         Constellarcomic,
         Doujins,
@@ -215,6 +220,7 @@ def get_all_domains():
         'bibimanga.com',
         'blogmanga.net',
         'coloredmanga.com',
+        'comick.com',
         'comics.8muses.com',
         'constellar.com',
         'doujins.com',
