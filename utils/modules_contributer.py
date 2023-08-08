@@ -30,6 +30,9 @@ def get_module(key):
         case 'ehentai.to':
             from modules.Ehentai import Ehentai
             return Ehentai
+        case 'hennojin.com':
+            from modules.Hennojin import Hennojin
+            return Hennojin
         case 'hentaifox.com':
             from modules.Hentaifox import Hentaifox
             return Hentaifox
@@ -138,6 +141,7 @@ def get_all_modules():
     from modules.Constellarcomic import Constellarcomic
     from modules.Doujins import Doujins
     from modules.Ehentai import Ehentai
+    from modules.Hennojin import Hennojin
     from modules.Hentaifox import Hentaifox
     from modules.Hentaixcomic import Hentaixcomic
     from modules.Imhentai import Imhentai
@@ -180,6 +184,7 @@ def get_all_modules():
         Constellarcomic,
         Doujins,
         Ehentai,
+        Hennojin,
         Hentaifox,
         Hentaixcomic,
         Imhentai,
@@ -225,6 +230,7 @@ def get_all_domains():
         'constellar.com',
         'doujins.com',
         'ehentai.to',
+        'hennojin.com',
         'hentaifox.com',
         'hentaixcomic.com',
         'imhentai.xxx',
