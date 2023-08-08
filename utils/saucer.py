@@ -1,8 +1,16 @@
-import requests, os
+import requests, json, os
 from bs4 import BeautifulSoup
 from contextlib import suppress
 from utils.logger import log_over, log
 from utils.assets import save_dict_to_file
+
+def yandex(url):
+    response = requests.get(f'https://yandex.com/images/search?rpt=imageview&url={url}')
+    soup = BeautifulSoup(response.text, 'html.parser')
+    data_raw = soup.find('div', {'class': 'cbir-section cbir-section_name_sites'}).find('div', {'class': 'Root'})['data-state']
+    data = json.loads(data_raw)
+    sites = data['sites']
+    return [{'url': site['url'], 'image': site['originalImage']['url']} for site in sites]
 
 def tineye(url):
     headers = {'content-type': 'multipart/form-data; boundary=----WebKitFormBoundaryVxauFLsZbD7Cr1Fa'}
@@ -64,11 +72,11 @@ def sauce_url(url):
     results = {}
     for site in sites:
         temp_results = []
-        log_over(f'\r{site}: searching image')
-        with suppress(Exception): temp_results = sites[site](url)
-        log(f'\r{site}: {len(temp_results)} results were found.', 'green' if temp_results else 'yellow')
+        log_over(f'\r{site.__name__}: searching image')
+        with suppress(Exception): temp_results = site(url)
+        log(f'\r{site.__name__}: {len(temp_results)} results were found.', 'green' if temp_results else 'yellow')
         if temp_results:
-            results[site] = temp_results
+            results[site.__name__] = temp_results
     save_dict_to_file(f'sauce_output.json', results)
     print_output(results)
     log('This was a summary of the saucer.\nYou can see the full results in sauce_output.json', 'green')
@@ -80,8 +88,4 @@ def print_output(results):
         for result in results[site][:5]:
             log(f'    url: {result["url"]}, image: {result["image"]}')
 
-sites = {
-    'tineye': tineye,
-    'iqdb': iqdb,
-    'saucenao': saucenao,
-}
+sites = [yandex, tineye, iqdb, saucenao]
