@@ -6,7 +6,8 @@ def download_doujin(code, module, sleep_time, merge, convert_to_pdf, fit_merge):
     last_truncated = None
     try:
         logger.log_over(f'\r{code}: Getting name of doujin...')
-        doujin_title = f'{code}_{module.get_title(code)}'
+        pre_code = f'{code}_' if module.is_coded else ''
+        doujin_title = f'{pre_code}{module.get_title(code)}'
         shorten_doujin_title = textwrap.shorten(doujin_title, width=50)
         logger.log_over(f'\r{shorten_doujin_title}: Getting image links...')
         images, save_names = module.get_images(code)

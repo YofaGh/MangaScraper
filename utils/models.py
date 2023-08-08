@@ -70,5 +70,7 @@ class Manga(Module):
             return f'Chapter {new_name.split(".", 1)[0].zfill(3)}.{new_name.split(".", 1)[1]}'
 
 class Doujin(Module):
+    is_coded = True
+    
     def get_title():
         return ''

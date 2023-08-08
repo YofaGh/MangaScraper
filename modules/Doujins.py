@@ -3,6 +3,7 @@ from utils.models import Doujin
 
 class Doujins(Doujin):
     domain = 'doujins.com'
+    is_coded = False
 
     def get_title(code):
         response = Doujins.send_request(f'https://doujins.com/{code}')
