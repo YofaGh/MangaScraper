@@ -111,6 +111,9 @@ def get_module(key):
         case 'sarrast.com':
             from modules.Sarrast import Sarrast
             return Sarrast
+        case 'simply-hentai.com':
+            from modules.Simply_hentai import Simply_hentai
+            return Simply_hentai
         case 'simplyhentai.org':
             from modules.Simplyhentai import Simplyhentai
             return Simplyhentai
@@ -168,6 +171,7 @@ def get_all_modules():
     from modules.Omegascans import Omegascans
     from modules.Readonepiece import Readonepiece
     from modules.Sarrast import Sarrast
+    from modules.Simply_hentai import Simply_hentai
     from modules.Simplyhentai import Simplyhentai
     from modules.Toonily import Toonily_Com
     from modules.Toonily import Toonily_Me
@@ -211,6 +215,7 @@ def get_all_modules():
         Omegascans,
         Readonepiece,
         Sarrast,
+        Simply_hentai,
         Simplyhentai,
         Toonily_Com,
         Toonily_Me,
@@ -257,6 +262,7 @@ def get_all_domains():
         'omegascans.org',
         'readonepiece.com',
         'sarrast.com',
+        'simply-hentai.com',
         'simplyhentai.org',
         'toonily.com',
         'toonily.me',
