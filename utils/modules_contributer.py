@@ -126,6 +126,9 @@ def get_module(key):
         case 'truemanga.com':
             from modules.Truemanga import Truemanga
             return Truemanga
+        case 'vyvymanga.net':
+            from modules.Vyvymanga import Vyvymanga
+            return Vyvymanga
         case 'w.mangairo.com':
             from modules.WMangairo import WMangairo
             return WMangairo
@@ -176,6 +179,7 @@ def get_all_modules():
     from modules.Toonily import Toonily_Com
     from modules.Toonily import Toonily_Me
     from modules.Truemanga import Truemanga
+    from modules.Vyvymanga import Vyvymanga
     from modules.WMangairo import WMangairo
     return [
         Allmanga,
@@ -220,6 +224,7 @@ def get_all_modules():
         Toonily_Com,
         Toonily_Me,
         Truemanga,
+        Vyvymanga,
         WMangairo
     ]
 
@@ -267,5 +272,6 @@ def get_all_domains():
         'toonily.com',
         'toonily.me',
         'truemanga.com',
+        'vyvymanga.net',
         'w.mangairo.com'
     ]
