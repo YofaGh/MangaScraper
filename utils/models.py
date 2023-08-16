@@ -29,11 +29,11 @@ class Module:
                 _waiter()
 
     @classmethod
-    def download_image(self, url, image_name, log_num, headers=None):
+    def download_image(self, url, image_name, log_num, headers=None, verify=None):
         from requests.exceptions import HTTPError, Timeout
         while True:
             try:
-                response = self.send_request(url, headers=headers)
+                response = self.send_request(url, headers=headers, verify=verify)
                 with open(image_name, 'wb') as image:
                     image.write(response.content)
                 return image_name
@@ -71,6 +71,6 @@ class Manga(Module):
 
 class Doujin(Module):
     is_coded = True
-    
+
     def get_title():
         return ''
