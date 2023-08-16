@@ -15,16 +15,16 @@ class Allmanga(Manga):
         outputs = script.rsplit('(', 1)[-1][:-3].replace('void ', '')
         outputs = json.loads(f'[{outputs}]')
         vars = dict(zip(inputs, outputs))
-        chapters = script.split('availableChaptersDetail:{', 1)[1].split('}')[0]
+        chapters_urls = script.split('availableChaptersDetail:{', 1)[1].split('}')[0]
         subs, raws = [], []
-        subs_raw = chapters.split('sub:[', 1)[1].split(']')[0]
+        subs_raw = chapters_urls.split('sub:[', 1)[1].split(']')[0]
         subs_raw = [sub.replace('"', '') for sub in subs_raw.split(',')]
         for sub in subs_raw:
             if sub in vars:
                 subs.append(vars[sub])
             else:
                 subs.append(sub)
-        raws_raw = chapters.split('raw:[', 1)[1].split(']')[0]
+        raws_raw = chapters_urls.split('raw:[', 1)[1].split(']')[0]
         if raws_raw:
             raws_raw = [raw.replace('"', '') for raw in raws_raw.split(',')]
             raws = []
@@ -33,11 +33,15 @@ class Allmanga(Manga):
                     raws.append(vars[raw])
                 else:
                     raws.append(raw)
-        chapters = [f'chapter-{sub}-sub' for sub in subs[::-1]] + [f'chapter-{raw}-raw' for raw in raws[::-1]]
+        chapters_urls = [f'chapter-{sub}-sub' for sub in subs[::-1]] + [f'chapter-{raw}-raw' for raw in raws[::-1]]
+        chapters = [{
+            'url': chapter_url,
+            'name': Allmanga.rename_chapter(chapter_url)
+        } for chapter_url in chapters_urls]
         return chapters
 
     def get_images(manga, chapter):
-        response = Allmanga.send_request(f'https://allmanga.to/read/{manga}/{chapter}')
+        response = Allmanga.send_request(f'https://allmanga.to/read/{manga}/{chapter["url"]}')
         soup = BeautifulSoup(response.text, 'html.parser')
         script = soup.find(lambda tag: tag.name == 'script' and 'selectedPicturesServer' in tag.text).get_text(strip=True)
         inputs = script.split('function(', 1)[1].split(')')[0].split(',')
@@ -131,3 +135,23 @@ class Allmanga(Manga):
                 }
             yield results
             page += 1
+    
+    def rename_chapter(chapter):
+        if chapter in ['pass', None]:
+            return ''
+        tail = ' Raw' if 'raw' in chapter else ''
+        new_name = ''
+        reached_number = False
+        for ch in chapter:
+            if ch.isdigit():
+                new_name += ch
+                reached_number = True
+            elif ch in '-.' and reached_number and new_name[-1] != '.':
+                new_name += '.'
+        if not reached_number:
+            return chapter
+        new_name = new_name[:-1] if new_name[-1] == '.' else new_name
+        try:
+            return f'Chapter {int(new_name):03d}{tail}'
+        except:
+            return f'Chapter {new_name.split(".", 1)[0].zfill(3)}.{new_name.split(".", 1)[1]}{tail}'

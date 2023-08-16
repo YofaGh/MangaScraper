@@ -13,11 +13,15 @@ class Manhuamanhwa(Manga):
         response = Manhuamanhwa.send_request(f'https://manhuamanhwa.com/manga/{manga}/ajax/chapters/', method='POST', headers=Manhuamanhwa.headers)
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find_all('li', {'class':'wp-manga-chapter'})
-        chapters = [div.find('a')['href'].split('/')[-2] for div in divs[::-1]]
+        chapters_urls = [div.find('a')['href'].split('/')[-2] for div in divs[::-1]]
+        chapters = [{
+            'url': chapter_url,
+            'name': Manhuamanhwa.rename_chapter(chapter_url)
+        } for chapter_url in chapters_urls]
         return chapters
 
     def get_images(manga, chapter):
-        response = Manhuamanhwa.send_request(f'https://manhuamanhwa.com/manga/{manga}/{chapter}/', headers=Manhuamanhwa.headers)
+        response = Manhuamanhwa.send_request(f'https://manhuamanhwa.com/manga/{manga}/{chapter["url"]}/', headers=Manhuamanhwa.headers)
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'class': 'reading-content'}).find_all('img')
         images = [image['data-src'] for image in images]

@@ -8,12 +8,16 @@ class Bato(Manga):
         response = Bato.send_request(f'https://bato.to/title/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         links = soup.find('div', {'class': 'group flex flex-col-reverse'}).find_all('a', {'class': 'link-hover link-primary visited:text-accent'})
-        chapters = [link['href'].split('/')[-1] for link in links]
+        chapters_urls = [link['href'].split('/')[-1] for link in links]
+        chapters = [{
+            'url': chapter_url,
+            'name': Bato.rename_chapter(chapter_url)
+        } for chapter_url in chapters_urls]
         return chapters
 
     def get_images(manga, chapter):
         import json
-        response = Bato.send_request(f'https://bato.to/chapter/{chapter.split("-")[0]}')
+        response = Bato.send_request(f'https://bato.to/chapter/{chapter["url"].split("-")[0]}')
         soup = BeautifulSoup(response.text, 'html.parser')
         script = soup.find(lambda tag:tag.name == 'script' and 'imgHttpLis' in tag.text).text
         vars = script.split('\n')

@@ -9,11 +9,15 @@ class WMangairo(Manga):
         response = WMangairo.send_request(f'https://chap.mangairo.com/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         lis = soup.find('div', {'class': 'chapter_list'}).find_all('li')
-        chapters = [li.find('a')['href'].split('/')[-1] for li in lis[::-1]]
+        chapters_urls = [li.find('a')['href'].split('/')[-1] for li in lis[::-1]]
+        chapters = [{
+            'url': chapter_url,
+            'name': WMangairo.rename_chapter(chapter_url)
+        } for chapter_url in chapters_urls]
         return chapters
 
     def get_images(manga, chapter):
-        response = WMangairo.send_request(f'https://chap.mangairo.com/{manga}/{chapter}')
+        response = WMangairo.send_request(f'https://chap.mangairo.com/{manga}/{chapter["url"]}')
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'class': 'panel-read-story'}).find_all('img')
         images = [image['src'].strip() for image in images]

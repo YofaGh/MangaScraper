@@ -9,12 +9,16 @@ class Manga18(Manga):
         response = Manga18.send_request(f'https://manga18.club/manhwa/{manga}', headers=Manga18.headers)
         soup = BeautifulSoup(response.text, 'html.parser')
         lis = soup.find('div', {'class': 'chapter_box'}).find_all('li')
-        chapters = [li.find('a')['href'].split('/')[-1] for li in lis[::-1]]
+        chapters_urls = [li.find('a')['href'].split('/')[-1] for li in lis[::-1]]
+        chapters = [{
+            'url': chapter_url,
+            'name': Manga18.rename_chapter(chapter_url)
+        } for chapter_url in chapters_urls]
         return chapters
 
     def get_images(manga, chapter):
         import base64
-        response = Manga18.send_request(f'https://manga18.club/manhwa/{manga}/{chapter}', headers=Manga18.headers)
+        response = Manga18.send_request(f'https://manga18.club/manhwa/{manga}/{chapter["url"]}', headers=Manga18.headers)
         soup = BeautifulSoup(response.text, 'html.parser')
         script = soup.find(lambda tag:tag.name == 'script' and 'slides_p_path' in tag.text)
         images = script.text.split('[', 1)[1].split(']', 1)[0][:-1]

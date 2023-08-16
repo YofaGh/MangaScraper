@@ -9,14 +9,19 @@ class Constellarcomic(Manga):
         response = Constellarcomic.send_request(f'https://constellarcomic.com/manga/{manga}/', headers=Constellarcomic.headers)
         soup = BeautifulSoup(response.text, 'html.parser')
         links = soup.find('div', {'id': 'chapterlist'}).find_all('a')
-        chapters = [link['href'].split('/')[-2].replace(f'{manga}-', '') for link in links[::-1]]
+        chapters_urls = [link['href'].split('/')[-2].replace(f'{manga}-', '') for link in links[::-1]]
+        chapters = [{
+            'url': chapter_url,
+            'name': Constellarcomic.rename_chapter(chapter_url)
+        } for chapter_url in chapters_urls]
         return chapters
 
     def get_images(manga, chapter):
         import json
-        if f'{manga}-' in chapter:
-            chapter = chapter.replace(f'{manga}-', '')
-        response = Constellarcomic.send_request(f'https://constellarcomic.com/{manga}-{chapter}/', headers=Constellarcomic.headers)
+        chapter_url = chapter['url']
+        if f'{manga}-' in chapter_url:
+            chapter_url = chapter_url.replace(f'{manga}-', '')
+        response = Constellarcomic.send_request(f'https://constellarcomic.com/{manga}-{chapter_url}/', headers=Constellarcomic.headers)
         soup = BeautifulSoup(response.text, 'html.parser')
         script = soup.find(lambda tag:tag.name == 'script' and 'NO IMAGE YET' in tag.text)
         images = json.loads(script.get_text(strip=True).replace('ts_rea_der_._run(', '')[:-2])

@@ -63,12 +63,12 @@ def title_checker(module, code):
 
 def manga_images_checker(module, manga, chapter):
     images, save_names = [], []
-    log_over(f'\r{module.domain}: {manga}: {chapter}: Getting images...')
+    log_over(f'\r{module.domain}: {manga}: {chapter["url"]}: Getting images...')
     with suppress(Exception): images, save_names = module.get_images(manga, chapter)
     if images:
-        log(f'\r{module.domain}: {manga}: {chapter}: Recieved images links successfully', 'green')
+        log(f'\r{module.domain}: {manga}: {chapter["url"]}: Recieved images links successfully', 'green')
     else:
-        log(f'\r{module.domain}: {manga}: {chapter}: Recieving images links was a failure', 'red')
+        log(f'\r{module.domain}: {manga}: {chapter["url"]}: Recieving images links was a failure', 'red')
     return images, save_names
 
 def doujin_images_checker(module, code):

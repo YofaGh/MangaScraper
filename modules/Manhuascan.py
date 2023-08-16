@@ -8,11 +8,15 @@ class Manhuascan(Manga):
         response = Manhuascan.send_request(f'https://manhuascan.us/manga/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find_all('div', {'class': 'eph-num'})
-        chapters = [div.find('a')['href'].split('/')[-1] for div in divs[::-1]]
+        chapters_urls = [div.find('a')['href'].split('/')[-1] for div in divs[::-1]]
+        chapters = [{
+            'url': chapter_url,
+            'name': Manhuascan.rename_chapter(chapter_url)
+        } for chapter_url in chapters_urls]
         return chapters
 
     def get_images(manga, chapter):
-        response = Manhuascan.send_request(f'https://manhuascan.us/manga/{manga}/{chapter}')
+        response = Manhuascan.send_request(f'https://manhuascan.us/manga/{manga}/{chapter["url"]}')
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'id': 'readerarea'}).find_all('img')
         images = [image['src'] for image in images]

@@ -16,7 +16,7 @@ class LastChapter(argparse.Action):
             raise ValueError('Minimum chapter is 0')
         if values.is_integer():
             values = int(values)
-        setattr(namespace, self.dest, values)
+        setattr(namespace, self.dest, str(values))
 
 class RangeOfChapters(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
@@ -27,6 +27,7 @@ class RangeOfChapters(argparse.Action):
                 raise ValueError('Minimum chapter is 0')
             if values[i].is_integer():
                 values[i] = int(values[i])
+            values[i] = str(values[i])
         setattr(namespace, self.dest, values)
 
 class CheckChapters(argparse.Action):
@@ -34,6 +35,7 @@ class CheckChapters(argparse.Action):
         for i in range(len(values)):
             if values[i].is_integer():
                 values[i] = int(values[i])
+            values[i] = str(values[i])
         setattr(namespace, self.dest, values)
 
 def validate_corrupted_image(path_to_image):

@@ -10,11 +10,15 @@ class Toonily_Com(Manga):
         response = Toonily_Com.send_request(f'https://toonily.com/webtoon/{manga}/')
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find_all('li', {'class': 'wp-manga-chapter'})
-        chapters = [div.find('a')['href'].split('/')[-2] for div in divs[::-1]]
+        chapters_urls = [div.find('a')['href'].split('/')[-2] for div in divs[::-1]]
+        chapters = [{
+            'url': chapter_url,
+            'name': Toonily_Com.rename_chapter(chapter_url)
+        } for chapter_url in chapters_urls]
         return chapters
 
     def get_images(manga, chapter):
-        response = Toonily_Com.send_request(f'https://toonily.com/webtoon/{manga}/{chapter}/')
+        response = Toonily_Com.send_request(f'https://toonily.com/webtoon/{manga}/{chapter["url"]}/')
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'class': 'reading-content'}).find_all('img')
         images = [image['data-src'].strip() for image in images]
@@ -57,11 +61,15 @@ class Toonily_Me(Manga):
         response = Toonily_Me.send_request(f'https://toonily.me/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find('ul', {'class': 'chapter-list'}).find_all('li')
-        chapters = [div.find('a')['href'].split('/')[-1] for div in divs[::-1]]
+        chapters_urls = [div.find('a')['href'].split('/')[-1] for div in divs[::-1]]
+        chapters = [{
+            'url': chapter_url,
+            'name': Toonily_Me.rename_chapter(chapter_url)
+        } for chapter_url in chapters_urls]
         return chapters
 
     def get_images(manga, chapter):
-        response = Toonily_Me.send_request(f'https://toonily.me/{manga}/{chapter}')
+        response = Toonily_Me.send_request(f'https://toonily.me/{manga}/{chapter["url"]}')
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'id': 'chapter-images'}).find_all('img')
         images = [image['data-src'].strip() for image in images]

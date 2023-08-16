@@ -9,11 +9,16 @@ class Manga18hot(Manga):
         response = Manga18hot.send_request(f'https://manga18hot.net/manga-{manga}.html')
         soup = BeautifulSoup(response.text, 'html.parser')
         links = soup.find_all('a', {'class': 'item-link'})
-        return [link['href'].replace(f'read-{manga}-', '').replace('.html', '') for link in links[::-1]]
+        chapters_urls = [link['href'].replace(f'read-{manga}-', '').replace('.html', '') for link in links[::-1]]
+        chapters = [{
+            'url': chapter_url,
+            'name': Manga18hot.rename_chapter(chapter_url)
+        } for chapter_url in chapters_urls]
+        return chapters
 
     def get_images(manga, chapter):
         manga = manga.replace('manga-', '') if manga.startswith('manga-') else manga
-        response = Manga18hot.send_request(f'https://manga18hot.net/read-{manga}-{chapter}.html')
+        response = Manga18hot.send_request(f'https://manga18hot.net/read-{manga}-{chapter["url"]}.html')
         soup = BeautifulSoup(response.text, 'html.parser')
         chapter_id = soup.find('body').find('div')['data-reading-id']
         response = Manga18hot.send_request(f'https://manga18hot.net/app/manga/controllers/cont.getChapter.php?chapter={chapter_id}&mode=vertical&quality=high').json()
@@ -61,3 +66,7 @@ class Manga18hot(Manga):
 
     def get_db():
         return Manga18hot.search_by_keyword('', False)
+
+    @classmethod
+    def download_image(self, url, image_name, log_num, headers=None, verify=None):
+        return super(Manga18hot, self).download_image(url, image_name, log_num, headers=headers, verify=False)

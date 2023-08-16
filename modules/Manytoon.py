@@ -8,11 +8,15 @@ class Manytoon(Manga):
         response = Manytoon.send_request(f'https://manytoon.com/comic/{manga}/ajax/chapters/', method='POST')
         soup = BeautifulSoup(response.text, 'html.parser')
         lis = soup.find_all('li', {'class': 'wp-manga-chapter'})
-        chapters = [li.find('a')['href'].split('/')[-2] for li in lis[::-1]]
+        chapters_urls = [li.find('a')['href'].split('/')[-2] for li in lis[::-1]]
+        chapters = [{
+            'url': chapter_url,
+            'name': Manytoon.rename_chapter(chapter_url)
+        } for chapter_url in chapters_urls]
         return chapters
 
     def get_images(manga, chapter):
-        response = Manytoon.send_request(f'https://manytoon.com/comic/{manga}/{chapter}/')
+        response = Manytoon.send_request(f'https://manytoon.com/comic/{manga}/{chapter["url"]}/')
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'class': 'reading-content'}).find_all('img')
         images = [image['data-src'].strip() for image in images]

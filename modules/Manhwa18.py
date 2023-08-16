@@ -8,11 +8,15 @@ class Manhwa18(Manga):
         response = Manhwa18.send_request(f'https://manhwa18.com/manga/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         aas = soup.find('ul', {'class':'list-chapters at-series'}).find_all('a')
-        chapters = [aa['href'].split('/')[-1] for aa in aas[::-1]]
+        chapters_urls = [aa['href'].split('/')[-1] for aa in aas[::-1]]
+        chapters = [{
+            'url': chapter_url,
+            'name': Manhwa18.rename_chapter(chapter_url)
+        } for chapter_url in chapters_urls]
         return chapters
 
     def get_images(manga, chapter):
-        response = Manhwa18.send_request(f'https://manhwa18.com/manga/{manga}/{chapter}')
+        response = Manhwa18.send_request(f'https://manhwa18.com/manga/{manga}/{chapter["url"]}')
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'id':'chapter-content'}).find_all('img')
         images = [image['data-src'] for image in images]

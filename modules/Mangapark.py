@@ -19,15 +19,18 @@ class Mangapark(Manga):
         begin = response['data']['get_content_comicChapterRangeList']['pager'][-1]['y']
         data_json['variables']['select']['range'] = {'x': begin, 'y': end}
         data_json['query'] = '''query get_chapters($select: Content_ComicChapterRangeList_Select) 
-            { get_content_comicChapterRangeList( select: $select ) { items{ chapterNodes { data {urlPath} } } } } '''
+            { get_content_comicChapterRangeList( select: $select ) { items{ chapterNodes { data { urlPath, dname } } } } } '''
         response = Mangapark.send_request('https://mangapark.to/apo/', method='POST', headers={'content-type': 'application/json'}, json=data_json).json()
         items = response['data']['get_content_comicChapterRangeList']['items']
-        chapters = [item['chapterNodes'][0]['data']['urlPath'].split('/')[-1] for item in items[::-1]]
+        chapters = [{
+            'url': item['chapterNodes'][0]['data']['urlPath'].split('/')[-1],
+            'name': Mangapark.rename_chapter(item['chapterNodes'][0]['data']['dname'])
+        } for item in items[::-1]]
         return chapters
 
     def get_images(manga, chapter):
         import json
-        response = Mangapark.send_request(f'https://mangapark.to/title/{manga}/{chapter}')
+        response = Mangapark.send_request(f'https://mangapark.to/title/{manga}/{chapter["url"]}')
         soup = BeautifulSoup(response.text, 'html.parser')
         script = soup.find('script', {'id': '__NEXT_DATA__'})
         data = json.loads(script.text)

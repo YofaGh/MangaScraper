@@ -14,14 +14,18 @@ class Myrockmanga(Manga):
     }
 
     def get_chapters(manga):
-        response = Myrockmanga.send_request(f'https://myrockmanga.com/manga-detail/{manga}')
+        response = Myrockmanga.send_request(f'https://myrockmanga.com/manga-detail/{manga}', verify=False)
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find_all('tr', {'class': 'chapter'})
-        chapters = [div.find('a')['href'].replace('/chapter/', '') for div in divs[::-1]]
+        chapters_urls = [div.find('a')['href'].replace('/chapter/', '') for div in divs[::-1]]
+        chapters = [{
+            'url': chapter_url,
+            'name': Myrockmanga.rename_chapter(chapter_url)
+        } for chapter_url in chapters_urls]
         return chapters
 
     def get_images(manga, chapter):
-        response = Myrockmanga.send_request(f'https://myrockmanga.com/chapter/{chapter}')
+        response = Myrockmanga.send_request(f'https://myrockmanga.com/chapter/{chapter["url"]}', verify=False)
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'id': 'rendering'}).find_all('img')
         images = [image['src'] for image in images if image.has_attr('page')]
@@ -35,7 +39,7 @@ class Myrockmanga(Manga):
         from requests.exceptions import HTTPError
         while True:
             try:
-                response = Myrockmanga.send_request(f'https://myrockmanga.com/Home/Search?search={keyword}', headers=Myrockmanga.headers)
+                response = Myrockmanga.send_request(f'https://myrockmanga.com/Home/Search?search={keyword}', headers=Myrockmanga.headers, verify=False)
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -71,7 +75,7 @@ class Myrockmanga(Manga):
         page = 1
         data = 'Type=1&Page=P_P_P_P&Lang=all&Dir=NewPostedDate&filterCategory=All'
         while True:
-            response = Myrockmanga.send_request(f'https://myrockmanga.com/Manga/Newest', method='POST', headers=Myrockmanga.get_db_headers, data=data.replace('P_P_P_P', str(page)))
+            response = Myrockmanga.send_request(f'https://myrockmanga.com/Manga/Newest', method='POST', headers=Myrockmanga.get_db_headers, data=data.replace('P_P_P_P', str(page)), verify=False)
             soup = BeautifulSoup(response.text, 'html.parser')
             mangas = soup.find_all('div', {'class': 'col-xs-12 picture-card mdl-card shadow-z-1'})
             if len(mangas) == 0:

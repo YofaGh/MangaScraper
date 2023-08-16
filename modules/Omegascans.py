@@ -8,12 +8,16 @@ class Omegascans(Manga):
         response = Omegascans.send_request(f'https://omegascans.org/series/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         links = soup.find('div', {'class': 'chapters-list-wrapper'}).find_all('a')
-        chapters = [link['href'].split('/')[-1] for link in links[::-1]]
+        chapters_urls = [link['href'].split('/')[-1] for link in links[::-1]]
+        chapters = [{
+            'url': chapter_url,
+            'name': Omegascans.rename_chapter(chapter_url)
+        } for chapter_url in chapters_urls]
         return chapters
 
     def get_images(manga, chapter):
         import json
-        response = Omegascans.send_request(f'https://omegascans.org/series/{manga}/{chapter}')
+        response = Omegascans.send_request(f'https://omegascans.org/series/{manga}/{chapter["url"]}')
         soup = BeautifulSoup(response.text, 'html.parser')
         script = soup.find('script', {'id': '__NEXT_DATA__'})
         id = json.loads(script.text)['props']['pageProps']['data']['id']

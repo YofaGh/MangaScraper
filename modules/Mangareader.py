@@ -9,11 +9,18 @@ class Mangareader(Manga):
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find('div', {'class':'cl'}).find_all('a')
         chapters = [div['href'].split('/')[-1] for div in divs[::-1]]
-        chapters = [chapter.replace(f'{manga}-','') for chapter in chapters]
+        chapters_urls = [chapter.replace(f'{manga}-','') for chapter in chapters]
+        chapters = [{
+            'url': chapter_url,
+            'name': Mangareader.rename_chapter(chapter_url)
+        } for chapter_url in chapters_urls]
         return chapters
 
     def get_images(manga, chapter):
-        response = Mangareader.send_request(f'https://mangareader.mobi/chapter/{manga}-{chapter}', verify=False)
+        chapter_url = chapter['url']
+        if f'{manga}-' in chapter_url:
+            chapter_url = chapter_url.replace(f'{manga}-','')
+        response = Mangareader.send_request(f'https://mangareader.mobi/chapter/{manga}-{chapter_url}', verify=False)
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'id':'readerarea'}).find('p').text
         images = images.split(',')

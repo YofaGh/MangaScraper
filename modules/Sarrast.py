@@ -8,11 +8,15 @@ class Sarrast(Manga):
         response = Sarrast.send_request(f'https://sarrast.com/series/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find('div', {'class': 'text-white mb-20 mt-8 relative px-4'}).find_all('a')
-        chapters = [div['href'].split('/')[-1] for div in divs[::-1]]
+        chapters_urls = [div['href'].split('/')[-1] for div in divs[::-1]]
+        chapters = [{
+            'url': chapter_url,
+            'name': Sarrast.rename_chapter(chapter_url)
+        } for chapter_url in chapters_urls]
         return chapters
 
     def get_images(manga, chapter):
-        response = Sarrast.send_request(f'https://sarrast.com/series/{manga}/{chapter}')
+        response = Sarrast.send_request(f'https://sarrast.com/series/{manga}/{chapter["url"]}')
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'class': 'episode w-full flex flex-col items-center'}).find_all('img')
         images = [f'https://sarrast.com{image["src"]}' for image in images]

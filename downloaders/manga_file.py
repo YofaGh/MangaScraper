@@ -1,4 +1,3 @@
-import natsort
 from utils.logger import log_over, log
 from utils.modules_contributer import get_module
 from utils.exceptions import MissingModuleException
@@ -16,19 +15,17 @@ def get_name_of_chapters(json_file):
     for valid_manga in valid_mangas:
         manga = mangas[valid_manga]
         log_over(f'\r{valid_manga}: Getting chapters...')
-        if manga['last_downloaded_chapter'] != 'pass':
-            chapters = get_module(manga['domain']).get_chapters(manga['url'])
-            if manga['last_downloaded_chapter'] is None:
-                manga['chapters'] += [chapter for chapter in chapters if chapter not in manga['chapters']]
-            else:
-                reached_last_downloaded_chapter = False
-                for chapter in chapters:
-                    if chapter == manga['last_downloaded_chapter']:
-                        reached_last_downloaded_chapter = True
-                        continue
-                    if reached_last_downloaded_chapter and chapter not in manga['chapters']:
-                        manga['chapters'].append(chapter)
-        manga['chapters'] = sorted(manga['chapters'], key=lambda _: (get_module(manga['domain']).rename_chapter, natsort.os_sorted))
+        chapters = get_module(manga['domain']).get_chapters(manga['url'])
+        if manga['last_downloaded_chapter'] is None:
+            manga['chapters'] += chapters
+        else:
+            reached_last_downloaded_chapter = False
+            for chapter in chapters:
+                if chapter['url'] == manga['last_downloaded_chapter']:
+                    reached_last_downloaded_chapter = True
+                    continue
+                if reached_last_downloaded_chapter:
+                    manga['chapters'].append(chapter)
         log(f'\r{valid_manga}: {len(manga["chapters"])} chapter{"" if len(manga["chapters"]) == 1 else "s"} to download.')
     save_dict_to_file(json_file, mangas)
 
@@ -44,8 +41,7 @@ def download_mangas(json_file, sleep_time, merge, convert_to_pdf, fit_merge):
                 module = get_module(mangas[manga]['domain'])
                 ics = download_manga(manga, mangas[manga]['url'], module, sleep_time, [chapter], merge, convert_to_pdf, fit_merge)
                 inconsistencies += ics
-                if module.rename_chapter(chapter) > module.rename_chapter(mangas[manga]['last_downloaded_chapter']):
-                    mangas[manga]['last_downloaded_chapter'] = chapter
+                mangas[manga]['last_downloaded_chapter'] = chapter['url']
                 del mangas[manga]['chapters'][0]
                 save_dict_to_file(json_file, mangas)
         except MissingModuleException as error:

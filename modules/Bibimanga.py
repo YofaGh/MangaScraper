@@ -8,11 +8,15 @@ class Bibimanga(Manga):
         response = Bibimanga.send_request(f'https://bibimanga.com/manga/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find_all('li', {'class': 'wp-manga-chapter'})
-        chapters = [div.find('a')['href'].split('/')[-2] for div in divs[::-1]]
+        chapters_urls = [div.find('a')['href'].split('/')[-2] for div in divs[::-1]]
+        chapters = [{
+            'url': chapter_url,
+            'name': Bibimanga.rename_chapter(chapter_url)
+        } for chapter_url in chapters_urls]
         return chapters
 
     def get_images(manga, chapter):
-        response = Bibimanga.send_request(f'https://bibimanga.com/manga/{manga}/{chapter}')
+        response = Bibimanga.send_request(f'https://bibimanga.com/manga/{manga}/{chapter["url"]}')
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'class':'reading-content'}).find_all('img')
         images = [image['data-src'].strip() for image in images]
