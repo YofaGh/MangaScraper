@@ -4,7 +4,7 @@ class Module:
     domain = ''
     download_images_headers = None
 
-    def send_request(url, method='GET', headers=None, json=None, data=None, verify=None):
+    def send_request(url, method='GET', headers=None, json=None, data=None, params=None, verify=None):
         def _waiter():
             import time
             logger.log_over(' Connection lost.\n\rWaiting 1 minute to attempt a fresh connection.', 'red')
@@ -18,9 +18,9 @@ class Module:
         while True:
             try:
                 if method == 'GET':
-                    response = requests.get(url, headers=headers, json=json, data=data, verify=verify)
+                    response = requests.get(url, headers=headers, json=json, data=data, params=params, verify=verify)
                 elif method == 'POST':
-                    response = requests.post(url, headers=headers, json=json, data=data, verify=verify)
+                    response = requests.post(url, headers=headers, json=json, data=data, params=params, verify=verify)
                 response.raise_for_status()
                 return response
             except (requests.exceptions.HTTPError, requests.exceptions.Timeout) as error:
