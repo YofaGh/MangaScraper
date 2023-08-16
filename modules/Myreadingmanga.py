@@ -3,6 +3,7 @@ from utils.models import Doujin
 
 class Myreadingmanga(Doujin):
     domain = 'myreadingmanga.to'
+    download_images_headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36'}
 
     def get_title(code):
         response = Myreadingmanga.send_request(f'https://myreadingmanga.to/g/{code}')
