@@ -58,8 +58,7 @@ def merge_fit(images, path_to_destination):
     current_height = 0
     temp_list = []
     for image in images:
-        image_width = image.size[0]
-        image_height = image.size[1]
+        image_width, image_height = image.size
         if image_width == min_width:
             if (current_height + image_height) < 65500:
                 temp_list.append(image)
