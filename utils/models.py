@@ -29,19 +29,16 @@ class Module:
                 _waiter()
 
     @classmethod
-    def download_image(self, url, image_name, log_num, headers=None, verify=None):
-        from requests.exceptions import HTTPError, Timeout
-        while True:
-            try:
-                response = self.send_request(url, headers=headers, verify=verify)
-                with open(image_name, 'wb') as image:
-                    image.write(response.content)
-                return image_name
-            except HTTPError as error:
-                logger.log(f' Warning: Could not download image {log_num}: {url}', 'red')
-                return ''
-            except Timeout as error:
-                raise error
+    def download_image(cls, url, image_name, log_num, headers=None, verify=None):
+        from requests.exceptions import HTTPError
+        try:
+            response = cls.send_request(url, headers=headers, verify=verify)
+            with open(image_name, 'wb') as image:
+                image.write(response.content)
+            return image_name
+        except HTTPError:
+            logger.log(f' Warning: Could not download image {log_num}: {url}', 'red')
+            return ''
 
     def get_images():
         return [], False
