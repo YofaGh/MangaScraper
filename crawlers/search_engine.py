@@ -1,5 +1,4 @@
 import time
-from itertools import islice
 from utils.logger import log_over, log
 from utils.assets import save_dict_to_file
 from utils.exceptions import MissingFunctionException
@@ -37,8 +36,8 @@ def search(keyword, modules, sleep_time, absolute, limit_page):
 
 def print_output(results):
     log('Summary:')
-    for module in results:
+    for module, data in results.items():
         log(f'{module}:')
-        for result, value in islice(results[module].items(), 5):
+        for result, value in list(data.items())[:5]:
             refer = 'url' if 'url' in value else 'code'
             log(f'    title: {result}, {refer}: {value[refer]}')
