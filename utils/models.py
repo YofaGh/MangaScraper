@@ -2,6 +2,8 @@ from utils import logger
 
 class Module:
     domain = ''
+    logo = ''
+    type = 'Module'
     download_images_headers = None
 
     def send_request(url, method='GET', headers=None, json=None, data=None, params=None, verify=None):
@@ -44,6 +46,7 @@ class Module:
         return [], False
 
 class Manga(Module):
+    type = 'Manga'
     def get_chapters():
         return []
 
@@ -67,6 +70,7 @@ class Manga(Module):
             return f'Chapter {new_name.split(".", 1)[0].zfill(3)}.{new_name.split(".", 1)[1]}'
 
 class Doujin(Module):
+    type = 'Doujin'
     is_coded = True
 
     def get_title():
