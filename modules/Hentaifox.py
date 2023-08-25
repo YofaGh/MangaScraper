@@ -3,6 +3,7 @@ from utils.models import Doujin
 
 class Hentaifox(Doujin):
     domain = 'hentaifox.com'
+    logo = 'https://hentaifox.com/images/logo.png'
     image_formats = {
         'j': 'jpg',
         'p': 'png',

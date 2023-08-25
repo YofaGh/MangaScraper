@@ -3,6 +3,7 @@ from utils.models import Manga
 
 class Myrockmanga(Manga):
     domain = 'myrockmanga.com'
+    logo = 'https://myrockmanga.com/Content/Img/logo_square.png'
     headers = {'cookie': 'culture=en'}
     get_db_headers = {'cookie': 'culture=en', 'content-type': 'application/x-www-form-urlencoded; charset=UTF-8'}
     langs = {

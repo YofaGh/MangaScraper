@@ -3,6 +3,7 @@ from utils.models import Manga
 
 class Bato(Manga):
     domain = 'bato.to'
+    logo = 'https://bato.to/public-assets/img/favicon.ico'
 
     def get_chapters(manga):
         response = Bato.send_request(f'https://bato.to/title/{manga}')

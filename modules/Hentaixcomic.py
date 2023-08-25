@@ -3,6 +3,7 @@ from utils.models import Manga
 
 class Hentaixcomic(Manga):
     domain = 'hentaixcomic.com'
+    logo = 'https://hentaixcomic.com/wp-content/uploads/2020/07/cropped-Pg_00-1-192x192.jpg'
 
     def get_chapters(manga):
         response = Hentaixcomic.send_request(f'https://hentaixcomic.com/manga/{manga}')

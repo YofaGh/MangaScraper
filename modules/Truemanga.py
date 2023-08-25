@@ -3,6 +3,7 @@ from utils.models import Manga
 
 class Truemanga(Manga):
     domain = 'truemanga.com'
+    logo = 'https://truemanga.com/static/sites/truemanga/icons/favicon.ico'
     download_images_headers = {'Referer': 'https://truemanga.com/'}
 
     def get_chapters(manga):

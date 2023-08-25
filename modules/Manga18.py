@@ -3,6 +3,7 @@ from utils.models import Manga
 
 class Manga18(Manga):
     domain = 'manga18.club'
+    logo = 'https://manga18.club/fav.png?v=1'
     headers = {'User-Agent': 'Leech/1051 CFNetwork/454.9.4 Darwin/10.3.0 (i386) (MacPro1%2C1)'}
 
     def get_chapters(manga):

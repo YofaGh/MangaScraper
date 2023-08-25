@@ -4,6 +4,7 @@ from utils.models import Manga
 
 class Comick(Manga):
     domain = 'comick.app'
+    logo = 'https://comick.app/static/icons/unicorn-256_maskable.png'
     headers = {'User-Agent': 'Leech/1051 CFNetwork/454.9.4 Darwin/10.3.0 (i386) (MacPro1%2C1)'}
     download_images_headers = {'User-Agent': 'Leech/1051 CFNetwork/454.9.4 Darwin/10.3.0 (i386) (MacPro1%2C1)'}
 

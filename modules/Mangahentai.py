@@ -3,6 +3,7 @@ from utils.models import Manga
 
 class Mangahentai(Manga):
     domain = 'mangahentai.me'
+    logo = 'https://mangahentai.me/favicon.ico'
 
     def get_chapters(manga):
         response = Mangahentai.send_request(f'https://mangahentai.me/manga-hentai/{manga}/ajax/chapters/', method='POST')

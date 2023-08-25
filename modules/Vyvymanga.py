@@ -3,6 +3,7 @@ from utils.models import Manga
 
 class Vyvymanga(Manga):
     domain = 'vyvymanga.net'
+    logo = 'https://vyvymanga.net/web/img/icon.png'
 
     def get_chapters(manga):
         response = Vyvymanga.send_request(f'https://vyvymanga.net/manga/{manga}')

@@ -3,6 +3,7 @@ from utils.models import Manga
 
 class Manhwa18(Manga):
     domain = 'manhwa18.com'
+    logo = 'https://manhwa18.com/favicon1.ico'
 
     def get_chapters(manga):
         response = Manhwa18.send_request(f'https://manhwa18.com/manga/{manga}')

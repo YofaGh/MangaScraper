@@ -2,6 +2,7 @@ from utils.models import Doujin
 
 class NineHentai(Doujin):
     domain = '9hentai.to'
+    logo = 'https://9hentai.to/images/logo.png'
 
     def get_title(code):
         response = NineHentai.send_request('https://9hentai.to/api/getBookByID', method='POST', json={'id':26487}).json()

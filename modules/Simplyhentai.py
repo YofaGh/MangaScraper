@@ -3,6 +3,7 @@ from utils.models import Doujin
 
 class Simplyhentai(Doujin):
     domain = 'simplyhentai.org'
+    logo = 'https://simplyhentai.org/img/logo.svg'
 
     def get_title(code):
         response = Simplyhentai.send_request(f'https://simplyhentai.org/g/{code}')

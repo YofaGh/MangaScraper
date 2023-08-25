@@ -3,6 +3,7 @@ from utils.models import Manga
 
 class Mangadistrict(Manga):
     domain = 'mangadistrict.com'
+    logo = 'https://mangadistrict.com/wp-content/uploads/2021/02/cropped-Copie-de-Copie-de-MANGADISTRICT_5-192x192.png'
 
     def get_chapters(manga):
         response = Mangadistrict.send_request(f'https://mangadistrict.com/read-scan/{manga}/ajax/chapters/', method='POST')

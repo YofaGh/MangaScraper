@@ -3,6 +3,7 @@ from utils.models import Manga
 
 class Manhuamix(Manga):
     domain = 'manhuamix.com'
+    logo = 'https://manhuamix.com/wp-content/uploads/2022/04/cropped-icon-manhua-192x192.png'
 
     def get_chapters(manga):
         response = Manhuamix.send_request(f'https://manhuamix.com/manhua/{manga}/ajax/chapters/', 'POST')

@@ -3,6 +3,7 @@ from utils.models import Doujin
 
 class Luscious(Doujin):
     domain = 'luscious.net'
+    logo = 'https://www.luscious.net/assets/logo.png'
 
     def get_title(code):
         response = Luscious.send_request(f'https://www.luscious.net/albums/{code}')

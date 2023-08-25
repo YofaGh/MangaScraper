@@ -3,6 +3,7 @@ from utils.models import Doujin
 
 class Doujins(Doujin):
     domain = 'doujins.com'
+    logo = 'https://doujins.com/img/logo32x32.png'
     is_coded = False
 
     def get_title(code):

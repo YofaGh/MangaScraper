@@ -3,6 +3,7 @@ from utils.models import Manga
 
 class Manga18hot(Manga):
     domain = 'manga18hot.net'
+    logo = 'https://manga18hot.net/apple-touch-icon.png'
 
     def get_chapters(manga):
         manga = manga.replace('manga-', '') if manga.startswith('manga-') else manga

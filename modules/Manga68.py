@@ -3,6 +3,7 @@ from utils.models import Manga
 
 class Manga68(Manga):
     domain = 'manga68.com'
+    logo = 'https://manga68.com/wp-content/uploads/2017/10/cropped-manga68-2-192x192.png'
 
     def get_chapters(manga):
         response = Manga68.send_request(f'https://manga68.com/manga/{manga}/ajax/chapters/', method='POST')

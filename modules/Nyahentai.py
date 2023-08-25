@@ -3,6 +3,7 @@ from utils.models import Doujin
 
 class Nyahentai(Doujin):
     domain = 'nyahentai.red'
+    logo = 'https://nyahentai.red/front/logo.svg'
 
     def get_title(code):
         response = Nyahentai.send_request(f'https://nyahentai.red/g/{code}')

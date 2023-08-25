@@ -3,6 +3,7 @@ from utils.models import Doujin
 
 class Nhentai_Com(Doujin):
     domain = 'nhentai.com'
+    logo = 'https://cdn.nhentai.com/nhentai/images/icon.png'
     headers = {'User-Agent': 'Leech/1051 CFNetwork/454.9.4 Darwin/10.3.0 (i386) (MacPro1%2C1)'}
     is_coded = False
 
@@ -48,6 +49,7 @@ class Nhentai_Com(Doujin):
 
 class Nhentai_Xxx(Doujin):
     domain = 'nhentai.xxx'
+    logo = 'https://nhentai.xxx/front/logo.svg'
 
     def get_title(code):
         response = Nhentai_Xxx.send_request(f'https://nhentai.xxx/g/{code}')

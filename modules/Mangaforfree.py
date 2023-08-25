@@ -3,6 +3,7 @@ from utils.models import Manga
 
 class Mangaforfree(Manga):
     domain = 'mangaforfree.net'
+    logo = 'https://mangaforfree.net/wp-content/uploads/2023/02/cropped-Favicol-mangaNet-192x192.png'
 
     def get_chapters(manga):
         response = Mangaforfree.send_request(f'https://mangaforfree.net/manga/{manga}')

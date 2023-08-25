@@ -3,6 +3,7 @@ from utils.models import Doujin
 
 class Hennojin(Doujin):
     domain = 'hennojin.com'
+    logo = 'https://hennojin.com/favicon.ico'
     is_coded = False
 
     def get_title(code):

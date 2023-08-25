@@ -3,6 +3,7 @@ from utils.models import Manga
 
 class Bibimanga(Manga):
     domain = 'bibimanga.com'
+    logo = 'https://bibimanga.com/wp-content/uploads/2021/06/FAV-300x300.png'
 
     def get_chapters(manga):
         response = Bibimanga.send_request(f'https://bibimanga.com/manga/{manga}')

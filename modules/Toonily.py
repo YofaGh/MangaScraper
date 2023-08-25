@@ -3,6 +3,7 @@ from utils.models import Manga
 
 class Toonily_Com(Manga):
     domain = 'toonily.com'
+    logo = 'https://toonily.com/wp-content/uploads/2020/01/cropped-toonfavicon-1-192x192.png'
     download_images_headers = {'Referer': 'https://toonily.com/'}
     search_headers = {'cookie': 'toonily-mature=1'}
 
@@ -55,6 +56,7 @@ class Toonily_Com(Manga):
 
 class Toonily_Me(Manga):
     domain = 'toonily.me'
+    logo = 'https://toonily.me/static/sites/toonily/icons/favicon.ico'
     download_images_headers = {'Referer': 'https://toonily.me/'}
 
     def get_chapters(manga):

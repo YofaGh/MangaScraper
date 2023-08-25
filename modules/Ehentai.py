@@ -3,6 +3,7 @@ from utils.models import Doujin
 
 class Ehentai(Doujin):
     domain = 'ehentai.to'
+    logo = 'https://ehentai.to/favicon.ico'
     download_images_headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36'}
 
     def get_title(code):

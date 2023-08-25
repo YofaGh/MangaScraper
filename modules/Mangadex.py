@@ -2,6 +2,7 @@ from utils.models import Manga
 
 class Mangadex(Manga):
     domain = 'mangadex.org'
+    logo = 'https://mangadex.org/favicon.ico'
 
     def get_chapters(manga):
         manga = manga.split('/')[0] if '/' in manga else manga

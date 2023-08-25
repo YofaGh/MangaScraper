@@ -3,6 +3,7 @@ from utils.models import Manga
 
 class Comics8Muses(Manga):
     domain = 'comics.8muses.com'
+    logo = 'https://comics.8muses.com/favicon.ico'
 
     def get_chapters(manga):
         page = 1

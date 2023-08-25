@@ -3,6 +3,7 @@ from utils.models import Manga
 
 class Mangareader(Manga):
     domain = 'mangareader.mobi'
+    logo = 'https://mangareader.mobi/frontend/imgs/favicon16.png'
 
     def get_chapters(manga):
         response = Mangareader.send_request(f'https://mangareader.mobi/manga/{manga}', verify=False)

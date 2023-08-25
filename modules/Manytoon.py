@@ -3,6 +3,7 @@ from utils.models import Manga
 
 class Manytoon(Manga):
     domain = 'manytoon.com'
+    logo = 'https://manytoon.com/favicon.ico'
 
     def get_chapters(manga):
         response = Manytoon.send_request(f'https://manytoon.com/comic/{manga}/ajax/chapters/', method='POST')

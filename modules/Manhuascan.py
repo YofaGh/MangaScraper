@@ -3,6 +3,7 @@ from utils.models import Manga
 
 class Manhuascan(Manga):
     domain = 'manhuascan.us'
+    logo = 'https://manhuascan.us/fav.png?v=1'
 
     def get_chapters(manga):
         response = Manhuascan.send_request(f'https://manhuascan.us/manga/{manga}')

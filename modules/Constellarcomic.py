@@ -3,6 +3,7 @@ from utils.models import Manga
 
 class Constellarcomic(Manga):
     domain = 'constellarcomic.com'
+    logo = 'https://constellarcomic.com/wp-content/uploads/2022/11/Constellar-Logo-Rounded-000.png'
     headers = {'User-Agent': 'Leech/1051 CFNetwork/454.9.4 Darwin/10.3.0 (i386) (MacPro1%2C1)'}
 
     def get_chapters(manga):

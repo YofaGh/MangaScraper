@@ -4,6 +4,7 @@ from utils.models import Manga
 
 class Allmanga(Manga):
     domain = 'allmanga.to'
+    logo = 'https://allanime.to/pics/icon-32x32.png'
     search_headers = {'if-none-match': '87272', 'Referer': 'https://allmanga.to/'}
     get_db_headers = {'Referer': 'https://allmanga.to/'}
 

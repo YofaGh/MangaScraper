@@ -3,6 +3,7 @@ from utils.models import Manga
 
 class Coloredmanga(Manga):
     domain = 'coloredmanga.com'
+    logo = 'https://coloredmanga.com/wp-content/uploads/2022/09/cropped-000-192x192.png'
 
     def get_chapters(manga):
         response = Coloredmanga.send_request(f'https://coloredmanga.com/mangas/{manga}/')

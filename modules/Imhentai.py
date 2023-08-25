@@ -3,6 +3,7 @@ from utils.models import Doujin
 
 class Imhentai(Doujin):
     domain = 'imhentai.xxx'
+    logo = 'https://imhentai.xxx/images/logo.png'
     image_formats = {
         'j': 'jpg',
         'p': 'png',

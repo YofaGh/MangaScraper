@@ -3,6 +3,7 @@ from utils.models import Manga
 
 class Omegascans(Manga):
     domain = 'omegascans.org'
+    logo = 'https://omegascans.org/images/webicon.png'
 
     def get_chapters(manga):
         response = Omegascans.send_request(f'https://omegascans.org/series/{manga}')

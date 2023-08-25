@@ -3,6 +3,7 @@ from utils.models import Manga
 
 class Readonepiece(Manga):
     domain = 'readonepiece.com'
+    logo = 'https://ww9.readonepiece.com/apple-touch-icon.png'
 
     def get_chapters(manga):
         response = Readonepiece.send_request(f'https://ww9.readonepiece.com/manga/{manga}/')

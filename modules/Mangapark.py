@@ -3,6 +3,7 @@ from utils.models import Manga
 
 class Mangapark(Manga):
     domain = 'mangapark.to'
+    logo = 'https://mangapark.to/public-assets/img/favicon.ico'
 
     def get_chapters(manga):
         manga = manga.split('-')[0] if '-' in manga else manga

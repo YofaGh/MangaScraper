@@ -3,6 +3,7 @@ from utils.models import Manga
 
 class WMangairo(Manga):
     domain = 'w.mangairo.com'
+    logo = 'https://w.mangairo.com/themes/home/images/favicon.png'
     download_images_headers = {'Referer': 'https://chap.mangairo.com/'}
 
     def get_chapters(manga):
