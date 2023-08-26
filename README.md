@@ -173,14 +173,14 @@
 >
 > allows you to search between available modules that searching function is implemented for them.  
 > unlike downloading with -single argument you can specify multiple modules when using -s.  
-> you can also use "-s all" to search in all modules.  
+> if you don't use -s, all modules will be searched.  
 > set page limit with -page-limit argument.  
 > you can limit the results with setting -absoulte argument.  
 > Examples:  
 >
 > - search in one module: ```python cli.py search -s manhuascan.us -n "secret"```  
 > - search in multiple modules: ```python cli.py search -s mangapark.to manga68.com -n "secret"```  
-> - search in all modules: ```python cli.py search -s all -n "secret"```  
+> - search in all modules: ```python cli.py search -n "secret"```  
 > - e.g.  ```python cli.py search -s manhuascan.us -n "secret" -page-limit 5 -absolute -t 1```
 
 ## Database crawler
@@ -200,8 +200,9 @@
 
 ## Modules Checker
 >
-> To check if a module is functional or not you can use check option.  
+> to check if a module is functional or not you can use check option.  
+> if you don't use -s, all modules will be checked.  
 > Examples:  
 >
 > - check on module: ```python cli.py check -s manhuascan.us```
-> - check all modules: ```python cli.py check -s all```  
+> - check all modules: ```python cli.py check```  
