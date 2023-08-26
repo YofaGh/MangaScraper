@@ -204,5 +204,5 @@
 > if you don't use -s, all modules will be checked.  
 > Examples:  
 >
-> - check on module: ```python cli.py check -s manhuascan.us```
+> - check one module: ```python cli.py check -s manhuascan.us```
 > - check all modules: ```python cli.py check```  
