@@ -1,42 +1,9 @@
-import argparse
-
-class SetModule(argparse.Action):
-    def __call__(self, parser, namespace, values, option_string=None):
-        if 'all' in values:
-            from utils.modules_contributer import get_all_modules
-            values = get_all_modules()
-        else:
-            from utils.modules_contributer import get_module
-            values = [get_module(value) for value in values]
-        setattr(namespace, self.dest, values)
-
-class LastChapter(argparse.Action):
-    def __call__(self, parser, namespace, values, option_string=None):
-        if values < 0:
-            raise ValueError('Minimum chapter is 0')
-        if values.is_integer():
-            values = int(values)
-        setattr(namespace, self.dest, str(values))
-
-class RangeOfChapters(argparse.Action):
-    def __call__(self, parser, namespace, values, option_string=None):
-        if values[0] > values[1]:
-            raise ValueError('The beginning chapter must be lower than the ending chapter')
-        for i in range(len(values)):
-            if values[i] < 0:
-                raise ValueError('Minimum chapter is 0')
-            if values[i].is_integer():
-                values[i] = int(values[i])
-            values[i] = str(values[i])
-        setattr(namespace, self.dest, values)
-
-class CheckChapters(argparse.Action):
-    def __call__(self, parser, namespace, values, option_string=None):
-        for i in range(len(values)):
-            if values[i].is_integer():
-                values[i] = int(values[i])
-            values[i] = str(values[i])
-        setattr(namespace, self.dest, values)
+def setModules(domains):
+    if domains:
+        from utils.modules_contributer import get_module
+        return [get_module(domain) for domain in domains]
+    from utils.modules_contributer import get_all_modules
+    return get_all_modules()
 
 def validate_corrupted_image(path_to_image):
     from PIL import Image

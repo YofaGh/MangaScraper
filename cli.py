@@ -1,5 +1,20 @@
 import argparse, sys, os
-from utils.assets import SetModule, CheckChapters, LastChapter, RangeOfChapters
+
+class SetChapters(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        if self.dest == 'r' and values[0] > values[1]:
+            raise ValueError('The beginning chapter must be lower than the ending chapter')
+        if self.dest == 'l':
+            values = [values]
+        for i in range(len(values)):
+            if values[i] < 0:
+                raise ValueError('Minimum chapter is 0')
+            if values[i].is_integer():
+                values[i] = int(values[i])
+            values[i] = str(values[i])
+        if self.dest == 'l':
+            values = values[0]
+        setattr(namespace, self.dest, values)
 
 parser = argparse.ArgumentParser(allow_abbrev=False)
 parser.add_argument('task', choices=['manga', 'doujin', 'merge', 'c2pdf', 'search', 'db', 'check', 'sauce'])
@@ -10,16 +25,16 @@ mc_options = parser.add_argument_group('merge or convert').add_mutually_exclusiv
 mc_options.add_argument('-folder', help='merges or converts images in given folder')
 mc_options.add_argument('-bulk', help='merges or converts images of folders in the given folder')
 mc_options.add_argument('-bulkone', help='converts images of folders in the given folder into one pdf file')
-parser.add_argument('-s', action=SetModule, nargs='+', metavar='modules', help='specify domains to scrape from')
+parser.add_argument('-s', nargs='+', metavar='modules', help='specify domains to scrape from')
 parser.add_argument('-n', metavar='str', help='specify a name')
 parser.add_argument('-m', action='store_true', help='if set, merges images vertically')
 parser.add_argument('-fit', action='store_true', help='if set, resizes the images to the same width')
 parser.add_argument('-p', action='store_true', help='if set, converts images to a pdf file')
 parser.add_argument('-t', default=0.1, type=float, help='set sleep time between requests')
 chapters = parser.add_argument_group('specify chapters').add_mutually_exclusive_group()
-chapters.add_argument('-c', action=CheckChapters, nargs='+', type=float, help='specify chapters')
-chapters.add_argument('-l', action=LastChapter, type=float, help='chapters after the given chapter')
-chapters.add_argument('-r', action=RangeOfChapters, nargs=2, type=float, metavar=('begin', 'end'), help='chapters between the given chapters')
+chapters.add_argument('-c', action=SetChapters, nargs='+', type=float, help='specify chapters')
+chapters.add_argument('-l', action=SetChapters, type=float, help='chapters after the given chapter')
+chapters.add_argument('-r', action=SetChapters, nargs=2, type=float, metavar=('begin', 'end'), help='chapters between the given chapters')
 search_args = parser.add_argument_group('customize search results')
 search_args.add_argument('-page-limit', default=10, type=int, help='specify how many pages should be searched')
 search_args.add_argument('-absolute', action='store_true', help='if set, checks that the name you searched should be in the title')
@@ -27,6 +42,10 @@ saucer = parser.add_argument_group('find source of an image').add_mutually_exclu
 saucer.add_argument('-url', help='url of the image')
 saucer.add_argument('-image', help='specify a downloaded image path')
 args = parser.parse_args(args=(sys.argv[1:] or ['-h']))
+
+if args.task in ['manga', 'doujin', 'search', 'db', 'check']:
+    from utils.assets import setModules
+    args.s = setModules(args.s)
 
 if (args.single or args.task == 'db') and (not args.s or len(args.s) > 1):
     parser.error('please specify one module using -s argument.\nyou can only set one module when downloading or getting database.')
