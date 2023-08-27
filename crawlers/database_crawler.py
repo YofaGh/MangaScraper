@@ -14,7 +14,7 @@ def crawl(module, sleep_time):
             try:
                 log_over(f'\r{module.domain}: Crawling page {page}...')
                 last = next(crawler)
-                if len(last) == 0:
+                if not last:
                     break
                 results.update(last)
                 page += 1

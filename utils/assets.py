@@ -8,9 +8,7 @@ def setModules(domains):
 def validate_corrupted_image(path_to_image):
     from PIL import Image
     try:
-        im = Image.open(path_to_image)
-        im.verify()
-        im.close()
+        Image.open(path_to_image).verify()
         return True
     except:
         return False
@@ -63,6 +61,6 @@ def detect_images(path_to_folder):
     import os
     images_path = []
     for file in os.listdir(path_to_folder):
-        if file.split('.')[-1] in ['jpg', 'png', 'jpeg', 'gif', 'webp']:
+        if file.endswith(('jpg', 'png', 'jpeg', 'gif', 'webp')):
             images_path.append(f'{path_to_folder}/{file}')
     return images_path

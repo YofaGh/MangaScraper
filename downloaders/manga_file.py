@@ -16,9 +16,7 @@ def get_name_of_chapters(json_file):
         manga = mangas[valid_manga]
         log_over(f'\r{valid_manga}: Getting chapters...')
         chapters = get_module(manga['domain']).get_chapters(manga['url'])
-        if manga['last_downloaded_chapter'] is None:
-            manga['chapters'] += chapters
-        else:
+        if not manga['last_downloaded_chapter']:
             reached_last_downloaded_chapter = False
             for chapter in chapters:
                 if chapter['url'] == manga['last_downloaded_chapter']:
@@ -26,6 +24,8 @@ def get_name_of_chapters(json_file):
                     continue
                 if reached_last_downloaded_chapter:
                     manga['chapters'].append(chapter)
+        else:
+            manga['chapters'] += chapters
         log(f'\r{valid_manga}: {len(manga["chapters"])} chapter{"" if len(manga["chapters"]) == 1 else "s"} to download.')
     save_dict_to_file(json_file, mangas)
 

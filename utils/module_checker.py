@@ -1,16 +1,15 @@
 import time, os
 from contextlib import suppress
 from utils.logger import log_over, log
-from utils.models import Manga, Doujin
 from utils.exceptions import MissingFunctionException
 from utils.assets import validate_corrupted_image, validate_truncated_image, load_dict_from_file
 
 def check_modules(modules):
     samples = load_dict_from_file('test_samples.json')
     for module in modules:
-        if Manga in module.__bases__:
+        if module.type == 'Manga':
             check_manga(module, samples[module.domain])
-        elif Doujin in module.__bases__:
+        elif module.type == 'Doujin':
             check_doujin(module, samples[module.domain])
 
 def check_manga(module, sample):
@@ -27,7 +26,7 @@ def check_manga(module, sample):
             download_checker(module, images[0], f'{module.domain}_test.{images[0].split(".")[-1]}')
     else:
         log(f'\r{module.domain}: {sample["manga"]}: Skipped download_checker due to images_checker failure', 'red')
-    search_by_keyword_checker(module, sample['keyword'])
+    search_by_keyword_checker(module, sample.get('keyword', 'a'))
     get_db_checker(module)
 
 def check_doujin(module, sample):
@@ -40,7 +39,7 @@ def check_doujin(module, sample):
             download_checker(module, images[0], f'{module.domain}_test.{images[0].split(".")[-1]}')
     else:
         log(f'\r{module.domain}: {sample["doujin"]}: Skipped download_checker due to images_checker failure', 'red')
-    search_by_keyword_checker(module, sample['keyword'])
+    search_by_keyword_checker(module, sample.get('keyword', 'a'))
     get_db_checker(module)
 
 def chapter_checker(module, manga):
@@ -115,7 +114,7 @@ def search_by_keyword_checker(module, keyword):
         if len(results) > 0:
             log(f'\r{module.domain}: Searched in module successfully', 'green')
         else:
-            log(f'\r{module.domain}: Searching by keyword was a failue: empty results', 'red')
+            raise Exception('Empty results')
     except Exception as error:
         log(f'\r{module.domain}: Searching by keyword was a failure: {error}', 'red')
 
@@ -141,6 +140,6 @@ def get_db_checker(module):
         if len(results) > 0:
             log(f'\r{module.domain}: Crawled database successfully', 'green')
         else:
-            log(f'\r{module.domain}: Crawling database was a failue: empty results', 'red')
+            raise Exception('Empty results')
     except Exception as error:
         log(f'\r{module.domain}: Crawling database was a failure: {error}', 'red')

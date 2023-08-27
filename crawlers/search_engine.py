@@ -16,7 +16,7 @@ def search(keyword, modules, sleep_time, absolute, limit_page):
                 try:
                     log_over(f'\r{module.domain}: Searching page {page}...')
                     last = next(search)
-                    if len(last) == 0:
+                    if not last:
                         break
                     temp_results.update(last)
                     page += 1

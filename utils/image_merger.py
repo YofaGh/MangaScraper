@@ -46,61 +46,60 @@ def merge(images, path_to_destination):
         merged_image = Image.new('RGB', (max_width, total_height), color=(255, 255, 255))
         x_offset = 0
         for image in list_to_merge:
-            merged_image.paste(image, (int((max_width - image.size[0])/2), x_offset))
-            x_offset += image.size[1]
+            merged_image.paste(image, (int((max_width - image.width)/2), x_offset))
+            x_offset += image.height
         merged_image.save(f'{path_to_destination}/{index+1:03d}.jpg')
     return len(lists_to_merge)
 
 def merge_fit(images, path_to_destination):
     import math
     lists_to_merge = []
-    min_width = images[0].size[0]
+    min_width = images[0].width
     current_height = 0
     temp_list = []
     for image in images:
-        image_width, image_height = image.size
-        if image_width == min_width:
-            if (current_height + image_height) < 65500:
+        if image.width == min_width:
+            if (current_height + image.height) < 65500:
                 temp_list.append(image)
-                current_height = current_height + image_height
+                current_height = current_height + image.height
             else:
                 lists_to_merge.append(temp_list)
                 temp_list = [image]
-                current_height = image_height
-        elif image_width > min_width:
-            if (current_height + image_height * min_width / image_width) < 65500:
+                current_height = image.height
+        elif image.width > min_width:
+            if (current_height + image.height * min_width / image.width) < 65500:
                 temp_list.append(image)
-                current_height = current_height + image_height * min_width / image_width
+                current_height = current_height + image.height * min_width / image.width
             else:
                 lists_to_merge.append(temp_list)
                 temp_list = [image]
-                min_width = image_width
-                current_height = image_height
+                min_width = image.width
+                current_height = image.height
         else:
-            if (current_height * image_width / min_width + image_height) < 65500:
+            if (current_height * image.width / min_width + image.height) < 65500:
                 temp_list.append(image)
-                current_height = current_height * image_width / min_width + image_height
-                min_width = image_width
+                current_height = current_height * image.width / min_width + image.height
+                min_width = image.width
             else:
                 lists_to_merge.append(temp_list)
                 temp_list = [image]
-                min_width = image_width
-                current_height = image_height
+                min_width = image.width
+                current_height = image.height
     lists_to_merge.append(temp_list)
     for index, list_to_merge in enumerate(lists_to_merge):
         if len(list_to_merge) == 1:
             shutil.copy2(list_to_merge[0].filename, f'{path_to_destination}/{index+1:03d}.{list_to_merge[0].filename.split(".")[-1]}')
             continue
-        min_width = min(list_to_merge, key=lambda image: image.size[0]).size[0]
+        min_width = min(list_to_merge, key=lambda image: image.width).width
         total_height = 0
         for image in list_to_merge:
-            total_height += image.size[1] * min_width / image.size[0]
+            total_height += image.height * min_width / image.width
         merged_image = Image.new('RGB', (min_width, math.ceil(total_height)), color=(255, 255, 255))
         x_offset = 0
         for image in list_to_merge:
-            image.thumbnail((min_width, image.size[1]*(min_width/image.size[0])), Image.Resampling.LANCZOS)
+            image.thumbnail((min_width, image.height*(min_width/image.width)), Image.Resampling.LANCZOS)
             merged_image.paste(image, (0, x_offset))
-            x_offset += image.size[1]
+            x_offset += image.height
         merged_image.save(f'{path_to_destination}/{index+1:03d}.jpg')
     return len(lists_to_merge)
 
