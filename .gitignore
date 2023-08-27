@@ -1,0 +1,6 @@
+*.json
+*/__pycache__
+/Merged
+/archived
+sources.txt
+test_center.py
