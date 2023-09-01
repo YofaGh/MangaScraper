@@ -16,7 +16,7 @@ def get_name_of_chapters(json_file):
         manga = mangas[valid_manga]
         log_over(f'\r{valid_manga}: Getting chapters...')
         chapters = get_module(manga['domain']).get_chapters(manga['url'])
-        if not manga['last_downloaded_chapter']:
+        if manga['last_downloaded_chapter']:
             reached_last_downloaded_chapter = False
             for chapter in chapters:
                 if chapter['url'] == manga['last_downloaded_chapter']:
