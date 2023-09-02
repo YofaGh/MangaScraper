@@ -5,6 +5,42 @@ class Manhuascan(Manga):
     domain = 'manhuascan.us'
     logo = 'https://manhuascan.us/fav.png?v=1'
 
+    def get_info(manga):
+        from contextlib import suppress
+        response = Manhuascan.send_request(f'https://manhuascan.us/manga/{manga}')
+        soup = BeautifulSoup(response.text, 'html.parser')
+        cover, title, alternative, summary, rating, status, authors, artists, posted_on, updated_on = 10 * ['']
+        info_box = soup.find('div', {'class': 'tsinfo bixbox'})
+        with suppress(Exception): cover = soup.find('img', {'class': 'attachment- size- wp-post-image'})['src']
+        with suppress(Exception): title = soup.find('h1', {'class': 'entry-title'}).get_text(strip=True)
+        with suppress(Exception): alternative = soup.find('span', {'class': 'alternative'}).get_text(strip=True)
+        with suppress(Exception): summary = soup.find('div', {'class': 'entry-content entry-content-single'}).get_text(strip=True)
+        with suppress(Exception): rating = float(soup.find('div', {'class': 'detail_rate'}).find('span').get_text(strip=True).replace('/5', ''))
+        with suppress(Exception): status = info_box.find(lambda tag: 'Status' in tag.text).find('i').get_text(strip=True)
+        with suppress(Exception): authors = info_box.find(lambda tag: 'Author' in tag.text).find('a').get_text(strip=True)
+        with suppress(Exception): artists = info_box.find(lambda tag: 'Artist' in tag.text).find('a').get_text(strip=True)
+        with suppress(Exception): posted_on = info_box.find(lambda tag: 'Posted' in tag.text).find('time')['datetime']
+        with suppress(Exception): updated_on = info_box.find(lambda tag: 'Updated' in tag.text).find('time')['datetime']
+        divs = soup.find_all('div', {'class': 'eph-num'})
+        chapters_urls = [div.find('a')['href'].split('/')[-1] for div in divs[::-1]]
+        chapters = [{
+            'url': chapter_url,
+            'name': Manhuascan.rename_chapter(chapter_url)
+        } for chapter_url in chapters_urls]
+        return {
+            'cover': cover,
+            'title': title,
+            'alternative': alternative,
+            'summary': summary,
+            'rating': rating,
+            'status': status,
+            'authors': authors,
+            'artists': artists,
+            'posted on': posted_on,
+            'updated on': updated_on,
+            'chapters': chapters
+        }
+
     def get_chapters(manga):
         response = Manhuascan.send_request(f'https://manhuascan.us/manga/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
