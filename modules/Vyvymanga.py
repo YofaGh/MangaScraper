@@ -57,11 +57,11 @@ class Vyvymanga(Manga):
         return Vyvymanga.search_by_keyword('', False)
 
     @classmethod
-    def download_image(cls, url, image_name, log_num, headers=None, verify=None):
+    def download_image(cls, url, image_name, log_num, verify=None):
         from requests.exceptions import HTTPError
         from utils import logger
         try:
-            response = cls.send_request(url, headers=headers, verify=verify)
+            response = cls.send_request(url, headers=cls.download_images_headers, verify=verify)
             image_format = response.headers['Content-Disposition'].split('.')[-1].replace('"', '')
             saved_path = f'{image_name}.{image_format}'
             with open(saved_path, 'wb') as image:

@@ -69,5 +69,5 @@ class Manga18hot(Manga):
         return Manga18hot.search_by_keyword('', False)
 
     @classmethod
-    def download_image(cls, url, image_name, log_num, headers=None, verify=None):
-        return super(Manga18hot, cls).download_image(url, image_name, log_num, headers=headers, verify=False)
+    def download_image(cls, url, image_name, log_num, verify=None):
+        return super(Manga18hot, cls).download_image(url, image_name, log_num, verify=False)

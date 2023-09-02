@@ -68,7 +68,7 @@ def download_manga(manga, url, module, sleep_time, chapters, merge, convert_to_p
                     save_path = f'{path}/{i+adder+1:03d}.{images[i].split(".")[-1]}'
                 if not os.path.exists(save_path):
                     time.sleep(sleep_time)
-                    saved_path = module.download_image(images[i], save_path, i+adder+1, module.download_images_headers)
+                    saved_path = module.download_image(images[i], save_path, i+adder+1)
                     if not assets.validate_corrupted_image(saved_path):
                         logger.log(f' Warning: Image {i+adder+1} is corrupted. will not be able to merge this chapter', 'red')
                         i += 1

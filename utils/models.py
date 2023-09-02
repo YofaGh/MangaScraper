@@ -31,10 +31,10 @@ class Module:
                 _waiter()
 
     @classmethod
-    def download_image(cls, url, image_name, log_num, headers=None, verify=None):
+    def download_image(cls, url, image_name, log_num, verify=None):
         from requests.exceptions import HTTPError
         try:
-            response = cls.send_request(url, headers=headers, verify=verify)
+            response = cls.send_request(url, headers=cls.download_images_headers, verify=verify)
             with open(image_name, 'wb') as image:
                 image.write(response.content)
             return image_name
