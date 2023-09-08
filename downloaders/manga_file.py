@@ -19,11 +19,12 @@ def get_name_of_chapters(json_file):
         if manga['last_downloaded_chapter']:
             reached_last_downloaded_chapter = False
             for chapter in chapters:
-                if chapter['url'] == manga['last_downloaded_chapter']:
+                if chapter['url'] == manga['last_downloaded_chapter']['url']:
                     reached_last_downloaded_chapter = True
                     continue
                 if reached_last_downloaded_chapter:
-                    manga['chapters'].append(chapter)
+                    if chapter not in manga['chapters']:
+                        manga['chapters'].append(chapter)
         else:
             manga['chapters'] += chapters
         log(f'\r{valid_manga}: {len(manga["chapters"])} chapter{"" if len(manga["chapters"]) == 1 else "s"} to download.')
@@ -41,7 +42,10 @@ def download_mangas(json_file, sleep_time, merge, convert_to_pdf, fit_merge):
                 module = get_module(mangas[manga]['domain'])
                 ics = download_manga(manga, mangas[manga]['url'], module, sleep_time, [chapter], merge, convert_to_pdf, fit_merge)
                 inconsistencies += ics
-                mangas[manga]['last_downloaded_chapter'] = chapter['url']
+                mangas[manga]['last_downloaded_chapter'] = {
+                    'name': chapter['name'],
+                    'url': chapter['url'],
+                }
                 del mangas[manga]['chapters'][0]
                 save_dict_to_file(json_file, mangas)
         except MissingModuleException as error:

@@ -21,24 +21,17 @@ class Manhuascan(Manga):
         with suppress(Exception): artists = info_box.find(lambda tag: 'Artist' in tag.text).find('a').get_text(strip=True)
         with suppress(Exception): posted_on = info_box.find(lambda tag: 'Posted' in tag.text).find('time')['datetime']
         with suppress(Exception): updated_on = info_box.find(lambda tag: 'Updated' in tag.text).find('time')['datetime']
-        divs = soup.find_all('div', {'class': 'eph-num'})
-        chapters_urls = [div.find('a')['href'].split('/')[-1] for div in divs[::-1]]
-        chapters = [{
-            'url': chapter_url,
-            'name': Manhuascan.rename_chapter(chapter_url)
-        } for chapter_url in chapters_urls]
         return {
-            'cover': cover,
-            'title': title,
-            'alternative': alternative,
-            'summary': summary,
-            'rating': rating,
-            'status': status,
-            'authors': authors,
-            'artists': artists,
-            'posted on': posted_on,
-            'updated on': updated_on,
-            'chapters': chapters
+            'Cover': cover,
+            'Title': title,
+            'Alternative': alternative,
+            'Summary': summary,
+            'Rating': rating,
+            'Status': status,
+            'Authors': authors,
+            'Artists': artists,
+            'Posted On': posted_on,
+            'Updated On': updated_on
         }
 
     def get_chapters(manga):
