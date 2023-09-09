@@ -13,7 +13,7 @@ class Manhuascan(Manga):
         info_box = soup.find('div', {'class': 'tsinfo bixbox'})
         with suppress(Exception): cover = soup.find('img', {'class': 'attachment- size- wp-post-image'})['src']
         with suppress(Exception): title = soup.find('h1', {'class': 'entry-title'}).get_text(strip=True)
-        with suppress(Exception): alternative = soup.find('span', {'class': 'alternative'}).get_text(strip=True)
+        with suppress(Exception): alternative = soup.find('span', {'class': 'alternative'}).get_text(strip=True).replace('Other Name: ', '')
         with suppress(Exception): summary = soup.find('div', {'class': 'entry-content entry-content-single'}).get_text(strip=True)
         with suppress(Exception): rating = float(soup.find('div', {'class': 'detail_rate'}).find('span').get_text(strip=True).replace('/5', ''))
         with suppress(Exception): status = info_box.find(lambda tag: 'Status' in tag.text).find('i').get_text(strip=True)
