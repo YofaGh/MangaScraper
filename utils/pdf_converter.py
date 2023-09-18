@@ -1,6 +1,6 @@
 import img2pdf
 from utils.logger import log_over, log
-from utils.assets import validate_folder, create_path, detect_images
+from utils.assets import validate_folder, create_folder, detect_images
 
 def convert_folder(path_to_source, path_to_destination, pdf_name, name=None):
     name = name if name else path_to_source
@@ -8,7 +8,7 @@ def convert_folder(path_to_source, path_to_destination, pdf_name, name=None):
     if not validate_folder(path_to_source):
         log(f'\rFailed to convert {path_to_source} because of a corrupted image.', 'red')
         return
-    create_path(path_to_destination)
+    create_folder(path_to_destination)
     log_over(f'\r{name}: Converting to pdf...')
     images_path = detect_images(path_to_source)
     with open(f'{path_to_destination}/{pdf_name}', 'wb') as pdf_file:

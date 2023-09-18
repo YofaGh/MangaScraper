@@ -38,18 +38,9 @@ def validate_folder(path_to_folder):
             return False
     return True
 
-def create_folder(folder):
+def create_folder(path):
     import os
-    if not os.path.exists(folder):
-        os.mkdir(folder)
-
-def create_path(path):
-    import os
-    folders = list(filter(None, path.split('/')))
-    temp_path = ''
-    for folder in folders:
-        temp_path = os.path.join(temp_path, fix_name_for_folder(folder))
-        create_folder(temp_path)
+    os.makedirs(path, exist_ok=True)
 
 def fix_name_for_folder(manga):
     name = ''.join([ch for ch in manga if ch not in '\/:*?"><|'])

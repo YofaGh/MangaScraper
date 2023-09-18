@@ -1,14 +1,14 @@
 import shutil
 from PIL import Image
 from utils.logger import log_over, log, clean
-from utils.assets import validate_folder, detect_images, create_path
+from utils.assets import validate_folder, detect_images, create_folder
 
 def merge_folder(path_to_source, path_to_destination, fit_merge, name=None):
     name = name if name else path_to_source
     if not validate_folder(path_to_source):
         log(f'\rFailed to Merge {path_to_source} because one image is corrupted or truncated.', 'red')
         return
-    create_path(path_to_destination)
+    create_folder(path_to_destination)
     images_path = detect_images(path_to_source)
     if not images_path:
         log(f'\rFailed to Merge {path_to_source} because there was no image in the given folder.', 'red')
