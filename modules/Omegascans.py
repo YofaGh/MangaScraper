@@ -34,6 +34,8 @@ class Omegascans(Manga):
         while True:
             mangas = Omegascans.send_request(f'https://api.omegascans.org/series/search', method='POST', json=json).json()
             results = {}
+            if not mangas:
+                yield results
             for manga in mangas:
                 if absolute and keyword.lower() not in manga['title'].lower():
                     continue
@@ -45,6 +47,7 @@ class Omegascans(Manga):
                 results[manga['title']] = {
                     'domain': Omegascans.domain,
                     'url': manga['series_slug'],
+                    'thumbnail': manga['thumbnail'],
                     'summary': summary.replace('<p>', '').replace('</p>', ''),
                     'alternative': alternative,
                     'type': type,

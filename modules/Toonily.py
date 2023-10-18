@@ -38,14 +38,16 @@ class Toonily_Com(Manga):
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')
-            mangas = soup.find_all('div', {'class': 'post-title font-title'})
+            mangas = soup.find_all('div', {'class': 'col-6 col-sm-3 col-lg-2'})
             results = {}
             for manga in mangas:
-                if absolute and keyword.lower() not in manga.get_text(strip=True).lower():
+                details = manga.find('div', {'class': 'post-title font-title'})
+                if absolute and keyword.lower() not in details.get_text(strip=True).lower():
                     continue
-                results[manga.get_text(strip=True)] = {
+                results[details.get_text(strip=True)] = {
                     'domain': Toonily_Com.domain,
-                    'url': manga.find('a')['href'].split('/')[-2],
+                    'url': details.find('a')['href'].split('/')[-2],
+                    'thumbnail': manga.find('img')['data-src'],
                     'page': page
                 }
             yield results
@@ -100,6 +102,7 @@ class Toonily_Me(Manga):
                     'domain': Toonily_Me.domain,
                     'url': ti['href'].split('/')[-1],
                     'latest_chapter': latest_chapter,
+                    'thumbnail': f'https:{manga.find("img")["data-src"]}',
                     'genres': genres,
                     'summary': summary,
                     'page': page

@@ -35,19 +35,21 @@ class Manga18fx(Manga):
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')
-            mangas = soup.find_all('div', {'class': 'bigor-manga'})
+            mangas = soup.find_all('div', {'class': 'page-item'})
             results = {}
             if mangas == prev_page:
                 yield {}
             for manga in mangas:
-                ti = manga.find('h3', {'class': 'tt'}).find('a')
+                details = manga.find('div', {'class': 'bigor-manga'})
+                ti = details.find('h3', {'class': 'tt'}).find('a')
                 if absolute and keyword.lower() not in ti['title'].lower():
                     continue
-                with suppress(Exception): latest_chapter = manga.find('div', {'class': 'list-chapter'}).find('a')['href'].split('/')[-1]
+                with suppress(Exception): latest_chapter = details.find('div', {'class': 'list-chapter'}).find('a')['href'].split('/')[-1]
                 results[ti['title']] = {
                     'domain': Manga18fx.domain,
                     'url': ti['href'].split('/')[-1],
                     'latest_chapter': latest_chapter,
+                    'thumbnail': manga.find('img')['data-src'],
                     'page': page
                 }
             prev_page = mangas

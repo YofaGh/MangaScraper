@@ -49,7 +49,7 @@ class Mangapark(Manga):
         while True:
             data_json = {
                 'query':'''query get_content_browse_search($select: ComicSearchSelect) { get_content_browse_search( select: $select ) {
-                    items { data {name authors artists genres originalStatus summary { code } urlPath } max_chapterNode { data { urlPath } } } } }''',
+                    items { data {name authors artists genres originalStatus summary { code } urlPath urlCover600 } max_chapterNode { data { urlPath } } } } }''',
                 'variables': {
                     'select': {
                         'word': keyword,
@@ -63,6 +63,7 @@ class Mangapark(Manga):
             if mangas == prev_page:
                 yield {}
             results = {}
+            print(mangas[0])
             for manga in mangas:
                 name = manga['data']['name']
                 url = manga['data']['urlPath'].split('/')[-1]
@@ -78,6 +79,7 @@ class Mangapark(Manga):
                 results[name] = {
                     'domain': Mangapark.domain,
                     'url': url,
+                    'thumbnail': manga['data']['urlCover600'],
                     'authors': authors,
                     'artists': artists,
                     'genres': genres,

@@ -64,6 +64,7 @@ class Mangadistrict(Manga):
                     'domain': Mangadistrict.domain,
                     'url': tilink.find('a')['href'].split('/')[-2],
                     'latest_chapter': latest_chapter,
+                    'thumbnail': manga.find('img')['src'],
                     'genres': genres,
                     'authors': authors,
                     'artists': artists,

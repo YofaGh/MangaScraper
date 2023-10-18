@@ -59,6 +59,7 @@ class Bato(Manga):
                     'domain': Bato.domain,
                     'url': ti['href'].replace('/title/', ''),
                     'latest_chapter': latest_chapter,
+                    'thumbnail': manga.find('img')['src'],
                     'genres': genres,
                     'alias': alias,
                     'page': page

@@ -44,6 +44,7 @@ class Manhwa18(Manga):
                     'domain': Manhwa18.domain,
                     'url': manga.find('a')['href'].split('/')[-1],
                     'latest_chapter': manga.find('div', {'class': 'thumb-detail'}).find('a')['href'].split('/')[-1],
+                    'thumbnail': manga.find('div', {'class': 'a6-ratio'}).find('div')['data-bg'],
                     'page': page
                 }
             yield results

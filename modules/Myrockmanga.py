@@ -66,6 +66,7 @@ class Myrockmanga(Manga):
                     'type': type,
                     'lang': Myrockmanga.langs[lang],
                     'latest_chapter': latest_chapter.replace('/chapter/', ''),
+                    'thumbnail': manga.find('img')['src'],
                     'page': 1
                 }
             yield results

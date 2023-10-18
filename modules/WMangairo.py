@@ -55,6 +55,7 @@ class WMangairo(Manga):
                 results[ti.get_text(strip=True)] = {
                     'domain': WMangairo.domain,
                     'url': ti.find('a')['href'].split('/')[-1],
+                    'thumbnail': manga.find('img')['src'],
                     'Authors': authors.replace('Author : ', '').replace('Author(s) : ', ''),
                     'latest_chapter': latest_chapter,
                     'page': page

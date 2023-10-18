@@ -60,6 +60,7 @@ class Manga68(Manga):
                     'domain': Manga68.domain,
                     'url': tilink.find('a')['href'].split('/')[-2],
                     'latest_chapter': latest_chapter,
+                    'thumbnail': manga.find('img')['data-src'],
                     'genres': genres,
                     'authors': authors,
                     'artists': artists,

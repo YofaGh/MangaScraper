@@ -59,6 +59,7 @@ class Comick(Manga):
                     'domain': Comick.domain,
                     'url': manga['slug'],
                     'latest_chapter': manga['last_chapter'],
+                    'thumbnail': f'https://meo.comick.pictures/{manga["md_covers"][0]["b2key"]}' if manga['md_covers'] else '',
                     'genres': ', '.join([genres[genre_id] for genre_id in manga['genres']]),
                     'page': page
                 }

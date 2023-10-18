@@ -43,6 +43,7 @@ class Myreadingmanga(Doujin):
                 results[doujin.get_text(strip=True)] = {
                     'domain': Myreadingmanga.domain,
                     'code': doujin.find('a')['href'].split('/')[-2],
+                    'thumbnail': doujin.find('img')['data-src'],
                     'page': page
                 }
             yield results

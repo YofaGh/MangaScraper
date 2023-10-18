@@ -57,6 +57,7 @@ class Bibimanga(Manga):
                     'domain': Bibimanga.domain,
                     'url': link,
                     'latest_chapter': latest_chapter,
+                    'thumbnail': manga.find('img')['data-src'],
                     'genres': genres,
                     'authors': authors,
                     'artists': artists,

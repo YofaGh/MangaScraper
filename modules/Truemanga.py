@@ -54,6 +54,7 @@ class Truemanga(Manga):
                     'domain': Truemanga.domain,
                     'url': manga.find('div', {'class': 'title'}).find('a')['href'].split('/')[-1],
                     'latest_chapter': latest_chapter,
+                    'thumbnail': manga.find('img')['data-src'],
                     'genres': genres,
                     'summary': summary,
                     'page': page

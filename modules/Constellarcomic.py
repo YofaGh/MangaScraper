@@ -48,6 +48,7 @@ class Constellarcomic(Manga):
                 results[ti['title']] = {
                     'domain': Constellarcomic.domain,
                     'url': ti['href'].split('/')[-2],
+                    'thumbnail': manga.find('img')['src'],
                     'status': status,
                     'page': page
                 }

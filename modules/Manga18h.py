@@ -56,6 +56,7 @@ class Manga18h(Manga):
                     'domain': Manga18h.domain,
                     'url': link,
                     'latest_chapter': latest_chapter,
+                    'thumbnail': manga.find('img')['src'],
                     'genres': genres,
                     'authors': authors,
                     'artists': artists,

@@ -46,6 +46,7 @@ class Manga18(Manga):
                 results[ti.get_text(strip=True)] = {
                     'domain': Manga18.domain,
                     'url': ti['href'].split('/')[-1],
+                    'thumbnail': manga.find('img')['src'],
                     'latest_chapter': latest_chapter,
                     'page': page
                 }

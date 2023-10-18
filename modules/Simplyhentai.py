@@ -42,6 +42,7 @@ class Simplyhentai(Doujin):
                 results[doujin.get_text(strip=True)] = {
                     'domain': Simplyhentai.domain,
                     'code': doujin.find('a')['href'].split('/')[-2],
+                    'thumbnail': doujin.find('img')['src'],
                     'page': page
                 }
             yield results

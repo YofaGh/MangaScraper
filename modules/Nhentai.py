@@ -36,6 +36,7 @@ class Nhentai_Com(Doujin):
                 results[doujin['title']] = {
                     'domain': Nhentai_Com.domain,
                     'code': doujin['slug'],
+                    'thumbnail': doujin['image_url'],
                     'category': category,
                     'language': language,
                     'tags': tags,
@@ -88,6 +89,7 @@ class Nhentai_Xxx(Doujin):
                 results[doujin.get_text(strip=True)] = {
                     'domain': Nhentai_Xxx.domain,
                     'code': doujin.find('a')['href'].split('/')[-2],
+                    'thumbnail': doujin.find('img')['src'],
                     'page': page
                 }
             yield results

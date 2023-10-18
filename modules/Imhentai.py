@@ -49,6 +49,7 @@ class Imhentai(Doujin):
                     'domain': Imhentai.domain,
                     'code': caption.find('a')['href'].split('/')[-2],
                     'category': doujin.find('a', {'class':'thumb_cat'}).get_text(),
+                    'thumbnail': doujin.find('div', {'class': 'inner_thumb'}).find('img')['data-src'],
                     'page': page
                 }
             yield results

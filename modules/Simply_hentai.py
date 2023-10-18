@@ -33,6 +33,7 @@ class Simply_hentai(Doujin):
             if len(datas) == 0:
                 yield {}
             results = {}
+            print(datas[0])
             for data in datas:
                 doujin = data['object']
                 if absolute and keyword.lower() not in doujin['title'].lower():
@@ -40,6 +41,7 @@ class Simply_hentai(Doujin):
                 results[doujin['title']] = {
                     'domain': Simply_hentai.domain,
                     'code': f'{doujin["series"]["slug"]}/{doujin["slug"]}',
+                    'thumbnail': doujin['preview']['sizes']['thumb'],
                     'page': page
                 }
             page += 1

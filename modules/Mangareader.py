@@ -61,6 +61,7 @@ class Mangareader(Manga):
                     'domain': Mangareader.domain,
                     'url': ti['href'].split('/')[-1],
                     'latest_chapter': latest_chapter,
+                    'thumbnail': manga.find('img')['src'],
                     'genres': genres,
                     'status': status,
                     'page': page

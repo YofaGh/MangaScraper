@@ -64,6 +64,7 @@ class Hentaixcomic(Manga):
                     'domain': Hentaixcomic.domain,
                     'url': link,
                     'latest_chapter': latest_chapter,
+                    'thumbnail': manga.find('img')['src'],
                     'genres': genres,
                     'authors': authors,
                     'status': status,

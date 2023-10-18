@@ -63,6 +63,7 @@ class Comics8Muses(Manga):
                     results[comic.get_text(strip=True)] = {
                         'domain': Comics8Muses.domain,
                         'url': url,
+                        'thumbnail': f'https://comics.8muses.com{comic.find("img")["data-src"]}',
                         'page': page
                     }
             yield results

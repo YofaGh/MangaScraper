@@ -49,6 +49,7 @@ class Hentaifox(Doujin):
                     'domain': Hentaifox.domain,
                     'code': caption.find('a')['href'].split('/')[-2],
                     'category': doujin.find('a', {'class':'t_cat'}).get_text(),
+                    'thumbnail': doujin.find('img')['src'],
                     'page': page
                 }
             yield results

@@ -30,8 +30,8 @@ class Doujins(Doujin):
         while True:
             response = Doujins.send_request(f'https://doujins.com/searches?words={keyword}&page={page}')
             soup = BeautifulSoup(response.text, 'html.parser')
-            soup = soup.select('div:not(.mt-3)')
-            doujins = [div for div in soup if div.has_attr('class') and ' '.join(div['class']) == 'col-6 col-sm-4 col-md-3 col-lg-2 px-1']
+            soup = soup.select('#content > div > div:nth-child(5)')[0]
+            doujins = soup.find_all('div', {'class': 'col-6 col-sm-4 col-md-3 col-lg-2 px-1'})
             if len(doujins) == 0:
                 yield {}
             results = {}
@@ -44,6 +44,7 @@ class Doujins(Doujin):
                 results[tilink.get_text(strip=True)] = {
                     'domain': Doujins.domain,
                     'code': tilink['href'][1:],
+                    'thumbnail': doujin.find('img')['srcset'],
                     'artists': artist.replace('Artist: ', ''),
                     'page': page
                 }

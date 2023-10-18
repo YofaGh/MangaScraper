@@ -95,6 +95,7 @@ class Allmanga(Manga):
                     'domain': Allmanga.domain,
                     'url': manga['_id'],
                     'latest_chapter': latest_chapter,
+                    'thumbnail': f'https://wp.youtube-anime.com/aln.youtube-anime.com/{manga["thumbnail"]}',
                     'page': page
                 }
             yield results
@@ -136,7 +137,7 @@ class Allmanga(Manga):
                 }
             yield results
             page += 1
-    
+
     def rename_chapter(chapter):
         if chapter in ['pass', None]:
             return ''

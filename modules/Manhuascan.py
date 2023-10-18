@@ -76,6 +76,7 @@ class Manhuascan(Manga):
                     'domain': Manhuascan.domain,
                     'url': manga.find('a')['href'].split('/')[-1],
                     'latest_chapter': latest_chapter,
+                    'thumbnail': manga.find('img')['src'],
                     'page': page
                 }
             yield results

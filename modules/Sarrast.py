@@ -31,10 +31,13 @@ class Sarrast(Manga):
             response = Sarrast.send_request(f'https://sarrast.com/search?value={keyword}')
             mangas = response.json()
             results = {}
+            if not mangas:
+                yield results
             for manga in mangas:
                 results[manga['title']] = {
                     'domain': Sarrast.domain,
                     'url': manga['slug'],
+                    'thumbnail': ''
                 }
             yield results
         except HTTPError:

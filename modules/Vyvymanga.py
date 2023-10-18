@@ -48,6 +48,7 @@ class Vyvymanga(Manga):
                     'url': manga.find('a')['href'].split('/')[-1],
                     'status': status,
                     'latest_chapter': latest_chapter,
+                    'thumbnail': manga.find('div', {'class': 'comic-image'})['data-background-image'],
                     'page': page
                 }
             yield results

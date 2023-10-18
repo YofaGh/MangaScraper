@@ -57,6 +57,7 @@ class Mangahentai(Manga):
                     'domain': Mangahentai.domain,
                     'url': link,
                     'latest_chapter': latest_chapter,
+                    'thumbnail': manga.find('img')['src'],
                     'genres': genres,
                     'authors': authors,
                     'artists': artists,

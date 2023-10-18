@@ -86,6 +86,7 @@ class Nyahentai(Doujin):
                 results[doujin.get_text(strip=True)] = {
                     'domain': Nyahentai.domain,
                     'code': doujin.find('a')['href'].split('/')[-2],
+                    'thumbnail': doujin.find('img')['src'],
                     'page': page
                 }
             yield results

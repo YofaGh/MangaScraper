@@ -58,6 +58,7 @@ class Manga18hot(Manga):
                     'domain': Manga18hot.domain,
                     'url': f'manga-{url}',
                     'latest_chapter': latest_chapter.replace(f'read-{url}-', '').replace('.html', ''),
+                    'thumbnail': manga.find('img')['src'],
                     'genres': genres,
                     'page': page
                 }

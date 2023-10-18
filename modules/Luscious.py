@@ -49,6 +49,7 @@ class Luscious(Doujin):
                 results[name] = {
                     'domain': Luscious.domain,
                     'code': code,
+                    'thumbnail': doujin['cover']['url'],
                     'genres': genres,
                     'tags': tags,
                     'page': page

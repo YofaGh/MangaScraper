@@ -45,6 +45,7 @@ class Ehentai(Doujin):
                 results[ti] = {
                     'domain': Ehentai.domain,
                     'code': doj['href'].split('/')[-2],
+                    'thumbnail': doj.find('img')['data-src'],
                     'page': page
                 }
             yield results

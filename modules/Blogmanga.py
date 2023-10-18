@@ -60,6 +60,7 @@ class Blogmanga(Manga):
                     'domain': Blogmanga.domain,
                     'url': link,
                     'latest_chapter': latest_chapter,
+                    'thumbnail': manga.find('img')['data-src'],
                     'genres': genres,
                     'authors': authors,
                     'status': status,

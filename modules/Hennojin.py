@@ -24,18 +24,19 @@ class Hennojin(Doujin):
         data = {'action': 'post_grid_paginate_ajax_free', 'grid_id': '23', 'current_page': 1, 'formData': f'keyword={keyword}'}
         while True:
             response = Hennojin.send_request(f'https://hennojin.com/home/wp-admin/admin-ajax.php', method='POST', data=data).json()
-            if not response['pagination']:
+            if not response.get('html'):
                 yield {}
             soup = BeautifulSoup(response['html'], 'html.parser')
-            doujins = soup.find_all('div', {'class': 'title_link'})
+            doujins = soup.find_all('div', {'class': 'layer-content element_3'})
             results = {}
             for doujin in doujins:
-                tilink = doujin.find('a')
+                tilink = doujin.find('div', {'class': 'title_link'}).find('a')
                 if absolute and keyword.lower() not in tilink.get_text(strip=True).lower():
                     continue
                 results[tilink.get_text(strip=True)] = {
                     'domain': Hennojin.domain,
                     'code': tilink['href'],
+                    'thumbnail': doujin.find('img')['src'],
                     'page': data['current_page']
                 }
             yield results

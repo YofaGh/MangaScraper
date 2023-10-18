@@ -45,6 +45,7 @@ class NineHentai(Doujin):
                 results[doujin['title']] = {
                     'domain': NineHentai.domain,
                     'code': doujin['id'],
+                    'thumbnail': f'{doujin["image_server"]}{doujin["id"]}/cover-small.jpg',
                     'tags': ', '.join([tag['name'] for tag in doujin['tags']]),
                     'page': json['search']['page'] + 1
                 }

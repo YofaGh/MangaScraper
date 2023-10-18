@@ -32,7 +32,7 @@ class Mangadex(Manga):
     def search_by_keyword(keyword, absolute):
         from requests.exceptions import HTTPError
         page = 1
-        params = {'limit': 100, 'title': keyword, 'order[relevance]': 'desc'} if keyword else {'limit': 100, 'order[title]': 'asc'}
+        params = {'limit': 100, 'title': keyword, 'order[relevance]': 'desc', 'includes[]': 'cover_art'} if keyword else {'limit': 100, 'order[title]': 'asc'}
         url = 'https://api.mangadex.org/manga'
         while True:
             params['offset'] = (page - 1) * 100
@@ -50,6 +50,13 @@ class Mangadex(Manga):
                 if absolute and keyword.lower() not in title.lower():
                     continue
                 summary = manga['attributes']['description'] or {'en': ''}
+                cover = ''
+                try:
+                    for relationship in manga['relationships']:
+                        if relationship['type'] == 'cover_art':
+                            cover = f'https://mangadex.org/covers/{manga["id"]}/{relationship["attributes"]["fileName"]}'
+                            break
+                except: pass
                 results[title] = {
                     'domain': Mangadex.domain,
                     'url': manga['id'],
@@ -57,6 +64,7 @@ class Mangadex(Manga):
                     'original_language': manga['attributes']['originalLanguage'],
                     'latest_chapter': manga['attributes']['lastChapter'],
                     'latest_volume': manga['attributes']['lastVolume'],
+                    'thumbnail': cover,
                     'status': manga['attributes']['status'],
                     'tags': ', '.join([tag['attributes']['name']['en'] for tag in manga['attributes']['tags']]),
                     'page': page
