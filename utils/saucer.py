@@ -41,7 +41,7 @@ def iqdb(url):
                 td_url = 'https:' + td_url
             td_image = td.find('img')['src']
             if 'https:' not in td_image:
-                td_image = 'https:' + td_image
+                td_image = 'https://iqdb.org' + td_image
             results.append({'url': td_url, 'image': td_image})
     return results
 
@@ -53,7 +53,7 @@ def saucenao(url):
     for div in divs:
         if 'Low similarity results have been hidden' in div.text:
             break
-        with suppress(Exception): results.append({'url': div.find('div', {'class': 'resultmiscinfo'}).find('a')['href'], 'image': None})
+        with suppress(Exception): results.append({'url': div.find('div', {'class': 'resultimage'}).find('a')['href'], 'image': None})
     return results
 
 def sauce_file(path_to_file):
