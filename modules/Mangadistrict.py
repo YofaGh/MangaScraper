@@ -5,8 +5,8 @@ class Mangadistrict(Manga):
     domain = 'mangadistrict.com'
     logo = 'https://mangadistrict.com/wp-content/uploads/2021/02/cropped-Copie-de-Copie-de-MANGADISTRICT_5-192x192.png'
 
-    def get_chapters(manga):
-        response = Mangadistrict.send_request(f'https://mangadistrict.com/read-scan/{manga}/ajax/chapters/', method='POST')
+    def get_chapters(manga, wait=True):
+        response = Mangadistrict.send_request(f'https://mangadistrict.com/read-scan/{manga}/ajax/chapters/', method='POST', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find_all('li', {'class':'wp-manga-chapter'})
         chapters_urls = [div.find('a')['href'].split('/')[-2] for div in divs[::-1]]
@@ -16,8 +16,8 @@ class Mangadistrict(Manga):
         } for chapter_url in chapters_urls]
         return chapters
 
-    def get_images(manga, chapter):
-        response = Mangadistrict.send_request(f'https://mangadistrict.com/read-scan/{manga}/{chapter["url"]}/')
+    def get_images(manga, chapter, wait=True):
+        response = Mangadistrict.send_request(f'https://mangadistrict.com/read-scan/{manga}/{chapter["url"]}/', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'class':'reading-content'}).find_all('img')
         images = [image['src'].strip() for image in images]
@@ -26,7 +26,7 @@ class Mangadistrict(Manga):
             save_names.append(f'{i+1:03d}.{images[i].split(".")[-1]}')
         return images, save_names
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(keyword, absolute, wait=True):
         from contextlib import suppress
         from requests.exceptions import HTTPError
         page = 1
@@ -35,7 +35,7 @@ class Mangadistrict(Manga):
             template = 'https://mangadistrict.com/page/P_P_P_P/?s&post_type=wp-manga&m_orderby=alphabet'
         while True:
             try:
-                response = Mangadistrict.send_request(template.replace('P_P_P_P', str(page)))
+                response = Mangadistrict.send_request(template.replace('P_P_P_P', str(page)), wait=wait)
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -75,5 +75,5 @@ class Mangadistrict(Manga):
             yield results
             page += 1
 
-    def get_db():
-        return Mangadistrict.search_by_keyword('', False)
+    def get_db(wait=True):
+        return Mangadistrict.search_by_keyword('', False, wait=wait)

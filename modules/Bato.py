@@ -5,8 +5,8 @@ class Bato(Manga):
     domain = 'bato.to'
     logo = 'https://bato.to/public-assets/img/favicon.ico'
 
-    def get_chapters(manga):
-        response = Bato.send_request(f'https://bato.to/title/{manga}')
+    def get_chapters(manga, wait=True):
+        response = Bato.send_request(f'https://bato.to/title/{manga}', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         links = soup.find('div', {'class': 'group flex flex-col-reverse'}).find_all('a', {'class': 'link-hover link-primary visited:text-accent'})
         chapters_urls = [link['href'].split('/')[-1] for link in links]
@@ -16,9 +16,9 @@ class Bato(Manga):
         } for chapter_url in chapters_urls]
         return chapters
 
-    def get_images(manga, chapter):
+    def get_images(manga, chapter, wait=True):
         import json
-        response = Bato.send_request(f'https://bato.to/chapter/{chapter["url"].split("-")[0]}')
+        response = Bato.send_request(f'https://bato.to/chapter/{chapter["url"].split("-")[0]}', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         script = soup.find(lambda tag:tag.name == 'script' and 'imgHttpLis' in tag.text).text
         vars = script.split('\n')
@@ -33,13 +33,13 @@ class Bato(Manga):
             save_names.append(f'{i+1:03d}.{images[i].split(".")[-1].split("?")[0]}')
         return images, save_names
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(keyword, absolute, wait=True):
         from contextlib import suppress
         from requests.exceptions import HTTPError
         page = 1
         while True:
             try:
-                response = Bato.send_request(f'https://bato.to/v3x-search?word={keyword}&page={page}')
+                response = Bato.send_request(f'https://bato.to/v3x-search?word={keyword}&page={page}', wait=wait)
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -67,8 +67,8 @@ class Bato(Manga):
             yield results
             page += 1
 
-    def get_db():
-        return Bato.search_by_keyword('', False)
+    def get_db(wait=True):
+        return Bato.search_by_keyword('', False, wait=wait)
 
     def rename_chapter(chapter):
         if chapter in ['pass', None]:

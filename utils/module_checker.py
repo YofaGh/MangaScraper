@@ -93,7 +93,7 @@ def download_checker(module, url, name):
         log(f'\r{module.domain}: Downloading image was a failure', 'red')
 
 def search_by_keyword_checker(module, keyword):
-    log_over(f'\r{module.domain}: Checkeing search function...')
+    log_over(f'\r{module.domain}: Checking search function...')
     try:
         if not hasattr(module, 'search_by_keyword'):
             raise MissingFunctionException(module.domain, 'search_by_keyword')
@@ -119,7 +119,7 @@ def search_by_keyword_checker(module, keyword):
         log(f'\r{module.domain}: Searching by keyword was a failure: {error}', 'red')
 
 def get_db_checker(module):
-    log_over(f'\r{module.domain}: Checkeing get_db function...')
+    log_over(f'\r{module.domain}: Checking get_db function...')
     try:
         if not hasattr(module, 'get_db'):
             raise MissingFunctionException(module.domain, 'get_db')

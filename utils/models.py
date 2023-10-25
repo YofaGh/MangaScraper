@@ -6,7 +6,7 @@ class Module:
     type = 'Module'
     download_images_headers = None
 
-    def send_request(url, method='GET', headers=None, json=None, data=None, params=None, verify=None):
+    def send_request(url, method='GET', headers=None, json=None, data=None, params=None, verify=None, wait=True):
         def _waiter():
             import time
             logger.log_over(' Connection lost.\n\rWaiting 1 minute to attempt a fresh connection.', 'red')
@@ -27,14 +27,17 @@ class Module:
                 return response
             except (requests.exceptions.HTTPError, requests.exceptions.Timeout) as error:
                 raise error
-            except requests.exceptions.RequestException:
-                _waiter()
+            except requests.exceptions.RequestException as error:
+                if wait:
+                    _waiter()
+                else:
+                    raise error
 
     @classmethod
-    def download_image(cls, url, image_name, log_num, verify=None):
+    def download_image(cls, url, image_name, log_num, verify=None, wait=True):
         from requests.exceptions import HTTPError
         try:
-            response = cls.send_request(url, headers=cls.download_images_headers, verify=verify)
+            response = cls.send_request(url, headers=cls.download_images_headers, verify=verify, wait=wait)
             with open(image_name, 'wb') as image:
                 image.write(response.content)
             return image_name

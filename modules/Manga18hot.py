@@ -5,9 +5,9 @@ class Manga18hot(Manga):
     domain = 'manga18hot.net'
     logo = 'https://manga18hot.net/apple-touch-icon.png'
 
-    def get_chapters(manga):
+    def get_chapters(manga, wait=True):
         manga = manga.replace('manga-', '') if manga.startswith('manga-') else manga
-        response = Manga18hot.send_request(f'https://manga18hot.net/manga-{manga}.html')
+        response = Manga18hot.send_request(f'https://manga18hot.net/manga-{manga}.html', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         links = soup.find_all('a', {'class': 'item-link'})
         chapters_urls = [link['href'].replace(f'read-{manga}-', '').replace('.html', '') for link in links[::-1]]
@@ -17,12 +17,12 @@ class Manga18hot(Manga):
         } for chapter_url in chapters_urls]
         return chapters
 
-    def get_images(manga, chapter):
+    def get_images(manga, chapter, wait=True):
         manga = manga.replace('manga-', '') if manga.startswith('manga-') else manga
-        response = Manga18hot.send_request(f'https://manga18hot.net/read-{manga}-{chapter["url"]}.html')
+        response = Manga18hot.send_request(f'https://manga18hot.net/read-{manga}-{chapter["url"]}.html', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         chapter_id = soup.find('body').find('div')['data-reading-id']
-        response = Manga18hot.send_request(f'https://manga18hot.net/app/manga/controllers/cont.getChapter.php?chapter={chapter_id}&mode=vertical&quality=high').json()
+        response = Manga18hot.send_request(f'https://manga18hot.net/app/manga/controllers/cont.getChapter.php?chapter={chapter_id}&mode=vertical&quality=high', wait=wait).json()
         soup = BeautifulSoup(response['html'], 'html.parser')
         divs = soup.find_all('div', {'class': 'iv-card shuffled'})
         images = [div['data-url'].strip() for div in divs]
@@ -31,14 +31,14 @@ class Manga18hot(Manga):
             save_names.append(f'{i+1:03d}.{images[i].split(".")[-1]}')
         return images, save_names
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(keyword, absolute, wait=True):
         from contextlib import suppress
         from requests.exceptions import HTTPError
         page = 1
         prev_page = []
         while True:
             try:
-                response = Manga18hot.send_request(f'https://manga18hot.net/manga-list.html?page={page}&name={keyword}')
+                response = Manga18hot.send_request(f'https://manga18hot.net/manga-list.html?page={page}&name={keyword}', wait=wait)
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -66,9 +66,9 @@ class Manga18hot(Manga):
             prev_page = mangas
             page += 1
 
-    def get_db():
-        return Manga18hot.search_by_keyword('', False)
+    def get_db(wait=True):
+        return Manga18hot.search_by_keyword('', False, wait=wait)
 
     @classmethod
-    def download_image(cls, url, image_name, log_num, verify=None):
-        return super(Manga18hot, cls).download_image(url, image_name, log_num, verify=False)
+    def download_image(cls, url, image_name, log_num, verify=None, wait=True):
+        return super(Manga18hot, cls).download_image(url, image_name, log_num, verify=False, wait=wait)

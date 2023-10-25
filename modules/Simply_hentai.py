@@ -6,16 +6,16 @@ class Simply_hentai(Doujin):
     logo = 'https://www.simply-hentai.com/images/logo.svg'
     headers = {'User-Agent': 'Leech/1051 CFNetwork/454.9.4 Darwin/10.3.0 (i386) (MacPro1%2C1)'}
 
-    def get_title(code):
-        response = Simply_hentai.send_request(f'https://www.simply-hentai.com/{code}', headers=Simply_hentai.headers)
+    def get_title(code, wait=True):
+        response = Simply_hentai.send_request(f'https://www.simply-hentai.com/{code}', headers=Simply_hentai.headers, wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         title = soup.find('section', {'class', 'album-info'}).find('h1').get_text(strip=True)
         return title
 
-    def get_images(code):
+    def get_images(code, wait=True):
         import json
         headers = {'User-Agent': 'Leech/1051 CFNetwork/454.9.4 Darwin/10.3.0 (i386) (MacPro1%2C1)'}
-        response = Simply_hentai.send_request(f'https://www.simply-hentai.com/{code}/all-pages', headers=Simply_hentai.headers)
+        response = Simply_hentai.send_request(f'https://www.simply-hentai.com/{code}/all-pages', headers=Simply_hentai.headers, wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         script = soup.find('script', {'id': '__NEXT_DATA__'}).get_text(strip=True)
         data_raw = json.loads(script)
@@ -25,15 +25,14 @@ class Simply_hentai(Doujin):
             save_names.append(f'{i+1:03d}.{images[i].split(".")[-1].split("?")[0]}')
         return images, save_names
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(keyword, absolute, wait=True):
         page = 1
         while True:
-            response = Simply_hentai.send_request(f'https://api.simply-hentai.com/v3/search/complex?filter[class_name][0]=Manga&query={keyword}&page={page}', headers=Simply_hentai.headers)
+            response = Simply_hentai.send_request(f'https://api.simply-hentai.com/v3/search/complex?filter[class_name][0]=Manga&query={keyword}&page={page}', headers=Simply_hentai.headers, wait=wait)
             datas = response.json()['data']
             if len(datas) == 0:
                 yield {}
             results = {}
-            print(datas[0])
             for data in datas:
                 doujin = data['object']
                 if absolute and keyword.lower() not in doujin['title'].lower():
@@ -47,11 +46,11 @@ class Simply_hentai(Doujin):
             page += 1
             yield results
 
-    def get_db():
+    def get_db(wait=True):
         page = 1
         prev_page = None
         while True:
-            response = Simply_hentai.send_request(f'https://www.simply-hentai.com/2-mangas/page-{page}', headers=Simply_hentai.headers)
+            response = Simply_hentai.send_request(f'https://www.simply-hentai.com/2-mangas/page-{page}', headers=Simply_hentai.headers, wait=wait)
             soup = BeautifulSoup(response.text, 'html.parser')
             results = {}
             divs = soup.find_all('div', {'class', 'col-6 col-lg-3'})

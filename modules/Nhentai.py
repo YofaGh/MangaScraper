@@ -7,21 +7,21 @@ class Nhentai_Com(Doujin):
     headers = {'User-Agent': 'Leech/1051 CFNetwork/454.9.4 Darwin/10.3.0 (i386) (MacPro1%2C1)'}
     is_coded = False
 
-    def get_title(code):
-        response = Nhentai_Com.send_request(f'https://nhentai.com/api/comics/{code}', headers=Nhentai_Com.headers).json()
+    def get_title(code, wait=True):
+        response = Nhentai_Com.send_request(f'https://nhentai.com/api/comics/{code}', headers=Nhentai_Com.headers, wait=wait).json()
         return response['title']
 
-    def get_images(code):
-        response = Nhentai_Com.send_request(f'https://nhentai.com/api/comics/{code}/images', headers=Nhentai_Com.headers).json()
+    def get_images(code, wait=True):
+        response = Nhentai_Com.send_request(f'https://nhentai.com/api/comics/{code}/images', headers=Nhentai_Com.headers, wait=wait).json()
         images = [image['source_url'] for image in response['images']]
         return images, False
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(keyword, absolute, wait=True):
         from contextlib import suppress
         page = 1
         tail = '&sort=title' if not keyword else ''
         while True:
-            response = Nhentai_Com.send_request(f'https://nhentai.com/api/comics?page={page}&q={keyword}{tail}', headers=Nhentai_Com.headers).json()
+            response = Nhentai_Com.send_request(f'https://nhentai.com/api/comics?page={page}&q={keyword}{tail}', headers=Nhentai_Com.headers, wait=wait).json()
             doujins = response['data']
             if len(doujins) == 0:
                 yield {}
@@ -45,21 +45,21 @@ class Nhentai_Com(Doujin):
             yield results
             page += 1
 
-    def get_db():
-        return Nhentai_Com.search_by_keyword('', False)
+    def get_db(wait=True):
+        return Nhentai_Com.search_by_keyword('', False, wait=wait)
 
 class Nhentai_Xxx(Doujin):
     domain = 'nhentai.xxx'
     logo = 'https://nhentai.xxx/front/logo.svg'
 
-    def get_title(code):
-        response = Nhentai_Xxx.send_request(f'https://nhentai.xxx/g/{code}')
+    def get_title(code, wait=True):
+        response = Nhentai_Xxx.send_request(f'https://nhentai.xxx/g/{code}', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         title = soup.find('h1', {'class', 'title'}).find('span').get_text(strip=True)
         return title
 
-    def get_images(code):
-        response = Nhentai_Xxx.send_request(f'https://nhentai.xxx/g/{code}/')
+    def get_images(code, wait=True):
+        response = Nhentai_Xxx.send_request(f'https://nhentai.xxx/g/{code}/', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find_all('a', {'class': 'gallerythumb'})
         images = [div.find('img')['data-src'] for div in divs]
@@ -70,12 +70,12 @@ class Nhentai_Xxx(Doujin):
             new_images.append(f'{image.rsplit("/", 1)[0]}/{name}')
         return new_images, False
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(keyword, absolute, wait=True):
         from requests.exceptions import HTTPError
         page = 1
         while True:
             try:
-                response = Nhentai_Xxx.send_request(f'https://nhentai.xxx/search?q={keyword}&page={page}')
+                response = Nhentai_Xxx.send_request(f'https://nhentai.xxx/search?q={keyword}&page={page}', wait=wait)
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -95,5 +95,5 @@ class Nhentai_Xxx(Doujin):
             yield results
             page += 1
 
-    def get_db():
-        return Nhentai_Xxx.search_by_keyword('', False)
+    def get_db(wait=True):
+        return Nhentai_Xxx.search_by_keyword('', False, wait=wait)

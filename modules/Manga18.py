@@ -6,8 +6,8 @@ class Manga18(Manga):
     logo = 'https://manga18.club/fav.png?v=1'
     headers = {'User-Agent': 'Leech/1051 CFNetwork/454.9.4 Darwin/10.3.0 (i386) (MacPro1%2C1)'}
 
-    def get_chapters(manga):
-        response = Manga18.send_request(f'https://manga18.club/manhwa/{manga}', headers=Manga18.headers)
+    def get_chapters(manga, wait=True):
+        response = Manga18.send_request(f'https://manga18.club/manhwa/{manga}', headers=Manga18.headers, wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         lis = soup.find('div', {'class': 'chapter_box'}).find_all('li')
         chapters_urls = [li.find('a')['href'].split('/')[-1] for li in lis[::-1]]
@@ -17,9 +17,9 @@ class Manga18(Manga):
         } for chapter_url in chapters_urls]
         return chapters
 
-    def get_images(manga, chapter):
+    def get_images(manga, chapter, wait=True):
         import base64
-        response = Manga18.send_request(f'https://manga18.club/manhwa/{manga}/{chapter["url"]}', headers=Manga18.headers)
+        response = Manga18.send_request(f'https://manga18.club/manhwa/{manga}/{chapter["url"]}', headers=Manga18.headers, wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         script = soup.find(lambda tag:tag.name == 'script' and 'slides_p_path' in tag.text)
         images = script.text.split('[', 1)[1].split(']', 1)[0][:-1]
@@ -27,11 +27,11 @@ class Manga18(Manga):
         images = [base64.b64decode(image).decode('utf-8') for image in images]
         return images, False
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(keyword, absolute, wait=True):
         from contextlib import suppress
         page = 1
         while True:
-            response = Manga18.send_request(f'https://manga18.club/list-manga/{page}?search={keyword}', headers=Manga18.headers)
+            response = Manga18.send_request(f'https://manga18.club/list-manga/{page}?search={keyword}', headers=Manga18.headers, wait=wait)
             soup = BeautifulSoup(response.text, 'html.parser')
             mangas = soup.find_all('div', {'class': 'col-md-3 col-sm-4 col-xs-6'})
             if len(mangas) == 0:
@@ -53,5 +53,5 @@ class Manga18(Manga):
             yield results
             page += 1
 
-    def get_db():
-        return Manga18.search_by_keyword('', False)
+    def get_db(wait=True):
+        return Manga18.search_by_keyword('', False, wait=wait)

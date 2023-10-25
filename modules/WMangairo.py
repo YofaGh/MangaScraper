@@ -6,8 +6,8 @@ class WMangairo(Manga):
     logo = 'https://w.mangairo.com/themes/home/images/favicon.png'
     download_images_headers = {'Referer': 'https://chap.mangairo.com/'}
 
-    def get_chapters(manga):
-        response = WMangairo.send_request(f'https://chap.mangairo.com/{manga}')
+    def get_chapters(manga, wait=True):
+        response = WMangairo.send_request(f'https://chap.mangairo.com/{manga}', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         lis = soup.find('div', {'class': 'chapter_list'}).find_all('li')
         chapters_urls = [li.find('a')['href'].split('/')[-1] for li in lis[::-1]]
@@ -17,14 +17,14 @@ class WMangairo(Manga):
         } for chapter_url in chapters_urls]
         return chapters
 
-    def get_images(manga, chapter):
-        response = WMangairo.send_request(f'https://chap.mangairo.com/{manga}/{chapter["url"]}')
+    def get_images(manga, chapter, wait=True):
+        response = WMangairo.send_request(f'https://chap.mangairo.com/{manga}/{chapter["url"]}', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'class': 'panel-read-story'}).find_all('img')
         images = [image['src'].strip() for image in images]
         return images, False
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(keyword, absolute, wait=True):
         from contextlib import suppress
         from requests.exceptions import HTTPError
         page = 1
@@ -35,7 +35,7 @@ class WMangairo(Manga):
         prev_page = []
         while True:
             try:
-                response = WMangairo.send_request(template.replace('P_P_P_P', str(page)))
+                response = WMangairo.send_request(template.replace('P_P_P_P', str(page)), wait=wait)
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -64,5 +64,5 @@ class WMangairo(Manga):
             yield results
             page += 1
 
-    def get_db():
-        return WMangairo.search_by_keyword('', False)
+    def get_db(wait=True):
+        return WMangairo.search_by_keyword('', False, wait=wait)

@@ -6,8 +6,8 @@ class Truemanga(Manga):
     logo = 'https://truemanga.com/static/sites/truemanga/icons/favicon.ico'
     download_images_headers = {'Referer': 'https://truemanga.com/'}
 
-    def get_chapters(manga):
-        response = Truemanga.send_request(f'https://truemanga.com/{manga}')
+    def get_chapters(manga, wait=True):
+        response = Truemanga.send_request(f'https://truemanga.com/{manga}', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         links = soup.find('ul', {'class':'chapter-list'}).find_all('a')
         chapters_urls = [link['href'].split('/')[-1] for link in links[::-1]]
@@ -17,8 +17,8 @@ class Truemanga(Manga):
         } for chapter_url in chapters_urls]
         return chapters
 
-    def get_images(manga, chapter):
-        response = Truemanga.send_request(f'https://truemanga.com/{manga}/{chapter["url"]}')
+    def get_images(manga, chapter, wait=True):
+        response = Truemanga.send_request(f'https://truemanga.com/{manga}/{chapter["url"]}', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         script = soup.find(lambda tag:tag.name == 'script' and 'chapImages' in tag.text).text
         images = script.replace("var chapImages = '", '').strip()[:-1].split(',')
@@ -27,14 +27,14 @@ class Truemanga(Manga):
             save_names.append(f'{i+1:03d}.{images[i].split(".")[-1].split("?")[0]}')
         return images, save_names
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(keyword, absolute, wait=True):
         from contextlib import suppress
         from requests.exceptions import HTTPError
         template = f'https://truemanga.com/search?q={keyword}&page=P_P_P_P' if keyword else 'https://truemanga.com/az-list?page=P_P_P_P'
         page = 1
         while True:
             try:
-                response = Truemanga.send_request(template.replace('P_P_P_P', str(page)))
+                response = Truemanga.send_request(template.replace('P_P_P_P', str(page)), wait=wait)
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -62,5 +62,5 @@ class Truemanga(Manga):
             yield results
             page += 1
 
-    def get_db():
-        return Truemanga.search_by_keyword('', False)
+    def get_db(wait=True):
+        return Truemanga.search_by_keyword('', False, wait=wait)

@@ -4,7 +4,7 @@ class Mangadex(Manga):
     domain = 'mangadex.org'
     logo = 'https://mangadex.org/favicon.ico'
 
-    def get_chapters(manga):
+    def get_chapters(manga, wait=True):
         manga = manga.split('/')[0] if '/' in manga else manga
         chapters = []
         params = {
@@ -14,7 +14,7 @@ class Mangadex(Manga):
             'offset': 0
         }
         while True:
-            response = Mangadex.send_request(f'https://api.mangadex.org/manga/{manga}/feed', params=params).json()
+            response = Mangadex.send_request(f'https://api.mangadex.org/manga/{manga}/feed', params=params, wait=wait).json()
             if len(response['data']) == 0:
                 break
             chapters.extend([{
@@ -24,12 +24,12 @@ class Mangadex(Manga):
             params['offset'] += 500
         return chapters
 
-    def get_images(manga, chapter):
-        response = Mangadex.send_request(f'https://api.mangadex.org/at-home/server/{chapter["url"]}').json()
+    def get_images(manga, chapter, wait=True):
+        response = Mangadex.send_request(f'https://api.mangadex.org/at-home/server/{chapter["url"]}', wait=wait).json()
         images = [f'{response["baseUrl"]}/data/{response["chapter"]["hash"]}/{image}' for image in response['chapter']['data']]
         return images, False
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(keyword, absolute, wait=True):
         from requests.exceptions import HTTPError
         page = 1
         params = {'limit': 100, 'title': keyword, 'order[relevance]': 'desc', 'includes[]': 'cover_art'} if keyword else {'limit': 100, 'order[title]': 'asc'}
@@ -37,7 +37,7 @@ class Mangadex(Manga):
         while True:
             params['offset'] = (page - 1) * 100
             try:
-                response = Mangadex.send_request(url, params=params).json()
+                response = Mangadex.send_request(url, params=params, wait=wait).json()
             except HTTPError:
                 yield {}
             mangas = response['data']
@@ -72,5 +72,5 @@ class Mangadex(Manga):
             yield results
             page += 1
 
-    def get_db():
-        return Mangadex.search_by_keyword('', False)
+    def get_db(wait=True):
+        return Mangadex.search_by_keyword('', False, wait=wait)

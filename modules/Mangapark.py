@@ -5,7 +5,7 @@ class Mangapark(Manga):
     domain = 'mangapark.to'
     logo = 'https://mangapark.to/public-assets/img/favicon.ico'
 
-    def get_chapters(manga):
+    def get_chapters(manga, wait=True):
         manga = manga.split('-')[0] if '-' in manga else manga
         data_json = {
             'query': '''query get_chapters($select: Content_ComicChapterRangeList_Select) 
@@ -15,13 +15,13 @@ class Mangapark(Manga):
             },
             'operationName': 'get_chapters'
         }
-        response = Mangapark.send_request('https://mangapark.to/apo/', method='POST', headers={'content-type': 'application/json'}, json=data_json).json()
+        response = Mangapark.send_request('https://mangapark.to/apo/', method='POST', headers={'content-type': 'application/json'}, json=data_json, wait=wait).json()
         end = response['data']['get_content_comicChapterRangeList']['pager'][0]['x']
         begin = response['data']['get_content_comicChapterRangeList']['pager'][-1]['y']
         data_json['variables']['select']['range'] = {'x': begin, 'y': end}
         data_json['query'] = '''query get_chapters($select: Content_ComicChapterRangeList_Select) 
             { get_content_comicChapterRangeList( select: $select ) { items{ chapterNodes { data { urlPath, dname } } } } } '''
-        response = Mangapark.send_request('https://mangapark.to/apo/', method='POST', headers={'content-type': 'application/json'}, json=data_json).json()
+        response = Mangapark.send_request('https://mangapark.to/apo/', method='POST', headers={'content-type': 'application/json'}, json=data_json, wait=wait).json()
         items = response['data']['get_content_comicChapterRangeList']['items']
         chapters = [{
             'url': item['chapterNodes'][0]['data']['urlPath'].split('/')[-1],
@@ -29,9 +29,9 @@ class Mangapark(Manga):
         } for item in items[::-1]]
         return chapters
 
-    def get_images(manga, chapter):
+    def get_images(manga, chapter, wait=True):
         import json
-        response = Mangapark.send_request(f'https://mangapark.to/title/{manga}/{chapter["url"]}')
+        response = Mangapark.send_request(f'https://mangapark.to/title/{manga}/{chapter["url"]}', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         script = soup.find('script', {'id': '__NEXT_DATA__'})
         data = json.loads(script.text)
@@ -42,7 +42,7 @@ class Mangapark(Manga):
             save_names.append(f'{i+1:03d}.{images[i].split(".")[-1].split("?")[0]}')
         return images, save_names
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(keyword, absolute, wait=True):
         from contextlib import suppress
         page = 1
         prev_page = {}
@@ -58,12 +58,11 @@ class Mangapark(Manga):
                 },
                 'operationName':'get_content_browse_search'
             }
-            response = Mangapark.send_request('https://mangapark.to/apo/', method='POST', headers={'content-type': 'application/json'}, json=data_json).json()
+            response = Mangapark.send_request('https://mangapark.to/apo/', method='POST', headers={'content-type': 'application/json'}, json=data_json, wait=wait).json()
             mangas = response['data']['get_content_browse_search']['items']
             if mangas == prev_page:
                 yield {}
             results = {}
-            print(mangas[0])
             for manga in mangas:
                 name = manga['data']['name']
                 url = manga['data']['urlPath'].split('/')[-1]
@@ -92,8 +91,8 @@ class Mangapark(Manga):
             page += 1
             prev_page = mangas
 
-    def get_db():
-        return Mangapark.search_by_keyword('', False)
+    def get_db(wait=True):
+        return Mangapark.search_by_keyword('', False, wait=wait)
 
     def rename_chapter(chapter):
         if chapter in ['pass', None]:

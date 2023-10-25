@@ -7,8 +7,8 @@ class Toonily_Com(Manga):
     download_images_headers = {'Referer': 'https://toonily.com/'}
     search_headers = {'cookie': 'toonily-mature=1'}
 
-    def get_chapters(manga):
-        response = Toonily_Com.send_request(f'https://toonily.com/webtoon/{manga}/')
+    def get_chapters(manga, wait=True):
+        response = Toonily_Com.send_request(f'https://toonily.com/webtoon/{manga}/', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find_all('li', {'class': 'wp-manga-chapter'})
         chapters_urls = [div.find('a')['href'].split('/')[-2] for div in divs[::-1]]
@@ -18,8 +18,8 @@ class Toonily_Com(Manga):
         } for chapter_url in chapters_urls]
         return chapters
 
-    def get_images(manga, chapter):
-        response = Toonily_Com.send_request(f'https://toonily.com/webtoon/{manga}/{chapter["url"]}/')
+    def get_images(manga, chapter, wait=True):
+        response = Toonily_Com.send_request(f'https://toonily.com/webtoon/{manga}/{chapter["url"]}/', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'class': 'reading-content'}).find_all('img')
         images = [image['data-src'].strip() for image in images]
@@ -28,13 +28,13 @@ class Toonily_Com(Manga):
             save_names.append(f'{i+1:03d}.{images[i].split(".")[-1]}')
         return images, save_names
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(keyword, absolute, wait=True):
         from requests.exceptions import HTTPError
         template = f'https://toonily.com/search/{keyword}/page/P_P_P_P/' if keyword else f'https://toonily.com/search/page/P_P_P_P/'
         page = 1
         while True:
             try:
-                response = Toonily_Com.send_request(template.replace('P_P_P_P', str(page)), headers=Toonily_Com.search_headers)
+                response = Toonily_Com.send_request(template.replace('P_P_P_P', str(page)), headers=Toonily_Com.search_headers, wait=wait)
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -53,16 +53,16 @@ class Toonily_Com(Manga):
             yield results
             page += 1
 
-    def get_db():
-        return Toonily_Com.search_by_keyword('', False)
+    def get_db(wait=True):
+        return Toonily_Com.search_by_keyword('', False, wait=wait)
 
 class Toonily_Me(Manga):
     domain = 'toonily.me'
     logo = 'https://toonily.me/static/sites/toonily/icons/favicon.ico'
     download_images_headers = {'Referer': 'https://toonily.me/'}
 
-    def get_chapters(manga):
-        response = Toonily_Me.send_request(f'https://toonily.me/{manga}')
+    def get_chapters(manga, wait=True):
+        response = Toonily_Me.send_request(f'https://toonily.me/{manga}', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find('ul', {'class': 'chapter-list'}).find_all('li')
         chapters_urls = [div.find('a')['href'].split('/')[-1] for div in divs[::-1]]
@@ -72,19 +72,19 @@ class Toonily_Me(Manga):
         } for chapter_url in chapters_urls]
         return chapters
 
-    def get_images(manga, chapter):
-        response = Toonily_Me.send_request(f'https://toonily.me/{manga}/{chapter["url"]}')
+    def get_images(manga, chapter, wait=True):
+        response = Toonily_Me.send_request(f'https://toonily.me/{manga}/{chapter["url"]}', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'id': 'chapter-images'}).find_all('img')
         images = [image['data-src'].strip() for image in images]
         return images, False
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(keyword, absolute, wait=True):
         from contextlib import suppress
         template = f'https://toonily.me/search?q={keyword}&page=P_P_P_P' if keyword else f'https://toonily.me/az-list?page=P_P_P_P'
         page = 1
         while True:
-            response = Toonily_Me.send_request(template.replace('P_P_P_P', str(page)))
+            response = Toonily_Me.send_request(template.replace('P_P_P_P', str(page)), wait=wait)
             soup = BeautifulSoup(response.text, 'html.parser')
             mangas = soup.find_all('div', {'class': 'book-item'})
             if len(mangas) == 0:
@@ -110,5 +110,5 @@ class Toonily_Me(Manga):
             yield results
             page += 1
 
-    def get_db():
-        return Toonily_Me.search_by_keyword('', False)
+    def get_db(wait=True):
+        return Toonily_Me.search_by_keyword('', False, wait=wait)

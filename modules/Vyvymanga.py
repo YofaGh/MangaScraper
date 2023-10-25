@@ -5,8 +5,8 @@ class Vyvymanga(Manga):
     domain = 'vyvymanga.net'
     logo = 'https://vyvymanga.net/web/img/icon.png'
 
-    def get_chapters(manga):
-        response = Vyvymanga.send_request(f'https://vyvymanga.net/manga/{manga}')
+    def get_chapters(manga, wait=True):
+        response = Vyvymanga.send_request(f'https://vyvymanga.net/manga/{manga}', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         aas = soup.find_all('a', {'class': 'list-group-item list-group-item-action list-chapter'})
         chapters = [{
@@ -15,8 +15,8 @@ class Vyvymanga(Manga):
         } for aa in aas[::-1]]
         return chapters
 
-    def get_images(manga, chapter):
-        response = Vyvymanga.send_request(chapter['url'])
+    def get_images(manga, chapter, wait=True):
+        response = Vyvymanga.send_request(chapter['url'], wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'class': 'vview carousel-inner'}).find_all('img')
         images = [image['data-src'] for image in images]
@@ -25,11 +25,11 @@ class Vyvymanga(Manga):
             save_names.append(f'{i+1:03d}')
         return images, save_names
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(keyword, absolute, wait=True):
         from contextlib import suppress
         page = 1
         while True:
-            response = Vyvymanga.send_request(f'https://vyvymanga.net/search?q={keyword}&page={page}')
+            response = Vyvymanga.send_request(f'https://vyvymanga.net/search?q={keyword}&page={page}', wait=wait)
             soup = BeautifulSoup(response.text, 'html.parser')
             mangas = soup.find_all('div', {'class': 'comic-item'})
             if len(mangas) == 0:
@@ -54,15 +54,15 @@ class Vyvymanga(Manga):
             yield results
             page += 1
 
-    def get_db():
-        return Vyvymanga.search_by_keyword('', False)
+    def get_db(wait=True):
+        return Vyvymanga.search_by_keyword('', False, wait=wait)
 
     @classmethod
-    def download_image(cls, url, image_name, log_num, verify=None):
+    def download_image(cls, url, image_name, log_num, verify=None, wait=True):
         from requests.exceptions import HTTPError
         from utils import logger
         try:
-            response = cls.send_request(url, headers=cls.download_images_headers, verify=verify)
+            response = cls.send_request(url, headers=cls.download_images_headers, verify=verify, wait=wait)
             image_format = response.headers['Content-Disposition'].split('.')[-1].replace('"', '')
             saved_path = f'{image_name}.{image_format}'
             with open(saved_path, 'wb') as image:

@@ -8,8 +8,8 @@ class Allmanga(Manga):
     search_headers = {'if-none-match': '87272', 'Referer': 'https://allmanga.to/'}
     get_db_headers = {'Referer': 'https://allmanga.to/'}
 
-    def get_chapters(manga):
-        response = Allmanga.send_request(f'https://allmanga.to/manga/{manga}')
+    def get_chapters(manga, wait=True):
+        response = Allmanga.send_request(f'https://allmanga.to/manga/{manga}', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         script = soup.find(lambda tag: tag.name == 'script' and 'availableChaptersDetail' in tag.text).get_text(strip=True)
         inputs = script.split('function(', 1)[1].split(')')[0].split(',')
@@ -41,8 +41,8 @@ class Allmanga(Manga):
         } for chapter_url in chapters_urls]
         return chapters
 
-    def get_images(manga, chapter):
-        response = Allmanga.send_request(f'https://allmanga.to/read/{manga}/{chapter["url"]}')
+    def get_images(manga, chapter, wait=True):
+        response = Allmanga.send_request(f'https://allmanga.to/read/{manga}/{chapter["url"]}', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         script = soup.find(lambda tag: tag.name == 'script' and 'selectedPicturesServer' in tag.text).get_text(strip=True)
         inputs = script.split('function(', 1)[1].split(')')[0].split(',')
@@ -59,7 +59,7 @@ class Allmanga(Manga):
         images = [image.replace('\\u002F', '/') for image in images]
         return images, False
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(keyword, absolute, wait=True):
         query = '''https://api.allmanga.to/api?variables=
         {
             "search":{
@@ -77,7 +77,7 @@ class Allmanga(Manga):
         }'''
         page = 1
         while True:
-            response = Allmanga.send_request(query.replace('P_P_P_P', str(page)).replace('K_K_K_K', keyword), headers=Allmanga.search_headers)
+            response = Allmanga.send_request(query.replace('P_P_P_P', str(page)).replace('K_K_K_K', keyword), headers=Allmanga.search_headers, wait=wait)
             mangas = response.json()['data']['mangas']['edges']
             if len(mangas) == 0:
                 yield {}
@@ -101,7 +101,7 @@ class Allmanga(Manga):
             yield results
             page += 1
 
-    def get_db():
+    def get_db(wait=True):
         from contextlib import suppress
         query = '''https://api.allmanga.to/api?variables=
         {
@@ -121,7 +121,7 @@ class Allmanga(Manga):
         }'''
         page = 1
         while True:
-            response = Allmanga.send_request(query.replace('P_P_P_P', str(page)), headers=Allmanga.get_db_headers)
+            response = Allmanga.send_request(query.replace('P_P_P_P', str(page)), headers=Allmanga.get_db_headers, wait=wait)
             mangas = response.json()['data']['mangas']['edges']
             if len(mangas) == 0:
                 yield {}

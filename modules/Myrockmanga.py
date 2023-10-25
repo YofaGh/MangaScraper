@@ -14,8 +14,8 @@ class Myrockmanga(Manga):
         'es': 'Spanish'
     }
 
-    def get_chapters(manga):
-        response = Myrockmanga.send_request(f'https://myrockmanga.com/manga-detail/{manga}', verify=False)
+    def get_chapters(manga, wait=True):
+        response = Myrockmanga.send_request(f'https://myrockmanga.com/manga-detail/{manga}', verify=False, wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find_all('tr', {'class': 'chapter'})
         chapters_urls = [div.find('a')['href'].replace('/chapter/', '') for div in divs[::-1]]
@@ -25,8 +25,8 @@ class Myrockmanga(Manga):
         } for chapter_url in chapters_urls]
         return chapters
 
-    def get_images(manga, chapter):
-        response = Myrockmanga.send_request(f'https://myrockmanga.com/chapter/{chapter["url"]}', verify=False)
+    def get_images(manga, chapter, wait=True):
+        response = Myrockmanga.send_request(f'https://myrockmanga.com/chapter/{chapter["url"]}', verify=False, wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'id': 'rendering'}).find_all('img')
         images = [image['src'] for image in images if image.has_attr('page')]
@@ -35,12 +35,12 @@ class Myrockmanga(Manga):
             save_names.append(f'{i+1:03d}.{images[i].split(".")[-1]}')
         return images, save_names
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(keyword, absolute, wait=True):
         from contextlib import suppress
         from requests.exceptions import HTTPError
         while True:
             try:
-                response = Myrockmanga.send_request(f'https://myrockmanga.com/Home/Search?search={keyword}', headers=Myrockmanga.headers, verify=False)
+                response = Myrockmanga.send_request(f'https://myrockmanga.com/Home/Search?search={keyword}', headers=Myrockmanga.headers, verify=False, wait=wait)
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -72,12 +72,12 @@ class Myrockmanga(Manga):
             yield results
             yield {}
 
-    def get_db():
+    def get_db(wait=True):
         from contextlib import suppress
         page = 1
         data = 'Type=1&Page=P_P_P_P&Lang=all&Dir=NewPostedDate&filterCategory=All'
         while True:
-            response = Myrockmanga.send_request(f'https://myrockmanga.com/Manga/Newest', method='POST', headers=Myrockmanga.get_db_headers, data=data.replace('P_P_P_P', str(page)), verify=False)
+            response = Myrockmanga.send_request(f'https://myrockmanga.com/Manga/Newest', method='POST', headers=Myrockmanga.get_db_headers, data=data.replace('P_P_P_P', str(page)), verify=False, wait=wait)
             soup = BeautifulSoup(response.text, 'html.parser')
             mangas = soup.find_all('div', {'class': 'col-xs-12 picture-card mdl-card shadow-z-1'})
             if len(mangas) == 0:

@@ -6,14 +6,14 @@ class Myreadingmanga(Doujin):
     logo = 'https://myreadingmanga.to/img/logoo.png'
     download_images_headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36'}
 
-    def get_title(code):
-        response = Myreadingmanga.send_request(f'https://myreadingmanga.to/g/{code}')
+    def get_title(code, wait=True):
+        response = Myreadingmanga.send_request(f'https://myreadingmanga.to/g/{code}', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         title = soup.find('div', {'class', 'container'}).find('h1').get_text(strip=True)
         return title
 
-    def get_images(code):
-        response = Myreadingmanga.send_request(f'https://myreadingmanga.to/g/{code}/')
+    def get_images(code, wait=True):
+        response = Myreadingmanga.send_request(f'https://myreadingmanga.to/g/{code}/', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find_all('a', {'class': 'gallerythumb'})
         images = [div.find('img')['data-src'] for div in divs]
@@ -24,12 +24,12 @@ class Myreadingmanga(Doujin):
             new_images.append(f'{image.rsplit("/", 1)[0]}/{name}')
         return new_images, False
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(keyword, absolute, wait=True):
         from requests.exceptions import HTTPError
         page = 1
         while True:
             try:
-                response = Myreadingmanga.send_request(f'https://myreadingmanga.to/search?q={keyword}&page={page}')
+                response = Myreadingmanga.send_request(f'https://myreadingmanga.to/search?q={keyword}&page={page}', wait=wait)
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -49,5 +49,5 @@ class Myreadingmanga(Doujin):
             yield results
             page += 1
 
-    def get_db():
-        return Myreadingmanga.search_by_keyword('', False)
+    def get_db(wait=True):
+        return Myreadingmanga.search_by_keyword('', False, wait=wait)

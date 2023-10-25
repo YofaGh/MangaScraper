@@ -8,15 +8,15 @@ class Comick(Manga):
     headers = {'User-Agent': 'Leech/1051 CFNetwork/454.9.4 Darwin/10.3.0 (i386) (MacPro1%2C1)'}
     download_images_headers = {'User-Agent': 'Leech/1051 CFNetwork/454.9.4 Darwin/10.3.0 (i386) (MacPro1%2C1)'}
 
-    def get_chapters(manga):
-        response = Comick.send_request(f'https://comick.app/comic/{manga}', headers=Comick.headers)
+    def get_chapters(manga, wait=True):
+        response = Comick.send_request(f'https://comick.app/comic/{manga}', headers=Comick.headers, wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         script = soup.find('script', {'id': '__NEXT_DATA__'})
         hid = json.loads(script.get_text(strip=True))['props']['pageProps']['comic']['hid']
         chapters_urls = []
         page = 1
         while True:
-            response = Comick.send_request(f'https://api.comick.app/comic/{hid}/chapters?lang=en&chap-order=1&page={page}', headers=Comick.headers).json()
+            response = Comick.send_request(f'https://api.comick.app/comic/{hid}/chapters?lang=en&chap-order=1&page={page}', headers=Comick.headers, wait=wait).json()
             if not response['chapters']:
                 break
             chapters_urls.extend([f'{chapter["hid"]}-chapter-{chapter["chap"]}-en' for chapter in response['chapters'] if chapter['chap']])
@@ -27,8 +27,8 @@ class Comick(Manga):
         } for chapter_url in chapters_urls]
         return chapters
 
-    def get_images(manga, chapter):
-        response = Comick.send_request(f'https://comick.app/comic/{manga}/{chapter["url"]}', headers=Comick.headers)
+    def get_images(manga, chapter, wait=True):
+        response = Comick.send_request(f'https://comick.app/comic/{manga}/{chapter["url"]}', headers=Comick.headers, wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         script = soup.find('script', {'id': '__NEXT_DATA__'})
         images = json.loads(script.get_text(strip=True))['props']['pageProps']['chapter']['md_images']
@@ -38,16 +38,16 @@ class Comick(Manga):
             save_names.append(f'{i+1:03d}.{images[i].split(".")[-1]}')
         return images, save_names
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(keyword, absolute, wait=True):
         from requests.exceptions import HTTPError
-        response = Comick.send_request(f'https://comick.app/search', headers=Comick.headers)
+        response = Comick.send_request(f'https://comick.app/search', headers=Comick.headers, wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         script = soup.find('script', {'id': '__NEXT_DATA__'}).get_text(strip=True)
         genres = {genre['id']: genre['name'] for genre in json.loads(script)['props']['pageProps']['genres']}
         page = 1
         while True:
             try:
-                response = Comick.send_request(f'https://api.comick.app/v1.0/search?q={keyword}&limit=300&page={page}', headers=Comick.headers)
+                response = Comick.send_request(f'https://api.comick.app/v1.0/search?q={keyword}&limit=300&page={page}', headers=Comick.headers, wait=wait)
             except HTTPError:
                 yield {}
             mangas = response.json()
@@ -66,8 +66,8 @@ class Comick(Manga):
             yield results
             page += 1
 
-    def get_db():
-        return Comick.search_by_keyword('', False)
+    def get_db(wait=True):
+        return Comick.search_by_keyword('', False, wait=wait)
 
     def rename_chapter(chapter):
         if chapter in ['pass', None]:

@@ -5,8 +5,8 @@ class Manga18fx(Manga):
     domain = 'manga18fx.com'
     logo = 'https://manga18fx.com/images/favicon-160x160.jpg'
 
-    def get_chapters(manga):
-        response = Manga18fx.send_request(f'https://manga18fx.com/manga/{manga}')
+    def get_chapters(manga, wait=True):
+        response = Manga18fx.send_request(f'https://manga18fx.com/manga/{manga}', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find_all('li', {'class': 'a-h'})
         chapters_urls = [div.find('a')['href'].split('/')[-1] for div in divs[::-1]]
@@ -16,14 +16,14 @@ class Manga18fx(Manga):
         } for chapter_url in chapters_urls]
         return chapters
 
-    def get_images(manga, chapter):
-        response = Manga18fx.send_request(f'https://manga18fx.com/manga/{manga}/{chapter["url"]}')
+    def get_images(manga, chapter, wait=True):
+        response = Manga18fx.send_request(f'https://manga18fx.com/manga/{manga}/{chapter["url"]}', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'class': 'read-content'}).find_all('img')
         images = [image['src'].strip() for image in images]
         return images, False
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(keyword, absolute, wait=True):
         from requests.exceptions import HTTPError
         from contextlib import suppress
         template = f'https://manga18fx.com/search?q={keyword}&page=P_P_P_P' if keyword else f'https://manga18fx.com/page/P_P_P_P'
@@ -31,7 +31,7 @@ class Manga18fx(Manga):
         prev_page = []
         while True:
             try:
-                response = Manga18fx.send_request(template.replace('P_P_P_P', str(page)))
+                response = Manga18fx.send_request(template.replace('P_P_P_P', str(page)), wait=wait)
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -56,5 +56,5 @@ class Manga18fx(Manga):
             yield results
             page += 1
 
-    def get_db():
-        return Manga18fx.search_by_keyword('', False)
+    def get_db(wait=True):
+        return Manga18fx.search_by_keyword('', False, wait=wait)
