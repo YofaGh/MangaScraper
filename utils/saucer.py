@@ -66,7 +66,7 @@ def sauce_file(path_to_file):
     log('\rimage was successfully uploaded to imgops.com', 'green')
     log(f'here is the link to the image:', 'green')
     log(f'    https:{link}', 'yellow')
-    sauce_url(f'https:{link}')
+    return f'https:{link}'
 
 def sauce_url(url):
     results = {}

@@ -104,8 +104,8 @@ match args.task:
     case 'search':
         if not args.n:
             parser.error('you should specify what you want to search using -n')
-        from crawlers.search_engine import search
-        search(args.n, args.s, args.t, args.absolute, args.page_limit)
+        from crawlers.search_engine import search_wrapper
+        search_wrapper(args.n, args.s, args.t, args.absolute, args.page_limit)
 
     case 'db':
         from crawlers.database_crawler import crawl
@@ -117,8 +117,9 @@ match args.task:
 
     case 'sauce':
         if args.image:
-            from utils.saucer import sauce_file
-            sauce_file(args.image)
+            from utils.saucer import sauce_file, sauce_url
+            url = sauce_file(args.image)
+            sauce_url(url)
         elif args.url:
             from utils.saucer import sauce_url
             sauce_url(args.url)
