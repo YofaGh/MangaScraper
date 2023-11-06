@@ -13,7 +13,7 @@ class Truemanga(Manga):
         cover, title, alternative, summary, status = 5 * ['']
         extras = {}
         info_box = soup.find('div', {'class': 'book-info'})
-        with suppress(Exception): cover = info_box.find('div', {'class': 'img-cover'}).find('img')['src']
+        with suppress(Exception): cover = info_box.find('div', {'class': 'img-cover'}).find('img')['data-src']
         with suppress(Exception): title = info_box.find('div', {'class': 'name box'}).find('h1').get_text(strip=True)
         with suppress(Exception): alternative = info_box.find('div', {'class': 'name box'}).find('h2').get_text(strip=True)
         with suppress(Exception): summary = soup.find('div', {'class': 'section-body summary'}).find('p').get_text(strip=True)
