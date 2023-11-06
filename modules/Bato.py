@@ -5,6 +5,32 @@ class Bato(Manga):
     domain = 'bato.to'
     logo = 'https://bato.to/public-assets/img/favicon.ico'
 
+    def get_info(manga, wait=True):
+        from contextlib import suppress
+        response = Bato.send_request(f'https://bato.to/title/{manga}', wait=wait)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        cover, title, alternative, summary, rating, status = 6 * ['']
+        info_box = soup.find('div', {'class': 'flex flex-col md:flex-row'})
+        extras = {}
+        with suppress(Exception): cover = info_box.find('img')['src']
+        with suppress(Exception): title = info_box.find('h3').get_text(strip=True)
+        with suppress(Exception): alternative = info_box.find('div', {'class': 'mt-1 text-xs md:text-base opacity-80'}).get_text(strip=True)
+        with suppress(Exception): summary = info_box.find('div', {'class': 'relative w-full'}).find('astro-island').get_text(strip=True)
+        with suppress(Exception): rating = float(soup.find('span', {'class': 'font-black text-[2.0rem] md:text-[2.5rem] text-yellow-500'}).get_text(strip=True))/2
+        with suppress(Exception): status = info_box.find(lambda tag: 'Status' in tag.text).find('i').get_text(strip=True)
+        with suppress(Exception): extras['By'] = [a.get_text(strip=True) for a in info_box.find('div', {'class': 'mt-2 text-sm md:text-base opacity-80'}).find_all('a')]
+        with suppress(Exception): 
+            extras['Genres'] = [f.find('span').get_text(strip=True) for f in info_box.find('div', {'class': 'flex items-center flex-wrap'}).find_all('span', recursive=False)]
+        return {
+            'Cover': cover,
+            'Title': title,
+            'Alternative': alternative,
+            'Summary': summary,
+            'Rating': rating,
+            'Status': status,
+            'Extras': extras,
+        }
+
     def get_chapters(manga, wait=True):
         response = Bato.send_request(f'https://bato.to/title/{manga}', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')

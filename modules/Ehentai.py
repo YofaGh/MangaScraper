@@ -6,6 +6,33 @@ class Ehentai(Doujin):
     logo = 'https://ehentai.to/favicon.ico'
     download_images_headers = {'Referer': 'https://ehentai.to/'}
 
+    def get_info(code, wait=True):
+        from contextlib import suppress
+        response = Ehentai.send_request(f'https://ehentai.to/g/{code}', wait=wait)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        cover, title, alternative, pages, uploaded = 5 * ['']
+        info_box = soup.find('div', {'id': 'info'})
+        extras = {}
+        with suppress(Exception): cover = soup.find('div', {'id': 'cover'}).find('img')['data-src']
+        with suppress(Exception): title = info_box.find('h1').get_text(strip=True)
+        with suppress(Exception): alternative = info_box.find('h2').get_text(strip=True)
+        with suppress(Exception): uploaded = info_box.find('time')['datetime']
+        with suppress(Exception): pages = info_box.find(lambda tag: 'pages' in tag.text).get_text(strip=True).replace(' pages', '')
+        tag_box = soup.find('section', {'id': 'tags'}).find_all('div', {'class': 'tag-container field-name'})
+        for box in tag_box:
+            with suppress(Exception): 
+                extras[box.contents[0].strip()] = [link.find('span', {'class': 'name'}).get_text(strip=True) for link in box.find_all('a')]
+        return {
+            'Cover': cover,
+            'Title': title,
+            'Pages': pages,
+            'Alternative': alternative,
+            'Extras': extras,
+            'Dates': {
+                'Uploaded': uploaded
+            }
+        }
+
     def get_title(code, wait=True):
         response = Ehentai.send_request(f'https://ehentai.to/g/{code}', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')

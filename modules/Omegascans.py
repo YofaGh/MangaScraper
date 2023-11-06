@@ -3,7 +3,33 @@ from utils.models import Manga
 
 class Omegascans(Manga):
     domain = 'omegascans.org'
-    logo = 'https://omegascans.org/images/webicon.png'
+    logo = 'https://omegascans.org/icon.png'
+
+    def get_info(manga, wait=True):
+        from contextlib import suppress
+        from urllib.parse import unquote
+        response = Omegascans.send_request(f'https://omegascans.org/series/{manga}', wait=wait)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        cover, title, alternative, summary, release_year, authors = 6 * ['']
+        with suppress(Exception): 
+            cover = unquote(soup.find('div', {'class': 'lg:absolute flex flex-col items-center justify-center gap-y-2 w-full'}).find('img')['src'].replace('/_next/image?url=', ''))
+        with suppress(Exception): title = soup.find('div', {'class': 'col-span-12 lg:col-span-9'}).find('h1').get_text(strip=True)
+        with suppress(Exception): alternative = soup.find('div', {'class': 'col-span-12 lg:col-span-9'}).find('p').get_text(strip=True)
+        with suppress(Exception): summary = soup.find('div', {'class': 'bg-gray-800 text-gray-50 rounded-xl p-5'}).get_text(strip=True)
+        with suppress(Exception): 
+            authors = soup.find('div', {'class': 'flex flex-col gap-y-2'}).find(lambda t: t.name == 'p' and 'Author' in t.text).find('strong').get_text(strip=True)
+        with suppress(Exception): 
+            release_year = soup.find('div', {'class': 'flex flex-col gap-y-2'}).find(lambda t: t.name == 'p' and 'Release' in t.text).find('strong').get_text(strip=True)
+        return {
+            'Cover': cover,
+            'Title': title,
+            'Alternative': alternative,
+            'Summary': summary,
+            'Extras': {
+                'Authors': authors,
+                'Release Year': release_year
+            }
+        }
 
     def get_chapters(manga, wait=True):
         response = Omegascans.send_request(f'https://omegascans.org/series/{manga}', wait=wait)

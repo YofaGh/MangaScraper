@@ -6,6 +6,41 @@ class Simply_hentai(Doujin):
     logo = 'https://www.simply-hentai.com/images/logo.svg'
     headers = {'User-Agent': 'Leech/1051 CFNetwork/454.9.4 Darwin/10.3.0 (i386) (MacPro1%2C1)'}
 
+    def get_info(code, wait=True):
+        from contextlib import suppress
+        from datetime import datetime
+        response = Simply_hentai.send_request(f'https://www.simply-hentai.com/{code}', headers=Simply_hentai.headers, wait=wait)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        cover, title, pages, uploaded = 4 * ['']
+        info_box = soup.find('section', {'class': 'album-info'})
+        extras = {}
+        with suppress(Exception): cover = info_box.find('img')['data-src']
+        with suppress(Exception): title = info_box.find('h1').get_text(strip=True)
+        with suppress(Exception): 
+            extras['Views'] = info_box.find('div', {'class': 'row mb-2 align-items-center'}).find('div', {'class': 'col-4'}).find('div').get_text(strip=True)
+        with suppress(Exception): 
+            uploaded = info_box.find('div', {'class': 'row mb-2 align-items-center'}).find('div', {'class': 'col-5'}).find('div').get_text(strip=True)
+        with suppress(Exception): pages = info_box.find('div', {'class': 'col-12 col-lg-4'}).find_all('a')[-1].get_text(strip=True)[11:-1]
+        attr, lis = None, []
+        for child in info_box.find_all('div', {'class': 'col-12 col-sm-6 col-lg-4'})[1].find('div', {'class': 'data-wrapper'}).children:
+            if child.name == 'div':
+                if attr:
+                    extras[attr] = lis
+                attr = child.get_text(strip=True)
+                lis = []
+            else:
+                lis.append(child.get_text(strip=True))
+        extras[attr] = lis
+        return {
+            'Cover': cover,
+            'Title': title,
+            'Pages': pages,
+            'Extras': extras,
+            'Dates': {
+                'Uploaded': datetime.strptime(uploaded, '%m/%d/%Y').strftime('%Y-%m-%d %H:%M:%S')
+            }
+        }
+
     def get_title(code, wait=True):
         response = Simply_hentai.send_request(f'https://www.simply-hentai.com/{code}', headers=Simply_hentai.headers, wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')

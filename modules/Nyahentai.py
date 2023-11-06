@@ -9,44 +9,29 @@ class Nyahentai(Doujin):
         from contextlib import suppress
         response = Nyahentai.send_request(f'https://nyahentai.red/g/{code}', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
-        cover, title, alternative, parodies, characters, tags, artists, groups, languages, categories, pages, uploaded = 12 * ['']
-        with suppress(Exception): cover = soup.find('div', {'id': 'cover'}).find('img')['src']
-        with suppress(Exception): title = soup.find('h1', {'class', 'title'}).find('span').get_text(strip=True)
-        with suppress(Exception): alternative = soup.find('h2', {'class', 'title'}).find('span').get_text(strip=True)
+        cover, title, alternative, pages, uploaded = 5 * ['']
+        info_box = soup.find('div', {'id': 'info'})
+        extras = {}
+        with suppress(Exception): cover = soup.find('div', {'id': 'cover'}).find('img')['data-src']
+        with suppress(Exception): title = info_box.find('h1').get_text(strip=True)
+        with suppress(Exception): alternative = info_box.find('h2').get_text(strip=True)
+        with suppress(Exception): uploaded = info_box.find('time')['datetime']
+        with suppress(Exception): pages = info_box.find('section', {'id': 'tags'}).find(lambda tag: 'Pages:' in tag.text).get_text(strip=True).replace('Pages:', '')
         tag_box = soup.find('section', {'id': 'tags'}).find_all('div', {'class': 'tag-container field-name'})
         for box in tag_box:
+            if 'Pages' in box.text or 'Uploaded' in box.text:
+                continue
             with suppress(Exception): 
-                if 'Parodies' in box.text:
-                    parodies = [link.find('span', {'class': 'name'}).get_text(strip=True) for link in box.find_all('a')]
-                elif 'Characters' in box.text:
-                    characters = [link.find('span', {'class': 'name'}).get_text(strip=True) for link in box.find_all('a')]
-                elif 'Tags' in box.text:
-                    tags = [link.find('span', {'class': 'name'}).get_text(strip=True) for link in box.find_all('a')]
-                elif 'Artists' in box.text:
-                    artists = [link.find('span', {'class': 'name'}).get_text(strip=True) for link in box.find_all('a')]
-                elif 'Groups' in box.text:
-                    groups = [link.find('span', {'class': 'name'}).get_text(strip=True) for link in box.find_all('a')]
-                elif 'Languages' in box.text:
-                    languages = [link.find('span', {'class': 'name'}).get_text(strip=True) for link in box.find_all('a')]
-                elif 'Categories' in box.text:
-                    categories = [link.find('span', {'class': 'name'}).get_text(strip=True) for link in box.find_all('a')]
-                elif 'Pages:' in box.text:
-                    pages = box.find('a').get_text(strip=True)
-                elif 'Uploaded:' in box.text:
-                    uploaded = box.find('time')['datetime']
+                extras[box.contents[0].strip()] = [link.find('span', {'class': 'name'}).get_text(strip=True) for link in box.find_all('a')]
         return {
             'Cover': cover,
             'Title': title,
-            'Alternative': alternative,
-            'Parodies': parodies,
-            'Characters': characters,
-            'Tags': tags,
-            'Artists': artists,
-            'Groups': groups,
-            'Languages': languages,
-            'Categories': categories,
             'Pages': pages,
-            'Uploaded': uploaded
+            'Alternative': alternative,
+            'Extras': extras,
+            'Dates': {
+                'Uploaded': uploaded
+            }
         }
 
     def get_title(code, wait=True):

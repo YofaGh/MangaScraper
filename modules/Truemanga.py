@@ -6,6 +6,34 @@ class Truemanga(Manga):
     logo = 'https://truemanga.com/static/sites/truemanga/icons/favicon.ico'
     download_images_headers = {'Referer': 'https://truemanga.com/'}
 
+    def get_info(manga, wait=True):
+        from contextlib import suppress
+        response = Truemanga.send_request(f'https://truemanga.com/{manga}', wait=wait)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        cover, title, alternative, summary, status = 5 * ['']
+        extras = {}
+        info_box = soup.find('div', {'class': 'book-info'})
+        with suppress(Exception): cover = info_box.find('div', {'class': 'img-cover'}).find('img')['src']
+        with suppress(Exception): title = info_box.find('div', {'class': 'name box'}).find('h1').get_text(strip=True)
+        with suppress(Exception): alternative = info_box.find('div', {'class': 'name box'}).find('h2').get_text(strip=True)
+        with suppress(Exception): summary = soup.find('div', {'class': 'section-body summary'}).find('p').get_text(strip=True)
+        for p in info_box.find('div', {'class': 'meta box mt-1 p-10'}).find_all('p'):
+            if 'Status' in p.get_text():
+                status = p.find('span').get_text(strip=True)
+            else:
+                if len(p.find_all('a')) <= 1:
+                    extras[p.find('strong').get_text(strip=True).replace(':', '').strip()] = p.find('span').get_text(strip=True)
+                else:
+                    extras[p.find('strong').get_text(strip=True).replace(':', '').strip()] = [a.text.replace(' ', '').replace('\n,', '').strip() for a in p.find_all('a')]
+        return {
+            'Cover': cover,
+            'Title': title,
+            'Alternative': alternative,
+            'Summary': summary,
+            'Status': status,
+            'Extras': extras
+        }
+
     def get_chapters(manga, wait=True):
         response = Truemanga.send_request(f'https://truemanga.com/{manga}', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')

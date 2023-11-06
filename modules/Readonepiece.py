@@ -5,6 +5,18 @@ class Readonepiece(Manga):
     domain = 'readonepiece.com'
     logo = 'https://ww9.readonepiece.com/apple-touch-icon.png'
 
+    def get_info(manga, wait=True):
+        response = Readonepiece.send_request(f'https://ww9.readonepiece.com/manga/{manga}/', wait=wait)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        cover = soup.find('div', {'class': 'py-4 px-6 mb-3'}).find('img')['src']
+        title = soup.find('h1', {'class': 'my-3 font-bold text-2xl md:text-3xl'}).get_text(strip=True)
+        summary = soup.find('div', {'class': 'py-4 px-6 mb-3'}).find('div', {'class': 'text-text-muted'}).get_text(strip=True)
+        return {
+            'Cover': cover,
+            'Title': title,
+            'Summary': summary,
+        }
+
     def get_chapters(manga, wait=True):
         response = Readonepiece.send_request(f'https://ww9.readonepiece.com/manga/{manga}/', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')

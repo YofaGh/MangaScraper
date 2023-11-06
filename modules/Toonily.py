@@ -7,6 +7,42 @@ class Toonily_Com(Manga):
     download_images_headers = {'Referer': 'https://toonily.com/'}
     search_headers = {'cookie': 'toonily-mature=1'}
 
+    def get_info(manga, wait=True):
+        from contextlib import suppress
+        response = Toonily_Com.send_request(f'https://toonily.com/webtoon/{manga}/', wait=wait)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        cover, title, alternative, summary, rating, status, authors, artists, genres, tags = 10 * ['']
+        info_box = soup.find('div', {'class': 'tab-summary'})
+        with suppress(Exception): cover = info_box.find('img')['src']
+        with suppress(Exception): title = info_box.find('div', {'class': 'post-title'}).find('h1').contents[0].strip()
+        with suppress(Exception): summary = soup.find('div', {'class': 'summary__content'}).get_text(strip=True)
+        with suppress(Exception): rating = float(soup.find('span', {'id': 'averagerate'}).get_text(strip=True))
+        with suppress(Exception): status = info_box.find('div', {'class': 'post-status'}).find_all('div', {'class': 'summary-content'})[1].get_text(strip=True)
+        with suppress(Exception): tags = [tag.get_text(strip=True).replace('#', '') for tag in soup.find('div', {'class': 'wp-manga-tags-list'}).find_all('a')]
+        for box in soup.find('div', {'class': 'manga-info-row'}).find_all('div', {'class': 'post-content_item'}):
+            if 'Alt Name' in box.get_text(strip=True):
+                alternative = box.find('div', {'class': 'summary-content'}).get_text(strip=True)
+            elif 'Author' in box.get_text(strip=True):
+                authors = [a.get_text(strip=True) for a in box.find_all('a')]
+            elif 'Artist' in box.get_text(strip=True):
+                artists = [a.get_text(strip=True) for a in box.find_all('a')]
+            elif 'Genre' in box.get_text(strip=True):
+                genres = [a.get_text(strip=True) for a in box.find_all('a')]
+        return {
+            'Cover': cover,
+            'Title': title,
+            'Alternative': alternative,
+            'Summary': summary,
+            'Rating': rating,
+            'Status': status,
+            'Extras': {
+                'Authors': authors,
+                'Artists': artists,
+                'Genres': genres,
+                'Tags': tags
+            }
+        }
+
     def get_chapters(manga, wait=True):
         response = Toonily_Com.send_request(f'https://toonily.com/webtoon/{manga}/', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
@@ -60,6 +96,44 @@ class Toonily_Me(Manga):
     domain = 'toonily.me'
     logo = 'https://toonily.me/static/sites/toonily/icons/favicon.ico'
     download_images_headers = {'Referer': 'https://toonily.me/'}
+
+    def get_info(manga, wait=True):
+        from contextlib import suppress
+        response = Toonily_Me.send_request(f'https://toonily.me/{manga}', wait=wait)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        cover, title, alternative, summary, rating, status, authors, chapters, genres, last_update = 10 * ['']
+        info_box = soup.find('div', {'class': 'book-info'})
+        with suppress(Exception): cover = f'https:{info_box.find("img")["data-src"]}'
+        with suppress(Exception): title = info_box.find('div', {'class': 'name box'}).find('h1').get_text(strip=True)
+        with suppress(Exception): alternative = info_box.find('div', {'class': 'name box'}).find('h2').get_text(strip=True)
+        with suppress(Exception): summary = soup.find('div', {'class': 'section box mt-1 summary'}).find('p').get_text(strip=True)
+        with suppress(Exception): rating = float(soup.find('span', {'class': 'score'}).contents[-1].strip())
+        with suppress(Exception): status = info_box.find('div', {'class': 'post-status'}).find_all('div', {'class': 'summary-content'})[1].get_text(strip=True)
+        for box in soup.find('div', {'class': 'meta box mt-1 p-10'}).find_all('p'):
+            if 'Author' in box.get_text(strip=True):
+                authors = [a.get_text(strip=True) for a in box.find_all('a')]
+            elif 'Status' in box.get_text(strip=True):
+                status = box.find('a').get_text(strip=True)
+            elif 'Chapters' in box.get_text(strip=True):
+                chapters = box.find('span').get_text(strip=True)
+            elif 'Genre' in box.get_text(strip=True):
+                genres = [a.get_text(strip=True) for a in box.find_all('a')]
+            elif 'Last update' in box.get_text(strip=True):
+                last_update = box.find('span').get_text(strip=True)
+        return {
+            'Cover': cover,
+            'Title': title,
+            'Alternative': alternative,
+            'Summary': summary,
+            'Rating': rating,
+            'Status': status,
+            'Extras': {
+                'Authors': authors,
+                'Chapters': chapters,
+                'Genres': genres,
+                'Last update': last_update
+            }
+        }
 
     def get_chapters(manga, wait=True):
         response = Toonily_Me.send_request(f'https://toonily.me/{manga}', wait=wait)

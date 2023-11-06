@@ -5,6 +5,34 @@ class Mangareader(Manga):
     domain = 'mangareader.mobi'
     logo = 'https://mangareader.mobi/frontend/imgs/favicon16.png'
 
+    def get_info(manga, wait=True):
+        from contextlib import suppress
+        response = Mangareader.send_request(f'https://mangareader.mobi/manga/{manga}', wait=wait)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        cover, title, alternative, summary, status, authors, views, genres = 8 * ['']
+        info_box = soup.find('div', {'class': 'imgdesc'})
+        with suppress(Exception): cover = info_box.find('img')['src']
+        with suppress(Exception): title = soup.find('div', {'class': 'rm'}).find('h1').get_text(strip=True)
+        with suppress(Exception):
+            alternative = info_box.find(lambda tag: tag.name == 'li' and 'Alternative' in tag.text).contents[1][1:].strip()
+        with suppress(Exception): summary = soup.find('div', {'id': 'noidungm'}).get_text(strip=True)
+        with suppress(Exception): status = info_box.find_all(lambda tag: tag.name == 'li' and 'Status' in tag.text)[2].get_text(strip=True).replace('Status:', '').strip()
+        with suppress(Exception): authors = info_box.find_all(lambda tag: tag.name == 'li' and 'Author' in tag.text)[2].get_text(strip=True).replace('Author:', '')
+        with suppress(Exception): views = info_box.find_all(lambda tag: tag.name == 'li' and 'Views' in tag.text)[2].get_text(strip=True).replace('Views:', '').replace('Views:', '')
+        with suppress(Exception): genres = [a.get_text(strip=True) for a in info_box.find_all(lambda tag: tag.name == 'li' and 'Genres' in tag.text)[2].find_all('a')]
+        return {
+            'Cover': cover,
+            'Title': title,
+            'Alternative': alternative,
+            'Summary': summary,
+            'Status': status,
+            'Extras': {
+                'Authors': authors,
+                'Views': views,
+                'Genres': genres
+            }
+        }
+
     def get_chapters(manga, wait=True):
         response = Mangareader.send_request(f'https://mangareader.mobi/manga/{manga}', verify=False, wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')

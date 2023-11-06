@@ -5,6 +5,39 @@ class Manga68(Manga):
     domain = 'manga68.com'
     logo = 'https://manga68.com/wp-content/uploads/2017/10/cropped-manga68-2-192x192.png'
 
+    def get_info(manga, wait=True):
+        from contextlib import suppress
+        response = Manga68.send_request(f'https://manga68.com/manga/{manga}', wait=wait)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        cover, title, summary, rating, status = 5 * ['']
+        extras = {}
+        info_box = soup.find('div', {'class': 'tab-summary'})
+        with suppress(Exception): cover = info_box.find('img')['data-src']
+        with suppress(Exception): title = soup.find('div', {'id': 'manga-title'}).find('h1').contents[-1].strip()
+        with suppress(Exception): rating = float(info_box.find('div', {'class': 'post-total-rating'}).find('span').get_text(strip=True))
+        for box in soup.find('div', {'class': 'post-content'}).find_all('div', {'class': 'post-content_item'}):
+            if 'Rating' in box.get_text(strip=True) or 'Comments' in box.get_text(strip=True):
+                continue
+            elif 'Summary' in box.get_text(strip=True):
+                with suppress(Exception): summary = box.find('p').get_text(strip=True)
+            elif 'Status' in box.get_text(strip=True):
+                with suppress(Exception): status = box.find('div', {'class': 'summary-content'}).get_text(strip=True)
+            else:
+                heading = box.find('div', {'class': 'summary-heading'}).get_text(strip=True).replace('(s)', '')
+                info = box.find('div', {'class': 'summary-content'})
+                if info.find('a'):
+                    extras[heading] = [a.get_text(strip=True) for a in info.find_all('a')]
+                else:
+                    extras[heading] = box.find('div', {'class': 'summary-content'}).get_text(strip=True)
+        return {
+            'Cover': cover,
+            'Title': title,
+            'Summary': summary,
+            'Rating': rating,
+            'Status': status,
+            'Extras': extras
+        }
+
     def get_chapters(manga, wait=True):
         response = Manga68.send_request(f'https://manga68.com/manga/{manga}/ajax/chapters/', method='POST', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')

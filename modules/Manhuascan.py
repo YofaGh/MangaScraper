@@ -28,10 +28,14 @@ class Manhuascan(Manga):
             'Summary': summary,
             'Rating': rating,
             'Status': status,
-            'Authors': authors,
-            'Artists': artists,
-            'Posted On': posted_on,
-            'Updated On': updated_on
+            'Extras': {
+                'Authors': authors,
+                'Artists': artists
+            },
+            'Dates': {
+                'Posted On': posted_on,
+                'Updated On': updated_on
+            },
         }
 
     def get_chapters(manga, wait=True):

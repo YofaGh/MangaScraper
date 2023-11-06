@@ -5,6 +5,39 @@ class Coloredmanga(Manga):
     domain = 'coloredmanga.com'
     logo = 'https://coloredmanga.com/wp-content/uploads/2022/09/cropped-000-192x192.png'
 
+    def get_info(manga, wait=True):
+        from contextlib import suppress
+        response = Coloredmanga.send_request(f'https://coloredmanga.com/mangas/{manga}/', wait=wait)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        cover, title, alternative, rating, status = 5 * ['']
+        extras = {}
+        info_box = soup.find('div', {'class': 'tab-summary'})
+        with suppress(Exception): cover = info_box.find('img')['src']
+        with suppress(Exception): title = soup.find('div', {'class': 'post-title'}).find('h1').get_text(strip=True)
+        with suppress(Exception): rating = float(info_box.find('div', {'class': 'post-total-rating'}).find('span').get_text(strip=True))
+        for box in soup.find('div', {'class': 'post-content'}).find_all('div', {'class': 'post-content_item'}):
+            if 'Rating' in box.get_text(strip=True):
+                continue
+            elif 'Alternative' in box.get_text(strip=True):
+                with suppress(Exception): alternative = box.find('div', {'class': 'summary-content'}).get_text(strip=True)
+            elif 'Status' in box.get_text(strip=True):
+                with suppress(Exception): status = box.find('div', {'class': 'summary-content'}).get_text(strip=True)
+            else:
+                heading = box.find('div', {'class': 'summary-heading'}).get_text(strip=True).replace('(s)', '')
+                info = box.find('div', {'class': 'summary-content'})
+                if info.find('a'):
+                    extras[heading] = [a.get_text(strip=True) for a in info.find_all('a')]
+                else:
+                    extras[heading] = box.find('div', {'class': 'summary-content'}).get_text(strip=True)
+        return {
+            'Cover': cover,
+            'Title': title,
+            'Alternative': alternative,
+            'Rating': rating,
+            'Status': status,
+            'Extras': extras
+        }
+
     def get_chapters(manga, wait=True):
         response = Coloredmanga.send_request(f'https://coloredmanga.com/mangas/{manga}/', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')

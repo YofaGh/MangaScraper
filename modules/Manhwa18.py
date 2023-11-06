@@ -5,6 +5,41 @@ class Manhwa18(Manga):
     domain = 'manhwa18.com'
     logo = 'https://manhwa18.com/favicon1.ico'
 
+    def get_info(manga, wait=True):
+        from contextlib import suppress
+        response = Manhwa18.send_request(f'https://manhwa18.com/manga/{manga}', wait=wait)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        cover, title, alternative, summary, rating, status, latest_reading, views = 8 * ['']
+        info_box = soup.find('main', {'class': 'section-body'})
+        extras = {}
+        with suppress(Exception): cover = soup.find('meta', {'property': 'og:image'})['content']
+        with suppress(Exception): title = info_box.find('span', {'class': 'series-name'}).get_text(strip=True)
+        with suppress(Exception): summary = info_box.find('div', {'class': 'summary-content'}).get_text(strip=True)
+        with suppress(Exception): 
+            rating = float(info_box.find_all('div', {'class': 'col-4 statistic-item'})[0].find('div', {'class': 'statistic-value'}).get_text(strip=True).replace('/5', ''))
+        with suppress(Exception): views = info_box.find_all('div', {'class': 'col-4 statistic-item'})[1].find('div', {'class': 'statistic-value'}).get_text(strip=True)
+        with suppress(Exception): latest_reading = info_box.find('time')['datetime']
+        for box in info_box.find('div', {'class': 'series-information'}).find_all('div', {'class': 'info-item'}):
+            if 'Other name' in box.text:
+                alternative = box.find('span', {'class': 'info-value'}).get_text(strip=True)
+            elif 'Status' in box.text:
+                status = box.find('a').get_text(strip=True)
+            else:
+                extras[box.find('span').get_text(strip=True).replace(':', '')] = [a.get_text(strip=True) for a in box.find_all('a')]
+        extras['Views'] = views
+        return {
+            'Cover': cover,
+            'Title': title,
+            'Alternative': alternative,
+            'Summary': summary,
+            'Rating': rating,
+            'Status': status,
+            'Extras': extras,
+            'Dates': {
+                'Latest reading': latest_reading,
+            },
+        }
+
     def get_chapters(manga, wait=True):
         response = Manhwa18.send_request(f'https://manhwa18.com/manga/{manga}', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')

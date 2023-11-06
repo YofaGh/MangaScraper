@@ -4,6 +4,30 @@ class Mangadex(Manga):
     domain = 'mangadex.org'
     logo = 'https://mangadex.org/favicon.ico'
 
+    def get_info(manga, wait=True):
+        manga = manga.split('/')[0] if '/' in manga else manga
+        response = Mangadex.send_request(f'https://api.mangadex.org/manga/{manga}?includes[]=artist&includes[]=author&includes[]=cover_art', wait=wait)
+        data = response.json()['data']
+        cover = next(filter(lambda x: x['type'] == 'cover_art', data['relationships']))['attributes']['fileName']
+        return {
+            'Cover': f'https://mangadex.org/covers/{manga}/{cover}',
+            'Title': data['attributes']['title']['en'],
+            'Alternative': ', '.join(list(g.values())[0] for g in data['attributes']['altTitles']),
+            'Summary': data['attributes']['description']['en'],
+            'Status': data['attributes']['status'],
+            'Extras': {
+                'Authors': [author['attributes']['name'] for author in data['relationships'] if author['type'] == 'author'],
+                'Artists': [artist['attributes']['name'] for artist in data['relationships'] if artist['type'] == 'artist'],
+                'Demographic': data['attributes']['publicationDemographic'],
+                'Year': data['attributes']['year'],
+                'Tags': [tag['attributes']['name']['en'] for tag in data['attributes']['tags'] if tag['type'] == 'tag']
+            },
+            'Dates': {
+                'Created At': data['attributes']['createdAt'],
+                'Updated At': data['attributes']['updatedAt']
+            },
+        }
+
     def get_chapters(manga, wait=True):
         manga = manga.split('/')[0] if '/' in manga else manga
         chapters = []

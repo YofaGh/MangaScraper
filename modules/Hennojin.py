@@ -6,6 +6,35 @@ class Hennojin(Doujin):
     logo = 'https://hennojin.com/favicon.ico'
     is_coded = False
 
+    def get_info(code, wait=True):
+        from contextlib import suppress
+        response = Hennojin.send_request(f'https://hennojin.com/home/?manga={code}', wait=wait)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        cover, title, alternative = 3 * ['']
+        info_box = soup.find('div', {'class': 'col-lg-9'})
+        extras = {}
+        with suppress(Exception): cover = soup.find('div', {'class': 'manga-thumbnail'}).find('img')['src']
+        with suppress(Exception): title = soup.find('h3', {'class', 'manga-title'}).contents[0]
+        with suppress(Exception): alternative = soup.find('h3', {'class', 'manga-title'}).contents[-1].strip()
+        for box in info_box.find('p', {'data-pm-slice': '1 1 []'}).get_text().split('\n'):
+            extras[box.split(': ')[0]] = box.split(': ')[1]
+        attr, lis = None, []
+        for child in info_box.find('p', {'class': 'tags-list'}).children:
+            if child.name == 'span':
+                if attr:
+                    extras[attr] = lis
+                attr = child.get_text(strip=True)
+                lis = []
+            elif child.get_text(strip=True):
+                lis.append(child.get_text(strip=True))
+        extras[attr] = lis
+        return {
+            'Cover': cover,
+            'Title': title,
+            'Alternative': alternative,
+            'Extras': extras
+        }
+
     def get_title(code, wait=True):
         response = Hennojin.send_request(f'https://hennojin.com/home/?manga={code}', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')

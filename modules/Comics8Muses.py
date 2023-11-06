@@ -5,6 +5,14 @@ class Comics8Muses(Manga):
     domain = 'comics.8muses.com'
     logo = 'https://comics.8muses.com/favicon.ico'
 
+    def get_info(manga, wait=True):
+        response = Comics8Muses.send_request(f'https://comics.8muses.com/comics/album/{manga}/', wait=wait)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        return {
+            'Cover': f'https://comics.8muses.com{soup.find("div", {"class": "gallery"}).find("img")["data-src"]}',
+            'Title': soup.find('div', {'class': 'top-menu-breadcrumb'}).find_all('li')[-1].find('a').get_text(strip=True),
+        }
+
     def get_chapters(manga, wait=True):
         page = 1
         chapters_urls = []

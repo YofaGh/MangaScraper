@@ -8,6 +8,27 @@ class Comick(Manga):
     headers = {'User-Agent': 'Leech/1051 CFNetwork/454.9.4 Darwin/10.3.0 (i386) (MacPro1%2C1)'}
     download_images_headers = {'User-Agent': 'Leech/1051 CFNetwork/454.9.4 Darwin/10.3.0 (i386) (MacPro1%2C1)'}
 
+    def get_info(manga, wait=True):
+        response = Comick.send_request(f'https://comick.app/comic/{manga}', headers=Comick.headers, wait=wait)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        data = json.loads(soup.find('script', {'id': '__NEXT_DATA__'}).get_text(strip=True))['props']['pageProps']
+        extras = {item['md_genres']['group']: [d['md_genres']['name'] for d in data['comic']['md_comic_md_genres'] if d.get('md_genres', {}).get('group') == item['md_genres']['group']] for item in data['comic']['md_comic_md_genres']}
+        extras['Artinsts'] = [ti['name'] for ti in data['artists']]
+        extras['Authors'] = [ti['name'] for ti in data['authors']]
+        extras['demographic'] = data['demographic']
+        extras['Published'] = data['comic']['year']
+        extras['Publishers'] = [ti['mu_publishers']['title'] for ti in data['comic']['mu_comics']['mu_comic_publishers']]
+        extras['Categories'] = [ti['mu_categories']['title'] for ti in data['comic']['mu_comics']['mu_comic_categories']]
+        return {
+            'Cover': f'https://meo3.comick.pictures/{data["comic"]["md_covers"][0]["b2key"]}',
+            'Title': data['comic']['title'],
+            'Alternative': ', '.join([ti['title'] for ti in data['comic']['md_titles']]),
+            'Summary': data['comic']['desc'],
+            'Rating': float(data['comic']['bayesian_rating'])/2,
+            'Status': 'Ongoing' if data['comic']['status'] == 1 else 'Completed',
+            'Extras': extras
+        }
+
     def get_chapters(manga, wait=True):
         response = Comick.send_request(f'https://comick.app/comic/{manga}', headers=Comick.headers, wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')

@@ -5,6 +5,36 @@ class Manga18hot(Manga):
     domain = 'manga18hot.net'
     logo = 'https://manga18hot.net/apple-touch-icon.png'
 
+    def get_info(manga, wait=True):
+        manga = manga.replace('manga-', '') if manga.startswith('manga-') else manga
+        from contextlib import suppress
+        response = Manga18hot.send_request(f'https://manga18hot.net/manga-{manga}.html', wait=wait)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        cover, title, alternative, summary, rating, status, genres = 7 * ['']
+        info_box = soup.find('div', {'class': 'anis-content active'})
+        extras = {}
+        with suppress(Exception): cover = info_box.find('img')['src']
+        with suppress(Exception): title = info_box.find('h1').get_text(strip=True)
+        with suppress(Exception): alternative = info_box.find('div', {'class': 'manga-name-or'}).get_text(strip=True)
+        with suppress(Exception): summary = info_box.find('div', {'class': 'description'}).get_text(strip=True)
+        with suppress(Exception): rating = float(info_box.find('div', {'class': 'rr-mark float-left'}).find('strong').get_text(strip=True).replace('/5', ''))
+        with suppress(Exception): genres = [a.get_text(strip=True) for a in info_box.find('div', {'class': 'genres'}).find_all('a')]
+        for box in info_box.find('div', {'class': 'anisc-info'}).find_all('div', {'class': 'item item-title'}):
+            if 'Status' in box.text:
+                with suppress(Exception): status = box.find('a').get_text(strip=True)
+            else:
+                with suppress(Exception): extras[box.find('span', {'class': 'item-head'}).get_text(strip=True)[:-1]] = box.contents[-2].get_text(strip=True)
+        extras['Genres'] = genres
+        return {
+            'Cover': cover,
+            'Title': title,
+            'Alternative': alternative,
+            'Summary': summary,
+            'Rating': rating,
+            'Status': status,
+            'Extras': extras
+        }
+
     def get_chapters(manga, wait=True):
         manga = manga.replace('manga-', '') if manga.startswith('manga-') else manga
         response = Manga18hot.send_request(f'https://manga18hot.net/manga-{manga}.html', wait=wait)

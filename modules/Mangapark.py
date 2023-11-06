@@ -5,6 +5,27 @@ class Mangapark(Manga):
     domain = 'mangapark.to'
     logo = 'https://mangapark.to/public-assets/img/favicon.ico'
 
+    def get_info(manga, wait=True):
+        import json
+        manga = manga.split('-')[0] if '-' in manga else manga
+        response = Mangapark.send_request(f'https://mangapark.to/title/{manga}', wait=wait)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        script = soup.find('script', {'id': '__NEXT_DATA__'}).get_text(strip=True)
+        data = json.loads(script)['props']['pageProps']['dehydratedState']['queries'][0]['state']['data']['data']
+        return {
+            'Cover': data['urlCover600'],
+            'Title': data['name'],
+            'Alternative': ', '.join(data['altNames']) if data['altNames'] else '',
+            'Summary': data['summary']['code'] if data['summary'] else '',
+            'Rating': data['stat_score_avg'] if data['stat_score_avg'] else '',
+            'Status': data['originalStatus'] if data['originalStatus'] else '',
+            'Extras': {
+                'Authors': data['authors'] if data['authors'] else '',
+                'Artists': data['artists'] if data['artists'] else '',
+                'Genres': data['genres'] if data['genres'] else '',
+            },
+        }
+
     def get_chapters(manga, wait=True):
         manga = manga.split('-')[0] if '-' in manga else manga
         data_json = {

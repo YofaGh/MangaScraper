@@ -6,6 +6,38 @@ class Manga18(Manga):
     logo = 'https://manga18.club/fav.png?v=1'
     headers = {'User-Agent': 'Leech/1051 CFNetwork/454.9.4 Darwin/10.3.0 (i386) (MacPro1%2C1)'}
 
+    def get_info(manga, wait=True):
+        from contextlib import suppress
+        response = Manga18.send_request(f'https://manga18.club/manhwa/{manga}', headers=Manga18.headers, wait=wait)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        cover, title, alternative, summary, rating, status, authors, artists, views, categories = 10 * ['']
+        info_box = soup.find('div', {'class': 'detail_story'})
+        item_box = soup.find('div', {'class': 'detail_listInfo'})
+        with suppress(Exception): cover = info_box.find('img')['src']
+        with suppress(Exception): title = info_box.find('h1').get_text(strip=True)
+        with suppress(Exception): summary = soup.find('div', {'class': 'detail_reviewContent'}).get_text(strip=True)
+        with suppress(Exception): rating = float(info_box.find('div', {'class': 'detail_rate'}).find('span').get_text(strip=True).replace('/5', ''))
+        with suppress(Exception): alternative = item_box.find(lambda tag: 'Other name' in tag.text).find('span').get_text(strip=True)
+        with suppress(Exception): status = item_box.find(lambda tag: 'Status' in tag.text).find('span').get_text(strip=True)
+        with suppress(Exception): authors = [a.get_text(strip=True) for a in item_box.find(lambda tag: 'Author' in tag.text).find_all('a')]
+        with suppress(Exception): artists = [a.get_text(strip=True) for a in item_box.find(lambda tag: 'Artist' in tag.text).find_all('a')]
+        with suppress(Exception): views = item_box.find(lambda tag: 'Views' in tag.text).find('span').get_text(strip=True)
+        with suppress(Exception): categories = [a.get_text(strip=True) for a in item_box.find(lambda tag: 'Categories' in tag.text).find_all('a')]
+        return {
+            'Cover': cover,
+            'Title': title,
+            'Alternative': alternative,
+            'Summary': summary,
+            'Rating': rating,
+            'Status': status,
+            'Extras': {
+                'Authors': authors,
+                'Artists': artists,
+                'Views': views,
+                'Categories': categories
+            }
+        }
+
     def get_chapters(manga, wait=True):
         response = Manga18.send_request(f'https://manga18.club/manhwa/{manga}', headers=Manga18.headers, wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')

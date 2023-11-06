@@ -7,6 +7,30 @@ class Nhentai_Com(Doujin):
     headers = {'User-Agent': 'Leech/1051 CFNetwork/454.9.4 Darwin/10.3.0 (i386) (MacPro1%2C1)'}
     is_coded = False
 
+    def get_info(code, wait=True):
+        from datetime import datetime
+        response = Nhentai_Com.send_request(f'https://nhentai.com/api/comics/{code}', headers=Nhentai_Com.headers, wait=wait).json()
+        return {
+            'Cover': response['image_url'],
+            'Title': response['title'],
+            'Pages': response['pages'],
+            'Alternative': response['alternative_title'],
+            'Extras': {
+                'Parodies': [tag['name'] for tag in response['parodies']],
+                'Characters': [tag['name'] for tag in response['characters']],
+                'Tags': [tag['name'] for tag in response['tags']],
+                'Artists': [tag['name'] for tag in response['artists']],
+                'Authors': [tag['name'] for tag in response['authors']],
+                'Groups': [tag['name'] for tag in response['groups']],
+                'Languages': response['language']['name'] if response['language'] else '',
+                'Category': response['category']['name'] if response['category'] else '',
+                'Relationships': [tag['name'] for tag in response['relationships']]
+            },
+            'Dates': {
+                'Uploaded At': datetime.strptime(response['uploaded_at'], '%Y-%m-%d').strftime('%Y-%m-%d %H:%M:%S') if response['uploaded_at'] else ''
+            }
+        }
+
     def get_title(code, wait=True):
         response = Nhentai_Com.send_request(f'https://nhentai.com/api/comics/{code}', headers=Nhentai_Com.headers, wait=wait).json()
         return response['title']
@@ -51,6 +75,35 @@ class Nhentai_Com(Doujin):
 class Nhentai_Xxx(Doujin):
     domain = 'nhentai.xxx'
     logo = 'https://nhentai.xxx/front/logo.svg'
+
+    def get_info(code, wait=True):
+        from contextlib import suppress
+        response = Nhentai_Xxx.send_request(f'https://nhentai.xxx/g/{code}', wait=wait)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        cover, title, alternative, pages, uploaded = 5 * ['']
+        info_box = soup.find('div', {'id': 'info'})
+        extras = {}
+        with suppress(Exception): cover = soup.find('div', {'id': 'cover'}).find('img')['data-src']
+        with suppress(Exception): title = info_box.find('h1').get_text(strip=True)
+        with suppress(Exception): alternative = info_box.find('h2').get_text(strip=True)
+        with suppress(Exception): uploaded = info_box.find('time')['datetime']
+        with suppress(Exception): pages = info_box.find('section', {'id': 'tags'}).find(lambda tag: 'Pages:' in tag.text).get_text(strip=True).replace('Pages:', '')
+        tag_box = soup.find('section', {'id': 'tags'}).find_all('div', {'class': 'tag-container field-name'})
+        for box in tag_box:
+            if 'Pages' in box.text or 'Uploaded' in box.text:
+                continue
+            with suppress(Exception): 
+                extras[box.contents[0].strip()] = [link.find('span', {'class': 'name'}).get_text(strip=True) for link in box.find_all('a')]
+        return {
+            'Cover': cover,
+            'Title': title,
+            'Pages': pages,
+            'Alternative': alternative,
+            'Extras': extras,
+            'Dates': {
+                'Uploaded': uploaded
+            }
+        }
 
     def get_title(code, wait=True):
         response = Nhentai_Xxx.send_request(f'https://nhentai.xxx/g/{code}', wait=wait)

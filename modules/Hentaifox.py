@@ -11,6 +11,27 @@ class Hentaifox(Doujin):
         'g': 'gif'
     }
 
+    def get_info(code, wait=True):
+        from contextlib import suppress
+        response = Hentaifox.send_request(f'https://hentaifox.com/gallery/{code}', wait=wait)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        cover, title, pages = 3 * ['']
+        info_box = soup.find('div', {'class': 'info'})
+        extras = {}
+        with suppress(Exception): cover = soup.find('div', {'class': 'cover'}).find('img')['src']
+        with suppress(Exception): title = info_box.find('h1').get_text(strip=True)
+        with suppress(Exception): extras['Posted'] = info_box.find(lambda tag: 'Posted' in tag.text).get_text(strip=True).replace('Posted: ', '')
+        with suppress(Exception): pages = info_box.find(lambda tag: 'Pages' in tag.text).get_text(strip=True).replace('Pages: ', '')
+        for box in info_box.find_all(lambda tag: tag.name == 'ul' and 'g_buttons' not in tag.get('class')):
+            with suppress(Exception): 
+                extras[box.find('span').get_text(strip=True)[:-1]] = [link.contents[0].strip() for link in box.find_all('a')]
+        return {
+            'Cover': cover,
+            'Title': title,
+            'Pages': pages,
+            'Extras': extras
+        }
+
     def get_title(code, wait=True):
         response = Hentaifox.send_request(f'https://hentaifox.com/gallery/{code}', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')

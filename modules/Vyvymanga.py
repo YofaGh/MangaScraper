@@ -5,6 +5,35 @@ class Vyvymanga(Manga):
     domain = 'vyvymanga.net'
     logo = 'https://vyvymanga.net/web/img/icon.png'
 
+    def get_info(manga, wait=True):
+        from contextlib import suppress
+        response = Vyvymanga.send_request(f'https://vyvymanga.net/manga/{manga}', wait=wait)
+        box = BeautifulSoup(response.text, 'html.parser').find('div', {'class': 'div-manga'})
+        cover, title, alternative, summary, rating, status, authors, view, genres = 9 * ['']
+        bbox = box.find('div', {'class': 'col-md-7'})
+        with suppress(Exception): cover = box.find('img')['src']
+        with suppress(Exception): title = box.find('h1', {'class': 'title'}).get_text(strip=True)
+        with suppress(Exception): alternative = box.find('div', {'class': 'col-md-7'}).find('p').get_text(strip=True)
+        with suppress(Exception): summary = box.find('div', {'class': 'summary'}).find('p', {'class': 'content'}).get_text(strip=True)
+        with suppress(Exception): authors = [a.get_text(strip=True) for a in bbox.find(lambda tag: tag.name == 'p' and 'Authors' in tag.text).find_all('a')]
+        with suppress(Exception): status = bbox.find(lambda tag: tag.name == 'p' and 'Status' in tag.text).contents[-1].get_text(strip=True)
+        with suppress(Exception): view = bbox.find(lambda tag: tag.name == 'p' and 'View' in tag.text).contents[-1].get_text(strip=True)
+        with suppress(Exception): genres = [a.get_text(strip=True) for a in bbox.find(lambda tag: tag.name == 'p' and 'Genres' in tag.text).find_all('a')]
+        with suppress(Exception): rating = float(bbox.find(lambda tag: tag.name == 'p' and 'Rating' in tag.text).contents[-1].split('/')[0].strip())/2
+        return {
+            'Cover': cover,
+            'Title': title,
+            'Alternative': alternative,
+            'Summary': summary,
+            'Rating': rating,
+            'Status': status,
+            'Extras': {
+                'Authors': authors,
+                'View': view,
+                'Genres': genres
+            }
+        }
+
     def get_chapters(manga, wait=True):
         response = Vyvymanga.send_request(f'https://vyvymanga.net/manga/{manga}', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')

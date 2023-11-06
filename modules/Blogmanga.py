@@ -5,6 +5,9 @@ class Blogmanga(Manga):
     domain = 'blogmanga.net'
     logo = 'https://blogmanga.net/favicon.png'
 
+    def get_info(manga, wait=True):
+        return {}
+
     def get_chapters(manga, wait=True):
         response = Blogmanga.send_request(f'https://blogmanga.net/manga/{manga}/', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')

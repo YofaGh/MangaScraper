@@ -5,6 +5,40 @@ class Manhuamix(Manga):
     domain = 'manhuamix.com'
     logo = 'https://manhuamix.com/wp-content/uploads/2022/04/cropped-icon-manhua-192x192.png'
 
+    def get_info(manga, wait=True):
+        from contextlib import suppress
+        response = Manhuamix.send_request(f'https://manhuamix.com/manhua/{manga}', wait=wait)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        cover, title, alternative, summary, rating, status = 6 * ['']
+        extras = {}
+        info_box = soup.find('div', {'class': 'tab-summary'})
+        with suppress(Exception): cover = info_box.find('img')['src']
+        with suppress(Exception): title = soup.find_all('div', {'class': 'post-title'})[-1].get_text(strip=True)
+        with suppress(Exception): summary = soup.find('div', {'class': 'summary__content'}).find('p').contents[-1].strip()
+        with suppress(Exception): rating = float(info_box.find('div', {'class': 'post-total-rating'}).find('span').get_text(strip=True))
+        with suppress(Exception): status = info_box.find('div', {'class': 'post-status'}).find('div', {'class': 'summary-content'}).get_text(strip=True)
+        for box in soup.find('div', {'class': 'post-content'}).find_all('div', {'class': 'post-content_item'}):
+            if 'Rating' in box.get_text(strip=True):
+                continue
+            elif 'Alternative' in box.get_text(strip=True):
+                with suppress(Exception): alternative = box.find('div', {'class': 'summary-content'}).get_text(strip=True)
+            else:
+                heading = box.find('div', {'class': 'summary-heading'}).get_text(strip=True).replace('(s)', '')
+                info = box.find('div', {'class': 'summary-content'})
+                if info.find('a'):
+                    extras[heading] = [a.get_text(strip=True) for a in info.find_all('a')]
+                else:
+                    extras[heading] = box.find('div', {'class': 'summary-content'}).get_text(strip=True)
+        return {
+            'Cover': cover,
+            'Title': title,
+            'Alternative': alternative,
+            'Summary': summary,
+            'Rating': rating,
+            'Status': status,
+            'Extras': extras
+        }
+
     def get_chapters(manga, wait=True):
         response = Manhuamix.send_request(f'https://manhuamix.com/manhua/{manga}/ajax/chapters/', 'POST', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')

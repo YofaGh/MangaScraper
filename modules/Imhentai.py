@@ -11,6 +11,29 @@ class Imhentai(Doujin):
         'g': 'gif'
     }
 
+    def get_info(code, wait=True):
+        from contextlib import suppress
+        response = Imhentai.send_request(f'https://imhentai.xxx/gallery/{code}', wait=wait)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        cover, title, alternative, pages = 4 * ['']
+        extras = {}
+        with suppress(Exception): cover = soup.find('div', {'class': 'col-md-4 col left_cover'}).find('img')['data-src']
+        with suppress(Exception): title = soup.find('h1').get_text(strip=True)
+        with suppress(Exception): alternative = soup.find('p', {'class': 'subtitle'}).get_text(strip=True)
+        with suppress(Exception): pages = soup.find(lambda tag: tag.name == 'li' and 'Pages' in tag.text).get_text(strip=True).replace('Pages:', '')
+        tag_box = soup.find('ul', {'class': 'galleries_info'}).find_all('li')
+        for box in tag_box:
+            if not 'Pages' in box.text:
+                with suppress(Exception): 
+                    extras[box.find('span').get_text(strip=True)[:-1]] = [link.contents[0].strip() for link in box.find_all('a')]
+        return {
+            'Cover': cover,
+            'Title': title,
+            'Pages': pages,
+            'Alternative': alternative,
+            'Extras': extras
+        }
+
     def get_title(code, wait=True):
         response = Imhentai.send_request(f'https://imhentai.xxx/gallery/{code}', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')

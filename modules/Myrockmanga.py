@@ -14,6 +14,35 @@ class Myrockmanga(Manga):
         'es': 'Spanish'
     }
 
+    def get_info(manga, wait=True):
+        from contextlib import suppress
+        response = Myrockmanga.send_request(f'https://myrockmanga.com/manga-detail/{manga}', headers=Myrockmanga.headers, wait=wait)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        cover, title, alternative, summary, rating, status, genres = 7 * ['']
+        extras = {}
+        with suppress(Exception): cover = soup.find('div', {'class': 'manga-top-img'}).find('img')['src']
+        with suppress(Exception): title = soup.find('h1', {'class': 'title text-lg-left'}).get_text(strip=True)
+        with suppress(Exception): 
+            alternative = soup.find('table').find(lambda tag: tag.name == 'tr' and not tag.find('th') and tag.find('td')).find('td').get_text(strip=True)
+        with suppress(Exception): summary = soup.find('div', {'class': 'summary'}).find('p').get_text(strip=True)
+        with suppress(Exception): rating = float(soup.find('div', {'class': 'rating'}).find('span').get_text(strip=True).replace('/ 10', ''))/2
+        with suppress(Exception): genres = [a.get_text(strip=True) for a in soup.find('div', {'class': 'genres'}).find_all('a')]
+        for box in soup.find('table').find_all(lambda tag: tag.name == 'tr' and tag.find('th') and tag.find('td')):
+            if 'Status' in box.text:
+                status = box.find('td').get_text(strip=True)
+            else:
+                extras[box.find('th').get_text(strip=True)] = [a.get_text(strip=True) for a in box.find_all('a')]
+        extras['Genres'] = genres
+        return {
+            'Cover': cover,
+            'Title': title,
+            'Alternative': alternative,
+            'Summary': summary,
+            'Rating': rating,
+            'Status': status,
+            'Extras': extras
+        }
+
     def get_chapters(manga, wait=True):
         response = Myrockmanga.send_request(f'https://myrockmanga.com/manga-detail/{manga}', verify=False, wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')

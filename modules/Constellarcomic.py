@@ -6,6 +6,32 @@ class Constellarcomic(Manga):
     logo = 'https://constellarcomic.com/wp-content/uploads/2022/11/Constellar-Logo-Rounded-000.png'
     headers = {'User-Agent': 'Leech/1051 CFNetwork/454.9.4 Darwin/10.3.0 (i386) (MacPro1%2C1)'}
 
+    def get_info(manga, wait=True):
+        from contextlib import suppress
+        response = Constellarcomic.send_request(f'https://constellarcomic.com/manga/{manga}/', headers=Constellarcomic.headers, wait=wait)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        cover, title, alternative, summary, rating, status = 6 * ['']
+        info_box = soup.find('div', {'class': 'main-info'})
+        extras = {}
+        with suppress(Exception): cover = info_box.find('img', {'class': 'attachment- size- wp-post-image'})['src']
+        with suppress(Exception): title = info_box.find('h1', {'class': 'entry-title'}).get_text(strip=True)
+        with suppress(Exception): alternative = info_box.find('div', {'class': 'desktop-titles'}).get_text(strip=True)
+        with suppress(Exception): summary = info_box.find('div', {'class': 'entry-content entry-content-single'}).get_text(strip=True)
+        with suppress(Exception): rating = float(info_box.find('div', {'class': 'numscore'}).get_text(strip=True))/2
+        with suppress(Exception): status = info_box.find('div', {'class': 'status'}).get_text(strip=True)
+        for box in info_box.find('div', {'class': 'tsinfo bixbox'}).find_all('div', {'class': 'imptdt'}):
+            with suppress(Exception): extras[box.contents[0].strip()] = box.find('i').get_text(strip=True) if box.find('i') else box.find('a').get_text(strip=True)
+        with suppress(Exception): extras['Genres'] = [a.get_text(strip=True) for a in info_box.find('div', {'class': 'wd-full'}).find_all('a')]
+        return {
+            'Cover': cover,
+            'Title': title,
+            'Alternative': alternative,
+            'Summary': summary,
+            'Rating': rating,
+            'Status': status,
+            'Extras': extras
+        }
+
     def get_chapters(manga, wait=True):
         response = Constellarcomic.send_request(f'https://constellarcomic.com/manga/{manga}/', headers=Constellarcomic.headers, wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
