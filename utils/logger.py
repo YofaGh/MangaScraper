@@ -1,3 +1,5 @@
+logging = True
+
 COLORS = {
     'white': '\033[00m',
     'green': '\033[92m',
@@ -9,10 +11,13 @@ RESET = '\033[0m'
 CLEAR = '\x1b[2K'
 
 def log_over(text, color='white'):
-    print(f'{COLORS[color]}{text}{RESET}', end='')
+    if logging:
+        print(f'{COLORS[color]}{text}{RESET}', end='')
 
 def log(text, color='white'):
-    print(f'{COLORS[color]}{text}{RESET}')
+    if logging:
+        print(f'{COLORS[color]}{text}{RESET}')
 
 def clean():
-    print(CLEAR, end='')
+    if logging:
+        print(CLEAR, end='')
