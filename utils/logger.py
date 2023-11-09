@@ -1,4 +1,4 @@
-logging = True
+logging = False
 
 COLORS = {
     'white': '\033[00m',

@@ -1,4 +1,7 @@
 import argparse, sys, os
+from utils import logger
+
+logger.logging = True
 
 class SetChapters(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
