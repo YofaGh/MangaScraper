@@ -1,13 +1,12 @@
-import time
 from utils.logger import log_over, log
-from utils.assets import save_dict_to_file
+from utils.assets import save_dict_to_file, sleep
 from utils.exceptions import MissingFunctionException
 
-def search_wrapper(keyword, modules, sleep_time, absolute, limit_page):
+def search_wrapper(keyword, modules, absolute, limit_page):
     results = {}
     for module in modules:
         try:
-            temp_results, page = search(keyword, module, sleep_time, absolute, limit_page)
+            temp_results, page = search(keyword, module, absolute, limit_page)
             log(f'\r{module.domain}: {len(temp_results)} results were found from {page} pages.', 'green' if temp_results else 'yellow')
             if temp_results:
                 results[module.domain] = temp_results
@@ -17,7 +16,7 @@ def search_wrapper(keyword, modules, sleep_time, absolute, limit_page):
     print_output(results)
     log(f'This was a summary of the search.\nYou can see the full results in {keyword}_output.json', 'green')
 
-def search(keyword, module, sleep_time, absolute, limit_page):
+def search(keyword, module, absolute, limit_page):
     results = {}
     if not hasattr(module, 'search_by_keyword'):
         raise MissingFunctionException(module.domain, 'search_by_keyword')
@@ -32,7 +31,7 @@ def search(keyword, module, sleep_time, absolute, limit_page):
             results.update(last)
             page += 1
             if page < limit_page:
-                time.sleep(sleep_time)
+                sleep()
         except Exception as error:
             log(f'\r{module.domain}: Failed to search: {error}', 'red')
             break

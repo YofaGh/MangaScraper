@@ -1,9 +1,8 @@
-import time
 from utils.logger import log_over, log
-from utils.assets import save_dict_to_file
+from utils.assets import save_dict_to_file, sleep
 from utils.exceptions import MissingFunctionException
 
-def crawl(module, sleep_time):
+def crawl(module):
     try:
         if not hasattr(module, 'get_db'):
             raise MissingFunctionException(module.domain, 'get_db')
@@ -18,7 +17,7 @@ def crawl(module, sleep_time):
                     break
                 results.update(last)
                 page += 1
-                time.sleep(sleep_time)
+                sleep()
             except Exception as error:
                 log(f'\r{module.domain}: Failed to crawl: {error}', 'red')
                 break

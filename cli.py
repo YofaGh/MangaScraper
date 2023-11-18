@@ -1,7 +1,4 @@
-import argparse, sys, os
-from utils import logger
-
-logger.logging = True
+import argparse, settings, sys, os
 
 class SetChapters(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
@@ -46,6 +43,11 @@ saucer.add_argument('-url', help='url of the image')
 saucer.add_argument('-image', help='specify a downloaded image path')
 args = parser.parse_args(args=(sys.argv[1:] or ['-h']))
 
+settings.SLEEP_TIME = args.t
+settings.AUTO_MERGE = args.m
+settings.AUTO_PDF_CONVERSION = args.p
+settings.FIT_MERGE = args.fit
+
 if args.task in ['manga', 'doujin', 'search', 'db', 'check']:
     from utils.assets import setModules
     args.s = setModules(args.s)
@@ -62,30 +64,30 @@ match args.task:
     case 'manga':
         if args.file:
             from downloaders.manga_file import download_file
-            download_file(args.file, args.t, args.m, args.p, args.fit)
+            download_file(args.file)
         elif args.single:
             from downloaders.manga_single import download_single
-            download_single(args.n or args.single, args.single, args.s[0], args.t, args.l, args.r, args.c, args.m, args.p, args.fit)
+            download_single(args.n or args.single, args.single, args.s[0], args.l, args.r, args.c)
         else:
             parser.error('please use one of the following arguments: [-single, -file]')
 
     case 'doujin':
         if args.file:
             from downloaders.doujin_file import download_doujins
-            download_doujins(args.file, args.t, args.m, args.p, args.fit)
+            download_doujins(args.file)
         elif args.single:
             from downloaders.doujin_single import download_doujin
-            download_doujin(args.single, args.s[0], args.t, args.m, args.p, args.fit)
+            download_doujin(args.single, args.s[0])
         else:
             parser.error('please use one of the following arguments: [-single, -file]')
 
     case 'merge':
         if args.folder:
             from utils.image_merger import merge_folder
-            merge_folder(args.folder, f'Merged/{args.folder}', args.fit)
+            merge_folder(args.folder, f'Merged/{args.folder}')
         elif args.bulk:
             from utils.image_merger import merge_bulk
-            merge_bulk(args.bulk, f'Merged/{args.bulk}', args.fit)
+            merge_bulk(args.bulk, f'Merged/{args.bulk}')
         else:
             parser.error('please set one of the following arguments: [-folder, -bulk]')
 
@@ -108,11 +110,11 @@ match args.task:
         if not args.n:
             parser.error('you should specify what you want to search using -n')
         from crawlers.search_engine import search_wrapper
-        search_wrapper(args.n, args.s, args.t, args.absolute, args.page_limit)
+        search_wrapper(args.n, args.s, args.absolute, args.page_limit)
 
     case 'db':
         from crawlers.database_crawler import crawl
-        crawl(args.s[0], args.t)
+        crawl(args.s[0])
 
     case 'check':
         from utils.module_checker import check_modules

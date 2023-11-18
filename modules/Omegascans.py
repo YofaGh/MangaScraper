@@ -34,7 +34,7 @@ class Omegascans(Manga):
     def get_chapters(manga, wait=True):
         response = Omegascans.send_request(f'https://omegascans.org/series/{manga}', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
-        links = soup.find('div', {'class': 'chapters-list-wrapper'}).find_all('a')
+        links = soup.find('ul', {'class': 'grid grid-cols-1 lg:grid-cols-3 gap-x-8 gap-y-4'}).find_all('a')
         chapters_urls = [link['href'].split('/')[-1] for link in links[::-1]]
         chapters = [{
             'url': chapter_url,
@@ -46,12 +46,8 @@ class Omegascans(Manga):
         import json
         response = Omegascans.send_request(f'https://omegascans.org/series/{manga}/{chapter["url"]}', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
-        script = soup.find('script', {'id': '__NEXT_DATA__'})
-        id = json.loads(script.text)['props']['pageProps']['data']['id']
-        response = Omegascans.send_request(f'https://api.omegascans.org/series/chapter/{id}', wait=wait)
-        images = []
-        for image in response.json()['content']['images']:
-            images.append(image if 'https://' in image else f'https://api.omegascans.org/{image}')
+        images = soup.find('p', {'class': 'flex flex-col justify-center items-center'})
+        images = [image['src'] for image in images.find_all('img')]
         return images, False
 
     def search_by_keyword(keyword, absolute, wait=True):

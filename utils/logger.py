@@ -1,4 +1,4 @@
-logging = False
+from settings import LOGGING
 
 COLORS = {
     'white': '\033[00m',
@@ -11,13 +11,13 @@ RESET = '\033[0m'
 CLEAR = '\x1b[2K'
 
 def log_over(text, color='white'):
-    if logging:
+    if LOGGING:
         print(f'{COLORS[color]}{text}{RESET}', end='')
 
 def log(text, color='white'):
-    if logging:
+    if LOGGING:
         print(f'{COLORS[color]}{text}{RESET}')
 
-def clean():
-    if logging:
+def clear():
+    if LOGGING:
         print(CLEAR, end='')

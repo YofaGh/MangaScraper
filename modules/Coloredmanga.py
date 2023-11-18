@@ -75,7 +75,7 @@ class Coloredmanga(Manga):
                 tilink = manga.find('div', {'class', 'post-title'})
                 if absolute and keyword.lower() not in manga.find('a')['href']:
                     continue
-                latest_chapter, authors, artists, genres, status, release_date = '', '', '', '', '', ''
+                latest_chapter, thumbnail, authors, artists, genres, status, release_date = '', '', '', '', '', '', ''
                 contents = manga.find_all('div', {'class': 'post-content_item'})
                 for content in contents:
                     with suppress(Exception):
@@ -90,11 +90,12 @@ class Coloredmanga(Manga):
                         if 'Release' in content.text:
                             release_date = content.find('div', {'class': 'summary-content'}).get_text(strip=True)
                 with suppress(Exception): latest_chapter = manga.find('span', {'class': 'font-meta chapter'}).find('a')['href'].split('/')[-2]
+                with suppress(Exception): thumbnail = manga.find('img')['src']
                 results[tilink.get_text(strip=True)] = {
                     'domain': Coloredmanga.domain,
                     'url': tilink.find('a')['href'].replace('https://coloredmanga.com/mangas/','')[:-1],
                     'latest_chapter': latest_chapter,
-                    'thumbnail': manga.find('img')['src'],
+                    'thumbnail': thumbnail,
                     'genres': genres,
                     'authors': authors,
                     'artists': artists,

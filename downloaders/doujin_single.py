@@ -1,13 +1,13 @@
-import textwrap, time, os
+import textwrap, os
 from utils import assets, exceptions, logger
 from requests.exceptions import HTTPError, Timeout
+from settings import AUTO_MERGE, AUTO_PDF_CONVERSION
 
-def download_doujin(code, module, sleep_time, merge, convert_to_pdf, fit_merge):
+def download_doujin(code, module):
     last_truncated = None
     try:
         logger.log_over(f'\r{code}: Getting name of doujin...')
-        pre_code = f'{code}_' if module.is_coded else ''
-        doujin_title = f'{pre_code}{module.get_title(code)}'
+        doujin_title = f'{code}_{module.get_title(code)}' if module.is_coded else module.get_title(code)
         shorten_doujin_title = textwrap.shorten(doujin_title, width=50)
         logger.log_over(f'\r{shorten_doujin_title}: Getting image links...')
         images, save_names = module.get_images(code)
@@ -22,7 +22,7 @@ def download_doujin(code, module, sleep_time, merge, convert_to_pdf, fit_merge):
             else:
                 save_path = f'{fixed_doujin_name}/{i+1:03d}.{images[i].split(".")[-1]}'
             if not os.path.exists(save_path):
-                time.sleep(sleep_time)
+                assets.sleep()
                 saved_path = module.download_image(images[i], save_path, i+1)
                 if not assets.validate_corrupted_image(saved_path):
                     logger.log(f' Warning: Image {i+1} is corrupted. will not be able to merge this chapter.', 'red')
@@ -35,10 +35,10 @@ def download_doujin(code, module, sleep_time, merge, convert_to_pdf, fit_merge):
                     i -= 1
             i += 1
         logger.log(f'\r{shorten_doujin_title}: Finished downloading, {len(images)} images were downloaded.', 'green')
-        if merge:
+        if AUTO_MERGE:
             from utils.image_merger import merge_folder
-            merge_folder(fixed_doujin_name, f'Merged/{fixed_doujin_name}', fit_merge, shorten_doujin_title)
-        if convert_to_pdf:
+            merge_folder(fixed_doujin_name, f'Merged/{fixed_doujin_name}', shorten_doujin_title)
+        if AUTO_PDF_CONVERSION:
             from utils.pdf_converter import convert_folder
             convert_folder(fixed_doujin_name, fixed_doujin_name, fixed_doujin_name, shorten_doujin_title)
         return True

@@ -1,5 +1,5 @@
 *.json
-*/__pycache__
+*__pycache__
 /Merged
 /archived
 sources.txt

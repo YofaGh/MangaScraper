@@ -43,7 +43,7 @@ def create_folder(path):
     os.makedirs(path, exist_ok=True)
 
 def fix_name_for_folder(manga):
-    name = ''.join([ch for ch in manga if ch not in '\/:*?"><|'])
+    name = ''.join([ch for ch in manga if ch not in r'\/:*?"><|'])
     while name[-1] == '.':
         name = name[:-1]
     return name
@@ -55,3 +55,8 @@ def detect_images(path_to_folder):
         if file.endswith(('jpg', 'png', 'jpeg', 'gif', 'webp')):
             images_path.append(f'{path_to_folder}/{file}')
     return images_path
+
+def sleep():
+    import time
+    from settings import SLEEP_TIME
+    time.sleep(SLEEP_TIME)

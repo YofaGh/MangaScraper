@@ -1,8 +1,8 @@
-import time, os
+import os
 from contextlib import suppress
 from utils.logger import log_over, log
 from utils.exceptions import MissingFunctionException
-from utils.assets import validate_corrupted_image, validate_truncated_image, load_dict_from_file
+from utils.assets import validate_corrupted_image, validate_truncated_image, load_dict_from_file, sleep
 
 def check_modules(modules):
     samples = load_dict_from_file('test_samples.json')
@@ -108,7 +108,7 @@ def search_by_keyword_checker(module, keyword):
                 results.update(last)
                 page += 1
                 if page < 2:
-                    time.sleep(0.1)
+                    sleep()
             except Exception as error:
                 break
         if len(results) > 0:
@@ -134,7 +134,7 @@ def get_db_checker(module):
                 results.update(last)
                 page += 1
                 if page < 2:
-                    time.sleep(0.1)
+                    sleep()
             except Exception as error:
                 break
         if len(results) > 0:

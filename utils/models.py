@@ -13,7 +13,7 @@ class Module:
             for i in range(59, 0, -1):
                 time.sleep(1)
                 logger.log_over(f'\rWaiting {i} seconds to attempt a fresh connection. ', 'red')
-            logger.clean()
+            logger.clear()
         import requests
         if verify is False:
             requests.packages.urllib3.disable_warnings(requests.packages.urllib3.exceptions.InsecureRequestWarning)
@@ -28,10 +28,9 @@ class Module:
             except (requests.exceptions.HTTPError, requests.exceptions.Timeout) as error:
                 raise error
             except requests.exceptions.RequestException as error:
-                if wait:
-                    _waiter()
-                else:
+                if not wait:
                     raise error
+                _waiter()
 
     @classmethod
     def download_image(cls, url, image_name, log_num, verify=None, wait=True):

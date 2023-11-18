@@ -1,10 +1,11 @@
-import time, os
+import os
 from utils import assets, exceptions, logger
 from requests.exceptions import HTTPError, Timeout
+from settings import AUTO_MERGE, AUTO_PDF_CONVERSION
 
-def download_single(manga, url, module, sleep_time, last, ranged, chapters, merge, convert_to_pdf, fit_merge):
+def download_single(manga, url, module, last, ranged, chapters):
     chapters_to_download = get_name_of_chapters(manga, url, module, last, ranged, chapters)
-    inconsistencies = download_manga(manga, url, module, sleep_time, chapters_to_download, merge, convert_to_pdf, fit_merge)
+    inconsistencies = download_manga(manga, url, module, chapters_to_download)
     if inconsistencies:
         logger.log(f'There were some inconsistencies with the following chapters: {", ".join(inconsistencies)}', 'red')
 
@@ -40,7 +41,7 @@ def get_name_of_chapters(manga, url, module, last, ranged, c_chapters):
     logger.log(f'\r{manga}: {len(ctd)} chapter{"" if len(ctd) == 1 else "s"} to download.')
     return ctd
 
-def download_manga(manga, url, module, sleep_time, chapters, merge, convert_to_pdf, fit_merge):
+def download_manga(manga, url, module, chapters):
     inconsistencies = []
     last_truncated = None
     fixed_manga = assets.fix_name_for_folder(manga)
@@ -67,7 +68,7 @@ def download_manga(manga, url, module, sleep_time, chapters, merge, convert_to_p
                         logger.log_over(f'\r{manga}: {chapter_name}: Downloading image {i+adder+1}/{len(images)+adder}...')
                     save_path = f'{path}/{i+adder+1:03d}.{images[i].split(".")[-1]}'
                 if not os.path.exists(save_path):
-                    time.sleep(sleep_time)
+                    assets.sleep()
                     saved_path = module.download_image(images[i], save_path, i+adder+1)
                     if not assets.validate_corrupted_image(saved_path):
                         logger.log(f' Warning: Image {i+adder+1} is corrupted. will not be able to merge this chapter', 'red')
@@ -81,10 +82,10 @@ def download_manga(manga, url, module, sleep_time, chapters, merge, convert_to_p
                 i += 1
             logger.log(f'\r{manga}: {chapter_name}: Finished downloading, {len(images)} images were downloaded.', 'green')
             del chapters[0]
-            if merge:
+            if AUTO_MERGE:
                 from utils.image_merger import merge_folder
-                merge_folder(path, f'Merged/{path}', fit_merge, f'{manga}: {chapter_name}')
-            if convert_to_pdf:
+                merge_folder(path, f'Merged/{path}', f'{manga}: {chapter_name}')
+            if AUTO_PDF_CONVERSION:
                 from utils.pdf_converter import convert_folder
                 convert_folder(path, fixed_manga, f'{manga}_{chapter_name}', f'{manga}: {chapter_name}')
         except (Timeout, HTTPError, exceptions.ImageMergerException, exceptions.PDFConverterException) as error:

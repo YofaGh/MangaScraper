@@ -1,9 +1,10 @@
-import shutil
 from PIL import Image
-from utils.logger import log_over, log, clean
+from shutil import copy2
+from utils.logger import log_over, log, clear
 from utils.assets import validate_folder, detect_images, create_folder
+from settings import FIT_MERGE
 
-def merge_folder(path_to_source, path_to_destination, fit_merge, name=None):
+def merge_folder(path_to_source, path_to_destination, name=None):
     name = name if name else path_to_source
     if not validate_folder(path_to_source):
         log(f'\rFailed to Merge {path_to_source} because one image is corrupted or truncated.', 'red')
@@ -14,13 +15,13 @@ def merge_folder(path_to_source, path_to_destination, fit_merge, name=None):
         log(f'\rFailed to Merge {path_to_source} because there was no image in the given folder.', 'red')
         return
     images = [Image.open(image_path) for image_path in images_path]
-    if fit_merge:
+    if FIT_MERGE:
         log_over(f'\r{name}: Merging with resizing enabled, overall quality might get reduced during the proccess...')
         results = merge_fit(images, path_to_destination)
     else:
         log_over(f'\r{name}: Merging without resizing, You might see white spaces around some images...')
         results = merge(images, path_to_destination)
-    clean()
+    clear()
     log(f'\r{name}: Merged {len(images_path)} images into {results}.', 'green')
 
 def merge(images, path_to_destination):
@@ -38,7 +39,7 @@ def merge(images, path_to_destination):
     lists_to_merge.append(temp_list)
     for index, list_to_merge in enumerate(lists_to_merge):
         if len(list_to_merge) == 1:
-            shutil.copy2(list_to_merge[0].filename, f'{path_to_destination}/{index+1:03d}.{list_to_merge[0].filename.split(".")[-1]}')
+            copy2(list_to_merge[0].filename, f'{path_to_destination}/{index+1:03d}.{list_to_merge[0].filename.split(".")[-1]}')
             continue
         widths, heights = zip(*(image.size for image in list_to_merge))
         total_height = sum(heights)
@@ -88,7 +89,7 @@ def merge_fit(images, path_to_destination):
     lists_to_merge.append(temp_list)
     for index, list_to_merge in enumerate(lists_to_merge):
         if len(list_to_merge) == 1:
-            shutil.copy2(list_to_merge[0].filename, f'{path_to_destination}/{index+1:03d}.{list_to_merge[0].filename.split(".")[-1]}')
+            copy2(list_to_merge[0].filename, f'{path_to_destination}/{index+1:03d}.{list_to_merge[0].filename.split(".")[-1]}')
             continue
         min_width = min(list_to_merge, key=lambda image: image.width).width
         total_height = 0
@@ -103,8 +104,8 @@ def merge_fit(images, path_to_destination):
         merged_image.save(f'{path_to_destination}/{index+1:03d}.jpg')
     return len(lists_to_merge)
 
-def merge_bulk(path_to_source, path_to_destination, fit_merge):
+def merge_bulk(path_to_source, path_to_destination):
     import os
     sub_folders = os.listdir(path_to_source)
     for sub_folder in sub_folders:
-        merge_folder(f'{path_to_source}/{sub_folder}', f'{path_to_destination}/{sub_folder}', fit_merge, f'{path_to_source}: {sub_folder}')
+        merge_folder(f'{path_to_source}/{sub_folder}', f'{path_to_destination}/{sub_folder}', f'{path_to_source}: {sub_folder}')
