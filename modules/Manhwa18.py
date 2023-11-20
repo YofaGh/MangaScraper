@@ -68,7 +68,7 @@ class Manhwa18(Manga):
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')
             mangas = soup.find_all('div', {'class': 'thumb-item-flow col-6 col-md-2'})
-            if len(mangas) == 0:
+            if not mangas:
                 yield {}
             results = {}
             for manga in mangas:

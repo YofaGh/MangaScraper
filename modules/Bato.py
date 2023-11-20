@@ -70,7 +70,7 @@ class Bato(Manga):
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')
             mangas = soup.find_all('div', {'class': 'flex border-b border-b-base-200 pb-5'})
-            if len(mangas) == 0:
+            if not mangas:
                 yield {}
             results = {}
             for index, manga in enumerate(mangas):

@@ -61,7 +61,7 @@ class NineHentai(Doujin):
         while True:
             response = NineHentai.send_request('https://9hentai.to/api/getBook', method='POST', json=json, wait=wait).json()
             doujins = response['results']
-            if len(doujins) == 0:
+            if not doujins:
                 yield {}
             results = {}
             for doujin in doujins:

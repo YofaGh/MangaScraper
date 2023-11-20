@@ -161,7 +161,7 @@ class Toonily_Me(Manga):
             response = Toonily_Me.send_request(template.replace('P_P_P_P', str(page)), wait=wait)
             soup = BeautifulSoup(response.text, 'html.parser')
             mangas = soup.find_all('div', {'class': 'book-item'})
-            if len(mangas) == 0:
+            if not mangas:
                 yield {}
             results = {}
             for manga in mangas:

@@ -60,7 +60,7 @@ class Imhentai(Doujin):
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')
             doujins = soup.find_all('div', {'class': 'thumb'})
-            if len(doujins) == 0:
+            if not doujins:
                 yield {}
             results = {}
             for doujin in doujins:

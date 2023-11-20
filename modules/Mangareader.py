@@ -69,7 +69,7 @@ class Mangareader(Manga):
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')
             mangas = soup.find('div', {'id': 'content'}).find('ul').find_all('li')
-            if len(mangas) == 0:
+            if not mangas:
                 yield {}
             results = {}
             for manga in mangas:

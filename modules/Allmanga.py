@@ -109,7 +109,7 @@ class Allmanga(Manga):
         while True:
             response = Allmanga.send_request(query.replace('P_P_P_P', str(page)).replace('K_K_K_K', keyword), headers=Allmanga.search_headers, wait=wait)
             mangas = response.json()['data']['mangas']['edges']
-            if len(mangas) == 0:
+            if not mangas:
                 yield {}
             results = {}
             for manga in mangas:
@@ -153,7 +153,7 @@ class Allmanga(Manga):
         while True:
             response = Allmanga.send_request(query.replace('P_P_P_P', str(page)), headers=Allmanga.get_db_headers, wait=wait)
             mangas = response.json()['data']['mangas']['edges']
-            if len(mangas) == 0:
+            if not mangas:
                 yield {}
             results = {}
             for manga in mangas:

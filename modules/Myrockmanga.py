@@ -109,7 +109,7 @@ class Myrockmanga(Manga):
             response = Myrockmanga.send_request(f'https://myrockmanga.com/Manga/Newest', method='POST', headers=Myrockmanga.get_db_headers, data=data.replace('P_P_P_P', str(page)), verify=False, wait=wait)
             soup = BeautifulSoup(response.text, 'html.parser')
             mangas = soup.find_all('div', {'class': 'col-xs-12 picture-card mdl-card shadow-z-1'})
-            if len(mangas) == 0:
+            if not mangas:
                 yield {}
             results = {}
             for manga in mangas:

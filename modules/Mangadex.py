@@ -39,7 +39,7 @@ class Mangadex(Manga):
         }
         while True:
             response = Mangadex.send_request(f'https://api.mangadex.org/manga/{manga}/feed', params=params, wait=wait).json()
-            if len(response['data']) == 0:
+            if not response['data']:
                 break
             chapters.extend([{
                 'url': chapter['id'],
@@ -65,7 +65,7 @@ class Mangadex(Manga):
             except HTTPError:
                 yield {}
             mangas = response['data']
-            if len(mangas) == 0:
+            if not mangas:
                 yield {}
             results = {}
             for manga in mangas:

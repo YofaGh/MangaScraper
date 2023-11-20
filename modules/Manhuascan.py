@@ -67,7 +67,7 @@ class Manhuascan(Manga):
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')
             mangas = soup.find_all('div', {'class': 'bsx'})
-            if len(mangas) == 0:
+            if not mangas:
                 yield {}
             results = {}
             for manga in mangas:

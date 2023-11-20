@@ -62,7 +62,7 @@ class Constellarcomic(Manga):
             response = Constellarcomic.send_request(f'https://constellarcomic.com/page/{page}/?s={keyword}', headers=Constellarcomic.headers, wait=wait)
             soup = BeautifulSoup(response.text, 'html.parser')
             mangas = soup.find_all('div', {'class': 'bs swiper-slide'})
-            if len(mangas) == 0 or response.url == f'https://constellarcomic.com/?s={keyword}':
+            if not mangas or response.url == f'https://constellarcomic.com/?s={keyword}':
                 yield {}
             results = {}
             for manga in mangas:

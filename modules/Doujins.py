@@ -63,7 +63,7 @@ class Doujins(Doujin):
             except:
                 divs = soup.select('#content > div > div:nth-child(4)')[0]
             doujins = divs.find_all('div', {'class': 'col-6 col-sm-4 col-md-3 col-lg-2 px-1'})
-            if len(doujins) == 0:
+            if not doujins:
                 yield {}
             results = {}
             for doujin in doujins:

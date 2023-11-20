@@ -66,7 +66,7 @@ class Manga18(Manga):
             response = Manga18.send_request(f'https://manga18.club/list-manga/{page}?search={keyword}', headers=Manga18.headers, wait=wait)
             soup = BeautifulSoup(response.text, 'html.parser')
             mangas = soup.find_all('div', {'class': 'col-md-3 col-sm-4 col-xs-6'})
-            if len(mangas) == 0:
+            if not mangas:
                 yield {}
             results = {}
             for manga in mangas:

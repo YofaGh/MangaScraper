@@ -65,7 +65,7 @@ class Simply_hentai(Doujin):
         while True:
             response = Simply_hentai.send_request(f'https://api.simply-hentai.com/v3/search/complex?filter[class_name][0]=Manga&query={keyword}&page={page}', headers=Simply_hentai.headers, wait=wait)
             datas = response.json()['data']
-            if len(datas) == 0:
+            if not datas:
                 yield {}
             results = {}
             for data in datas:

@@ -72,7 +72,7 @@ class WMangairo(Manga):
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')
             mangas = soup.find_all('div', {'class': 'story-item'})
-            if len(mangas) == 0:
+            if not mangas:
                 yield {}
             results = {}
             if mangas == prev_page:

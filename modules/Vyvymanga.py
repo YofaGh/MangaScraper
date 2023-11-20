@@ -61,7 +61,7 @@ class Vyvymanga(Manga):
             response = Vyvymanga.send_request(f'https://vyvymanga.net/search?q={keyword}&page={page}', wait=wait)
             soup = BeautifulSoup(response.text, 'html.parser')
             mangas = soup.find_all('div', {'class': 'comic-item'})
-            if len(mangas) == 0:
+            if not mangas:
                 yield {}
             results = {}
             for manga in mangas:

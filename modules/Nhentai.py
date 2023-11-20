@@ -47,7 +47,7 @@ class Nhentai_Com(Doujin):
         while True:
             response = Nhentai_Com.send_request(f'https://nhentai.com/api/comics?page={page}&q={keyword}{tail}', headers=Nhentai_Com.headers, wait=wait).json()
             doujins = response['data']
-            if len(doujins) == 0:
+            if not doujins:
                 yield {}
             results = {}
             for doujin in doujins:
@@ -133,7 +133,7 @@ class Nhentai_Xxx(Doujin):
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')
             doujins = soup.find_all('div', {'class': 'gallery'})
-            if len(doujins) == 0:
+            if not doujins:
                 yield {}
             results = {}
             for doujin in doujins:
