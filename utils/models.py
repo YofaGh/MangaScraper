@@ -8,10 +8,10 @@ class Module:
 
     def send_request(url, method='GET', headers=None, json=None, data=None, params=None, verify=None, wait=True):
         def _waiter():
-            import time
+            from utils.assets import sleep
             logger.log_over(' Connection lost.\n\rWaiting 1 minute to attempt a fresh connection.', 'red')
             for i in range(59, 0, -1):
-                time.sleep(1)
+                sleep(1)
                 logger.log_over(f'\rWaiting {i} seconds to attempt a fresh connection. ', 'red')
             logger.clear()
         import requests

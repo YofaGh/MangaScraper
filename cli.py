@@ -30,7 +30,7 @@ parser.add_argument('-n', metavar='str', help='specify a name')
 parser.add_argument('-m', action='store_true', help='if set, merges images vertically')
 parser.add_argument('-fit', action='store_true', help='if set, resizes the images to the same width')
 parser.add_argument('-p', action='store_true', help='if set, converts images to a pdf file')
-parser.add_argument('-t', default=0.1, type=float, help='set sleep time between requests')
+parser.add_argument('-t', type=float, help='set sleep time between requests')
 chapters = parser.add_argument_group('specify chapters').add_mutually_exclusive_group()
 chapters.add_argument('-c', action=SetChapters, nargs='+', type=float, help='specify chapters')
 chapters.add_argument('-l', action=SetChapters, type=float, help='chapters after the given chapter')
@@ -43,10 +43,10 @@ saucer.add_argument('-url', help='url of the image')
 saucer.add_argument('-image', help='specify a downloaded image path')
 args = parser.parse_args(args=(sys.argv[1:] or ['-h']))
 
-settings.SLEEP_TIME = args.t
-settings.AUTO_MERGE = args.m
-settings.AUTO_PDF_CONVERSION = args.p
-settings.FIT_MERGE = args.fit
+settings.SLEEP_TIME = args.t or settings.SLEEP_TIME
+settings.AUTO_MERGE = args.m or settings.AUTO_MERGE
+settings.AUTO_PDF_CONVERSION = args.p or settings.AUTO_PDF_CONVERSION
+settings.FIT_MERGE = args.fit or settings.FIT_MERGE
 
 if args.task in ['manga', 'doujin', 'search', 'db', 'check']:
     from utils.assets import setModules

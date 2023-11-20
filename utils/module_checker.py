@@ -92,26 +92,29 @@ def download_checker(module, url, name):
     except:
         log(f'\r{module.domain}: Downloading image was a failure', 'red')
 
+def se_ca(func):
+    page = 1
+    results = {}
+    while page <= 2:
+        try:
+            last = next(func)
+            if not last:
+                break
+            results.update(last)
+            page += 1
+            if page < 2:
+                sleep()
+        except Exception:
+            break
+    return results
+
 def search_by_keyword_checker(module, keyword):
     log_over(f'\r{module.domain}: Checking search function...')
     try:
         if not hasattr(module, 'search_by_keyword'):
             raise MissingFunctionException(module.domain, 'search_by_keyword')
-        search = module.search_by_keyword(keyword, False)
-        page = 1
-        results = {}
-        while page <= 2:
-            try:
-                last = next(search)
-                if len(last) == 0:
-                    break
-                results.update(last)
-                page += 1
-                if page < 2:
-                    sleep()
-            except Exception as error:
-                break
-        if len(results) > 0:
+        results = se_ca(module.search_by_keyword(keyword, False))
+        if results:
             log(f'\r{module.domain}: Searched in module successfully', 'green')
         else:
             raise Exception('Empty results')
@@ -123,21 +126,8 @@ def get_db_checker(module):
     try:
         if not hasattr(module, 'get_db'):
             raise MissingFunctionException(module.domain, 'get_db')
-        results = {}
-        crawler = module.get_db()
-        page = 1
-        while page <= 2:
-            try:
-                last = next(crawler)
-                if len(last) == 0:
-                    break
-                results.update(last)
-                page += 1
-                if page < 2:
-                    sleep()
-            except Exception as error:
-                break
-        if len(results) > 0:
+        results = se_ca(module.get_db())
+        if results:
             log(f'\r{module.domain}: Crawled database successfully', 'green')
         else:
             raise Exception('Empty results')

@@ -37,7 +37,7 @@ def download_mangas(json_file):
     valid_mangas = [manga for (manga, detm) in mangas.items() if (detm['include'] and detm['chapters'])]
     for manga in valid_mangas:
         try:
-            while len(mangas[manga]['chapters']) > 0:
+            while mangas[manga]['chapters']:
                 chapter = mangas[manga]['chapters'][0]
                 module = get_module(mangas[manga]['domain'])
                 ics = download_manga(manga, mangas[manga]['url'], module, [chapter])

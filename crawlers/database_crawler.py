@@ -21,7 +21,7 @@ def crawl(module):
             except Exception as error:
                 log(f'\r{module.domain}: Failed to crawl: {error}', 'red')
                 break
-        log(f'\r{module.domain}: {len(results)} results were crawled from {page-1} pages.', 'green' if len(results) > 0 else 'yellow')
+        log(f'\r{module.domain}: {len(results)} results were crawled from {page-1} pages.', 'green' if results else 'yellow')
         save_dict_to_file(f'{module.domain}_database.json', results)
         log(f'\r{module.domain}: Results were saved to {module.domain}_database.json', 'green')
     except MissingFunctionException as error:

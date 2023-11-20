@@ -46,7 +46,7 @@ def download_manga(manga, url, module, chapters):
     last_truncated = None
     fixed_manga = assets.fix_name_for_folder(manga)
     assets.create_folder(fixed_manga)
-    while len(chapters) > 0:
+    while chapters:
         try:
             chapter_name = chapters[0]['name']
             logger.log_over(f'\r{manga}: {chapter_name}: Getting image links...')

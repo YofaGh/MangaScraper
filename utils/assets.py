@@ -1,3 +1,5 @@
+from settings import SLEEP_TIME
+
 def setModules(domains):
     if domains:
         from utils.modules_contributer import get_module
@@ -56,7 +58,6 @@ def detect_images(path_to_folder):
             images_path.append(f'{path_to_folder}/{file}')
     return images_path
 
-def sleep():
+def sleep(secs=SLEEP_TIME):
     import time
-    from settings import SLEEP_TIME
-    time.sleep(SLEEP_TIME)
+    time.sleep(secs)
