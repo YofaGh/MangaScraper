@@ -9,9 +9,6 @@ def get_module(key):
         case 'bibimanga.com':
             from modules.Bibimanga import Bibimanga
             return Bibimanga
-        case 'blogmanga.net':
-            from modules.Blogmanga import Blogmanga
-            return Blogmanga
         case 'coloredmanga.com':
             from modules.Coloredmanga import Coloredmanga
             return Coloredmanga
@@ -149,7 +146,6 @@ def get_all_modules():
     from modules.Allmanga import Allmanga
     from modules.Bato import Bato
     from modules.Bibimanga import Bibimanga
-    from modules.Blogmanga import Blogmanga
     from modules.Coloredmanga import Coloredmanga
     from modules.Comics8Muses import Comics8Muses
     from modules.Comick import Comick
@@ -197,7 +193,6 @@ def get_all_modules():
         Allmanga,
         Bato,
         Bibimanga,
-        Blogmanga,
         Coloredmanga,
         Comick,
         Comics8Muses,
@@ -248,7 +243,6 @@ def get_all_domains():
         'allmanga.to',
         'bato.to',
         'bibimanga.com',
-        'blogmanga.net',
         'coloredmanga.com',
         'comick.com',
         'comics.8muses.com',
