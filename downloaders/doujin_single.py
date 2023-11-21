@@ -20,7 +20,7 @@ def download_doujin(code, module):
             if save_names:
                 save_path = f'{fixed_doujin_name}/{save_names[i]}'
             else:
-                save_path = f'{fixed_doujin_name}/{i+1:03d}.{images[i].split(".")[-1]}'
+                save_path = f'{fixed_doujin_name}/{i+1:03d}.{images[i].split('.')[-1]}'
             if not os.path.exists(save_path):
                 assets.sleep()
                 saved_path = module.download_image(images[i], save_path, i+1)

@@ -57,7 +57,7 @@ class Mangaforfree(Manga):
         return chapters
 
     def get_images(manga, chapter, wait=True):
-        response = Mangaforfree.send_request(f'https://mangaforfree.net/manga/{manga}/{chapter["url"]}/', wait=wait)
+        response = Mangaforfree.send_request(f'https://mangaforfree.net/manga/{manga}/{chapter['url']}/', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'class': 'reading-content'}).find_all('img')
         images = [image['src'].strip() for image in images]
@@ -128,4 +128,4 @@ class Mangaforfree(Manga):
         try:
             return f'Chapter {int(new_name):03d}{tail}'
         except:
-            return f'Chapter {new_name.split(".", 1)[0].zfill(3)}.{new_name.split(".", 1)[1]}{tail}'
+            return f'Chapter {new_name.split('.', 1)[0].zfill(3)}.{new_name.split('.', 1)[1]}{tail}'

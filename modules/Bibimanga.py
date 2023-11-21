@@ -51,7 +51,7 @@ class Bibimanga(Manga):
         return chapters
 
     def get_images(manga, chapter, wait=True):
-        response = Bibimanga.send_request(f'https://bibimanga.com/manga/{manga}/{chapter["url"]}', wait=wait)
+        response = Bibimanga.send_request(f'https://bibimanga.com/manga/{manga}/{chapter['url']}', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'class':'reading-content'}).find_all('img')
         images = [image['data-src'].strip() for image in images]

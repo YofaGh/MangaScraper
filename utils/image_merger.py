@@ -39,7 +39,7 @@ def merge(images, path_to_destination):
     lists_to_merge.append(temp_list)
     for index, list_to_merge in enumerate(lists_to_merge):
         if len(list_to_merge) == 1:
-            copy2(list_to_merge[0].filename, f'{path_to_destination}/{index+1:03d}.{list_to_merge[0].filename.split(".")[-1]}')
+            copy2(list_to_merge[0].filename, f'{path_to_destination}/{index+1:03d}.{list_to_merge[0].filename.split('.')[-1]}')
             continue
         widths, heights = zip(*(image.size for image in list_to_merge))
         total_height = sum(heights)
@@ -89,7 +89,7 @@ def merge_fit(images, path_to_destination):
     lists_to_merge.append(temp_list)
     for index, list_to_merge in enumerate(lists_to_merge):
         if len(list_to_merge) == 1:
-            copy2(list_to_merge[0].filename, f'{path_to_destination}/{index+1:03d}.{list_to_merge[0].filename.split(".")[-1]}')
+            copy2(list_to_merge[0].filename, f'{path_to_destination}/{index+1:03d}.{list_to_merge[0].filename.split('.')[-1]}')
             continue
         min_width = min(list_to_merge, key=lambda image: image.width).width
         total_height = 0

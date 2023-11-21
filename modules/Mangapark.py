@@ -52,7 +52,7 @@ class Mangapark(Manga):
 
     def get_images(manga, chapter, wait=True):
         import json
-        response = Mangapark.send_request(f'https://mangapark.to/title/{manga}/{chapter["url"]}', wait=wait)
+        response = Mangapark.send_request(f'https://mangapark.to/title/{manga}/{chapter['url']}', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         script = soup.find('script', {'id': '__NEXT_DATA__'})
         data = json.loads(script.text)
@@ -60,7 +60,7 @@ class Mangapark(Manga):
         images = [f'{url}?{tail}' for url, tail in zip(images_raw['httpLis'], images_raw['wordLis'])]
         save_names = []
         for i in range(len(images)):
-            save_names.append(f'{i+1:03d}.{images[i].split(".")[-1].split("?")[0]}')
+            save_names.append(f'{i+1:03d}.{images[i].split('.')[-1].split('?')[0]}')
         return images, save_names
 
     def search_by_keyword(keyword, absolute, wait=True):
@@ -133,4 +133,4 @@ class Mangapark(Manga):
         try:
             return f'Chapter {int(new_name):03d}'
         except:
-            return f'Chapter {new_name.split(".", 1)[0].zfill(3)}.{new_name.split(".", 1)[1]}'
+            return f'Chapter {new_name.split('.', 1)[0].zfill(3)}.{new_name.split('.', 1)[1]}'

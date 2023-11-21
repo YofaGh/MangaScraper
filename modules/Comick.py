@@ -20,7 +20,7 @@ class Comick(Manga):
         extras['Publishers'] = [ti['mu_publishers']['title'] for ti in data['comic']['mu_comics']['mu_comic_publishers']]
         extras['Categories'] = [ti['mu_categories']['title'] for ti in data['comic']['mu_comics']['mu_comic_categories']]
         return {
-            'Cover': f'https://meo3.comick.pictures/{data["comic"]["md_covers"][0]["b2key"]}',
+            'Cover': f'https://meo3.comick.pictures/{data['comic']['md_covers'][0]['b2key']}',
             'Title': data['comic']['title'],
             'Alternative': ', '.join([ti['title'] for ti in data['comic']['md_titles']]),
             'Summary': data['comic']['desc'],
@@ -40,7 +40,7 @@ class Comick(Manga):
             response = Comick.send_request(f'https://api.comick.app/comic/{hid}/chapters?lang=en&chap-order=1&page={page}', headers=Comick.headers, wait=wait).json()
             if not response['chapters']:
                 break
-            chapters_urls.extend([f'{chapter["hid"]}-chapter-{chapter["chap"]}-en' for chapter in response['chapters'] if chapter['chap']])
+            chapters_urls.extend([f'{chapter['hid']}-chapter-{chapter['chap']}-en' for chapter in response['chapters'] if chapter['chap']])
             page += 1
         chapters = [{
             'url': chapter_url,
@@ -49,14 +49,14 @@ class Comick(Manga):
         return chapters
 
     def get_images(manga, chapter, wait=True):
-        response = Comick.send_request(f'https://comick.app/comic/{manga}/{chapter["url"]}', headers=Comick.headers, wait=wait)
+        response = Comick.send_request(f'https://comick.app/comic/{manga}/{chapter['url']}', headers=Comick.headers, wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         script = soup.find('script', {'id': '__NEXT_DATA__'})
         images = json.loads(script.get_text(strip=True))['props']['pageProps']['chapter']['md_images']
-        images = [f'https://meo3.comick.pictures/{image["b2key"]}' for image in images]
+        images = [f'https://meo3.comick.pictures/{image['b2key']}' for image in images]
         save_names = []
         for i in range(len(images)):
-            save_names.append(f'{i+1:03d}.{images[i].split(".")[-1]}')
+            save_names.append(f'{i+1:03d}.{images[i].split('.')[-1]}')
         return images, save_names
 
     def search_by_keyword(keyword, absolute, wait=True):
@@ -80,7 +80,7 @@ class Comick(Manga):
                     'domain': Comick.domain,
                     'url': manga['slug'],
                     'latest_chapter': manga['last_chapter'],
-                    'thumbnail': f'https://meo.comick.pictures/{manga["md_covers"][0]["b2key"]}' if manga['md_covers'] else '',
+                    'thumbnail': f'https://meo.comick.pictures/{manga['md_covers'][0]['b2key']}' if manga['md_covers'] else '',
                     'genres': ', '.join([genres[genre_id] for genre_id in manga['genres']]),
                     'page': page
                 }
@@ -108,4 +108,4 @@ class Comick(Manga):
         try:
             return f'Chapter {int(new_name):03d}'
         except:
-            return f'Chapter {new_name.split(".", 1)[0].zfill(3)}.{new_name.split(".", 1)[1]}'
+            return f'Chapter {new_name.split('.', 1)[0].zfill(3)}.{new_name.split('.', 1)[1]}'

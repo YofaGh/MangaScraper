@@ -5,7 +5,7 @@ class Manhuamanhwa(Manga):
     domain = 'manhuamanhwa.com'
     headers = {
         'User-Agent': 'Leech/1051 CFNetwork/454.9.4 Darwin/10.3.0 (i386) (MacPro1%2C1)',
-        "Referer": "https://manhuamanhwa.com/"
+        'Referer': 'https://manhuamanhwa.com/'
     }
     download_images_headers = headers
 
@@ -56,7 +56,7 @@ class Manhuamanhwa(Manga):
         return chapters
 
     def get_images(manga, chapter, wait=True):
-        response = Manhuamanhwa.send_request(f'https://manhuamanhwa.com/manga/{manga}/{chapter["url"]}/', headers=Manhuamanhwa.headers, wait=wait)
+        response = Manhuamanhwa.send_request(f'https://manhuamanhwa.com/manga/{manga}/{chapter['url']}/', headers=Manhuamanhwa.headers, wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'class': 'reading-content'}).find_all('img')
         images = [image['data-src'] for image in images]

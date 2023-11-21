@@ -52,7 +52,7 @@ class Manhwa18(Manga):
         return chapters
 
     def get_images(manga, chapter, wait=True):
-        response = Manhwa18.send_request(f'https://manhwa18.com/manga/{manga}/{chapter["url"]}', wait=wait)
+        response = Manhwa18.send_request(f'https://manhwa18.com/manga/{manga}/{chapter['url']}', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'id':'chapter-content'}).find_all('img')
         images = [image['data-src'] for image in images]
@@ -106,4 +106,4 @@ class Manhwa18(Manga):
         try:
             return f'Chapter {int(new_name):03d}'
         except:
-            return f'Chapter {new_name.split(".", 1)[0].zfill(3)}.{new_name.split(".", 1)[1]}'
+            return f'Chapter {new_name.split('.', 1)[0].zfill(3)}.{new_name.split('.', 1)[1]}'

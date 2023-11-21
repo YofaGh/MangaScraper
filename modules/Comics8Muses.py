@@ -9,7 +9,7 @@ class Comics8Muses(Manga):
         response = Comics8Muses.send_request(f'https://comics.8muses.com/comics/album/{manga}/', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         return {
-            'Cover': f'https://comics.8muses.com{soup.find("div", {"class": "gallery"}).find("img")["data-src"]}',
+            'Cover': f'https://comics.8muses.com{soup.find('div', {'class': 'gallery'}).find('img')['data-src']}',
             'Title': soup.find('div', {'class': 'top-menu-breadcrumb'}).find_all('li')[-1].find('a').get_text(strip=True),
         }
 
@@ -35,14 +35,14 @@ class Comics8Muses(Manga):
         return chapters
 
     def get_images(manga, chapter, wait=True):
-        response = Comics8Muses.send_request(f'https://comics.8muses.com/comics/album/{manga}/{chapter["url"]}', wait=wait)
+        response = Comics8Muses.send_request(f'https://comics.8muses.com/comics/album/{manga}/{chapter['url']}', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         links = soup.find_all('a', {'class': 'c-tile t-hover'})
         images = [link.find('img').get('data-src') for link in links]
-        images = [f'https://comics.8muses.com/image/fm/{image.split("/")[-1]}' for image in images]
+        images = [f'https://comics.8muses.com/image/fm/{image.split('/')[-1]}' for image in images]
         save_names = []
         for i in range(len(images)):
-            save_names.append(f'{i+1:03d}.{images[i].split(".")[-1]}')
+            save_names.append(f'{i+1:03d}.{images[i].split('.')[-1]}')
         return images, save_names
 
     def search_by_keyword(keyword, absolute, wait=True):
@@ -71,7 +71,7 @@ class Comics8Muses(Manga):
                     results[comic.get_text(strip=True)] = {
                         'domain': Comics8Muses.domain,
                         'url': url,
-                        'thumbnail': f'https://comics.8muses.com{comic.find("img")["data-src"]}',
+                        'thumbnail': f'https://comics.8muses.com{comic.find('img')['data-src']}',
                         'page': page
                     }
             yield results

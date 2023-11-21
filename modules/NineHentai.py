@@ -35,7 +35,7 @@ class NineHentai(Doujin):
 
     def get_images(code, wait=True):
         response = NineHentai.send_request('https://9hentai.to/api/getBookByID', method='POST', json={'id':26487}, wait=wait).json()
-        images = [f'{response["results"]["image_server"]}{code}/{i+1}.jpg' for i in range(response['results']['total_page'])]
+        images = [f'{response['results']['image_server']}{code}/{i+1}.jpg' for i in range(response['results']['total_page'])]
         return images, False
 
     def search_by_keyword(keyword, absolute, wait=True):
@@ -70,7 +70,7 @@ class NineHentai(Doujin):
                 results[doujin['title']] = {
                     'domain': NineHentai.domain,
                     'code': doujin['id'],
-                    'thumbnail': f'{doujin["image_server"]}{doujin["id"]}/cover-small.jpg',
+                    'thumbnail': f'{doujin['image_server']}{doujin['id']}/cover-small.jpg',
                     'tags': ', '.join([tag['name'] for tag in doujin['tags']]),
                     'page': json['search']['page'] + 1
                 }

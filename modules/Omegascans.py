@@ -43,8 +43,7 @@ class Omegascans(Manga):
         return chapters
 
     def get_images(manga, chapter, wait=True):
-        import json
-        response = Omegascans.send_request(f'https://omegascans.org/series/{manga}/{chapter["url"]}', wait=wait)
+        response = Omegascans.send_request(f'https://omegascans.org/series/{manga}/{chapter['url']}', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('p', {'class': 'flex flex-col justify-center items-center'})
         images = [image['src'] for image in images.find_all('img')]

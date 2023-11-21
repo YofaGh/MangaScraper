@@ -50,7 +50,7 @@ class Manhuascan(Manga):
         return chapters
 
     def get_images(manga, chapter, wait=True):
-        response = Manhuascan.send_request(f'https://manhuascan.us/manga/{manga}/{chapter["url"]}', wait=wait)
+        response = Manhuascan.send_request(f'https://manhuascan.us/manga/{manga}/{chapter['url']}', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'id': 'readerarea'}).find_all('img')
         images = [image['src'] for image in images]

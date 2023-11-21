@@ -11,36 +11,27 @@ def check_modules(modules):
             check_manga(module, samples[module.domain])
         elif module.type == 'Doujin':
             check_doujin(module, samples[module.domain])
+        search_by_keyword_checker(module, samples[module.domain].get('keyword', 'a'))
+        get_db_checker(module)
 
 def check_manga(module, sample):
-    chapters = chapter_checker(module, sample['manga'])
+    chapters, images = chapter_checker(module, sample['manga']), []
     if chapters:
         images, save_names = manga_images_checker(module, sample['manga'], chapters[0])
     else:
-        images = []
-        log(f'\r{module.domain}: {sample["manga"]}: Skipped images_checker due to chapter_checker failure', 'red')
+        log(f'\r{module.domain}: {sample['manga']}: Skipped images_checker due to chapter_checker failure', 'red')
     if images:
-        if save_names:
-            download_checker(module, images[0], save_names[0])
-        else:
-            download_checker(module, images[0], f'{module.domain}_test.{images[0].split(".")[-1]}')
+        download_checker(module, images[0], save_names[0] if save_names else f'{module.domain}_test.{images[0].split('.')[-1]}')
     else:
-        log(f'\r{module.domain}: {sample["manga"]}: Skipped download_checker due to images_checker failure', 'red')
-    search_by_keyword_checker(module, sample.get('keyword', 'a'))
-    get_db_checker(module)
+        log(f'\r{module.domain}: {sample['manga']}: Skipped download_checker due to images_checker failure', 'red')
 
 def check_doujin(module, sample):
     title_checker(module, sample['doujin'])
     images, save_names = doujin_images_checker(module, sample['doujin'])
     if images:
-        if save_names:
-            download_checker(module, images[0], save_names[0])
-        else:
-            download_checker(module, images[0], f'{module.domain}_test.{images[0].split(".")[-1]}')
+        download_checker(module, images[0], save_names[0] if save_names else f'{module.domain}_test.{images[0].split('.')[-1]}')
     else:
-        log(f'\r{module.domain}: {sample["doujin"]}: Skipped download_checker due to images_checker failure', 'red')
-    search_by_keyword_checker(module, sample.get('keyword', 'a'))
-    get_db_checker(module)
+        log(f'\r{module.domain}: {sample['doujin']}: Skipped download_checker due to images_checker failure', 'red')
 
 def chapter_checker(module, manga):
     chapters = []
@@ -62,12 +53,12 @@ def title_checker(module, code):
 
 def manga_images_checker(module, manga, chapter):
     images, save_names = [], []
-    log_over(f'\r{module.domain}: {manga}: {chapter["name"]}: Getting images...')
+    log_over(f'\r{module.domain}: {manga}: {chapter['name']}: Getting images...')
     with suppress(Exception): images, save_names = module.get_images(manga, chapter)
     if images:
-        log(f'\r{module.domain}: {manga}: {chapter["name"]}: Recieved images links successfully', 'green')
+        log(f'\r{module.domain}: {manga}: {chapter['name']}: Recieved images links successfully', 'green')
     else:
-        log(f'\r{module.domain}: {manga}: {chapter["name"]}: Recieving images links was a failure', 'red')
+        log(f'\r{module.domain}: {manga}: {chapter['name']}: Recieving images links was a failure', 'red')
     return images, save_names
 
 def doujin_images_checker(module, code):
@@ -92,7 +83,7 @@ def download_checker(module, url, name):
     except:
         log(f'\r{module.domain}: Downloading image was a failure', 'red')
 
-def se_ca(func):
+def se_db(func):
     page = 1
     results = {}
     while page <= 2:
@@ -113,7 +104,7 @@ def search_by_keyword_checker(module, keyword):
     try:
         if not hasattr(module, 'search_by_keyword'):
             raise MissingFunctionException(module.domain, 'search_by_keyword')
-        results = se_ca(module.search_by_keyword(keyword, False))
+        results = se_db(module.search_by_keyword(keyword, False))
         if results:
             log(f'\r{module.domain}: Searched in module successfully', 'green')
         else:
@@ -126,7 +117,7 @@ def get_db_checker(module):
     try:
         if not hasattr(module, 'get_db'):
             raise MissingFunctionException(module.domain, 'get_db')
-        results = se_ca(module.get_db())
+        results = se_db(module.get_db())
         if results:
             log(f'\r{module.domain}: Crawled database successfully', 'green')
         else:

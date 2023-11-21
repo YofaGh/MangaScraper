@@ -7,7 +7,7 @@ def download_file(json_file):
     get_name_of_chapters(json_file)
     inconsistencies = download_mangas(json_file)
     if inconsistencies:
-        log(f'There were some inconsistencies with the following chapters: {", ".join(inconsistencies)}', 'red')
+        log(f'There were some inconsistencies with the following chapters: {', '.join(inconsistencies)}', 'red')
 
 def get_name_of_chapters(json_file):
     mangas = load_dict_from_file(json_file)
@@ -27,7 +27,7 @@ def get_name_of_chapters(json_file):
                         manga['chapters'].append(chapter)
         else:
             manga['chapters'] += chapters
-        log(f'\r{valid_manga}: {len(manga["chapters"])} chapter{"" if len(manga["chapters"]) == 1 else "s"} to download.')
+        log(f'\r{valid_manga}: {len(manga['chapters'])} chapter{'' if len(manga['chapters']) == 1 else 's'} to download.')
     save_dict_to_file(json_file, mangas)
 
 def download_mangas(json_file):
@@ -42,10 +42,7 @@ def download_mangas(json_file):
                 module = get_module(mangas[manga]['domain'])
                 ics = download_manga(manga, mangas[manga]['url'], module, [chapter])
                 inconsistencies += ics
-                mangas[manga]['last_downloaded_chapter'] = {
-                    'name': chapter['name'],
-                    'url': chapter['url'],
-                }
+                mangas[manga]['last_downloaded_chapter'] = chapter
                 del mangas[manga]['chapters'][0]
                 save_dict_to_file(json_file, mangas)
         except MissingModuleException as error:

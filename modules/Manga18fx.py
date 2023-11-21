@@ -51,7 +51,7 @@ class Manga18fx(Manga):
         return chapters
 
     def get_images(manga, chapter, wait=True):
-        response = Manga18fx.send_request(f'https://manga18fx.com/manga/{manga}/{chapter["url"]}', wait=wait)
+        response = Manga18fx.send_request(f'https://manga18fx.com/manga/{manga}/{chapter['url']}', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'class': 'read-content'}).find_all('img')
         images = [image['src'].strip() for image in images]

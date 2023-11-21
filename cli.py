@@ -104,7 +104,7 @@ match args.task:
             from utils.pdf_converter import convert_bulkone
             convert_bulkone(args.bulkone, args.bulkone)
         else:
-            parser.error('please set one of the following arguments: [-folder, -bulk]')
+            parser.error('please set one of the following arguments: [-folder, -bulk, -bulkone]')
 
     case 'search':
         if not args.n:

@@ -46,7 +46,7 @@ class Hennojin(Doujin):
         response = Hennojin.send_request(f'https://hennojin.com/home/manga-reader/?manga={code}&view=page', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'class': 'slideshow-container'}).find_all('img')
-        images = [f'https://hennojin.com{image["src"]}' for image in images]
+        images = [f'https://hennojin.com{image['src']}' for image in images]
         return images, False
 
     def search_by_keyword(keyword, absolute, wait=True):

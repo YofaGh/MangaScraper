@@ -50,13 +50,13 @@ class Coloredmanga(Manga):
         return chapters
 
     def get_images(manga, chapter, wait=True):
-        response = Coloredmanga.send_request(f'https://coloredmanga.com/mangas/{manga}/{chapter["url"]}/', wait=wait)
+        response = Coloredmanga.send_request(f'https://coloredmanga.com/mangas/{manga}/{chapter['url']}/', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'class': 'reading-content'}).find_all('img')
         images = [image['src'].strip() for image in images]
         save_names = []
         for i in range(len(images)):
-            save_names.append(f'{i+1:03d}.{images[i].split(".")[-1]}')
+            save_names.append(f'{i+1:03d}.{images[i].split('.')[-1]}')
         return images, save_names
 
     def search_by_keyword(keyword, absolute, wait=True):
@@ -131,4 +131,4 @@ class Coloredmanga(Manga):
         try:
             return f'{beginner} {int(new_name):03d}'
         except:
-            return f'{beginner} {new_name.split(".", 1)[0].zfill(3)}.{new_name.split(".", 1)[1]}'
+            return f'{beginner} {new_name.split('.', 1)[0].zfill(3)}.{new_name.split('.', 1)[1]}'

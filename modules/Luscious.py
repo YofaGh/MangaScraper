@@ -21,7 +21,7 @@ class Luscious(Doujin):
             if 'pictures' in box.text:
                 with suppress(Exception): pages = box.get_text(strip=True).replace(' pictures', '')
             else:
-                with suppress(Exception): dates[box.find('strong').get_text(strip=True)] = datetime.strptime(box.contents[-1], "%B %dth, %Y").strftime("%Y-%m-%d %H:%M:%S")
+                with suppress(Exception): dates[box.find('strong').get_text(strip=True)] = datetime.strptime(box.contents[-1], '%B %dth, %Y').strftime('%Y-%m-%d %H:%M:%S')
         for box in info_box.find_all('div', {'class': 'album-info-item'}):
             with suppress(Exception): extras[box.find('strong').get_text(strip=True)[:-1]] = [a.get_text(strip=True) for a in box.find_all('a')]
         for box in info_box.find_all('div', {'class': 'o-tag--category'}):

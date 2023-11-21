@@ -49,8 +49,8 @@ class Mangadex(Manga):
         return chapters
 
     def get_images(manga, chapter, wait=True):
-        response = Mangadex.send_request(f'https://api.mangadex.org/at-home/server/{chapter["url"]}', wait=wait).json()
-        images = [f'{response["baseUrl"]}/data/{response["chapter"]["hash"]}/{image}' for image in response['chapter']['data']]
+        response = Mangadex.send_request(f'https://api.mangadex.org/at-home/server/{chapter['url']}', wait=wait).json()
+        images = [f'{response['baseUrl']}/data/{response['chapter']['hash']}/{image}' for image in response['chapter']['data']]
         return images, False
 
     def search_by_keyword(keyword, absolute, wait=True):
@@ -78,7 +78,7 @@ class Mangadex(Manga):
                 try:
                     for relationship in manga['relationships']:
                         if relationship['type'] == 'cover_art':
-                            cover = f'https://mangadex.org/covers/{manga["id"]}/{relationship["attributes"]["fileName"]}'
+                            cover = f'https://mangadex.org/covers/{manga['id']}/{relationship['attributes']['fileName']}'
                             break
                 except: pass
                 results[title] = {

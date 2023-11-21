@@ -46,13 +46,13 @@ class Truemanga(Manga):
         return chapters
 
     def get_images(manga, chapter, wait=True):
-        response = Truemanga.send_request(f'https://truemanga.com/{manga}/{chapter["url"]}', wait=wait)
+        response = Truemanga.send_request(f'https://truemanga.com/{manga}/{chapter['url']}', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         script = soup.find(lambda tag:tag.name == 'script' and 'chapImages' in tag.text).text
         images = script.replace("var chapImages = '", '').strip()[:-1].split(',')
         save_names = []
         for i in range(len(images)):
-            save_names.append(f'{i+1:03d}.{images[i].split(".")[-1].split("?")[0]}')
+            save_names.append(f'{i+1:03d}.{images[i].split('.')[-1].split('?')[0]}')
         return images, save_names
 
     def search_by_keyword(keyword, absolute, wait=True):
