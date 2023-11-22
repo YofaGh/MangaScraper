@@ -5,6 +5,7 @@ class Simply_hentai(Doujin):
     domain = 'simply-hentai.com'
     logo = 'https://www.simply-hentai.com/images/logo.svg'
     headers = {'User-Agent': 'Leech/1051 CFNetwork/454.9.4 Darwin/10.3.0 (i386) (MacPro1%2C1)'}
+    is_coded = False
 
     def get_info(code, wait=True):
         from contextlib import suppress

@@ -49,6 +49,7 @@ class Module:
 
 class Manga(Module):
     type = 'Manga'
+
     def get_chapters():
         return []
 
