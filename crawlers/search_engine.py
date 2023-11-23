@@ -16,11 +16,11 @@ def search_wrapper(keyword, modules, absolute, limit_page):
     print_output(results)
     log(f'This was a summary of the search.\nYou can see the full results in {keyword}_output.json', 'green')
 
-def search(keyword, module, absolute, limit_page):
+def search(keyword, module, absolute, limit_page, wait=True):
     results = {}
     if not hasattr(module, 'search_by_keyword'):
         raise MissingFunctionException(module.domain, 'search_by_keyword')
-    search = module.search_by_keyword(keyword, absolute)
+    search = module.search_by_keyword(keyword, absolute, wait=wait)
     page = 1
     while page <= limit_page:
         try:
