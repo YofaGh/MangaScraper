@@ -1,12 +1,5 @@
 from settings import SLEEP_TIME
 
-def setModules(domains):
-    if domains:
-        from utils.modules_contributer import get_module
-        return [get_module(domain) for domain in domains]
-    from utils.modules_contributer import get_all_modules
-    return get_all_modules()
-
 def validate_corrupted_image(path_to_image):
     from PIL import Image
     try:
