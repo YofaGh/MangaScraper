@@ -1,5 +1,5 @@
 from utils.logger import log
-from utils.modules_contributer import get_module
+from utils.modules_contributer import get_modules
 from utils.exceptions import MissingModuleException
 from downloaders.doujin_single import download_doujin
 from utils.assets import save_dict_to_file, load_dict_from_file
@@ -11,7 +11,7 @@ def download_doujins(json_file):
         try:
             i = 0
             while len(doujins[doujin]['codes']) - i > 0:
-                if download_doujin(doujins[doujin]['codes'][i], get_module(doujin)):
+                if download_doujin(doujins[doujin]['codes'][i], get_modules(doujin)):
                     del doujins[doujin]['codes'][i]
                 else:
                     i += 1

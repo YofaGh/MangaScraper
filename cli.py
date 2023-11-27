@@ -49,8 +49,8 @@ settings.AUTO_PDF_CONVERSION = args.p or settings.AUTO_PDF_CONVERSION
 settings.FIT_MERGE = args.fit or settings.FIT_MERGE
 
 if args.task in ['manga', 'doujin', 'search', 'db', 'check']:
-    from utils.modules_contributer import get_all_modules, get_module
-    args.s = [get_module(domain) for domain in args.s] if args.s else get_all_modules()
+    from utils.modules_contributer import get_modules
+    args.s = get_modules(args.s)
 
 if (args.single or args.task == 'db') and (not args.s or len(args.s) > 1):
     parser.error('please specify one module using -s argument.\nyou can only set one module when downloading or getting database.')

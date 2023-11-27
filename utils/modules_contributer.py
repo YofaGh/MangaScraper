@@ -48,17 +48,17 @@ modules = {
 }
 
 def import_module(module_name):
-    return getattr(getattr(__import__('modules', fromlist=[module_name]), module_name), module_name)
+    return getattr(__import__(f'modules.{module_name}', fromlist=[module_name]), module_name)
 
-def get_module(key):
+def get_modules(key=None):
+    if not key:
+        return [import_module(module) for module in modules.values()]
+    if isinstance(key, list):
+        return [get_modules(module) for module in key]
     if key in modules:
         return import_module(modules[key])
-    else:
-        from utils.exceptions import MissingModuleException
-        raise MissingModuleException(key)
+    from utils.exceptions import MissingModuleException
+    raise MissingModuleException(key)
 
-def get_all_modules():
-    return [import_module(module) for module in modules.values()]
-
-def get_all_domains():
+def get_domains():
     return list(modules.keys())

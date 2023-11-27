@@ -1,5 +1,5 @@
 from utils.logger import log_over, log
-from utils.modules_contributer import get_module
+from utils.modules_contributer import get_modules
 from utils.exceptions import MissingModuleException
 from utils.assets import save_dict_to_file, load_dict_from_file
 
@@ -15,7 +15,7 @@ def get_name_of_chapters(json_file):
     for valid_manga in valid_mangas:
         manga = mangas[valid_manga]
         log_over(f'\r{valid_manga}: Getting chapters...')
-        chapters = get_module(manga['domain']).get_chapters(manga['url'])
+        chapters = get_modules(manga['domain']).get_chapters(manga['url'])
         if manga['last_downloaded_chapter']:
             reached_last_downloaded_chapter = False
             for chapter in chapters:
@@ -39,7 +39,7 @@ def download_mangas(json_file):
         try:
             while mangas[manga]['chapters']:
                 chapter = mangas[manga]['chapters'][0]
-                module = get_module(mangas[manga]['domain'])
+                module = get_modules(mangas[manga]['domain'])
                 ics = download_manga(manga, mangas[manga]['url'], module, [chapter])
                 inconsistencies += ics
                 mangas[manga]['last_downloaded_chapter'] = chapter
