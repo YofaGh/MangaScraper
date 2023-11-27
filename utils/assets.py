@@ -16,15 +16,15 @@ def validate_truncated_image(path_to_image):
     except:
         return False
 
-def load_dict_from_file(file_name):
+def load_dict_from_file(path_to_file):
     import json
-    with open(file_name) as input:
-        return json.loads(input.read())
+    with open(path_to_file) as file:
+        return json.load(file)
 
-def save_dict_to_file(file_name, content):
+def save_dict_to_file(path_to_file, content):
     import json
-    with open(file_name, 'w', encoding='utf8') as output:
-        json.dump(content, output, indent=4, ensure_ascii=False)
+    with open(path_to_file, 'w', encoding='utf8') as file:
+        json.dump(content, file, indent=4, ensure_ascii=False)
 
 def validate_folder(path_to_folder):
     images_path = detect_images(path_to_folder)
@@ -37,11 +37,8 @@ def create_folder(path):
     import os
     os.makedirs(path, exist_ok=True)
 
-def fix_name_for_folder(manga):
-    name = ''.join([ch for ch in manga if ch not in r'\/:*?"><|'])
-    while name[-1] == '.':
-        name = name[:-1]
-    return name
+def fix_name_for_folder(name):
+    return ''.join([ch for ch in name if ch not in r'\/:*?"><|']).rstrip('.')
 
 def detect_images(path_to_folder):
     import os
