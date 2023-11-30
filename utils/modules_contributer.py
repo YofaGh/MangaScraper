@@ -59,6 +59,3 @@ def get_modules(key=None):
         return import_module(modules[key])
     from utils.exceptions import MissingModuleException
     raise MissingModuleException(key)
-
-def get_domains():
-    return list(modules.keys())

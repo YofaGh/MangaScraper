@@ -131,10 +131,10 @@ class Bato(Manga):
         from hashlib import md5
         from Crypto.Cipher import AES
         def _bytes_to_key(salt, password):
-            dtot = md5(password+salt).digest()
+            dtot = md5(password + salt).digest()
             d = [dtot]
-            while len(dtot)<48:
-                d.append(md5(d[-1]+password+salt).digest())
+            while len(dtot) < 48:
+                d.append(md5(d[-1] + password + salt).digest())
                 dtot += d[-1]
             return dtot[:32], dtot[32:]
         unpad = lambda s: s[:-ord(s[-1:])]

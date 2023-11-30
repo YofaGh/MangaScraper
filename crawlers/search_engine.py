@@ -35,7 +35,7 @@ def search(keyword, module, absolute, limit_page, wait=True):
         except Exception as error:
             log(f'\r{module.domain}: Failed to search: {error}', 'red')
             break
-    return results, page-1
+    return results, page - 1
 
 def print_output(results):
     log('Summary:')
