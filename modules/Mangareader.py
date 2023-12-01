@@ -55,7 +55,7 @@ class Mangareader(Manga):
         images = images.split(',')
         save_names = []
         for i in range(len(images)):
-            save_names.append(f'{i+1:03d}.{images[i].split('.')[-1]}')
+            save_names.append(f'{i+1:03d}.{images[i].split(".")[-1]}')
         return images, save_names
 
     def search_by_keyword(keyword, absolute, wait=True):

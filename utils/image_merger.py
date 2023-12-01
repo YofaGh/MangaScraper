@@ -5,7 +5,7 @@ from utils.assets import validate_folder, detect_images, create_folder
 from settings import FIT_MERGE
 
 def merge_folder(path_to_source, path_to_destination, name=None):
-    name = name if name else path_to_source
+    name = name or path_to_source
     if not validate_folder(path_to_source):
         log(f'\rFailed to Merge {path_to_source} because one image is corrupted or truncated.', 'red')
         return

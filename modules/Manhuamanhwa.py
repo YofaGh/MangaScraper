@@ -56,7 +56,7 @@ class Manhuamanhwa(Manga):
         return chapters
 
     def get_images(manga, chapter, wait=True):
-        response = Manhuamanhwa.send_request(f'https://manhuamanhwa.com/manga/{manga}/{chapter['url']}/', headers=Manhuamanhwa.headers, wait=wait)
+        response = Manhuamanhwa.send_request(f'https://manhuamanhwa.com/manga/{manga}/{chapter["url"]}/', headers=Manhuamanhwa.headers, wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'class': 'reading-content'}).find_all('img')
         images = [image['data-src'] for image in images]

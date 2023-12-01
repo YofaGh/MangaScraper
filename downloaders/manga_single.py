@@ -7,7 +7,7 @@ def download_single(manga, url, module, last, ranged, chapters):
     chapters_to_download = get_name_of_chapters(manga, url, module, last, ranged, chapters)
     inconsistencies = download_manga(manga, url, module, chapters_to_download)
     if inconsistencies:
-        logger.log(f'There were some inconsistencies with the following chapters: {', '.join(inconsistencies)}', 'red')
+        logger.log(f'There were some inconsistencies with the following chapters: {", ".join(inconsistencies)}', 'red')
 
 def get_name_of_chapters(manga, url, module, last, ranged, c_chapters):
     ctd = []
@@ -38,7 +38,7 @@ def get_name_of_chapters(manga, url, module, last, ranged, c_chapters):
                     break
     else:
         ctd = chapters
-    logger.log(f'\r{manga}: {len(ctd)} chapter{'' if len(ctd) == 1 else 's'} to download.')
+    logger.log(f'\r{manga}: {len(ctd)} chapter{"" if len(ctd) == 1 else "s"} to download.')
     return ctd
 
 def download_manga(manga, url, module, chapters):
@@ -63,10 +63,10 @@ def download_manga(manga, url, module, chapters):
                 else:
                     if f'{i+adder+1}' not in images[i].split('/')[-1]:
                         adder += 1
-                        inconsistencies.append(f'{manga}/{chapter_name}/{i+adder:03d}.{images[i].split('.')[-1]}')
+                        inconsistencies.append(f'{manga}/{chapter_name}/{i+adder:03d}.{images[i].split(".")[-1]}')
                         logger.log(f' Warning: Inconsistency in order of images!!!. Skipped image {i + adder}', 'red')
                         logger.log_over(f'\r{manga}: {chapter_name}: Downloading image {i+adder+1}/{len(images)+adder}...')
-                    save_path = f'{path}/{i+adder+1:03d}.{images[i].split('.')[-1]}'
+                    save_path = f'{path}/{i+adder+1:03d}.{images[i].split(".")[-1]}'
                 if not os.path.exists(save_path):
                     assets.sleep()
                     saved_path = module.download_image(images[i], save_path, i+adder+1)

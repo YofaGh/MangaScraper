@@ -55,13 +55,13 @@ class Toonily_Com(Manga):
         return chapters
 
     def get_images(manga, chapter, wait=True):
-        response = Toonily_Com.send_request(f'https://toonily.com/webtoon/{manga}/{chapter['url']}/', wait=wait)
+        response = Toonily_Com.send_request(f'https://toonily.com/webtoon/{manga}/{chapter["url"]}/', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'class': 'reading-content'}).find_all('img')
         images = [image['data-src'].strip() for image in images]
         save_names = []
         for i in range(len(images)):
-            save_names.append(f'{i+1:03d}.{images[i].split('.')[-1]}')
+            save_names.append(f'{i+1:03d}.{images[i].split(".")[-1]}')
         return images, save_names
 
     def search_by_keyword(keyword, absolute, wait=True):

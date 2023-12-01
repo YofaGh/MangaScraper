@@ -51,7 +51,7 @@ class Manga18(Manga):
 
     def get_images(manga, chapter, wait=True):
         import base64
-        response = Manga18.send_request(f'https://manga18.club/manhwa/{manga}/{chapter['url']}', headers=Manga18.headers, wait=wait)
+        response = Manga18.send_request(f'https://manga18.club/manhwa/{manga}/{chapter["url"]}', headers=Manga18.headers, wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         script = soup.find(lambda tag:tag.name == 'script' and 'slides_p_path' in tag.text)
         images = script.text.split('[', 1)[1].split(']', 1)[0][:-1]

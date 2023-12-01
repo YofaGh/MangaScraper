@@ -12,7 +12,7 @@ class Toonily_Me(Manga):
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, summary, rating, status, authors, chapters, genres, last_update = 10 * ['']
         info_box = soup.find('div', {'class': 'book-info'})
-        with suppress(Exception): cover = f'https:{info_box.find('img')['data-src']}'
+        with suppress(Exception): cover = f'https:{info_box.find("img")["data-src"]}'
         with suppress(Exception): title = info_box.find('div', {'class': 'name box'}).find('h1').get_text(strip=True)
         with suppress(Exception): alternative = info_box.find('div', {'class': 'name box'}).find('h2').get_text(strip=True)
         with suppress(Exception): summary = soup.find('div', {'class': 'section box mt-1 summary'}).find('p').get_text(strip=True)
@@ -56,7 +56,7 @@ class Toonily_Me(Manga):
         return chapters
 
     def get_images(manga, chapter, wait=True):
-        response = Toonily_Me.send_request(f'https://toonily.me/{manga}/{chapter['url']}', wait=wait)
+        response = Toonily_Me.send_request(f'https://toonily.me/{manga}/{chapter["url"]}', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'id': 'chapter-images'}).find_all('img')
         images = [image['data-src'].strip() for image in images]
@@ -85,7 +85,7 @@ class Toonily_Me(Manga):
                     'domain': Toonily_Me.domain,
                     'url': ti['href'].split('/')[-1],
                     'latest_chapter': latest_chapter,
-                    'thumbnail': f'https:{manga.find('img')['data-src']}',
+                    'thumbnail': f'https:{manga.find("img")["data-src"]}',
                     'genres': genres,
                     'summary': summary,
                     'page': page

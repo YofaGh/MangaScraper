@@ -72,7 +72,7 @@ class Allmanga(Manga):
         return chapters
 
     def get_images(manga, chapter, wait=True):
-        response = Allmanga.send_request(f'https://allmanga.to/read/{manga}/{chapter['url']}', wait=wait)
+        response = Allmanga.send_request(f'https://allmanga.to/read/{manga}/{chapter["url"]}', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         script = soup.find(lambda tag: tag.name == 'script' and 'selectedPicturesServer' in tag.text).get_text(strip=True)
         inputs = script.split('function(', 1)[1].split(')')[0].split(',')
@@ -118,14 +118,14 @@ class Allmanga(Manga):
                 latest_chapter = ''
                 if manga['lastChapterInfo']:
                     if manga['lastChapterInfo']['sub']:
-                        latest_chapter = f'chapter-{manga['lastChapterInfo']['sub']['chapterString']}-sub'
+                        latest_chapter = f'chapter-{manga["lastChapterInfo"]["sub"]["chapterString"]}-sub'
                     elif manga['lastChapterInfo']['raw']:
-                        latest_chapter = f'chapter-{manga['lastChapterInfo']['raw']['chapterString']}-raw'
+                        latest_chapter = f'chapter-{manga["lastChapterInfo"]["raw"]["chapterString"]}-raw'
                 results[manga['name']] = {
                     'domain': Allmanga.domain,
                     'url': manga['_id'],
                     'latest_chapter': latest_chapter,
-                    'thumbnail': f'https://wp.youtube-anime.com/aln.youtube-anime.com/{manga['thumbnail']}',
+                    'thumbnail': f'https://wp.youtube-anime.com/aln.youtube-anime.com/{manga["thumbnail"]}',
                     'page': page
                 }
             yield results
@@ -158,7 +158,7 @@ class Allmanga(Manga):
             results = {}
             for manga in mangas:
                 latest_chapter = ''
-                with suppress(Exception): latest_chapter = f'chapter-{manga['lastChapterInfo']['sub']['chapterString']}-sub'
+                with suppress(Exception): latest_chapter = f'chapter-{manga["lastChapterInfo"]["sub"]["chapterString"]}-sub'
                 results[manga['name']] = {
                     'domain': Allmanga.domain,
                     'url': manga['_id'],
@@ -186,4 +186,4 @@ class Allmanga(Manga):
         try:
             return f'Chapter {int(new_name):03d}{tail}'
         except:
-            return f'Chapter {new_name.split('.', 1)[0].zfill(3)}.{new_name.split('.', 1)[1]}{tail}'
+            return f'Chapter {new_name.split(".", 1)[0].zfill(3)}.{new_name.split(".", 1)[1]}{tail}'

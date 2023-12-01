@@ -21,7 +21,7 @@ class Readonepiece(Manga):
         response = Readonepiece.send_request(f'https://ww9.readonepiece.com/manga/{manga}/', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find_all('div', {'class': 'bg-bg-secondary p-3 rounded mb-3 shadow'})
-        chapters = [div.find('a')['href'].split('/')[-1] for div in divs[::-1]]
+        chapters = [div.find('a')['href'].split('/')[-2] for div in divs[::-1]]
         chapters_urls = [chapter.replace(f'{manga}-','') for chapter in chapters]
         chapters = [{
             'url': chapter_url,

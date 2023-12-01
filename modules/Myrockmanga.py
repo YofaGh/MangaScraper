@@ -55,13 +55,13 @@ class Myrockmanga(Manga):
         return chapters
 
     def get_images(manga, chapter, wait=True):
-        response = Myrockmanga.send_request(f'https://myrockmanga.com/chapter/{chapter['url']}', verify=False, wait=wait)
+        response = Myrockmanga.send_request(f'https://myrockmanga.com/chapter/{chapter["url"]}', verify=False, wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'id': 'rendering'}).find_all('img')
         images = [image['src'] for image in images if image.has_attr('page')]
         save_names = []
         for i in range(len(images)):
-            save_names.append(f'{i+1:03d}.{images[i].split('.')[-1]}')
+            save_names.append(f'{i+1:03d}.{images[i].split(".")[-1]}')
         return images, save_names
 
     def search_by_keyword(keyword, absolute, wait=True):
@@ -148,4 +148,4 @@ class Myrockmanga(Manga):
         try:
             return f'Chapter {int(new_name):03d}'
         except:
-            return f'Chapter {new_name.split('.', 1)[0].zfill(3)}.{new_name.split('.', 1)[1]}'
+            return f'Chapter {new_name.split(".", 1)[0].zfill(3)}.{new_name.split(".", 1)[1]}'

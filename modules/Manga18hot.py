@@ -49,7 +49,7 @@ class Manga18hot(Manga):
 
     def get_images(manga, chapter, wait=True):
         manga = manga.replace('manga-', '') if manga.startswith('manga-') else manga
-        response = Manga18hot.send_request(f'https://manga18hot.net/read-{manga}-{chapter['url']}.html', wait=wait)
+        response = Manga18hot.send_request(f'https://manga18hot.net/read-{manga}-{chapter["url"]}.html', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         chapter_id = soup.find('body').find('div')['data-reading-id']
         response = Manga18hot.send_request(f'https://manga18hot.net/app/manga/controllers/cont.getChapter.php?chapter={chapter_id}&mode=vertical&quality=high', wait=wait).json()
@@ -58,7 +58,7 @@ class Manga18hot(Manga):
         images = [div['data-url'].strip() for div in divs]
         save_names = []
         for i in range(len(images)):
-            save_names.append(f'{i+1:03d}.{images[i].split('.')[-1]}')
+            save_names.append(f'{i+1:03d}.{images[i].split(".")[-1]}')
         return images, save_names
 
     def search_by_keyword(keyword, absolute, wait=True):

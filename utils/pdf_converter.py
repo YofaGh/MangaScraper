@@ -30,8 +30,7 @@ def convert_bulkone(path_to_source, path_to_destination):
         if not validate_folder(f'{path_to_source}/{sub_folder}'):
             log(f'\rFailed to convert {path_to_source}/{sub_folder} because of a corrupted image.', 'red')
             return
-        images_path = detect_images(f'{path_to_source}/{sub_folder}')
-        images += images_path
+        images += detect_images(f'{path_to_source}/{sub_folder}')
     log_over(f'\r{path_to_source}: Creating pdf...    ')
     with open(f'{path_to_destination}/{path_to_source}.pdf', 'wb') as pdf_file:
         pdf_file.write(img2pdf.convert(images))

@@ -50,7 +50,7 @@ class Manga68(Manga):
         return chapters
 
     def get_images(manga, chapter, wait=True):
-        response = Manga68.send_request(f'https://manga68.com/manga/{manga}/{chapter['url']}/', wait=wait)
+        response = Manga68.send_request(f'https://manga68.com/manga/{manga}/{chapter["url"]}/', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'class':'reading-content'}).find_all('img')
         images = [image['data-src'].strip() for image in images]

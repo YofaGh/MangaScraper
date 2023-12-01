@@ -10,7 +10,7 @@ class Sarrast(Manga):
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, summary, rating, status, chapters, posted_on, type = 8 * ['']
         info_boxes = soup.find('div', {'class': 'flex mt-4 w-full bg-black bg-opacity-70 py-4 rounded-2xl text-white'}).find_all('div', {'class': 'flex-1 text-center'})
-        with suppress(Exception): cover = f'https://sarrast.com/{soup.find('div', {'class': 'flex-1'}).find('img')['src']}'
+        with suppress(Exception): cover = f'https://sarrast.com/{soup.find("div", {"class": "flex-1"}).find("img")["src"]}'
         with suppress(Exception): title = soup.find('h1', {'class': 'text-xl font-black mt-2'}).get_text(strip=True)
         with suppress(Exception): summary = soup.find('p', {'class': 'mt-4 mb-2 text-sm'}).get_text(strip=True)
         with suppress(Exception): rating = float(info_boxes[1].find('div').get_text(strip=True))
@@ -43,11 +43,11 @@ class Sarrast(Manga):
         return chapters
 
     def get_images(manga, chapter, wait=True):
-        response = Sarrast.send_request(f'https://sarrast.com/series/{manga}/{chapter['url']}/api', wait=wait).json()
-        images = [f'https://sarrast.com{image['path']}' for image in response['files']]
+        response = Sarrast.send_request(f'https://sarrast.com/series/{manga}/{chapter["url"]}/api', wait=wait).json()
+        images = [f'https://sarrast.com{image["path"]}' for image in response['files']]
         save_names = []
         for i in range(len(images)):
-            save_names.append(f'{i+1:03d}.{images[i].split('.')[-1]}')
+            save_names.append(f'{i+1:03d}.{images[i].split(".")[-1]}')
         return images, save_names
 
     def search_by_keyword(keyword, absolute, wait=True):

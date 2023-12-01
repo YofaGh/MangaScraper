@@ -58,7 +58,7 @@ class Simply_hentai(Doujin):
         images = [image['sizes']['full'] for image in data_raw['props']['pageProps']['data']['pages']]
         save_names = []
         for i in range(len(images)):
-            save_names.append(f'{i+1:03d}.{images[i].split('.')[-1].split('?')[0]}')
+            save_names.append(f'{i+1:03d}.{images[i].split(".")[-1].split("?")[0]}')
         return images, save_names
 
     def search_by_keyword(keyword, absolute, wait=True):
@@ -75,7 +75,7 @@ class Simply_hentai(Doujin):
                     continue
                 results[doujin['title']] = {
                     'domain': Simply_hentai.domain,
-                    'code': f'{doujin['series']['slug']}/{doujin['slug']}',
+                    'code': f'{doujin["series"]["slug"]}/{doujin["slug"]}',
                     'thumbnail': doujin['preview']['sizes']['thumb'],
                     'page': page
                 }
