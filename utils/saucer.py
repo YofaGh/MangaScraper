@@ -86,6 +86,6 @@ def print_output(results):
     for site in results:
         log(f'{site}:')
         for result in results[site][:5]:
-            log(f'    url: {result['url']}, image: {result['image']}')
+            log(f'    url: {result["url"]}, image: {result["image"]}')
 
 sites = [yandex, tineye, iqdb, saucenao]
