@@ -53,7 +53,7 @@ def download_manga(manga, url, module, chapters):
             images, save_names = module.get_images(url, chapters[0])
             logger.log_over(f'\r{manga}: {chapter_name}: Creating folder...')
             path = f'{fixed_manga}/{chapter_name}'
-            assets.create_folder(f'{fixed_manga}/{chapter_name}')
+            assets.create_folder(path)
             adder = 0
             i = 0
             while i < len(images):
@@ -61,7 +61,7 @@ def download_manga(manga, url, module, chapters):
                 if save_names:
                     save_path = f'{path}/{save_names[i]}'
                 else:
-                    if f'{i+adder+1}' not in images[i].split('/')[-1]:
+                    if str(i+adder+1) not in images[i].split('/')[-1]:
                         adder += 1
                         inconsistencies.append(f'{manga}/{chapter_name}/{i+adder:03d}.{images[i].split(".")[-1]}')
                         logger.log(f' Warning: Inconsistency in order of images!!!. Skipped image {i + adder}', 'red')

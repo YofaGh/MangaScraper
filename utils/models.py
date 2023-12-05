@@ -66,7 +66,7 @@ class Manga(Module):
                 new_name += '.'
         if not reached_number:
             return chapter
-        new_name = new_name[:-1] if new_name[-1] == '.' else new_name
+        new_name = new_name.rstrip('.')
         try:
             return f'Chapter {int(new_name):03d}'
         except:
