@@ -42,11 +42,12 @@ def fix_name_for_folder(name):
 
 def detect_images(path_to_folder):
     import os
+    from natsort import os_sorted
     images_path = []
     for file in os.listdir(path_to_folder):
         if file.endswith(('jpg', 'png', 'jpeg', 'gif', 'webp')):
             images_path.append(f'{path_to_folder}/{file}')
-    return images_path
+    return os_sorted(images_path)
 
 def sleep(secs=SLEEP_TIME):
     import time
