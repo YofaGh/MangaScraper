@@ -100,23 +100,12 @@
         "url": "secret-class",
         "last_downloaded_chapter": "chapter-100",
         "chapters": []
-    },
-    "Solo Leveling": {
-        "include": true,
-        "domain": "manga68.com",
-        "url": "one-piece",
-        "last_downloaded_chapter": "pass",
-        "chapters": [
-            "chapter-1",
-            "chapter-2"
-        ]
     }
 }
 ```
 
 > - if the "last_downloaded_chapter" is null, all of the chapters will be added to the download list.  
-> - if the "last_downloaded_chapter" has valid value, do_file.py will automatically add the chapters after "last_downloaded_chapter" to the download list.  
-> - and if the "last_downloaded_chapter" is equal to "pass", only the download list which user filled will be downloaded.
+> - if the "last_downloaded_chapter" has valid value, it will automatically add the chapters after "last_downloaded_chapter" to the download list.  
 
 ## Download a doujin by it's code
 >
