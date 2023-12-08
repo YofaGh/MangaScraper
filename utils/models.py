@@ -54,8 +54,6 @@ class Manga(Module):
         return []
 
     def rename_chapter(chapter):
-        if chapter in ['pass', None]:
-            return ''
         new_name = ''
         reached_number = False
         for ch in chapter:

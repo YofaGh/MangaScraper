@@ -169,8 +169,6 @@ class Allmanga(Manga):
             page += 1
 
     def rename_chapter(chapter):
-        if chapter in ['pass', None]:
-            return ''
         tail = ' Raw' if 'raw' in chapter else ''
         new_name = ''
         reached_number = False
@@ -182,7 +180,7 @@ class Allmanga(Manga):
                 new_name += '.'
         if not reached_number:
             return chapter
-        new_name = new_name[:-1] if new_name[-1] == '.' else new_name
+        new_name = new_name.rstrip('.')
         try:
             return f'Chapter {int(new_name):03d}{tail}'
         except:

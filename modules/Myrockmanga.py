@@ -132,8 +132,6 @@ class Myrockmanga(Manga):
 
     def rename_chapter(chapter):
         chapter = chapter.split('/')[-1]
-        if chapter in ['pass', None]:
-            return ''
         new_name = ''
         reached_number = False
         for ch in chapter:
@@ -144,7 +142,7 @@ class Myrockmanga(Manga):
                 new_name += '.'
         if not reached_number:
             return chapter
-        new_name = new_name[:-1] if new_name[-1] == '.' else new_name
+        new_name = new_name.rstrip('.')
         try:
             return f'Chapter {int(new_name):03d}'
         except:

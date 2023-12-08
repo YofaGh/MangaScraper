@@ -110,8 +110,6 @@ class Coloredmanga(Manga):
         return Coloredmanga.search_by_keyword('', False, wait=wait)
 
     def rename_chapter(chapter):
-        if chapter in ['pass', None]:
-            return ''
         beginner = 'Chapter'
         if 'volume' in chapter:
             beginner = 'Volume'
@@ -127,7 +125,7 @@ class Coloredmanga(Manga):
                 new_name += '.'
         if not reached_number:
             return chapter
-        new_name = new_name[:-1] if new_name[-1] == '.' else new_name
+        new_name = new_name.rstrip('.')
         try:
             return f'{beginner} {int(new_name):03d}'
         except:

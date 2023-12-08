@@ -116,8 +116,6 @@ class Mangapark(Manga):
         return Mangapark.search_by_keyword('', False, wait=wait)
 
     def rename_chapter(chapter):
-        if chapter in ['pass', None]:
-            return ''
         chapter = chapter.split('-')[-1]
         new_name = ''
         reached_number = False
@@ -129,7 +127,7 @@ class Mangapark(Manga):
                 new_name += '.'
         if not reached_number:
             return chapter
-        new_name = new_name[:-1] if new_name[-1] == '.' else new_name
+        new_name = new_name.rstrip('.')
         try:
             return f'Chapter {int(new_name):03d}'
         except:

@@ -97,8 +97,6 @@ class Bato(Manga):
         return Bato.search_by_keyword('', False, wait=wait)
 
     def rename_chapter(chapter):
-        if chapter in ['pass', None]:
-            return ''
         chap = chapter.split('-', 1)[1] if '-' in chapter else chapter
         new_name = ''
         reached_number = False
@@ -110,7 +108,7 @@ class Bato(Manga):
                 new_name += '.'
         if not reached_number:
             return chap
-        new_name = new_name[:-1] if new_name[-1] == '.' else new_name
+        new_name = new_name.rstrip('.')
         try:
             return f'Chapter {int(new_name):03d}'
         except:

@@ -89,8 +89,6 @@ class Manhwa18(Manga):
         return Manhwa18.search_by_keyword('', False, wait=wait)
 
     def rename_chapter(chapter):
-        if chapter in ['pass', None]:
-            return ''
         new_name = ''
         reached_number = False
         for ch in chapter:
@@ -101,8 +99,7 @@ class Manhwa18(Manga):
                 new_name += '.'
         if not reached_number:
             return chapter
-        new_name = new_name[:-1] if new_name[-1] == '.' else new_name
-        new_name = new_name.rsplit('.', 1)[0]
+        new_name = new_name.rstrip('.').rsplit('.', 1)[0]
         try:
             return f'Chapter {int(new_name):03d}'
         except:
