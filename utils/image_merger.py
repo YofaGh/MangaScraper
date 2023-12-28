@@ -47,7 +47,7 @@ def merge(images, path_to_destination):
         merged_image = Image.new('RGB', (max_width, total_height), color=(255, 255, 255))
         x_offset = 0
         for image in list_to_merge:
-            merged_image.paste(image, (int((max_width - image.width)/2), x_offset))
+            merged_image.paste(image, (int((max_width - image.width) / 2), x_offset))
             x_offset += image.height
         merged_image.save(f'{path_to_destination}/{index+1:03d}.jpg')
     return len(lists_to_merge)
@@ -59,46 +59,28 @@ def merge_fit(images, path_to_destination):
     current_height = 0
     temp_list = []
     for image in images:
-        if image.width == min_width:
-            if (current_height + image.height) < 65500:
-                temp_list.append(image)
-                current_height = current_height + image.height
-            else:
-                lists_to_merge.append(temp_list)
-                temp_list = [image]
-                current_height = image.height
-        elif image.width > min_width:
-            if (current_height + image.height * min_width / image.width) < 65500:
-                temp_list.append(image)
-                current_height = current_height + image.height * min_width / image.width
-            else:
-                lists_to_merge.append(temp_list)
-                temp_list = [image]
-                min_width = image.width
-                current_height = image.height
+        if (image.width >= min_width and (current_height + image.height * min_width / image.width) < 65500):
+            temp_list.append(image)
+            current_height += image.height * min_width / image.width
+        elif (image.width < min_width and (current_height * image.width / min_width + image.height) < 65500):
+            temp_list.append(image)
+            current_height = current_height * image.width / min_width + image.height
+            min_width = image.width
         else:
-            if (current_height * image.width / min_width + image.height) < 65500:
-                temp_list.append(image)
-                current_height = current_height * image.width / min_width + image.height
-                min_width = image.width
-            else:
-                lists_to_merge.append(temp_list)
-                temp_list = [image]
-                min_width = image.width
-                current_height = image.height
+            lists_to_merge.append(temp_list)
+            temp_list = [image]
+            min_width, current_height = image.size
     lists_to_merge.append(temp_list)
     for index, list_to_merge in enumerate(lists_to_merge):
         if len(list_to_merge) == 1:
             copy2(list_to_merge[0].filename, f'{path_to_destination}/{index+1:03d}.{list_to_merge[0].filename.split(".")[-1]}')
             continue
         min_width = min(list_to_merge, key=lambda image: image.width).width
-        total_height = 0
-        for image in list_to_merge:
-            total_height += image.height * min_width / image.width
+        total_height = sum([image.height * min_width / image.width for image in list_to_merge])
         merged_image = Image.new('RGB', (min_width, math.ceil(total_height)), color=(255, 255, 255))
         x_offset = 0
         for image in list_to_merge:
-            image.thumbnail((min_width, image.height*(min_width/image.width)), Image.Resampling.LANCZOS)
+            image.thumbnail((min_width, image.height * (min_width / image.width)), Image.Resampling.LANCZOS)
             merged_image.paste(image, (0, x_offset))
             x_offset += image.height
         merged_image.save(f'{path_to_destination}/{index+1:03d}.jpg')
