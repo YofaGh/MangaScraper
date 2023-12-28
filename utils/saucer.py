@@ -64,7 +64,7 @@ def sauce_file(path_to_file):
     soup = BeautifulSoup(response.text, 'html.parser')
     link = soup.find('div', {'id': 'content'}).find('a')['href']
     log('\rimage was successfully uploaded to imgops.com', 'green')
-    log(f'here is the link to the image:', 'green')
+    log('here is the link to the image:', 'green')
     log(f'    https:{link}', 'yellow')
     return f'https:{link}'
 
@@ -77,7 +77,7 @@ def sauce_url(url):
         log(f'\r{site.__name__}: {len(temp_results)} results were found.', 'green' if temp_results else 'yellow')
         if temp_results:
             results[site.__name__] = temp_results
-    save_dict_to_file(f'sauce_output.json', results)
+    save_dict_to_file('sauce_output.json', results)
     print_output(results)
     log('This was a summary of the saucer.\nYou can see the full results in sauce_output.json', 'green')
 

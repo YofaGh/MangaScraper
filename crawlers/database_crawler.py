@@ -6,9 +6,8 @@ def crawl(module):
     try:
         if not hasattr(module, 'get_db'):
             raise MissingFunctionException(module.domain, 'get_db')
-        results = {}
         crawler = module.get_db()
-        page = 1
+        results, page = {}, 1
         while True:
             try:
                 log_over(f'\r{module.domain}: Crawling page {page}...')
