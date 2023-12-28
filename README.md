@@ -123,18 +123,14 @@
 
 ```json
 {
-    "nyahentai.red": {
-        "codes": [
-            999999,
-            999998
-        ]
-    },
-    "hentaifox.com": {
-        "codes": [
-            999997,
-            999996
-        ]
-    }
+    "nyahentai.red": [
+        999999,
+        999998
+    ],
+    "hentaifox.com": [
+        999997,
+        999996
+    ]
 }
 ```
 
