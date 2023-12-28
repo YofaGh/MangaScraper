@@ -3,7 +3,7 @@ modules = {
     'bato.to': 'Bato',
     'bibimanga.com': 'Bibimanga',
     'coloredmanga.com': 'Coloredmanga',
-    'comick.app': 'Comick',
+    'comick.cc': 'Comick',
     'comics.8muses.com': 'Comics8Muses',
     'constellarcomic.com': 'Constellarcomic',
     'doujins.com': 'Doujins',
