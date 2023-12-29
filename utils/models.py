@@ -19,10 +19,7 @@ class Module:
             requests.packages.urllib3.disable_warnings(requests.packages.urllib3.exceptions.InsecureRequestWarning)
         while True:
             try:
-                if method == 'GET':
-                    response = requests.get(url, headers=headers, json=json, data=data, params=params, verify=verify)
-                elif method == 'POST':
-                    response = requests.post(url, headers=headers, json=json, data=data, params=params, verify=verify)
+                response = requests.request(method, url, headers=headers, json=json, data=data, params=params, verify=verify)
                 response.raise_for_status()
                 return response
             except (requests.exceptions.HTTPError, requests.exceptions.Timeout) as error:
