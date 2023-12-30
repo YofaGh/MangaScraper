@@ -69,16 +69,16 @@ def download_manga(manga, url, module, chapters):
                     save_path = f'{path}/{i+adder+1:03d}.{images[i].split(".")[-1]}'
                 if not os.path.exists(save_path):
                     assets.sleep()
-                    saved_path = module.download_image(images[i], save_path, i+adder+1)
-                    if not assets.validate_corrupted_image(saved_path):
-                        logger.log(f' Warning: Image {i+adder+1} is corrupted. will not be able to merge this chapter', 'red')
-                        i += 1
-                        continue
-                    if not assets.validate_truncated_image(saved_path) and last_truncated != saved_path:
+                    saved_path = module.download_image(images[i], save_path)
+                    if not saved_path:
+                        logger.log(f' Warning: Image {i+adder+1} could not be downloaded. url: {images[i]}', 'red')
+                    elif not assets.validate_corrupted_image(saved_path):
+                        logger.log(f' Warning: Image {i+adder+1} was corrupted. may not be able to merge this chapter.', 'red')
+                    elif not assets.validate_truncated_image(saved_path) and last_truncated != saved_path:
                         last_truncated = saved_path
                         os.remove(saved_path)
                         logger.log(f' Warning: Image {i+adder+1} was truncated. trying to download it one more time...', 'red')
-                        i -= 1
+                        continue
                 i += 1
             logger.log(f'\r{manga}: {chapter_name}: Finished downloading, {len(images)} images were downloaded.', 'green')
             del chapters[0]

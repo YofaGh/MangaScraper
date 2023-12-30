@@ -100,5 +100,5 @@ class Manga18hot(Manga):
         return Manga18hot.search_by_keyword('', False, wait=wait)
 
     @classmethod
-    def download_image(cls, url, image_name, log_num, verify=None, wait=True):
-        return super(Manga18hot, cls).download_image(url, image_name, log_num, verify=False, wait=wait)
+    def download_image(cls, url, image_name, verify=None, wait=True):
+        return super(Manga18hot, cls).download_image(url, image_name, verify=False, wait=wait)

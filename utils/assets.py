@@ -52,3 +52,11 @@ def detect_images(path_to_folder):
 def sleep(secs=SLEEP_TIME):
     import time
     time.sleep(secs)
+
+def waiter():
+    from utils import logger
+    logger.log_over(' Connection lost.\n\rWaiting 1 minute to attempt a fresh connection.', 'red')
+    for i in range(59, 0, -1):
+        sleep(1)
+        logger.log_over(f'\rWaiting {i} seconds to attempt a fresh connection. ', 'red')
+    logger.clear()
