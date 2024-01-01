@@ -37,12 +37,14 @@ class Truemanga(Manga):
     def get_chapters(manga, wait=True):
         response = Truemanga.send_request(f'https://truemanga.com/{manga}', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
-        links = soup.find('ul', {'class':'chapter-list'}).find_all('a')
-        chapters_urls = [link['href'].split('/')[-1] for link in links[::-1]]
+        script = soup.find(lambda tag:tag.name == 'script' and 'bookId' in tag.text).text
+        book_id = script.split('bookId = ')[1].split(';', 1)[0]
+        response = Truemanga.send_request(f'https://truemanga.com/api/manga/{book_id}/chapters', wait=wait)
+        soup = BeautifulSoup(response.text, 'html.parser')
         chapters = [{
-            'url': chapter_url,
-            'name': Truemanga.rename_chapter(chapter_url)
-        } for chapter_url in chapters_urls]
+            'url': chapter['value'].split('/')[-1],
+            'name': chapter.get_text(strip=True)
+        } for chapter in soup.find_all('option')[::-1]]
         return chapters
 
     def get_images(manga, chapter, wait=True):
