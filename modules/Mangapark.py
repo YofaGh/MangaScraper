@@ -27,37 +27,24 @@ class Mangapark(Manga):
         }
 
     def get_chapters(manga, wait=True):
-        manga = manga.split('-')[0] if '-' in manga else manga
-        data_json = {
-            'query': '''query get_chapters($select: Content_ComicChapterRangeList_Select) 
-            { get_content_comicChapterRangeList( select: $select ) { pager {x y} } } ''',
-            'variables': {
-                'select': { 'comicId': manga }
-            },
-            'operationName': 'get_chapters'
-        }
-        response = Mangapark.send_request('https://mangapark.to/apo/', method='POST', headers={'content-type': 'application/json'}, json=data_json, wait=wait).json()
-        end = response['data']['get_content_comicChapterRangeList']['pager'][0]['x']
-        begin = response['data']['get_content_comicChapterRangeList']['pager'][-1]['y']
-        data_json['variables']['select']['range'] = {'x': begin, 'y': end}
-        data_json['query'] = '''query get_chapters($select: Content_ComicChapterRangeList_Select) 
-            { get_content_comicChapterRangeList( select: $select ) { items{ chapterNodes { data { urlPath, dname } } } } } '''
-        response = Mangapark.send_request('https://mangapark.to/apo/', method='POST', headers={'content-type': 'application/json'}, json=data_json, wait=wait).json()
-        items = response['data']['get_content_comicChapterRangeList']['items']
+        import json
+        response = Mangapark.send_request(f'https://mangapark.to/title/{manga}', wait=wait)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        script = soup.find('script', {'type': 'qwik/json'}).text
+        data = json.loads(script)['objs']
         chapters = [{
-            'url': item['chapterNodes'][0]['data']['urlPath'].split('/')[-1],
-            'name': Mangapark.rename_chapter(item['chapterNodes'][0]['data']['dname'])
-        } for item in items[::-1]]
+            'url': item.split('/')[-1],
+            'name': Mangapark.rename_chapter(str(data[i-1]))
+        } for i, item in enumerate(data) if isinstance(item, str) and f'{manga}/' in item]
         return chapters
 
     def get_images(manga, chapter, wait=True):
         import json
         response = Mangapark.send_request(f'https://mangapark.to/title/{manga}/{chapter["url"]}', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
-        script = soup.find('script', {'id': '__NEXT_DATA__'})
-        data = json.loads(script.text)
-        images_raw = data['props']['pageProps']['dehydratedState']['queries'][0]['state']['data']['data']['imageSet']
-        images = [f'{url}?{tail}' for url, tail in zip(images_raw['httpLis'], images_raw['wordLis'])]
+        script = soup.find('script', {'type': 'qwik/json'})
+        data = json.loads(script.text)['objs']
+        images = [item for item in data if isinstance(item, str) and 'comic' in item and '?acc=' in item]
         save_names = []
         for i in range(len(images)):
             save_names.append(f'{i+1:03d}.{images[i].split(".")[-1].split("?")[0]}')
@@ -114,21 +101,3 @@ class Mangapark(Manga):
 
     def get_db(wait=True):
         return Mangapark.search_by_keyword('', False, wait=wait)
-
-    def rename_chapter(chapter):
-        chapter = chapter.split('-')[-1]
-        new_name = ''
-        reached_number = False
-        for ch in chapter:
-            if ch.isdigit():
-                new_name += ch
-                reached_number = True
-            elif ch in '-.' and reached_number and new_name[-1] != '.':
-                new_name += '.'
-        if not reached_number:
-            return chapter
-        new_name = new_name.rstrip('.')
-        try:
-            return f'Chapter {int(new_name):03d}'
-        except:
-            return f'Chapter {new_name.split(".", 1)[0].zfill(3)}.{new_name.split(".", 1)[1]}'
