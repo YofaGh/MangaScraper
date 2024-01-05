@@ -52,11 +52,8 @@ if args.task in ['manga', 'doujin', 'search', 'db', 'check']:
     from utils.modules_contributer import get_modules
     args.s = get_modules(args.s)
 
-if (args.single or args.task == 'db') and (not args.s or len(args.s) > 1):
+if (args.single or args.task == 'db') and len(args.s) > 1:
     parser.error('please specify one module using -s argument.\nyou can only set one module when downloading or getting database.')
-
-if (args.task in ['search', 'check']) and not args.s:
-    parser.error('you should specify at least one module using -s')
 
 os.system('color')
 

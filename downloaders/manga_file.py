@@ -40,8 +40,7 @@ def download_mangas(json_file):
             while mangas[manga]['chapters']:
                 chapter = mangas[manga]['chapters'][0]
                 module = get_modules(mangas[manga]['domain'])
-                ics = download_manga(manga, mangas[manga]['url'], module, [chapter])
-                inconsistencies += ics
+                inconsistencies += download_manga(manga, mangas[manga]['url'], module, [chapter])
                 mangas[manga]['last_downloaded_chapter'] = chapter
                 del mangas[manga]['chapters'][0]
                 save_dict_to_file(json_file, mangas)
