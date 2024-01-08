@@ -44,16 +44,11 @@ class Bato(Manga):
 
     def get_images(manga, chapter, wait=True):
         import json
-        response = Bato.send_request(f'https://bato.to/chapter/{chapter["url"].split("-")[0]}', wait=wait)
+        response = Bato.send_request(f'https://bato.to/title/{manga}/{chapter["url"]}', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
-        script = soup.find(lambda tag:tag.name == 'script' and 'imgHttpLis' in tag.text).text
-        vars = script.split('\n')
-        images = json.loads(vars[5].split('= ', 1)[1][:-1])
-        password_raw = vars[6].split('= ', 1)[1][:-1]
-        encrypted_tokens = vars[7].split('= "', 1)[1][:-2]
-        password = Bato._normalize_pass(password_raw)
-        tokens = json.loads(Bato._decrypt_tokens(encrypted_tokens, password))
-        images = [f'{url}?{tail}' for url, tail in zip(images, tokens)]
+        props = soup.find(lambda tag: tag.name == 'astro-island' and 'imageFiles' in tag.get('props'))['props']
+        images = json.loads(props)['imageFiles'][1]
+        images = [ima[1] for ima in json.loads(images)]
         save_names = []
         for i in range(len(images)):
             save_names.append(f'{i+1:03d}.{images[i].split(".")[-1].split("?")[0]}')
@@ -113,32 +108,3 @@ class Bato(Manga):
             return f'Chapter {int(new_name):03d}'
         except:
             return f'Chapter {new_name.split(".", 1)[0].zfill(3)}.{new_name.split(".", 1)[1]}'
-
-    def _normalize_pass(pass_raw):
-        gg = pass_raw.replace('!+[]', '$').replace('[+[]]', '[]').replace('+', '')
-        start_of_dot = gg.find('(')
-        end_of_dot = gg.rfind(')')
-        gg  = f'{gg[:start_of_dot]}{gg[end_of_dot+4:]}'
-        gg = gg.split(']')
-        gg = [str(g.count('$')) for g in gg[:-1]]
-        gg = ''.join(gg)
-        return gg[:8]+'.'+gg[8:]
-
-    def _decrypt_tokens(encrypted_tokens, password):
-        import base64
-        from hashlib import md5
-        from Crypto.Cipher import AES
-        def _bytes_to_key(salt, password):
-            dtot = md5(password + salt).digest()
-            d = [dtot]
-            while len(dtot) < 48:
-                d.append(md5(d[-1] + password + salt).digest())
-                dtot += d[-1]
-            return dtot[:32], dtot[32:]
-        unpad = lambda s: s[:-ord(s[-1:])]
-        encrypted = base64.b64decode(encrypted_tokens)
-        salt = encrypted[8:16]
-        ciphertext = encrypted[16:]
-        key, iv = _bytes_to_key(salt, password.encode())
-        cipher = AES.new(key, AES.MODE_CBC, iv)
-        return unpad(cipher.decrypt(ciphertext)).decode('utf-8')
