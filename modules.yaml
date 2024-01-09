@@ -1,0 +1,237 @@
+allmanga.to:
+  className: Allmanga
+  type: Manga
+  test_sample:
+    url: vRFoRFrcDbFBfSjLu
+bato.to:
+  className: Bato
+  type: Manga
+  test_sample:
+    url: 19516-one-piece
+bibimanga.com:
+  className: Bibimanga
+  type: Manga
+  test_sample:
+    url: the-color-of-the-night
+coloredmanga.com:
+  className: Coloredmanga
+  type: Manga
+  test_sample:
+    url: vagabond-vizbig
+    keyword: hero
+comick.cc:
+  className: Comick
+  type: Manga
+  test_sample:
+    url: 01-i-ll-take-the-dukedom-from-today
+comics.8muses.com:
+  className: Comics8Muses
+  type: Manga
+  test_sample:
+    url: JAB-Comics/Ay-Papi
+    keyword: papi
+constellarcomic.com:
+  className: Constellarcomic
+  type: Manga
+  test_sample:
+    url: up-and-down
+doujins.com:
+  className: Doujins
+  type: Doujin
+  test_sample:
+    url: space-battleship-yamato-2199/circle-outerworld-niimi-kaoru-from-2198-62007
+ehentai.to:
+  className: Ehentai
+  type: Doujin
+  test_sample:
+    url: 2
+hennojin.com:
+  className: Hennojin
+  type: Doujin
+  test_sample:
+    url: "[CRAZY%20CLOVER%20CLUB]%20Lovely%20U%20(Advance%20Release)%20(Fate%20Grand%20Order)%20[Decensored]%20[Digital]"
+hentaifox.com:
+  className: Hentaifox
+  type: Doujin
+  test_sample:
+    url: 1
+hentaixcomic.com:
+  className: Hentaixcomic
+  type: Manga
+  test_sample:
+    url: the-unknown
+imhentai.xxx:
+  className: Imhentai
+  type: Doujin
+  test_sample:
+    url: 1
+luscious.net:
+  className: Luscious
+  type: Doujin
+  test_sample:
+    url: 505726
+    keyword: solo
+manga18.club:
+  className: Manga18
+  type: Manga
+  test_sample:
+    url: osaka
+manga18fx.com:
+  className: Manga18fx
+  type: Manga
+  test_sample:
+    url: boarding-diary-01
+manga18h.com:
+  className: Manga18h
+  type: Manga
+  test_sample:
+    url: death-angel
+manga18hot.net:
+  className: Manga18hot
+  type: Manga
+  test_sample:
+    url: shuffle
+manga68.com:
+  className: Manga68
+  type: Manga
+  test_sample:
+    url: solo-leveling
+mangadex.org:
+  className: Mangadex
+  type: Manga
+  test_sample:
+    url: 83cc2814-04e4-4434-9876-ba7eaafd32f5/i-am-the-master-in-this-life
+mangadistrict.com:
+  className: Mangadistrict
+  type: Manga
+  test_sample:
+    url: transcension-academy
+mangaforfree.net:
+  className: Mangaforfree
+  type: Manga
+  test_sample:
+    url: boarding-diary-a31
+mangahentai.me:
+  className: Mangahentai
+  type: Manga
+  test_sample:
+    url: new-flavors-2
+mangapark.to:
+  className: Mangapark
+  type: Manga
+  test_sample:
+    url: 77478-en-sakamoto-days
+mangareader.mobi:
+  className: Mangareader
+  type: Manga
+  test_sample:
+    url: evangelines-sword
+manhuamanhwa.com:
+  className: Manhuamanhwa
+  type: Manga
+  test_sample:
+    url: the-boy-out-of-my-reach
+manhuamix.com:
+  className: Manhuamix
+  type: Manga
+  test_sample:
+    url: reborn-as-a-monster
+manhuascan.us:
+  className: Manhuascan
+  type: Manga
+  test_sample:
+    url: secret-class
+manhwa18.com:
+  className: Manhwa18
+  type: Manga
+  test_sample:
+    url: not-to-be-missed
+manytoon.com:
+  className: Manytoon
+  type: Manga
+  test_sample:
+    url: my-illustrator
+myreadingmanga.to:
+  className: Myreadingmanga
+  type: Doujin
+  test_sample:
+    url: 2
+myrockmanga.com:
+  className: Myrockmanga
+  type: Manga
+  test_sample:
+    url: 23589/doraemon
+nhentai.com:
+  className: Nhentai_Com
+  type: Doujin
+  test_sample:
+    url: 60026
+nhentai.xxx:
+  className: Nhentai_Xxx
+  type: Doujin
+  test_sample:
+    url: 1
+9hentai.to:
+  className: NineHentai
+  type: Doujin
+  test_sample:
+    url: 1
+nyahentai.red:
+  className: Nyahentai
+  type: Doujin
+  test_sample:
+    url: 1
+omegascans.org:
+  className: Omegascans
+  type: Manga
+  test_sample:
+    url: where-is-my-hammer
+readonepiece.com:
+  className: Readonepiece
+  type: Manga
+  test_sample:
+    url: one-piece-digital-colored-comics
+sarrast.com:
+  className: Sarrast
+  type: Manga
+  test_sample:
+    url: she-is-working-out
+    keyword: "%D9%85%D9%86"
+simply-hentai.com:
+  className: Simply_hentai
+  type: Doujin
+  test_sample:
+    url: 5-original-work/roshutsukyou-flasher
+    keyword: aa
+simplyhentai.org:
+  className: Simplyhentai
+  type: Doujin
+  test_sample:
+    url: 1
+toonily.com:
+  className: Toonily_Com
+  type: Manga
+  test_sample:
+    url: peerless-dad
+toonily.me:
+  className: Toonily_Me
+  type: Manga
+  test_sample:
+    url: solo-leveling
+    keyword: solo
+truemanga.com:
+  className: Truemanga
+  type: Manga
+  test_sample:
+    url: blind-play
+    keyword: play
+vyvymanga.net:
+  className: Vyvymanga
+  type: Manga
+  test_sample:
+    url: it-starts-with-a-mountain
+w.mangairo.com:
+  className: WMangairo
+  type: Manga
+  test_sample:
+    url: story-cw292504

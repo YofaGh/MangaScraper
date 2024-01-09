@@ -1,5 +1,5 @@
 from utils.logger import log_over, log
-from utils.assets import save_dict_to_file, sleep
+from utils.assets import save_json_file, sleep
 from utils.exceptions import MissingFunctionException
 
 def crawl(module):
@@ -21,7 +21,7 @@ def crawl(module):
                 log(f'\r{module.domain}: Failed to crawl: {error}', 'red')
                 break
         log(f'\r{module.domain}: {len(results)} results were crawled from {page-1} pages.', 'green' if results else 'yellow')
-        save_dict_to_file(f'{module.domain}_database.json', results)
+        save_json_file(f'{module.domain}_database.json', results)
         log(f'\r{module.domain}: Results were saved to {module.domain}_database.json', 'green')
     except MissingFunctionException as error:
         log(error, 'red')

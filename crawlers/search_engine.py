@@ -1,5 +1,5 @@
 from utils.logger import log_over, log
-from utils.assets import save_dict_to_file, sleep
+from utils.assets import save_json_file, sleep
 from utils.exceptions import MissingFunctionException
 
 def search_wrapper(keyword, modules, absolute, limit_page):
@@ -11,7 +11,7 @@ def search_wrapper(keyword, modules, absolute, limit_page):
                 results[module.domain] = temp_results
         except MissingFunctionException as error:
             log(error, 'red')
-    save_dict_to_file(f'{keyword}_output.json', results)
+    save_json_file(f'{keyword}_output.json', results)
     print_output(results)
     log(f'This was a summary of the search.\nYou can see the full results in {keyword}_output.json', 'green')
 

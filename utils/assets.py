@@ -16,12 +16,17 @@ def validate_truncated_image(path_to_image):
     except:
         return False
 
-def load_dict_from_file(path_to_file):
+def load_yaml_file(path_to_file):
+    import yaml
+    with open(path_to_file, encoding='utf8') as file:
+        return yaml.safe_load(file)
+
+def load_json_file(path_to_file):
     import json
     with open(path_to_file) as file:
         return json.load(file)
 
-def save_dict_to_file(path_to_file, content):
+def save_json_file(path_to_file, content):
     import json
     with open(path_to_file, 'w', encoding='utf8') as file:
         json.dump(content, file, indent=4, ensure_ascii=False)

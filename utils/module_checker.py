@@ -1,37 +1,39 @@
 import os
 from contextlib import suppress
 from utils.logger import log_over, log
+from utils.modules_contributer import get_modules
 from utils.exceptions import MissingFunctionException
-from utils.assets import validate_corrupted_image, validate_truncated_image, load_dict_from_file, sleep
+from utils.assets import validate_corrupted_image, validate_truncated_image, load_yaml_file, sleep
 
-def check_modules(modules):
-    samples = load_dict_from_file('test_samples.json')
-    for module in modules:
-        if module.type == 'Manga':
-            check_manga(module, samples[module.domain])
-        elif module.type == 'Doujin':
-            check_doujin(module, samples[module.domain])
-        search_by_keyword_checker(module, samples[module.domain].get('keyword', 'a'))
+def check_modules(domains):
+    modules = load_yaml_file('modules.yaml')
+    for domain in domains:
+        module = get_modules(domain)
+        if modules[domain]['type'] == 'Manga':
+            check_manga(module, modules[domain]['test_sample'])
+        elif modules[domain]['type'] == 'Doujin':
+            check_doujin(module, modules[domain]['test_sample'])
+        search_by_keyword_checker(module, modules[domain]['test_sample'].get('keyword', 'a'))
         get_db_checker(module)
 
 def check_manga(module, sample):
-    chapters, images = chapter_checker(module, sample['manga']), []
+    chapters, images = chapter_checker(module, sample['url']), []
     if chapters:
-        images, save_names = manga_images_checker(module, sample['manga'], chapters[0])
+        images, save_names = manga_images_checker(module, sample['url'], chapters[0])
     else:
-        log(f'\r{module.domain}: {sample["manga"]}: Skipped images_checker due to chapter_checker failure', 'red')
+        log(f'\r{module.domain}: {sample["url"]}: Skipped images_checker due to chapter_checker failure', 'red')
     if images:
         download_checker(module, images[0], save_names[0] if save_names else f'{module.domain}_test.{images[0].split(".")[-1]}')
     else:
-        log(f'\r{module.domain}: {sample["manga"]}: Skipped download_checker due to images_checker failure', 'red')
+        log(f'\r{module.domain}: {sample["url"]}: Skipped download_checker due to images_checker failure', 'red')
 
 def check_doujin(module, sample):
-    title_checker(module, sample['doujin'])
-    images, save_names = doujin_images_checker(module, sample['doujin'])
+    title_checker(module, sample['url'])
+    images, save_names = doujin_images_checker(module, sample['url'])
     if images:
         download_checker(module, images[0], save_names[0] if save_names else f'{module.domain}_test.{images[0].split(".")[-1]}')
     else:
-        log(f'\r{module.domain}: {sample["doujin"]}: Skipped download_checker due to images_checker failure', 'red')
+        log(f'\r{module.domain}: {sample["url"]}: Skipped download_checker due to images_checker failure', 'red')
 
 def chapter_checker(module, manga):
     chapters = []

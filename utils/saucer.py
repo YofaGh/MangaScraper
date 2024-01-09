@@ -2,7 +2,7 @@ import requests, json, os
 from bs4 import BeautifulSoup
 from contextlib import suppress
 from utils.logger import log_over, log
-from utils.assets import save_dict_to_file
+from utils.assets import save_json_file
 
 def yandex(url):
     response = requests.get(f'https://yandex.com/images/search?rpt=imageview&url={url}')
@@ -77,7 +77,7 @@ def sauce_url(url):
         log(f'\r{site.__name__}: {len(temp_results)} results were found.', 'green' if temp_results else 'yellow')
         if temp_results:
             results[site.__name__] = temp_results
-    save_dict_to_file('sauce_output.json', results)
+    save_json_file('sauce_output.json', results)
     print_output(results)
     log('This was a summary of the saucer.\nYou can see the full results in sauce_output.json', 'green')
 

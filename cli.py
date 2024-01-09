@@ -48,7 +48,7 @@ settings.AUTO_MERGE = args.m or settings.AUTO_MERGE
 settings.AUTO_PDF_CONVERSION = args.p or settings.AUTO_PDF_CONVERSION
 settings.FIT_MERGE = args.fit or settings.FIT_MERGE
 
-if args.task in ['manga', 'doujin', 'search', 'db', 'check']:
+if args.task in ['manga', 'doujin', 'search', 'db']:
     from utils.modules_contributer import get_modules
     args.s = get_modules(args.s)
 
