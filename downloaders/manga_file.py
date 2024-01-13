@@ -22,11 +22,10 @@ def get_name_of_chapters(json_file):
                 if chapter['url'] == manga['last_downloaded_chapter']['url']:
                     reached_last_downloaded_chapter = True
                     continue
-                if reached_last_downloaded_chapter:
-                    if chapter not in manga['chapters']:
-                        manga['chapters'].append(chapter)
+                if reached_last_downloaded_chapter and chapter not in manga['chapters']:
+                    manga['chapters'].append(chapter)
         else:
-            manga['chapters'] += chapters
+            manga['chapters'].extend(chapters)
         log(f'\r{valid_manga}: {len(manga["chapters"])} chapter{"" if len(manga["chapters"]) == 1 else "s"} to download.')
     save_json_file(json_file, mangas)
 

@@ -4,14 +4,14 @@ class Module:
     type = 'Module'
     download_images_headers = None
 
-    def send_request(url, method='GET', headers=None, json=None, data=None, params=None, verify=None, wait=True):
+    def send_request(url, wait=True, method='GET', **kwargs):
         from utils.assets import waiter
         import requests
-        if verify is False:
+        if kwargs.get('verify') is False:
             requests.packages.urllib3.disable_warnings(requests.packages.urllib3.exceptions.InsecureRequestWarning)
         while True:
             try:
-                response = requests.request(method, url, headers=headers, json=json, data=data, params=params, verify=verify)
+                response = requests.request(url=url, method=method, **kwargs)
                 response.raise_for_status()
                 return response
             except (requests.exceptions.HTTPError, requests.exceptions.Timeout) as error:

@@ -17,7 +17,7 @@ class SetChapters(argparse.Action):
         setattr(namespace, self.dest, values)
 
 parser = argparse.ArgumentParser(allow_abbrev=False)
-parser.add_argument('task', choices=['manga', 'doujin', 'merge', 'c2pdf', 'search', 'db', 'check', 'sauce'])
+parser.add_argument('task', choices=('manga', 'doujin', 'merge', 'c2pdf', 'search', 'db', 'check', 'sauce'))
 webtoon_type = parser.add_argument_group('download').add_mutually_exclusive_group()
 webtoon_type.add_argument('-single', '-code', help='url of the manga, or code of the doujin')
 webtoon_type.add_argument('-file', help='downloads webtoons based on the given json file')
@@ -48,7 +48,7 @@ settings.AUTO_MERGE = args.m or settings.AUTO_MERGE
 settings.AUTO_PDF_CONVERSION = args.p or settings.AUTO_PDF_CONVERSION
 settings.FIT_MERGE = args.fit or settings.FIT_MERGE
 
-if args.task in ['manga', 'doujin', 'search', 'db']:
+if args.task in ('manga', 'doujin', 'search', 'db') and not args.file:
     from utils.modules_contributer import get_modules
     args.s = get_modules(args.s)
 
