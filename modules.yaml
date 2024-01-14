@@ -121,6 +121,11 @@ mangapark.to:
   type: Manga
   test_sample:
     url: 77478-en-sakamoto-days
+mangapill.com:
+  className: Mangapill
+  type: Manga
+  test_sample:
+    url: 1
 mangareader.mobi:
   className: Mangareader
   type: Manga
