@@ -39,7 +39,7 @@
 ## Setup
 
 > - After cloning the repository use ```pip install -r requirements.txt``` to install requirements.
-> - List of implemented modules is available in modules.yaml file.
+> - List of implemented modules is available in [modules.yaml](modules.yaml) file.
 
 ## Command line interface
 >
@@ -60,7 +60,7 @@
 > There are various modules implemented so far. They inherit from models.  
 > They're implemented differently based on how the website is develpoed.  
 > In case if using custom user agents or cookies are required, sending requests to the webiste is done dirctly by the module itself.  
-> To use them, they're loaded from modules.yaml file in modules_contributer.py and can be accesed by get_modules function.  
+> To use them, they're loaded from [modules.yaml](modules.yaml) file in [modules_contributer.py](utils/modules_contributer.py) and can be accesed by get_modules function.  
 
 ## Download a single manga
 >
