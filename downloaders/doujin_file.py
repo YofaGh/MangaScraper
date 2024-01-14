@@ -10,7 +10,7 @@ def download_doujins(json_file):
     for domain in valid_domains:
         try:
             i = 0
-            while len(doujins[domain]) - i > 0:
+            while i < len(doujins[domain]):
                 if download_doujin(doujins[domain][i], get_modules(domain)):
                     del doujins[domain][i]
                 else:

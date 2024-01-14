@@ -1,9 +1,10 @@
 class Module:
-    domain = ''
-    logo = ''
     type = 'Module'
+    logo = None
+    domain = None
     download_images_headers = None
 
+    @staticmethod
     def send_request(url, wait=True, method='GET', **kwargs):
         from utils.assets import waiter
         import requests
@@ -30,6 +31,9 @@ class Module:
                 return image_name
         except:
             return None
+
+    def get_info():
+        return {}
 
     def get_images():
         return [], False
