@@ -60,6 +60,11 @@ hentaixcomic.com:
   type: Manga
   test_sample:
     url: the-unknown
+hentaixcomics.com:
+  className: Hentaixcomics
+  type: Doujin
+  test_sample:
+    url: 98062-bind
 imhentai.xxx:
   className: Imhentai
   type: Doujin
