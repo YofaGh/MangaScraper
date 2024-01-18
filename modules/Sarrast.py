@@ -62,6 +62,7 @@ class Sarrast(Manga):
                 results[manga['title']] = {
                     'domain': Sarrast.domain,
                     'url': manga['slug'],
+                    'page': 1,
                     'thumbnail': ''
                 }
             yield results
