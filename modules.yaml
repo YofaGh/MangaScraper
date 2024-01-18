@@ -65,6 +65,11 @@ hentaixcomics.com:
   type: Doujin
   test_sample:
     url: 98062-bind
+hqporncomics.com:
+  className: Hqporncomics
+  type: Doujin
+  test_sample:
+    url: 11735-porn-comic-jinx-x-vi-x-jinx-2--ebluberry
 imhentai.xxx:
   className: Imhentai
   type: Doujin
