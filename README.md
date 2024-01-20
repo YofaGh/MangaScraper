@@ -98,7 +98,10 @@
         "include": true,
         "domain": "manhuascan.us",
         "url": "secret-class",
-        "last_downloaded_chapter": "chapter-100",
+        "last_downloaded_chapter": {
+            "url": "chapter-100",
+            "name": "Chapter 100"
+        },
         "chapters": []
     }
 }
