@@ -73,16 +73,14 @@ class Luscious(Doujin):
             doujins = response['data']['album']['list']['items']
             results = {}
             for doujin in doujins:
-                name = doujin['title']
-                code = doujin['id']
                 tags, genres = '', ''
                 with suppress(Exception): tags = ', '.join([tag['text'] for tag in doujin['tags']])
                 with suppress(Exception): genres = ', '.join([tag['title'] for tag in doujin['genres']])
-                if absolute and keyword.lower() not in name.lower():
+                if absolute and keyword.lower() not in doujin['title'].lower():
                     continue
-                results[name] = {
+                results[doujin['title']] = {
                     'domain': Luscious.domain,
-                    'code': code,
+                    'code': doujin['id'],
                     'thumbnail': doujin['cover']['url'],
                     'genres': genres,
                     'tags': tags,

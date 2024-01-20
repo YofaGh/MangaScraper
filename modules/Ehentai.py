@@ -46,8 +46,7 @@ class Ehentai(Doujin):
         images = [div.find('img')['data-src'] for div in divs]
         new_images = []
         for image in images:
-            name = image.rsplit('/', 1)[1]
-            name = name.replace('t.', '.')
+            name = image.rsplit('/', 1)[1].replace('t.', '.')
             new_images.append(f'{image.rsplit("/", 1)[0]}/{name}')
         return new_images, False
 

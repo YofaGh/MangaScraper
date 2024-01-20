@@ -56,9 +56,7 @@ class Manga18hot(Manga):
         soup = BeautifulSoup(response['html'], 'html.parser')
         divs = soup.find_all('div', {'class': 'iv-card shuffled'})
         images = [div['data-url'].strip() for div in divs]
-        save_names = []
-        for i in range(len(images)):
-            save_names.append(f'{i+1:03d}.{images[i].split(".")[-1]}')
+        save_names = [f'{i+1:03d}.{images[i].split(".")[-1]}' for i in range(len(images))]
         return images, save_names
 
     def search_by_keyword(keyword, absolute, wait=True):

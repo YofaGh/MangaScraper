@@ -40,9 +40,7 @@ class Comics8Muses(Manga):
         links = soup.find_all('a', {'class': 'c-tile t-hover'})
         images = [link.find('img').get('data-src') for link in links]
         images = [f'https://comics.8muses.com/image/fm/{image.split("/")[-1]}' for image in images]
-        save_names = []
-        for i in range(len(images)):
-            save_names.append(f'{i+1:03d}.{images[i].split(".")[-1]}')
+        save_names = [f'{i+1:03d}.{images[i].split(".")[-1]}' for i in range(len(images))]
         return images, save_names
 
     def search_by_keyword(keyword, absolute, wait=True):

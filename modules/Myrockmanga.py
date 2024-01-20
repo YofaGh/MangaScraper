@@ -59,9 +59,7 @@ class Myrockmanga(Manga):
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'id': 'rendering'}).find_all('img')
         images = [image['src'] for image in images if image.has_attr('page')]
-        save_names = []
-        for i in range(len(images)):
-            save_names.append(f'{i+1:03d}.{images[i].split(".")[-1]}')
+        save_names = [f'{i+1:03d}.{images[i].split(".")[-1]}' for i in range(len(images))]
         return images, save_names
 
     def search_by_keyword(keyword, absolute, wait=True):

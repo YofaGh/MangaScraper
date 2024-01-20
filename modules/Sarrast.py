@@ -45,9 +45,7 @@ class Sarrast(Manga):
     def get_images(manga, chapter, wait=True):
         response = Sarrast.send_request(f'https://sarrast.com/series/{manga}/{chapter["url"]}/api', wait=wait).json()
         images = [f'https://sarrast.com{image["path"]}' for image in response['files']]
-        save_names = []
-        for i in range(len(images)):
-            save_names.append(f'{i+1:03d}.{images[i].split(".")[-1]}')
+        save_names = [f'{i+1:03d}.{images[i].split(".")[-1]}' for i in range(len(images))]
         return images, save_names
 
     def search_by_keyword(keyword, absolute, wait=True):

@@ -56,9 +56,7 @@ class Mangadistrict(Manga):
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'class':'reading-content'}).find_all('img')
         images = [image['src'].strip() for image in images]
-        save_names = []
-        for i in range(len(images)):
-            save_names.append(f'{i+1:03d}.{images[i].split(".")[-1]}')
+        save_names = [f'{i+1:03d}.{images[i].split(".")[-1]}' for i in range(len(images))]
         return images, save_names
 
     def search_by_keyword(keyword, absolute, wait=True):

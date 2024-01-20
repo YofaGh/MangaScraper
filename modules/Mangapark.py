@@ -45,9 +45,7 @@ class Mangapark(Manga):
         script = soup.find('script', {'type': 'qwik/json'})
         data = json.loads(script.text)['objs']
         images = [item for item in data if isinstance(item, str) and 'comic' in item and '?acc=' in item]
-        save_names = []
-        for i in range(len(images)):
-            save_names.append(f'{i+1:03d}.{images[i].split(".")[-1].split("?")[0]}')
+        save_names = [f'{i+1:03d}.{images[i].split(".")[-1].split("?")[0]}' for i in range(len(images))]
         return images, save_names
 
     def search_by_keyword(keyword, absolute, wait=True):

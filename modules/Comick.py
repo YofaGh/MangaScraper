@@ -54,9 +54,7 @@ class Comick(Manga):
         script = soup.find('script', {'id': '__NEXT_DATA__'})
         images = json.loads(script.get_text(strip=True))['props']['pageProps']['chapter']['md_images']
         images = [f'https://meo3.comick.pictures/{image["b2key"]}' for image in images]
-        save_names = []
-        for i in range(len(images)):
-            save_names.append(f'{i+1:03d}.{images[i].split(".")[-1]}')
+        save_names = [f'{i+1:03d}.{images[i].split(".")[-1]}' for i in range(len(images))]
         return images, save_names
 
     def search_by_keyword(keyword, absolute, wait=True):

@@ -41,9 +41,7 @@ class Hqporncomics(Doujin):
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'id': 'block-image-slide'}).find_all('img')
         images = [image['data-src'] for image in images[::2]]
-        save_names = []
-        for i in range(len(images)):
-            save_names.append(f'{i+1:03d}.{images[i].split(".")[-1]}')
+        save_names = [f'{i+1:03d}.{images[i].split(".")[-1]}' for i in range(len(images))]
         return images, save_names
 
     def search_by_keyword(keyword, absolute, wait=True):
