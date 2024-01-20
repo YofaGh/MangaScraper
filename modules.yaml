@@ -1,3 +1,8 @@
+9hentai.to:
+  className: _9hentai
+  type: Doujin
+  test_sample:
+    url: 1
 allmanga.to:
   className: Allmanga
   type: Manga
@@ -183,11 +188,6 @@ nhentai.com:
     url: 60026
 nhentai.xxx:
   className: Nhentai_Xxx
-  type: Doujin
-  test_sample:
-    url: 1
-9hentai.to:
-  className: NineHentai
   type: Doujin
   test_sample:
     url: 1

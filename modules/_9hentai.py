@@ -1,13 +1,13 @@
 from utils.models import Doujin
 
-class NineHentai(Doujin):
+class _9hentai(Doujin):
     domain = '9hentai.to'
     logo = 'https://9hentai.to/images/logo.png'
 
     def get_info(code, wait=True):
         from bs4 import BeautifulSoup
         from contextlib import suppress
-        response = NineHentai.send_request(f'https://9hentai.to/g/{code}', wait=wait)
+        response = _9hentai.send_request(f'https://9hentai.to/g/{code}', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, pages, uploaded = 5 * ['']
         info_box = soup.find('div', {'id': 'info'})
@@ -30,11 +30,11 @@ class NineHentai(Doujin):
         }
 
     def get_title(code, wait=True):
-        response = NineHentai.send_request('https://9hentai.to/api/getBookByID', method='POST', json={'id':26487}, wait=wait).json()
+        response = _9hentai.send_request('https://9hentai.to/api/getBookByID', method='POST', json={'id':26487}, wait=wait).json()
         return response['results']['title']
 
     def get_images(code, wait=True):
-        response = NineHentai.send_request('https://9hentai.to/api/getBookByID', method='POST', json={'id':26487}, wait=wait).json()
+        response = _9hentai.send_request('https://9hentai.to/api/getBookByID', method='POST', json={'id':26487}, wait=wait).json()
         images = [f'{response["results"]["image_server"]}{code}/{i+1}.jpg' for i in range(response['results']['total_page'])]
         return images, False
 
@@ -59,7 +59,7 @@ class NineHentai(Doujin):
             }
         }
         while True:
-            response = NineHentai.send_request('https://9hentai.to/api/getBook', method='POST', json=json, wait=wait).json()
+            response = _9hentai.send_request('https://9hentai.to/api/getBook', method='POST', json=json, wait=wait).json()
             doujins = response['results']
             if not doujins:
                 yield {}
@@ -68,7 +68,7 @@ class NineHentai(Doujin):
                 if absolute and keyword.lower() not in doujin['title'].lower():
                     continue
                 results[doujin['title']] = {
-                    'domain': NineHentai.domain,
+                    'domain': _9hentai.domain,
                     'code': doujin['id'],
                     'thumbnail': f'{doujin["image_server"]}{doujin["id"]}/cover-small.jpg',
                     'tags': ', '.join([tag['name'] for tag in doujin['tags']]),
@@ -78,4 +78,4 @@ class NineHentai(Doujin):
             json['search']['page'] += 1
 
     def get_db(wait=True):
-        return NineHentai.search_by_keyword('', False, wait=wait)
+        return _9hentai.search_by_keyword('', False, wait=wait)
