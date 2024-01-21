@@ -3,6 +3,11 @@
   type: Doujin
   test_sample:
     url: 1
+999hentai.net:
+  className: _999hentai
+  type: Doujin
+  test_sample:
+    url: DrtrzQ6AuKd5hvtzJ
 allmanga.to:
   className: Allmanga
   type: Manga

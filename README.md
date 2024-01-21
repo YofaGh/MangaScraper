@@ -113,7 +113,7 @@
 ## Download a doujin by it's code
 >
 > You can download a doujin from an implemented module just by entering its code.  
-> Note: Doujins are still in development.  
+> Note: You can use -code or -single argument to download a single doujin (it doesn't matter).  
 > Example: ```python cli.py doujin -code 000000 -s hentaifox.com```  
 
 ## Download doujins of a file
