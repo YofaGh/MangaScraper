@@ -65,6 +65,11 @@ hentaifox.com:
   type: Doujin
   test_sample:
     url: 1
+hentairead.com:
+  className: Hentairead
+  type: Doujin
+  test_sample:
+    url: kyohiken-nante-nain-da-yo-danna-no-shinyuu-ni-netorareru-hitozuma
 hentaixcomic.com:
   className: Hentaixcomic
   type: Manga
