@@ -196,6 +196,11 @@ nhentai.com:
   type: Doujin
   test_sample:
     url: 60026
+nhentai.net:
+  className: Nhentai_Net
+  type: Doujin
+  test_sample:
+    url: 1
 nhentai.xxx:
   className: Nhentai_Xxx
   type: Doujin
