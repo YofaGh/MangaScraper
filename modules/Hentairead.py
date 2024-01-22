@@ -57,7 +57,7 @@ class Hentairead(Doujin):
     def search_by_keyword(keyword, absolute, wait=True):
         from contextlib import suppress
         from requests.exceptions import HTTPError
-        page = 25
+        page = 1
         template = f'https://hentairead.com/page/P_P_P_P/?s={keyword}'
         if not keyword:
             template = f'https://hentairead.com/hentai/page/P_P_P_P/?m_orderby=alphabet&m_order=desc'
