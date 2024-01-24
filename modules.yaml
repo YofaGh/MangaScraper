@@ -65,6 +65,11 @@ hentaifox.com:
   type: Doujin
   test_sample:
     url: 1
+hentaihand.com:
+  className: Hentaihand
+  type: Doujin
+  test_sample:
+    url: zurikishi-sotobenkei-no-ouji-sama
 hentairead.com:
   className: Hentairead
   type: Doujin
