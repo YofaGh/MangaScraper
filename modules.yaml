@@ -216,6 +216,11 @@ omegascans.org:
   type: Manga
   test_sample:
     url: where-is-my-hammer
+pururin.to:
+  className: Pururin
+  type: Doujin
+  test_sample:
+    url: 111
 readonepiece.com:
   className: Readonepiece
   type: Manga
