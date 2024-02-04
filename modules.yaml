@@ -101,6 +101,11 @@ luscious.net:
   test_sample:
     url: 505726
     keyword: solo
+magzino.top:
+  className: Magzino
+  type: Manga
+  test_sample:
+    url: gigant
 manga18.club:
   className: Manga18
   type: Manga
