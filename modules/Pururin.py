@@ -5,9 +5,9 @@ class Pururin(Doujin):
     domain = 'pururin.to'
     logo = 'https://pururin.to/assets/images/logo.png'
 
-    def get_info(code):
+    def get_info(code, wait=True):
         from contextlib import suppress
-        response = Pururin.send_request(f'https://pururin.to/gallery/{code}')
+        response = Pururin.send_request(f'https://pururin.to/gallery/{code}', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, pages, rating = 5 * ['']
         extras = {}
@@ -34,14 +34,14 @@ class Pururin(Doujin):
             'Extras': extras,
         }
 
-    def get_title(code):
-        response = Pururin.send_request(f'https://pururin.to/gallery/{code}')
+    def get_title(code, wait=True):
+        response = Pururin.send_request(f'https://pururin.to/gallery/{code}', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         title = soup.find('h1').get_text(strip=True)
         return title
 
-    def get_images(code):
-        response = Pururin.send_request(f'https://pururin.to/gallery/{code}')
+    def get_images(code, wait=True):
+        response = Pururin.send_request(f'https://pururin.to/gallery/{code}', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'class': 'gallery-preview'}).find_all('img')
         images = [image['data-src'] if image.get('data-src') else image['src'] for image in images]

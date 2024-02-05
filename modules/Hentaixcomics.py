@@ -11,9 +11,9 @@ class Hentaixcomics(Doujin):
         'cn': 'Chinese'
     }
 
-    def get_info(code):
+    def get_info(code, wait=True):
         from contextlib import suppress
-        response = Hentaixcomics.send_request(f'https://hentaixcomics.com/{code}/')
+        response = Hentaixcomics.send_request(f'https://hentaixcomics.com/{code}/', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, summary, pages = 5 * ['']
         info_box = soup.find('div', {'id': 'info'})
@@ -37,15 +37,15 @@ class Hentaixcomics(Doujin):
             'Extras': extras
         }
 
-    def get_title(code):
-        response = Hentaixcomics.send_request(f'https://hentaixcomics.com/{code}/')
+    def get_title(code, wait=True):
+        response = Hentaixcomics.send_request(f'https://hentaixcomics.com/{code}/', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         title = soup.find('div', {'id': 'info'}).find('h1').get_text(strip=True)
         return title
 
-    def get_images(code):
+    def get_images(code, wait=True):
         import json
-        response = Hentaixcomics.send_request(f'https://hentaixcomics.com/{code}/')
+        response = Hentaixcomics.send_request(f'https://hentaixcomics.com/{code}/', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         images_raw = soup.find('textarea').get_text(strip=True)
         images = json.loads(images_raw)

@@ -5,8 +5,8 @@ class Hentaihand(Doujin):
     logo = 'https://hentaihand.com/images/icon.png'
     is_coded = False
 
-    def get_info(code):
-        response = Hentaihand.send_request(f'https://hentaihand.com/api/comics/{code}').json()
+    def get_info(code, wait=True):
+        response = Hentaihand.send_request(f'https://hentaihand.com/api/comics/{code}', wait=wait).json()
         extras = {
             'Description': response['description'],
             'Category': response.get('category', {}).get('name') or '',
@@ -30,12 +30,12 @@ class Hentaihand(Doujin):
             }
         }
 
-    def get_title(code):
-        response = Hentaihand.send_request(f'https://hentaihand.com/api/comics/{code}').json()
+    def get_title(code, wait=True):
+        response = Hentaihand.send_request(f'https://hentaihand.com/api/comics/{code}', wait=wait).json()
         return response['title']
 
-    def get_images(code):
-        response = Hentaihand.send_request(f'https://hentaihand.com/api/comics/{code}/images').json()
+    def get_images(code, wait=True):
+        response = Hentaihand.send_request(f'https://hentaihand.com/api/comics/{code}/images', wait=wait).json()
         images = [image['source_url'] for image in response['images']]
         return images, False
 

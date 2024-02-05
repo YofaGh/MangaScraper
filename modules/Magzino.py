@@ -6,9 +6,9 @@ class Magzino(Manga):
     logo = 'https://magzino.top/storage/2023/06/cropped-nafiicon-192x192.png'
     image_headers = {'cookie': '_lscache_vary=621c4b8eafb4287a9451c2bda1936d41'}
 
-    def get_info(manga):
+    def get_info(manga, wait=True):
         from contextlib import suppress
-        response = Magzino.send_request(f'https://magzino.top/all-books/{manga}')
+        response = Magzino.send_request(f'https://magzino.top/all-books/{manga}', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, summary, rating, status = 5 * ['']
         info_box = soup.find_all('div', {'class': 'post-content_item'})
@@ -35,9 +35,9 @@ class Magzino(Manga):
             'Extras': extras
         }
 
-    def get_chapters(manga):
+    def get_chapters(manga, wait=True):
         print(manga)
-        response = Magzino.send_request(f'https://magzino.top/all-books/{manga}/ajax/chapters', method='POST')
+        response = Magzino.send_request(f'https://magzino.top/all-books/{manga}/ajax/chapters', method='POST', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         aas = soup.find_all('div', {'class': 'chap-a-span'})
         chapters = [{
@@ -46,8 +46,8 @@ class Magzino(Manga):
         } for aa in aas[::-1]]
         return chapters
 
-    def get_images(manga, chapter):
-        response = Magzino.send_request(f'https://magzino.top/all-books/{manga}/{chapter["url"]}/', headers=Magzino.image_headers)
+    def get_images(manga, chapter, wait=True):
+        response = Magzino.send_request(f'https://magzino.top/all-books/{manga}/{chapter["url"]}/', headers=Magzino.image_headers, wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find_all('img', {'class': 'wp-manga-chapter-img'})
         images = [div['src'].strip() for div in divs]
