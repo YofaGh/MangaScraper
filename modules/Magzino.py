@@ -36,7 +36,6 @@ class Magzino(Manga):
         }
 
     def get_chapters(manga, wait=True):
-        print(manga)
         response = Magzino.send_request(f'https://magzino.top/all-books/{manga}/ajax/chapters', method='POST', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         aas = soup.find_all('div', {'class': 'chap-a-span'})
