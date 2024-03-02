@@ -7,6 +7,7 @@ from utils.assets import validate_corrupted_image, validate_truncated_image, loa
 
 def check_modules(domains):
     modules = load_yaml_file('modules.yaml')
+    if not domains: domains = modules.keys()
     for domain in domains:
         module = get_modules(domain)
         if modules[domain]['type'] == 'Manga':
