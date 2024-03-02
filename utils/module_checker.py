@@ -3,10 +3,10 @@ from contextlib import suppress
 from utils.logger import log_over, log
 from utils.modules_contributer import get_modules
 from utils.exceptions import MissingFunctionException
-from utils.assets import validate_corrupted_image, validate_truncated_image, load_yaml_file, sleep
+from utils.assets import validate_corrupted_image, validate_truncated_image, load_modules_yaml_file, sleep
 
 def check_modules(domains):
-    modules = load_yaml_file('modules.yaml')
+    modules = load_modules_yaml_file()
     if not domains: domains = modules.keys()
     for domain in domains:
         module = get_modules(domain)

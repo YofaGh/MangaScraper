@@ -1,4 +1,4 @@
-from settings import SLEEP_TIME
+from settings import SLEEP_TIME, MODULES_FILE_PATH
 
 def validate_corrupted_image(path_to_image):
     from PIL import Image
@@ -16,9 +16,9 @@ def validate_truncated_image(path_to_image):
     except:
         return False
 
-def load_yaml_file(path_to_file):
+def load_modules_yaml_file():
     import yaml
-    with open(path_to_file, encoding='utf8') as file:
+    with open(MODULES_FILE_PATH, encoding='utf8') as file:
         return yaml.safe_load(file)
 
 def load_json_file(path_to_file):
