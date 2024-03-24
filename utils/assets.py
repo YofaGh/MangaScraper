@@ -40,7 +40,7 @@ def validate_folder(path_to_folder):
 
 def create_folder(path):
     import os
-    os.makedirs(path, exist_ok=True)
+    os.makedirs('/'.join([fix_name_for_folder(p) for p in path.split('/')]), exist_ok=True)
 
 def fix_name_for_folder(name):
     return ''.join([ch for ch in name if ch not in r'\/:*?"><|']).rstrip('.')
@@ -64,4 +64,4 @@ def waiter():
     for i in range(59, 0, -1):
         sleep(1)
         logger.log_over(f'\rWaiting {i} seconds to attempt a fresh connection. ', 'red')
-    logger.clear()
+    logger.log_over(logger.CLEAR)

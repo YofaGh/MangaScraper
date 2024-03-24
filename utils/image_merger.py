@@ -1,6 +1,6 @@
 from PIL import Image
 from shutil import copy2
-from utils.logger import log_over, log, clear
+from utils.logger import log_over, log, CLEAR
 from utils.assets import validate_folder, detect_images, create_folder
 from settings import FIT_MERGE
 
@@ -21,7 +21,7 @@ def merge_folder(path_to_source, path_to_destination, name=None):
     else:
         log_over(f'\r{name}: Merging without resizing, You might see white spaces around some images...')
         results = merge(images, path_to_destination)
-    clear()
+    log_over(CLEAR)
     log(f'\r{name}: Merged {len(images_path)} images into {results}.', 'green')
 
 def merge(images, path_to_destination):

@@ -13,7 +13,7 @@ def download_doujin(code, module):
         images, save_names = module.get_images(code)
         logger.log_over(f'\r{shorten_doujin_title}: Creating folder...')
         fixed_doujin_name = assets.fix_name_for_folder(doujin_title)
-        assets.create_folder(fixed_doujin_name)
+        assets.create_folder(doujin_title)
         i = 0
         while i < len(images):
             logger.log_over(f'\r{shorten_doujin_title}: Downloading image {i+1}/{len(images)}...')

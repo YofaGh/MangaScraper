@@ -52,7 +52,7 @@ def download_manga(manga, url, module, chapters):
             logger.log_over(f'\r{manga}: {chapter_name}: Getting image links...')
             images, save_names = module.get_images(url, chapters[0])
             logger.log_over(f'\r{manga}: {chapter_name}: Creating folder...')
-            path = f'{fixed_manga}/{chapter_name}'
+            path = f'{fixed_manga}/{assets.fix_name_for_folder(chapter_name)}'
             assets.create_folder(path)
             adder = 0
             i = 0

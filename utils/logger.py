@@ -17,7 +17,3 @@ def log_over(text, color='white'):
 def log(text, color='white'):
     if LOGGING:
         print(f'{COLORS[color]}{text}{RESET}')
-
-def clear():
-    if LOGGING:
-        print(CLEAR, end='')
