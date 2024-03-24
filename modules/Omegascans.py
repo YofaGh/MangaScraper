@@ -32,14 +32,14 @@ class Omegascans(Manga):
         }
 
     def get_chapters(manga, wait=True):
-        response = Omegascans.send_request(f'https://omegascans.org/series/{manga}', wait=wait)
+        response = Omegascans.send_request('https://omegascans.org/series/where-is-my-hammer', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
-        links = soup.find('ul', {'class': 'grid grid-cols-1 lg:grid-cols-3 gap-x-8 gap-y-4'}).find_all('a')
-        chapters_urls = [link['href'].split('/')[-1] for link in links[::-1]]
+        series_id = soup.find(lambda tag: tag.name == 'script' and 'series_id' in tag.text).text.split('{\\"series_id\\":')[1].split(',')[0]
+        response = Omegascans.send_request(f'https://api.omegascans.org/chapter/query?page=1&perPage=10000&series_id={series_id}', wait=wait)
         chapters = [{
-            'url': chapter_url,
-            'name': Omegascans.rename_chapter(chapter_url)
-        } for chapter_url in chapters_urls]
+            'url': chapter['chapter_slug'],
+            'name': chapter['chapter_name']
+        } for chapter in response.json()['data'][::-1]]
         return chapters
 
     def get_images(manga, chapter, wait=True):
@@ -51,20 +51,21 @@ class Omegascans(Manga):
 
     def search_by_keyword(keyword, absolute, wait=True):
         from contextlib import suppress
-        json = {'term': keyword}
+        data = {'adult': 'true', 'query_string': keyword, 'page': 1}
         while True:
-            mangas = Omegascans.send_request(f'https://api.omegascans.org/series/search', method='POST', json=json, wait=wait).json()
+            mangas = Omegascans.send_request(f'https://api.omegascans.org/query', params=data, wait=wait).json()['data']
             results = {}
             if not mangas:
                 yield results
             for manga in mangas:
                 if absolute and keyword.lower() not in manga['title'].lower():
                     continue
-                summary, type, alternative, chapters_count = '', '', '', ''
+                summary, type, alternative, chapters_count, latest_chapter = '', '', '', '', ''
                 with suppress(Exception): summary = manga['description']
                 with suppress(Exception): type = manga['series_type']
                 with suppress(Exception): alternative = manga['alternative_names']
                 with suppress(Exception): chapters_count = manga['meta']['chapters_count']
+                with suppress(Exception): latest_chapter = manga['latest_chapter']['chapter_slug']
                 results[manga['title']] = {
                     'domain': Omegascans.domain,
                     'url': manga['series_slug'],
@@ -73,38 +74,11 @@ class Omegascans(Manga):
                     'alternative': alternative,
                     'type': type,
                     'chapters_count': chapters_count,
-                    'page': 1
+                    'latest_chapter': latest_chapter,
+                    'page': data['page']
                 }
             yield results
-            yield {}
+            data['page'] += 1
 
     def get_db(wait=True):
-        from contextlib import suppress
-        statuses = ['Ongoing', 'Hiatus', 'Dropped', 'Completed']
-        for status in statuses:
-            page = 1
-            total_pages = 1000
-            while True:
-                if page > total_pages:
-                    yield {}
-                response = Omegascans.send_request(f'https://api.omegascans.org/series/querysearch', method='POST', json={'series_status': status, 'page': page}, wait=wait).json()
-                total_pages = response['meta']['total']
-                mangas = response['data']
-                results = {}
-                for manga in mangas:
-                    type, chapters_count, latest_chapter = '', '', ''
-                    with suppress(Exception): type = manga['series_type']
-                    with suppress(Exception): latest_chapter = manga['chapters'][0]['chapter_slug']
-                    with suppress(Exception): chapters_count = manga['meta']['chapters_count']
-                    results[manga['title']] = {
-                        'domain': Omegascans.domain,
-                        'url': manga['series_slug'],
-                        'latest_chapter': latest_chapter,
-                        'status': status,
-                        'type': type,
-                        'chapters_count': chapters_count,
-                        'page': page
-                    }
-                yield results
-                page += 1
-        yield {}
+        return Omegascans.search_by_keyword('', False, wait=wait)

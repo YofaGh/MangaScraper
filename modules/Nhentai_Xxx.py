@@ -37,13 +37,13 @@ class Nhentai_Xxx(Doujin):
     def get_title(code, wait=True):
         response = Nhentai_Xxx.send_request(f'https://nhentai.xxx/g/{code}', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
-        title = soup.find('h1', {'class', 'title'}).find('span').get_text(strip=True)
+        title = soup.find('div', {'class', 'info'}).find('h1').get_text(strip=True)
         return title
 
     def get_images(code, wait=True):
         response = Nhentai_Xxx.send_request(f'https://nhentai.xxx/g/{code}/', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
-        divs = soup.find_all('a', {'class': 'gallerythumb'})
+        divs = soup.find('div', {'class': 'gallery_thumbs'}).find_all('a')
         images = [div.find('img')['data-src'] for div in divs]
         new_images = []
         for image in images:
@@ -60,7 +60,7 @@ class Nhentai_Xxx(Doujin):
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')
-            doujins = soup.find_all('div', {'class': 'gallery'})
+            doujins = soup.find_all('div', {'class': 'gallery_item'})
             if not doujins:
                 yield {}
             results = {}

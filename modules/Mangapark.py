@@ -44,58 +44,42 @@ class Mangapark(Manga):
         soup = BeautifulSoup(response.text, 'html.parser')
         script = soup.find('script', {'type': 'qwik/json'})
         data = json.loads(script.text)['objs']
-        images = [item for item in data if isinstance(item, str) and 'comic' in item and '?acc=' in item]
-        save_names = [f'{i+1:03d}.{images[i].split(".")[-1].split("?")[0]}' for i in range(len(images))]
+        images = [item for item in data if isinstance(item, str) and '/comic/' in item]
+        save_names = [f'{i+1:03d}.{images[i].split(".")[-1]}' for i in range(len(images))]
         return images, save_names
 
     def search_by_keyword(keyword, absolute, wait=True):
         from contextlib import suppress
         page = 1
-        prev_page = {}
         while True:
-            data_json = {
-                'query':'''query get_content_browse_search($select: ComicSearchSelect) { get_content_browse_search( select: $select ) {
-                    items { data {name authors artists genres originalStatus summary { code } urlPath urlCover600 } max_chapterNode { data { urlPath } } } } }''',
-                'variables': {
-                    'select': {
-                        'word': keyword,
-                        'page': page
-                    }
-                },
-                'operationName':'get_content_browse_search'
-            }
-            response = Mangapark.send_request('https://mangapark.to/apo/', method='POST', headers={'content-type': 'application/json'}, json=data_json, wait=wait).json()
-            mangas = response['data']['get_content_browse_search']['items']
-            if mangas == prev_page:
+            response = Mangapark.send_request(f'https://mangapark.to/search?word={keyword}&page={page}', wait=wait)
+            soup = BeautifulSoup(response.text, 'html.parser')
+            mangas = soup.find_all('div', {'class': 'flex border-b border-b-base-200 pb-5'})
+            if not mangas:
                 yield {}
             results = {}
             for manga in mangas:
-                name = manga['data']['name']
-                url = manga['data']['urlPath'].split('/')[-1]
-                authors, artists, genres, status, summary, latest_chapter = '', '', '', '', '', ''
-                with suppress(Exception): authors = ', '.join(manga['data']['authors'])
-                with suppress(Exception): artists = ', '.join(manga['data']['artists'])
-                with suppress(Exception): genres = ', '.join(manga['data']['genres'])
-                with suppress(Exception): status = manga['data']['originalStatus']
-                with suppress(Exception): summary = manga['data']['summary']['code']
-                with suppress(Exception): latest_chapter = manga['max_chapterNode']['data']['urlPath'].split('/')[-1]
+                name = manga.find('h3').get_text(strip=True)
+                url = manga.find('h3').find('a')['href'].split('/')[-1]
+                authors, alternatives, genres, latest_chapter = '', '', '', ''
+                with suppress(Exception): authors = ', '.join(manga.find('div', {'q:key': '6N_0'}).get_text(strip=True).split('/'))
+                with suppress(Exception): alternatives = ', '.join(manga.find('div', {'q:key': 'lA_0'}).get_text(strip=True).split('/'))
+                with suppress(Exception): genres = ', '.join(manga.find('div', {'q:key': 'HB_9'}).get_text(strip=True).split(','))
+                with suppress(Exception): latest_chapter = manga.find('div', {'q:key': 'R7_8'}).find('a')['href'].split('/')[-1]
                 if absolute and keyword.lower() not in name.lower():
                     continue
                 results[name] = {
                     'domain': Mangapark.domain,
                     'url': url,
-                    'thumbnail': manga['data']['urlCover600'],
+                    'thumbnail': manga.find('img')['src'],
+                    'alternatives': alternatives,
                     'authors': authors,
-                    'artists': artists,
                     'genres': genres,
-                    'status': status,
-                    'summary': summary,
                     'latest_chapter': latest_chapter,
                     'page': page
                 }
             yield results
             page += 1
-            prev_page = mangas
 
     def get_db(wait=True):
         return Mangapark.search_by_keyword('', False, wait=wait)

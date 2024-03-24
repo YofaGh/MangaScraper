@@ -49,7 +49,7 @@ class Magzino(Manga):
         response = Magzino.send_request(f'https://magzino.top/all-books/{manga}/{chapter["url"]}/', headers=Magzino.image_headers, wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find_all('img', {'class': 'wp-manga-chapter-img'})
-        images = [div['src'].strip() for div in divs]
+        images = [div['data-src'].strip() for div in divs]
         return images, False
 
     def search_by_keyword(keyword, absolute, wait=True):

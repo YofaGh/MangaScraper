@@ -121,11 +121,6 @@ manga18h.com:
   type: Manga
   test_sample:
     url: death-angel
-manga18hot.net:
-  className: Manga18hot
-  type: Manga
-  test_sample:
-    url: shuffle
 manga68.com:
   className: Manga68
   type: Manga

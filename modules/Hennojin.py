@@ -50,7 +50,10 @@ class Hennojin(Doujin):
         return images, False
 
     def search_by_keyword(keyword, absolute, wait=True):
-        data = {'action': 'post_grid_paginate_ajax_free', 'grid_id': '23', 'current_page': 1, 'formData': f'keyword={keyword}'}
+        response = Hennojin.send_request('https://hennojin.com/home/', wait=wait)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        wpnonce = soup.find('input', {'id': '_wpnonce'})['value']
+        data = {'action': 'post_grid_ajax_search_free', 'grid_id': '23', 'current_page': 1, 'formData': f'keyword={keyword}&_wpnonce={wpnonce}'}
         while True:
             response = Hennojin.send_request(f'https://hennojin.com/home/wp-admin/admin-ajax.php', method='POST', data=data, wait=wait).json()
             if not response.get('html'):
