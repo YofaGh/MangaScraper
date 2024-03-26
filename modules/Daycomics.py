@@ -71,7 +71,7 @@ class Daycomics(Manga):
                 with suppress(Exception): genres = [genre.get_text(strip=True) for genre in manga.find('p', {'class': 'etc'}).find_all('span')]
                 results[ti] = {
                     'domain': Daycomics.domain,
-                    'url': manga.find('a')['href'],
+                    'url': manga.find('a')['href'].replace('https://daycomics.me/en/', '')[:-5],
                     'thumbnail': manga.find('img')['src'],
                     'status': status,
                     'authors': authors,
