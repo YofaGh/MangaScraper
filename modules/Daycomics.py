@@ -10,6 +10,7 @@ class Daycomics(Manga):
     def get_info(manga, wait=True):
         from contextlib import suppress
         manga = manga[:-5] if manga.endswith('.html') else manga
+        manga = manga.replace('https://daycomics.me/en/', '')
         response = Daycomics.send_request(f'https://daycomics.me/en/{manga}.html', headers=Daycomics.headers, wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, summary = '', '', ''
@@ -29,6 +30,7 @@ class Daycomics(Manga):
 
     def get_chapters(manga, wait=True):
         manga = manga[:-5] if manga.endswith('.html') else manga
+        manga = manga.replace('https://daycomics.me/en/', '')
         response = Daycomics.send_request(f'https://daycomics.me/en/{manga}.html', headers=Daycomics.headers, wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         lis = soup.find_all('li', {'class': 'normal_ep'})
