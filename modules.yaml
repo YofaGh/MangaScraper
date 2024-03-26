@@ -45,6 +45,11 @@ constellarcomic.com:
   type: Manga
   test_sample:
     url: up-and-down
+daycomics.me:
+  className: Daycomics
+  type: Manga
+  test_sample:
+    url: secret-class/7E4nFKYE
 doujins.com:
   className: Doujins
   type: Doujin
