@@ -1,13 +1,13 @@
 from utils.models import Doujin
 
 class _9hentai(Doujin):
-    domain = '9hentai.to'
-    logo = 'https://9hentai.to/images/logo.png'
+    domain = '9hentai.com'
+    logo = 'https://9hentai.com/images/logo.png'
 
     def get_info(code, wait=True):
         from bs4 import BeautifulSoup
         from contextlib import suppress
-        response = _9hentai.send_request(f'https://9hentai.to/g/{code}', wait=wait)
+        response = _9hentai.send_request(f'https://9hentai.com/g/{code}', wait=wait)
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, pages, uploaded = 5 * ['']
         info_box = soup.find('div', {'id': 'info'})
@@ -30,11 +30,11 @@ class _9hentai(Doujin):
         }
 
     def get_title(code, wait=True):
-        response = _9hentai.send_request('https://9hentai.to/api/getBookByID', method='POST', json={'id':26487}, wait=wait).json()
+        response = _9hentai.send_request('https://9hentai.com/api/getBookByID', method='POST', json={'id': code}, wait=wait).json()
         return response['results']['title']
 
     def get_images(code, wait=True):
-        response = _9hentai.send_request('https://9hentai.to/api/getBookByID', method='POST', json={'id':26487}, wait=wait).json()
+        response = _9hentai.send_request('https://9hentai.com/api/getBookByID', method='POST', json={'id': code}, wait=wait).json()
         images = [f'{response["results"]["image_server"]}{code}/{i+1}.jpg' for i in range(response['results']['total_page'])]
         return images, False
 
@@ -59,7 +59,7 @@ class _9hentai(Doujin):
             }
         }
         while True:
-            response = _9hentai.send_request('https://9hentai.to/api/getBook', method='POST', json=json, wait=wait).json()
+            response = _9hentai.send_request('https://9hentai.com/api/getBook', method='POST', json=json, wait=wait).json()
             doujins = response['results']
             if not doujins:
                 yield {}

@@ -1,4 +1,4 @@
-9hentai.to:
+9hentai.com:
   className: _9hentai
   type: Doujin
   test_sample:
@@ -110,7 +110,7 @@ magzino.top:
   className: Magzino
   type: Manga
   test_sample:
-    url: gigant
+    url: blue-box
 manga18.club:
   className: Manga18
   type: Manga
@@ -210,7 +210,7 @@ nhentai.net:
   className: Nhentai_Net
   type: Doujin
   test_sample:
-    url: 1
+    url: 2
 nhentai.xxx:
   className: Nhentai_Xxx
   type: Doujin
@@ -220,7 +220,7 @@ nyahentai.red:
   className: Nyahentai
   type: Doujin
   test_sample:
-    url: 1
+    url: 3
 omegascans.org:
   className: Omegascans
   type: Manga

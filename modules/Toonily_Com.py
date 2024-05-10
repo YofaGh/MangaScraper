@@ -13,7 +13,7 @@ class Toonily_Com(Manga):
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, summary, rating, status, authors, artists, genres, tags = 10 * ['']
         info_box = soup.find('div', {'class': 'tab-summary'})
-        with suppress(Exception): cover = info_box.find('img')['src']
+        with suppress(Exception): cover = info_box.find('img')['data-src']
         with suppress(Exception): title = info_box.find('div', {'class': 'post-title'}).find('h1').contents[0].strip()
         with suppress(Exception): summary = soup.find('div', {'class': 'summary__content'}).get_text(strip=True)
         with suppress(Exception): rating = float(soup.find('span', {'id': 'averagerate'}).get_text(strip=True))
