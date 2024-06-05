@@ -5,10 +5,10 @@ class Mangapark(Manga):
     domain = 'mangapark.to'
     logo = 'https://mangapark.to/public-assets/img/favicon.ico'
 
-    def get_info(manga, wait=True):
+    def get_info(manga):
         import json
         manga = manga.split('-')[0] if '-' in manga else manga
-        response = Mangapark.send_request(f'https://mangapark.to/title/{manga}', wait=wait)
+        response = Mangapark.send_request(f'https://mangapark.to/title/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         script = soup.find('script', {'id': '__NEXT_DATA__'}).get_text(strip=True)
         data = json.loads(script)['props']['pageProps']['dehydratedState']['queries'][0]['state']['data']['data']
@@ -26,9 +26,9 @@ class Mangapark(Manga):
             },
         }
 
-    def get_chapters(manga, wait=True):
+    def get_chapters(manga):
         import json
-        response = Mangapark.send_request(f'https://mangapark.to/title/{manga}', wait=wait)
+        response = Mangapark.send_request(f'https://mangapark.to/title/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         script = soup.find('script', {'type': 'qwik/json'}).text
         data = json.loads(script)['objs']
@@ -38,9 +38,9 @@ class Mangapark(Manga):
         } for i, item in enumerate(data) if isinstance(item, str) and f'{manga}/' in item]
         return chapters
 
-    def get_images(manga, chapter, wait=True):
+    def get_images(manga, chapter):
         import json
-        response = Mangapark.send_request(f'https://mangapark.to/title/{manga}/{chapter["url"]}', wait=wait)
+        response = Mangapark.send_request(f'https://mangapark.to/title/{manga}/{chapter["url"]}')
         soup = BeautifulSoup(response.text, 'html.parser')
         script = soup.find('script', {'type': 'qwik/json'})
         data = json.loads(script.text)['objs']
@@ -48,11 +48,11 @@ class Mangapark(Manga):
         save_names = [f'{i+1:03d}.{images[i].split(".")[-1]}' for i in range(len(images))]
         return images, save_names
 
-    def search_by_keyword(keyword, absolute, wait=True):
+    def search_by_keyword(keyword, absolute):
         from contextlib import suppress
         page = 1
         while True:
-            response = Mangapark.send_request(f'https://mangapark.to/search?word={keyword}&page={page}', wait=wait)
+            response = Mangapark.send_request(f'https://mangapark.to/search?word={keyword}&page={page}')
             soup = BeautifulSoup(response.text, 'html.parser')
             mangas = soup.find_all('div', {'class': 'flex border-b border-b-base-200 pb-5'})
             if not mangas:
@@ -81,5 +81,5 @@ class Mangapark(Manga):
             yield results
             page += 1
 
-    def get_db(wait=True):
-        return Mangapark.search_by_keyword('', False, wait=wait)
+    def get_db():
+        return Mangapark.search_by_keyword('', False)

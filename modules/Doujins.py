@@ -6,10 +6,10 @@ class Doujins(Doujin):
     logo = 'https://doujins.com/img/logo32x32.png'
     is_coded = False
 
-    def get_info(code, wait=True):
+    def get_info(code):
         from datetime import datetime
         from contextlib import suppress
-        response = Doujins.send_request(f'https://doujins.com/{code}', wait=wait)
+        response = Doujins.send_request(f'https://doujins.com/{code}')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, tags, artists, pages, translated_by, uploaded = 7 * ['']
         with suppress(Exception): cover = soup.find('img', {'class': 'doujin active'})['data-file'].replace('&amp;', '&')
@@ -33,14 +33,14 @@ class Doujins(Doujin):
             }
         }
 
-    def get_title(code, wait=True):
-        response = Doujins.send_request(f'https://doujins.com/{code}', wait=wait)
+    def get_title(code):
+        response = Doujins.send_request(f'https://doujins.com/{code}')
         soup = BeautifulSoup(response.text, 'html.parser')
         title = soup.find('div', {'class', 'folder-title'}).find_all('a')[-1].get_text(strip=True)
         return title
 
-    def get_images(code, wait=True):
-        response = Doujins.send_request(f'https://doujins.com/{code}', wait=wait)
+    def get_images(code):
+        response = Doujins.send_request(f'https://doujins.com/{code}')
         soup = BeautifulSoup(response.text, 'html.parser')
         if 'Upgrade to premium now!' in soup.find('div', {'id', 'thumbnails'}).get_text():
             return [], False
@@ -49,11 +49,11 @@ class Doujins(Doujin):
         save_names = [f'{i+1:03d}.{images[i].split(".")[-1].split("?")[0]}' for i in range(len(images))]
         return images, save_names
 
-    def search_by_keyword(keyword, absolute, wait=True):
+    def search_by_keyword(keyword, absolute):
         from contextlib import suppress
         page = 1
         while True:
-            response = Doujins.send_request(f'https://doujins.com/searches?words={keyword}&page={page}', wait=wait)
+            response = Doujins.send_request(f'https://doujins.com/searches?words={keyword}&page={page}')
             soup = BeautifulSoup(response.text, 'html.parser')
             divs = soup.select('#content > div > div:nth-child(5)')[0]
             try:

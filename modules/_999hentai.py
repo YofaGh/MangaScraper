@@ -7,9 +7,9 @@ class _999hentai(Doujin):
     headers = {'User-Agent': 'Mozilla/5.0'}
     is_coded = False
 
-    def get_info(code, wait=True):
+    def get_info(code):
         from contextlib import suppress
-        response = _999hentai.send_request(f'https://999hentai.net/hchapter/{code}', headers=_999hentai.headers, wait=wait)
+        response = _999hentai.send_request(f'https://999hentai.net/hchapter/{code}', headers=_999hentai.headers)
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, pages = '', '', ''
         extras = {}
@@ -34,14 +34,14 @@ class _999hentai(Doujin):
             'Extras': extras
         }
 
-    def get_title(code, wait=True):
-        response = _999hentai.send_request(f'https://999hentai.net/hchapter/{code}', headers=_999hentai.headers, wait=wait)
+    def get_title(code):
+        response = _999hentai.send_request(f'https://999hentai.net/hchapter/{code}', headers=_999hentai.headers)
         soup = BeautifulSoup(response.text, 'html.parser')
         title = soup.find('h1').get_text(strip=True)
         return title
 
-    def get_images(code, wait=True):
-        response = _999hentai.send_request(f'https://999hentai.net/hchapter/{code}', headers=_999hentai.headers, wait=wait)
+    def get_images(code):
+        response = _999hentai.send_request(f'https://999hentai.net/hchapter/{code}', headers=_999hentai.headers)
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find(lambda tag: tag.name == 'script' and '__NUXT__' in tag.text).get_text(strip=True).split('pics:[', 1)[1].split('],picsS')[0]
         images = [image.split('url:"', 1)[1].split('",', 1)[0] for image in images.split('},{')]

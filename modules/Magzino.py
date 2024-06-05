@@ -6,9 +6,9 @@ class Magzino(Manga):
     logo = 'https://magzino.top/storage/2023/06/cropped-nafiicon-192x192.png'
     image_headers = {'cookie': '_lscache_vary=621c4b8eafb4287a9451c2bda1936d41'}
 
-    def get_info(manga, wait=True):
+    def get_info(manga):
         from contextlib import suppress
-        response = Magzino.send_request(f'https://magzino.top/all-books/{manga}', wait=wait)
+        response = Magzino.send_request(f'https://magzino.top/all-books/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, summary, rating, status = 5 * ['']
         info_box = soup.find_all('div', {'class': 'post-content_item'})
@@ -35,8 +35,8 @@ class Magzino(Manga):
             'Extras': extras
         }
 
-    def get_chapters(manga, wait=True):
-        response = Magzino.send_request(f'https://magzino.top/all-books/{manga}/ajax/chapters', method='POST', wait=wait)
+    def get_chapters(manga):
+        response = Magzino.send_request(f'https://magzino.top/all-books/{manga}/ajax/chapters', method='POST')
         soup = BeautifulSoup(response.text, 'html.parser')
         aas = soup.find_all('div', {'class': 'chap-a-span'})
         chapters = [{
@@ -45,14 +45,14 @@ class Magzino(Manga):
         } for aa in aas[::-1]]
         return chapters
 
-    def get_images(manga, chapter, wait=True):
-        response = Magzino.send_request(f'https://magzino.top/all-books/{manga}/{chapter["url"]}/', headers=Magzino.image_headers, wait=wait)
+    def get_images(manga, chapter):
+        response = Magzino.send_request(f'https://magzino.top/all-books/{manga}/{chapter["url"]}/', headers=Magzino.image_headers)
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find_all('img', {'class': 'wp-manga-chapter-img'})
         images = [div['data-src'].strip() for div in divs]
         return images, False
 
-    def search_by_keyword(keyword, absolute, wait=True):
+    def search_by_keyword(keyword, absolute):
         from contextlib import suppress
         data = {
             'action': 'madara_load_more',
@@ -70,7 +70,7 @@ class Magzino(Manga):
         }
         class_name = 'row c-tabs-item__content' if keyword else 'col-12 col-md-6 badge-pos-1'
         while True:
-            response = Magzino.send_request(f'https://magzino.top/ajax-call', method='POST', data=data, wait=wait)
+            response = Magzino.send_request(f'https://magzino.top/ajax-call', method='POST', data=data)
             if not response.text:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -103,8 +103,8 @@ class Magzino(Manga):
             yield results
             data['page'] += 1
 
-    def get_db(wait=True):
-        return Magzino.search_by_keyword('', False, wait=wait)
+    def get_db():
+        return Magzino.search_by_keyword('', False)
 
     def rename_chapter(chapter):
         return ' '.join([ch.capitalize() for ch in chapter.strip('/').split('-')]).replace('/', '.')

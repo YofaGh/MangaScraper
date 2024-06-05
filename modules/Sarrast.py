@@ -4,9 +4,9 @@ from utils.models import Manga
 class Sarrast(Manga):
     domain = 'sarrast.com'
 
-    def get_info(manga, wait=True):
+    def get_info(manga):
         from contextlib import suppress
-        response = Sarrast.send_request(f'https://sarrast.com/series/{manga}', wait=wait)
+        response = Sarrast.send_request(f'https://sarrast.com/series/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, summary, rating, status, chapters, posted_on, type = 8 * ['']
         info_boxes = soup.find('div', {'class': 'flex mt-4 w-full bg-black bg-opacity-70 py-4 rounded-2xl text-white'}).find_all('div', {'class': 'flex-1 text-center'})
@@ -31,8 +31,8 @@ class Sarrast(Manga):
             },
         }
 
-    def get_chapters(manga, wait=True):
-        response = Sarrast.send_request(f'https://sarrast.com/series/{manga}', wait=wait)
+    def get_chapters(manga):
+        response = Sarrast.send_request(f'https://sarrast.com/series/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find('div', {'class': 'text-white mb-20 mt-8 relative px-4'}).find_all('a')
         chapters_urls = [div['href'].split('/')[-1] for div in divs[::-1]]
@@ -42,16 +42,16 @@ class Sarrast(Manga):
         } for chapter_url in chapters_urls]
         return chapters
 
-    def get_images(manga, chapter, wait=True):
-        response = Sarrast.send_request(f'https://sarrast.com/series/{manga}/{chapter["url"]}/api', wait=wait).json()
+    def get_images(manga, chapter):
+        response = Sarrast.send_request(f'https://sarrast.com/series/{manga}/{chapter["url"]}/api').json()
         images = [f'https://sarrast.com{image["path"]}' for image in response['files']]
         save_names = [f'{i+1:03d}.{images[i].split(".")[-1]}' for i in range(len(images))]
         return images, save_names
 
-    def search_by_keyword(keyword, absolute, wait=True):
+    def search_by_keyword(keyword, absolute):
         from requests.exceptions import HTTPError
         try:
-            response = Sarrast.send_request(f'https://sarrast.com/search?value={keyword}', wait=wait)
+            response = Sarrast.send_request(f'https://sarrast.com/search?value={keyword}')
             mangas = response.json()
             results = {}
             if not mangas:
@@ -68,5 +68,5 @@ class Sarrast(Manga):
             yield {}
         yield {}
 
-    def get_db(wait=True):
-        return Sarrast.search_by_keyword('', False, wait=wait)
+    def get_db():
+        return Sarrast.search_by_keyword('', False)

@@ -11,9 +11,9 @@ class Imhentai(Doujin):
         'g': 'gif'
     }
 
-    def get_info(code, wait=True):
+    def get_info(code):
         from contextlib import suppress
-        response = Imhentai.send_request(f'https://imhentai.xxx/gallery/{code}', wait=wait)
+        response = Imhentai.send_request(f'https://imhentai.xxx/gallery/{code}')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, pages = 4 * ['']
         extras = {}
@@ -34,15 +34,15 @@ class Imhentai(Doujin):
             'Extras': extras
         }
 
-    def get_title(code, wait=True):
-        response = Imhentai.send_request(f'https://imhentai.xxx/gallery/{code}', wait=wait)
+    def get_title(code):
+        response = Imhentai.send_request(f'https://imhentai.xxx/gallery/{code}')
         soup = BeautifulSoup(response.text, 'html.parser')
         title = soup.find('div', {'class', 'col-md-7 col-sm-7 col-lg-8 right_details'}).find('h1').get_text(strip=True)
         return title
 
-    def get_images(code, wait=True):
+    def get_images(code):
         import json
-        response = Imhentai.send_request(f'https://imhentai.xxx/gallery/{code}', wait=wait)
+        response = Imhentai.send_request(f'https://imhentai.xxx/gallery/{code}')
         soup = BeautifulSoup(response.text, 'html.parser')
         path = soup.find('div', {'id': 'append_thumbs'}).find('img')['data-src'].rsplit('/', 1)[0]
         script = soup.find(lambda tag:tag.name == 'script' and 'var g_th' in tag.text).text
@@ -50,12 +50,12 @@ class Imhentai(Doujin):
         images = [f'{path}/{image}.{Imhentai.image_formats[images[image][0]]}' for image in images]
         return images, False
 
-    def search_by_keyword(keyword, absolute, wait=True):
+    def search_by_keyword(keyword, absolute):
         from requests.exceptions import HTTPError
         page = 1
         while True:
             try:
-                response = Imhentai.send_request(f'https://imhentai.xxx/search/?key={keyword}&page={page}', wait=wait)
+                response = Imhentai.send_request(f'https://imhentai.xxx/search/?key={keyword}&page={page}')
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -78,5 +78,5 @@ class Imhentai(Doujin):
             yield results
             page += 1
 
-    def get_db(wait=True):
-        return Imhentai.search_by_keyword('', False, wait=wait)
+    def get_db():
+        return Imhentai.search_by_keyword('', False)

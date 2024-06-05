@@ -7,10 +7,10 @@ class Hentairead(Doujin):
     headers = {'User-Agent': 'Mozilla/5.0'}
     is_coded = False
 
-    def get_info(code, wait=True):
+    def get_info(code):
         from contextlib import suppress
         from datetime import datetime
-        response = Hentairead.send_request(f'https://hentairead.com/hentai/{code}/', headers=Hentairead.headers, wait=wait)
+        response = Hentairead.send_request(f'https://hentairead.com/hentai/{code}/', headers=Hentairead.headers)
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, pages, uploaded, rating = 6 * ['']
         extras = {}
@@ -41,20 +41,20 @@ class Hentairead(Doujin):
             }
         }
 
-    def get_title(code, wait=True):
-        response = Hentairead.send_request(f'https://hentairead.com/hentai/{code}/', headers=Hentairead.headers, wait=wait)
+    def get_title(code):
+        response = Hentairead.send_request(f'https://hentairead.com/hentai/{code}/', headers=Hentairead.headers)
         soup = BeautifulSoup(response.text, 'html.parser')
         title = soup.find('h1').get_text(strip=True)
         return title
 
-    def get_images(code, wait=True):
-        response = Hentairead.send_request(f'https://hentairead.com/hentai/{code}/', headers=Hentairead.headers, wait=wait)
+    def get_images(code):
+        response = Hentairead.send_request(f'https://hentairead.com/hentai/{code}/', headers=Hentairead.headers)
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('ul', {'class': 'chapter-images-list lazy-listing__list'}).find_all('img')
         images = [image['data-src'].split('?', 1)[0] for image in images]
         return images, False
 
-    def search_by_keyword(keyword, absolute, wait=True):
+    def search_by_keyword(keyword, absolute):
         from contextlib import suppress
         from requests.exceptions import HTTPError
         page = 1
@@ -63,7 +63,7 @@ class Hentairead(Doujin):
             template = f'https://hentairead.com/hentai/page/P_P_P_P/?m_orderby=alphabet&m_order=desc'
         while True:
             try:
-                response = Hentairead.send_request(template.replace('P_P_P_P', str(page)), headers=Hentairead.headers, wait=wait)
+                response = Hentairead.send_request(template.replace('P_P_P_P', str(page)), headers=Hentairead.headers)
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -99,5 +99,5 @@ class Hentairead(Doujin):
             yield results
             page += 1
 
-    def get_db(wait=True):
-        return Hentairead.search_by_keyword('', False, wait=wait)
+    def get_db():
+        return Hentairead.search_by_keyword('', False)

@@ -5,9 +5,9 @@ class Manytoon(Manga):
     domain = 'manytoon.com'
     logo = 'https://manytoon.com/favicon.ico'
 
-    def get_info(manga, wait=True):
+    def get_info(manga):
         from contextlib import suppress
-        response = Manytoon.send_request(f'https://manytoon.com/comic/{manga}', wait=wait)
+        response = Manytoon.send_request(f'https://manytoon.com/comic/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, summary, rating, status = 6 * ['']
         extras = {}
@@ -40,8 +40,8 @@ class Manytoon(Manga):
             'Extras': extras
         }
 
-    def get_chapters(manga, wait=True):
-        response = Manytoon.send_request(f'https://manytoon.com/comic/{manga}/ajax/chapters/', method='POST', wait=wait)
+    def get_chapters(manga):
+        response = Manytoon.send_request(f'https://manytoon.com/comic/{manga}/ajax/chapters/', method='POST')
         soup = BeautifulSoup(response.text, 'html.parser')
         lis = soup.find_all('li', {'class': 'wp-manga-chapter'})
         chapters_urls = [li.find('a')['href'].split('/')[-2] for li in lis[::-1]]
@@ -51,20 +51,20 @@ class Manytoon(Manga):
         } for chapter_url in chapters_urls]
         return chapters
 
-    def get_images(manga, chapter, wait=True):
-        response = Manytoon.send_request(f'https://manytoon.com/comic/{manga}/{chapter["url"]}/', wait=wait)
+    def get_images(manga, chapter):
+        response = Manytoon.send_request(f'https://manytoon.com/comic/{manga}/{chapter["url"]}/')
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'class': 'reading-content'}).find_all('img')
         images = [image['data-src'].strip() for image in images]
         return images, False
 
-    def search_by_keyword(keyword, absolute, wait=True):
+    def search_by_keyword(keyword, absolute):
         from contextlib import suppress
         from requests.exceptions import HTTPError
         page = 1
         while True:
             try:
-                response = Manytoon.send_request(f'https://manytoon.com/page/{page}/?s={keyword}&post_type=wp-manga', wait=wait)
+                response = Manytoon.send_request(f'https://manytoon.com/page/{page}/?s={keyword}&post_type=wp-manga')
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -99,5 +99,5 @@ class Manytoon(Manga):
             yield results
             page += 1
 
-    def get_db(wait=True):
-        return Manytoon.search_by_keyword('', False, wait=wait)
+    def get_db():
+        return Manytoon.search_by_keyword('', False)

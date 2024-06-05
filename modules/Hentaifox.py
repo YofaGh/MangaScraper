@@ -11,9 +11,9 @@ class Hentaifox(Doujin):
         'g': 'gif'
     }
 
-    def get_info(code, wait=True):
+    def get_info(code):
         from contextlib import suppress
-        response = Hentaifox.send_request(f'https://hentaifox.com/gallery/{code}', wait=wait)
+        response = Hentaifox.send_request(f'https://hentaifox.com/gallery/{code}')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, pages = 3 * ['']
         info_box = soup.find('div', {'class': 'info'})
@@ -32,15 +32,15 @@ class Hentaifox(Doujin):
             'Extras': extras
         }
 
-    def get_title(code, wait=True):
-        response = Hentaifox.send_request(f'https://hentaifox.com/gallery/{code}', wait=wait)
+    def get_title(code):
+        response = Hentaifox.send_request(f'https://hentaifox.com/gallery/{code}')
         soup = BeautifulSoup(response.text, 'html.parser')
         title = soup.find('div', {'class', 'info'}).find('h1').get_text(strip=True)
         return title
 
-    def get_images(code, wait=True):
+    def get_images(code):
         import json
-        response = Hentaifox.send_request(f'https://hentaifox.com/gallery/{code}', wait=wait)
+        response = Hentaifox.send_request(f'https://hentaifox.com/gallery/{code}')
         soup = BeautifulSoup(response.text, 'html.parser')
         path = soup.find('div', {'class': 'gallery_thumb'}).find('img')['data-src'].rsplit('/', 1)[0]
         script = soup.find(lambda tag:tag.name == 'script' and 'var g_th' in tag.text).text
@@ -48,12 +48,12 @@ class Hentaifox(Doujin):
         images = [f'{path}/{image}.{Hentaifox.image_formats[images[image][0]]}' for image in images]
         return images, False
 
-    def search_by_keyword(keyword, absolute, wait=True):
+    def search_by_keyword(keyword, absolute):
         from requests.exceptions import HTTPError
         page = 1
         while True:
             try:
-                response = Hentaifox.send_request(f'https://hentaifox.com/search/?q={keyword}&page={page}', wait=wait)
+                response = Hentaifox.send_request(f'https://hentaifox.com/search/?q={keyword}&page={page}')
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -76,9 +76,9 @@ class Hentaifox(Doujin):
             yield results
             page += 1
 
-    def get_db(wait=True):
+    def get_db():
         from requests.exceptions import HTTPError
-        response = Hentaifox.send_request('https://hentaifox.com/categories/', wait=wait)
+        response = Hentaifox.send_request('https://hentaifox.com/categories/')
         soup = BeautifulSoup(response.text, 'html.parser')
         categories = soup.find('div', {'class': 'list_tags'}).find_all('a')
         categories = [a['href'] for a in categories]
@@ -86,7 +86,7 @@ class Hentaifox(Doujin):
             page = 1
             while True:
                 try:
-                    response = Hentaifox.send_request(f'https://hentaifox.com{category}pag/{page}/', wait=wait)
+                    response = Hentaifox.send_request(f'https://hentaifox.com{category}pag/{page}/')
                 except HTTPError:
                     break
                 soup = BeautifulSoup(response.text, 'html.parser')

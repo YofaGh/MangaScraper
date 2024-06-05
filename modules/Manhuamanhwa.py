@@ -9,9 +9,9 @@ class Manhuamanhwa(Manga):
     }
     download_images_headers = headers
 
-    def get_info(manga, wait=True):
+    def get_info(manga):
         from contextlib import suppress
-        response = Manhuamanhwa.send_request(f'https://manhuamanhwa.com/manga/{manga}', headers=Manhuamanhwa.headers, wait=wait)
+        response = Manhuamanhwa.send_request(f'https://manhuamanhwa.com/manga/{manga}', headers=Manhuamanhwa.headers)
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, summary, rating, status = 6 * ['']
         extras = {}
@@ -44,8 +44,8 @@ class Manhuamanhwa(Manga):
             'Extras': extras
         }
 
-    def get_chapters(manga, wait=True):
-        response = Manhuamanhwa.send_request(f'https://manhuamanhwa.com/manga/{manga}/ajax/chapters/', method='POST', headers=Manhuamanhwa.headers, wait=wait)
+    def get_chapters(manga):
+        response = Manhuamanhwa.send_request(f'https://manhuamanhwa.com/manga/{manga}/ajax/chapters/', method='POST', headers=Manhuamanhwa.headers)
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find_all('li', {'class':'wp-manga-chapter'})
         chapters_urls = [div.find('a')['href'].split('/')[-2] for div in divs[::-1]]
@@ -55,20 +55,20 @@ class Manhuamanhwa(Manga):
         } for chapter_url in chapters_urls]
         return chapters
 
-    def get_images(manga, chapter, wait=True):
-        response = Manhuamanhwa.send_request(f'https://manhuamanhwa.com/manga/{manga}/{chapter["url"]}/', headers=Manhuamanhwa.headers, wait=wait)
+    def get_images(manga, chapter):
+        response = Manhuamanhwa.send_request(f'https://manhuamanhwa.com/manga/{manga}/{chapter["url"]}/', headers=Manhuamanhwa.headers)
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'class': 'reading-content'}).find_all('img')
         images = [image['data-src'] for image in images]
         return images, False
 
-    def search_by_keyword(keyword, absolute, wait=True):
+    def search_by_keyword(keyword, absolute):
         from contextlib import suppress
         from requests.exceptions import HTTPError
         page = 1
         while True:
             try:
-                response = Manhuamanhwa.send_request(f'https://manhuamanhwa.com/page/{page}?s={keyword}&post_type=wp-manga', headers=Manhuamanhwa.headers, wait=wait)
+                response = Manhuamanhwa.send_request(f'https://manhuamanhwa.com/page/{page}?s={keyword}&post_type=wp-manga', headers=Manhuamanhwa.headers)
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -106,5 +106,5 @@ class Manhuamanhwa(Manga):
             yield results
             page += 1
 
-    def get_db(wait=True):
-        return Manhuamanhwa.search_by_keyword('', False, wait=wait)
+    def get_db():
+        return Manhuamanhwa.search_by_keyword('', False)

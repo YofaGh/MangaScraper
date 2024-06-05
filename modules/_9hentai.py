@@ -4,10 +4,10 @@ class _9hentai(Doujin):
     domain = '9hentai.com'
     logo = 'https://9hentai.com/images/logo.png'
 
-    def get_info(code, wait=True):
+    def get_info(code):
         from bs4 import BeautifulSoup
         from contextlib import suppress
-        response = _9hentai.send_request(f'https://9hentai.com/g/{code}', wait=wait)
+        response = _9hentai.send_request(f'https://9hentai.com/g/{code}')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, pages, uploaded = 5 * ['']
         info_box = soup.find('div', {'id': 'info'})
@@ -29,16 +29,16 @@ class _9hentai(Doujin):
             'Extras': extras
         }
 
-    def get_title(code, wait=True):
-        response = _9hentai.send_request('https://9hentai.com/api/getBookByID', method='POST', json={'id': code}, wait=wait).json()
+    def get_title(code):
+        response = _9hentai.send_request('https://9hentai.com/api/getBookByID', method='POST', json={'id': code}).json()
         return response['results']['title']
 
-    def get_images(code, wait=True):
-        response = _9hentai.send_request('https://9hentai.com/api/getBookByID', method='POST', json={'id': code}, wait=wait).json()
+    def get_images(code):
+        response = _9hentai.send_request('https://9hentai.com/api/getBookByID', method='POST', json={'id': code}).json()
         images = [f'{response["results"]["image_server"]}{code}/{i+1}.jpg' for i in range(response['results']['total_page'])]
         return images, False
 
-    def search_by_keyword(keyword, absolute, wait=True):
+    def search_by_keyword(keyword, absolute):
         json = {
             'search': {
                 'text': keyword,
@@ -59,7 +59,7 @@ class _9hentai(Doujin):
             }
         }
         while True:
-            response = _9hentai.send_request('https://9hentai.com/api/getBook', method='POST', json=json, wait=wait).json()
+            response = _9hentai.send_request('https://9hentai.com/api/getBook', method='POST', json=json).json()
             doujins = response['results']
             if not doujins:
                 yield {}
@@ -77,5 +77,5 @@ class _9hentai(Doujin):
             yield results
             json['search']['page'] += 1
 
-    def get_db(wait=True):
-        return _9hentai.search_by_keyword('', False, wait=wait)
+    def get_db():
+        return _9hentai.search_by_keyword('', False)

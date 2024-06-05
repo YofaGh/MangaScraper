@@ -5,7 +5,7 @@ class Module:
     download_images_headers = None
 
     @staticmethod
-    def send_request(url, wait=True, method='GET', **kwargs):
+    def send_request(url, method='GET', **kwargs):
         from utils.assets import waiter
         import requests
         if kwargs.get('verify') is False:
@@ -18,14 +18,12 @@ class Module:
             except (requests.exceptions.HTTPError, requests.exceptions.Timeout) as error:
                 raise error
             except requests.exceptions.RequestException as error:
-                if not wait:
-                    raise error
                 waiter()
 
     @classmethod
-    def download_image(cls, url, image_name, verify=None, wait=True):
+    def download_image(cls, url, image_name, verify=None):
         try:
-            response = cls.send_request(url, headers=cls.download_images_headers, verify=verify, wait=wait)
+            response = cls.send_request(url, headers=cls.download_images_headers, verify=verify)
             with open(image_name, 'wb') as image:
                 image.write(response.content)
                 return image_name

@@ -5,8 +5,8 @@ class Hentaihand(Doujin):
     logo = 'https://hentaihand.com/images/icon.png'
     is_coded = False
 
-    def get_info(code, wait=True):
-        response = Hentaihand.send_request(f'https://hentaihand.com/api/comics/{code}', wait=wait).json()
+    def get_info(code):
+        response = Hentaihand.send_request(f'https://hentaihand.com/api/comics/{code}').json()
         extras = {
             'Description': response['description'],
             'Category': response.get('category', {}).get('name') or '',
@@ -30,23 +30,23 @@ class Hentaihand(Doujin):
             }
         }
 
-    def get_title(code, wait=True):
-        response = Hentaihand.send_request(f'https://hentaihand.com/api/comics/{code}', wait=wait).json()
+    def get_title(code):
+        response = Hentaihand.send_request(f'https://hentaihand.com/api/comics/{code}').json()
         return response['title']
 
-    def get_images(code, wait=True):
-        response = Hentaihand.send_request(f'https://hentaihand.com/api/comics/{code}/images', wait=wait).json()
+    def get_images(code):
+        response = Hentaihand.send_request(f'https://hentaihand.com/api/comics/{code}/images').json()
         images = [image['source_url'] for image in response['images']]
         return images, False
 
-    def search_by_keyword(keyword, absolute, wait=True):
+    def search_by_keyword(keyword, absolute):
         params = {
             'page': 1,
             'q': keyword,
             'sort': 'title',
         }
         while True:
-            response = Hentaihand.send_request('https://hentaihand.com/api/comics', params=params, wait=wait).json()
+            response = Hentaihand.send_request('https://hentaihand.com/api/comics', params=params).json()
             if not response['data']:
                 yield {}
             results = {}
@@ -68,5 +68,5 @@ class Hentaihand(Doujin):
             yield results
             params['page'] += 1
 
-    def get_db(wait=True):
-        return Hentaihand.search_by_keyword('', False, wait=wait)
+    def get_db():
+        return Hentaihand.search_by_keyword('', False)

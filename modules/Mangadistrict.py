@@ -5,9 +5,9 @@ class Mangadistrict(Manga):
     domain = 'mangadistrict.com'
     logo = 'https://mangadistrict.com/wp-content/uploads/2021/02/cropped-Copie-de-Copie-de-MANGADISTRICT_5-192x192.png'
 
-    def get_info(manga, wait=True):
+    def get_info(manga):
         from contextlib import suppress
-        response = Mangadistrict.send_request(f'https://mangadistrict.com/read-scan/{manga}', wait=wait)
+        response = Mangadistrict.send_request(f'https://mangadistrict.com/read-scan/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, summary, rating, status = 6 * ['']
         extras = {}
@@ -40,8 +40,8 @@ class Mangadistrict(Manga):
             'Extras': extras
         }
 
-    def get_chapters(manga, wait=True):
-        response = Mangadistrict.send_request(f'https://mangadistrict.com/read-scan/{manga}/ajax/chapters/', method='POST', wait=wait)
+    def get_chapters(manga):
+        response = Mangadistrict.send_request(f'https://mangadistrict.com/read-scan/{manga}/ajax/chapters/', method='POST')
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find_all('li', {'class':'wp-manga-chapter'})
         chapters_urls = [div.find('a')['href'].split('/')[-2] for div in divs[::-1]]
@@ -51,15 +51,15 @@ class Mangadistrict(Manga):
         } for chapter_url in chapters_urls]
         return chapters
 
-    def get_images(manga, chapter, wait=True):
-        response = Mangadistrict.send_request(f'https://mangadistrict.com/read-scan/{manga}/{chapter["url"]}/', wait=wait)
+    def get_images(manga, chapter):
+        response = Mangadistrict.send_request(f'https://mangadistrict.com/read-scan/{manga}/{chapter["url"]}/')
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'class':'reading-content'}).find_all('img')
         images = [image['src'].strip() for image in images]
         save_names = [f'{i+1:03d}.{images[i].split(".")[-1]}' for i in range(len(images))]
         return images, save_names
 
-    def search_by_keyword(keyword, absolute, wait=True):
+    def search_by_keyword(keyword, absolute):
         from contextlib import suppress
         from requests.exceptions import HTTPError
         page = 1
@@ -68,7 +68,7 @@ class Mangadistrict(Manga):
             template = 'https://mangadistrict.com/page/P_P_P_P/?s&post_type=wp-manga&m_orderby=alphabet'
         while True:
             try:
-                response = Mangadistrict.send_request(template.replace('P_P_P_P', str(page)), wait=wait)
+                response = Mangadistrict.send_request(template.replace('P_P_P_P', str(page)))
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -108,5 +108,5 @@ class Mangadistrict(Manga):
             yield results
             page += 1
 
-    def get_db(wait=True):
-        return Mangadistrict.search_by_keyword('', False, wait=wait)
+    def get_db():
+        return Mangadistrict.search_by_keyword('', False)

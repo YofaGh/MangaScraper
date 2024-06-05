@@ -5,9 +5,9 @@ class Manhuamix(Manga):
     domain = 'manhuamix.com'
     logo = 'https://manhuamix.com/wp-content/uploads/2022/04/cropped-icon-manhua-192x192.png'
 
-    def get_info(manga, wait=True):
+    def get_info(manga):
         from contextlib import suppress
-        response = Manhuamix.send_request(f'https://manhuamix.com/manhua/{manga}', wait=wait)
+        response = Manhuamix.send_request(f'https://manhuamix.com/manhua/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, summary, rating, status = 6 * ['']
         extras = {}
@@ -39,8 +39,8 @@ class Manhuamix(Manga):
             'Extras': extras
         }
 
-    def get_chapters(manga, wait=True):
-        response = Manhuamix.send_request(f'https://manhuamix.com/manhua/{manga}/ajax/chapters/', 'POST', wait=wait)
+    def get_chapters(manga):
+        response = Manhuamix.send_request(f'https://manhuamix.com/manhua/{manga}/ajax/chapters/', 'POST')
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find_all('li', {'class': 'wp-manga-chapter'})
         chapters_urls = [div.find('a')['href'].split('/')[-2] for div in divs[::-1]]
@@ -50,20 +50,20 @@ class Manhuamix(Manga):
         } for chapter_url in chapters_urls]
         return chapters
 
-    def get_images(manga, chapter, wait=True):
-        response = Manhuamix.send_request(f'https://manhuamix.com/manhua/{manga}/{chapter["url"]}/', wait=wait)
+    def get_images(manga, chapter):
+        response = Manhuamix.send_request(f'https://manhuamix.com/manhua/{manga}/{chapter["url"]}/')
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'class': 'reading-content'}).find_all('img')
         images = [image['src'].strip() for image in images]
         return images, False
 
-    def search_by_keyword(keyword, absolute, wait=True):
+    def search_by_keyword(keyword, absolute):
         from contextlib import suppress
         from requests.exceptions import HTTPError
         page = 1
         while True:
             try:
-                response = Manhuamix.send_request(f'https://manhuamix.com/page/{page}?s={keyword}&post_type=wp-manga', wait=wait)
+                response = Manhuamix.send_request(f'https://manhuamix.com/page/{page}?s={keyword}&post_type=wp-manga')
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -101,5 +101,5 @@ class Manhuamix(Manga):
             yield results
             page += 1
 
-    def get_db(wait=True):
-        return Manhuamix.search_by_keyword('', False, wait=wait)
+    def get_db():
+        return Manhuamix.search_by_keyword('', False)

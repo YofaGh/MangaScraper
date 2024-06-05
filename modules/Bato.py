@@ -5,9 +5,9 @@ class Bato(Manga):
     domain = 'bato.to'
     logo = 'https://bato.to/public-assets/img/favicon.ico'
 
-    def get_info(manga, wait=True):
+    def get_info(manga):
         from contextlib import suppress
-        response = Bato.send_request(f'https://bato.to/title/{manga}', wait=wait)
+        response = Bato.send_request(f'https://bato.to/title/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, summary, rating, status = 6 * ['']
         info_box = soup.find('div', {'class': 'flex flex-col md:flex-row'})
@@ -31,8 +31,8 @@ class Bato(Manga):
             'Extras': extras,
         }
 
-    def get_chapters(manga, wait=True):
-        response = Bato.send_request(f'https://bato.to/title/{manga}', wait=wait)
+    def get_chapters(manga):
+        response = Bato.send_request(f'https://bato.to/title/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         links = soup.find('div', {'class': 'group flex flex-col-reverse'}).find_all('a', {'class': 'link-hover link-primary visited:text-accent'})
         chapters_urls = [link['href'].split('/')[-1] for link in links]
@@ -42,9 +42,9 @@ class Bato(Manga):
         } for chapter_url in chapters_urls]
         return chapters
 
-    def get_images(manga, chapter, wait=True):
+    def get_images(manga, chapter):
         import json
-        response = Bato.send_request(f'https://bato.to/title/{manga}/{chapter["url"]}', wait=wait)
+        response = Bato.send_request(f'https://bato.to/title/{manga}/{chapter["url"]}')
         soup = BeautifulSoup(response.text, 'html.parser')
         props = soup.find(lambda tag: tag.name == 'astro-island' and 'imageFiles' in tag.get('props'))['props']
         images = json.loads(props)['imageFiles'][1]
@@ -52,13 +52,13 @@ class Bato(Manga):
         save_names = [f'{i+1:03d}.{images[i].split(".")[-1].split("?")[0]}' for i in range(len(images))]
         return images, save_names
 
-    def search_by_keyword(keyword, absolute, wait=True):
+    def search_by_keyword(keyword, absolute):
         from contextlib import suppress
         from requests.exceptions import HTTPError
         page = 1
         while True:
             try:
-                response = Bato.send_request(f'https://bato.to/v3x-search?word={keyword}&page={page}', wait=wait)
+                response = Bato.send_request(f'https://bato.to/v3x-search?word={keyword}&page={page}')
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -86,8 +86,8 @@ class Bato(Manga):
             yield results
             page += 1
 
-    def get_db(wait=True):
-        return Bato.search_by_keyword('', False, wait=wait)
+    def get_db():
+        return Bato.search_by_keyword('', False)
 
     def rename_chapter(chapter):
         chap = chapter.split('-', 1)[1] if '-' in chapter else chapter

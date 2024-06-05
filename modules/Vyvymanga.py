@@ -5,9 +5,9 @@ class Vyvymanga(Manga):
     domain = 'vyvymanga.net'
     logo = 'https://vyvymanga.net/web/img/icon.png'
 
-    def get_info(manga, wait=True):
+    def get_info(manga):
         from contextlib import suppress
-        response = Vyvymanga.send_request(f'https://vyvymanga.net/manga/{manga}', wait=wait)
+        response = Vyvymanga.send_request(f'https://vyvymanga.net/manga/{manga}')
         box = BeautifulSoup(response.text, 'html.parser').find('div', {'class': 'div-manga'})
         cover, title, alternative, summary, rating, status, authors, view, genres = 9 * ['']
         bbox = box.find('div', {'class': 'col-md-7'})
@@ -34,8 +34,8 @@ class Vyvymanga(Manga):
             }
         }
 
-    def get_chapters(manga, wait=True):
-        response = Vyvymanga.send_request(f'https://vyvymanga.net/manga/{manga}', wait=wait)
+    def get_chapters(manga):
+        response = Vyvymanga.send_request(f'https://vyvymanga.net/manga/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         aas = soup.find_all('a', {'class': 'list-group-item list-group-item-action list-chapter'})
         chapters = [{
@@ -44,19 +44,19 @@ class Vyvymanga(Manga):
         } for aa in aas[::-1]]
         return chapters
 
-    def get_images(manga, chapter, wait=True):
-        response = Vyvymanga.send_request(chapter['url'], wait=wait)
+    def get_images(manga, chapter):
+        response = Vyvymanga.send_request(chapter['url'])
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'class': 'vview carousel-inner'}).find_all('img')
         images = [image['data-src'] for image in images]
         save_names = [f'{i+1:03d}' for i in range(len(images))]
         return images, save_names
 
-    def search_by_keyword(keyword, absolute, wait=True):
+    def search_by_keyword(keyword, absolute):
         from contextlib import suppress
         page = 1
         while True:
-            response = Vyvymanga.send_request(f'https://vyvymanga.net/search?q={keyword}&page={page}', wait=wait)
+            response = Vyvymanga.send_request(f'https://vyvymanga.net/search?q={keyword}&page={page}')
             soup = BeautifulSoup(response.text, 'html.parser')
             mangas = soup.find_all('div', {'class': 'comic-item'})
             if not mangas:
@@ -81,13 +81,13 @@ class Vyvymanga(Manga):
             yield results
             page += 1
 
-    def get_db(wait=True):
-        return Vyvymanga.search_by_keyword('', False, wait=wait)
+    def get_db():
+        return Vyvymanga.search_by_keyword('', False)
 
     @classmethod
-    def download_image(cls, url, image_name, verify=None, wait=True):
+    def download_image(cls, url, image_name, verify=None):
         try:
-            response = cls.send_request(url, headers=cls.download_images_headers, verify=verify, wait=wait)
+            response = cls.send_request(url, headers=cls.download_images_headers, verify=verify)
             image_format = response.headers['Content-Disposition'].split('.')[-1].replace('"', '')
             saved_path = f'{image_name}.{image_format}'
             with open(saved_path, 'wb') as image:

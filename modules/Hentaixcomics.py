@@ -11,9 +11,9 @@ class Hentaixcomics(Doujin):
         'cn': 'Chinese'
     }
 
-    def get_info(code, wait=True):
+    def get_info(code):
         from contextlib import suppress
-        response = Hentaixcomics.send_request(f'https://hentaixcomics.com/{code}/', wait=wait)
+        response = Hentaixcomics.send_request(f'https://hentaixcomics.com/{code}/')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, summary, pages = 5 * ['']
         info_box = soup.find('div', {'id': 'info'})
@@ -37,25 +37,25 @@ class Hentaixcomics(Doujin):
             'Extras': extras
         }
 
-    def get_title(code, wait=True):
-        response = Hentaixcomics.send_request(f'https://hentaixcomics.com/{code}/', wait=wait)
+    def get_title(code):
+        response = Hentaixcomics.send_request(f'https://hentaixcomics.com/{code}/')
         soup = BeautifulSoup(response.text, 'html.parser')
         title = soup.find('div', {'id': 'info'}).find('h1').get_text(strip=True)
         return title
 
-    def get_images(code, wait=True):
+    def get_images(code):
         import json
-        response = Hentaixcomics.send_request(f'https://hentaixcomics.com/{code}/', wait=wait)
+        response = Hentaixcomics.send_request(f'https://hentaixcomics.com/{code}/')
         soup = BeautifulSoup(response.text, 'html.parser')
         images_raw = soup.find('textarea').get_text(strip=True)
         images = json.loads(images_raw)
         return images, False
 
-    def search_by_keyword(keyword, absolute, wait=True):
+    def search_by_keyword(keyword, absolute):
         page = 1
         prev_page = []
         while True:
-            response = Hentaixcomics.send_request(f'https://hentaixcomics.com/search/?s={keyword}&page={page}', wait=wait)
+            response = Hentaixcomics.send_request(f'https://hentaixcomics.com/search/?s={keyword}&page={page}')
             soup = BeautifulSoup(response.text, 'html.parser')
             if soup.find('span', {'class': 'count'}).get_text(strip=True) == '(0)':
                 yield {}
@@ -77,12 +77,12 @@ class Hentaixcomics(Doujin):
             yield results
             page += 1
 
-    def get_db(wait=True):
+    def get_db():
         for category in ('manga', 'doujinshi'):
             page = 1
             prev_page = []
             while True:
-                response = Hentaixcomics.send_request(f'https://hentaixcomics.com/s/{category}/page/{page}', wait=wait)
+                response = Hentaixcomics.send_request(f'https://hentaixcomics.com/s/{category}/page/{page}')
                 soup = BeautifulSoup(response.text, 'html.parser')
                 if soup.find('span', {'class': 'count'}).get_text(strip=True) == '(0)':
                     break

@@ -4,9 +4,9 @@ class Mangadex(Manga):
     domain = 'mangadex.org'
     logo = 'https://mangadex.org/favicon.ico'
 
-    def get_info(manga, wait=True):
+    def get_info(manga):
         manga = manga.split('/')[0] if '/' in manga else manga
-        response = Mangadex.send_request(f'https://api.mangadex.org/manga/{manga}?includes[]=artist&includes[]=author&includes[]=cover_art', wait=wait)
+        response = Mangadex.send_request(f'https://api.mangadex.org/manga/{manga}?includes[]=artist&includes[]=author&includes[]=cover_art')
         data = response.json()['data']
         cover = next(filter(lambda x: x['type'] == 'cover_art', data['relationships']))['attributes']['fileName']
         return {
@@ -28,7 +28,7 @@ class Mangadex(Manga):
             },
         }
 
-    def get_chapters(manga, wait=True):
+    def get_chapters(manga):
         manga = manga.split('/')[0] if '/' in manga else manga
         chapters = []
         params = {
@@ -38,7 +38,7 @@ class Mangadex(Manga):
             'offset': 0
         }
         while True:
-            response = Mangadex.send_request(f'https://api.mangadex.org/manga/{manga}/feed', params=params, wait=wait).json()
+            response = Mangadex.send_request(f'https://api.mangadex.org/manga/{manga}/feed', params=params).json()
             if not response['data']:
                 break
             chapters.extend([{
@@ -48,12 +48,12 @@ class Mangadex(Manga):
             params['offset'] += 500
         return chapters
 
-    def get_images(manga, chapter, wait=True):
-        response = Mangadex.send_request(f'https://api.mangadex.org/at-home/server/{chapter["url"]}', wait=wait).json()
+    def get_images(manga, chapter):
+        response = Mangadex.send_request(f'https://api.mangadex.org/at-home/server/{chapter["url"]}').json()
         images = [f'{response["baseUrl"]}/data/{response["chapter"]["hash"]}/{image}' for image in response['chapter']['data']]
         return images, False
 
-    def search_by_keyword(keyword, absolute, wait=True):
+    def search_by_keyword(keyword, absolute):
         from requests.exceptions import HTTPError
         page = 1
         params = {'limit': 100, 'title': keyword, 'order[relevance]': 'desc', 'includes[]': 'cover_art'} if keyword else {'limit': 100, 'order[title]': 'asc'}
@@ -61,7 +61,7 @@ class Mangadex(Manga):
         while True:
             params['offset'] = (page - 1) * 100
             try:
-                response = Mangadex.send_request(url, params=params, wait=wait).json()
+                response = Mangadex.send_request(url, params=params).json()
             except HTTPError:
                 yield {}
             mangas = response['data']
@@ -96,5 +96,5 @@ class Mangadex(Manga):
             yield results
             page += 1
 
-    def get_db(wait=True):
-        return Mangadex.search_by_keyword('', False, wait=wait)
+    def get_db():
+        return Mangadex.search_by_keyword('', False)

@@ -5,9 +5,9 @@ class Manhwa18(Manga):
     domain = 'manhwa18.com'
     logo = 'https://manhwa18.com/favicon1.ico'
 
-    def get_info(manga, wait=True):
+    def get_info(manga):
         from contextlib import suppress
-        response = Manhwa18.send_request(f'https://manhwa18.com/manga/{manga}', wait=wait)
+        response = Manhwa18.send_request(f'https://manhwa18.com/manga/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, summary, rating, status, latest_reading, views = 8 * ['']
         info_box = soup.find('main', {'class': 'section-body'})
@@ -40,8 +40,8 @@ class Manhwa18(Manga):
             },
         }
 
-    def get_chapters(manga, wait=True):
-        response = Manhwa18.send_request(f'https://manhwa18.com/manga/{manga}', wait=wait)
+    def get_chapters(manga):
+        response = Manhwa18.send_request(f'https://manhwa18.com/manga/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         aas = soup.find('ul', {'class':'list-chapters at-series'}).find_all('a')
         chapters_urls = [aa['href'].split('/')[-1] for aa in aas[::-1]]
@@ -51,19 +51,19 @@ class Manhwa18(Manga):
         } for chapter_url in chapters_urls]
         return chapters
 
-    def get_images(manga, chapter, wait=True):
-        response = Manhwa18.send_request(f'https://manhwa18.com/manga/{manga}/{chapter["url"]}', wait=wait)
+    def get_images(manga, chapter):
+        response = Manhwa18.send_request(f'https://manhwa18.com/manga/{manga}/{chapter["url"]}')
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'id':'chapter-content'}).find_all('img')
         images = [image['data-src'] for image in images]
         return images, False
 
-    def search_by_keyword(keyword, absolute, wait=True):
+    def search_by_keyword(keyword, absolute):
         from requests.exceptions import HTTPError
         page = 1
         while True:
             try:
-                response = Manhwa18.send_request(f'https://manhwa18.com/tim-kiem?q={keyword}&page={page}', wait=wait)
+                response = Manhwa18.send_request(f'https://manhwa18.com/tim-kiem?q={keyword}&page={page}')
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -85,8 +85,8 @@ class Manhwa18(Manga):
             yield results
             page += 1
 
-    def get_db(wait=True):
-        return Manhwa18.search_by_keyword('', False, wait=wait)
+    def get_db():
+        return Manhwa18.search_by_keyword('', False)
 
     def rename_chapter(chapter):
         new_name = ''

@@ -6,9 +6,9 @@ class Toonily_Me(Manga):
     logo = 'https://toonily.me/static/sites/toonily/icons/favicon.ico'
     download_images_headers = {'Referer': 'https://toonily.me/'}
 
-    def get_info(manga, wait=True):
+    def get_info(manga):
         from contextlib import suppress
-        response = Toonily_Me.send_request(f'https://toonily.me/{manga}', wait=wait)
+        response = Toonily_Me.send_request(f'https://toonily.me/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, summary, rating, status, authors, chapters, genres, last_update = 10 * ['']
         info_box = soup.find('div', {'class': 'book-info'})
@@ -44,8 +44,8 @@ class Toonily_Me(Manga):
             }
         }
 
-    def get_chapters(manga, wait=True):
-        response = Toonily_Me.send_request(f'https://toonily.me/{manga}', wait=wait)
+    def get_chapters(manga):
+        response = Toonily_Me.send_request(f'https://toonily.me/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find('ul', {'class': 'chapter-list'}).find_all('li')
         chapters_urls = [div.find('a')['href'].split('/')[-1] for div in divs[::-1]]
@@ -55,19 +55,19 @@ class Toonily_Me(Manga):
         } for chapter_url in chapters_urls]
         return chapters
 
-    def get_images(manga, chapter, wait=True):
-        response = Toonily_Me.send_request(f'https://toonily.me/{manga}/{chapter["url"]}', wait=wait)
+    def get_images(manga, chapter):
+        response = Toonily_Me.send_request(f'https://toonily.me/{manga}/{chapter["url"]}')
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'id': 'chapter-images'}).find_all('img')
         images = [image['data-src'].strip() for image in images]
         return images, False
 
-    def search_by_keyword(keyword, absolute, wait=True):
+    def search_by_keyword(keyword, absolute):
         from contextlib import suppress
         template = f'https://toonily.me/search?q={keyword}&page=P_P_P_P' if keyword else f'https://toonily.me/az-list?page=P_P_P_P'
         page = 1
         while True:
-            response = Toonily_Me.send_request(template.replace('P_P_P_P', str(page)), wait=wait)
+            response = Toonily_Me.send_request(template.replace('P_P_P_P', str(page)))
             soup = BeautifulSoup(response.text, 'html.parser')
             mangas = soup.find_all('div', {'class': 'book-item'})
             if not mangas:
@@ -93,5 +93,5 @@ class Toonily_Me(Manga):
             yield results
             page += 1
 
-    def get_db(wait=True):
-        return Toonily_Me.search_by_keyword('', False, wait=wait)
+    def get_db():
+        return Toonily_Me.search_by_keyword('', False)

@@ -14,9 +14,9 @@ class Myrockmanga(Manga):
         'es': 'Spanish'
     }
 
-    def get_info(manga, wait=True):
+    def get_info(manga):
         from contextlib import suppress
-        response = Myrockmanga.send_request(f'https://myrockmanga.com/manga-detail/{manga}', headers=Myrockmanga.headers, wait=wait)
+        response = Myrockmanga.send_request(f'https://myrockmanga.com/manga-detail/{manga}', headers=Myrockmanga.headers)
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, summary, rating, status, genres = 7 * ['']
         extras = {}
@@ -43,8 +43,8 @@ class Myrockmanga(Manga):
             'Extras': extras
         }
 
-    def get_chapters(manga, wait=True):
-        response = Myrockmanga.send_request(f'https://myrockmanga.com/manga-detail/{manga}', verify=False, wait=wait)
+    def get_chapters(manga):
+        response = Myrockmanga.send_request(f'https://myrockmanga.com/manga-detail/{manga}', verify=False)
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find_all('tr', {'class': 'chapter'})
         chapters_urls = [div.find('a')['href'].replace('/chapter/', '') for div in divs[::-1]]
@@ -54,20 +54,20 @@ class Myrockmanga(Manga):
         } for chapter_url in chapters_urls]
         return chapters
 
-    def get_images(manga, chapter, wait=True):
-        response = Myrockmanga.send_request(f'https://myrockmanga.com/chapter/{chapter["url"]}', verify=False, wait=wait)
+    def get_images(manga, chapter):
+        response = Myrockmanga.send_request(f'https://myrockmanga.com/chapter/{chapter["url"]}', verify=False)
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'id': 'rendering'}).find_all('img')
         images = [image['src'] for image in images if image.has_attr('page')]
         save_names = [f'{i+1:03d}.{images[i].split(".")[-1]}' for i in range(len(images))]
         return images, save_names
 
-    def search_by_keyword(keyword, absolute, wait=True):
+    def search_by_keyword(keyword, absolute):
         from contextlib import suppress
         from requests.exceptions import HTTPError
         while True:
             try:
-                response = Myrockmanga.send_request(f'https://myrockmanga.com/Home/Search?search={keyword}', headers=Myrockmanga.headers, verify=False, wait=wait)
+                response = Myrockmanga.send_request(f'https://myrockmanga.com/Home/Search?search={keyword}', headers=Myrockmanga.headers, verify=False)
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -99,12 +99,12 @@ class Myrockmanga(Manga):
             yield results
             yield {}
 
-    def get_db(wait=True):
+    def get_db():
         from contextlib import suppress
         page = 1
         data = 'Type=1&Page=P_P_P_P&Lang=all&Dir=NewPostedDate&filterCategory=All'
         while True:
-            response = Myrockmanga.send_request(f'https://myrockmanga.com/Manga/Newest', method='POST', headers=Myrockmanga.get_db_headers, data=data.replace('P_P_P_P', str(page)), verify=False, wait=wait)
+            response = Myrockmanga.send_request(f'https://myrockmanga.com/Manga/Newest', method='POST', headers=Myrockmanga.get_db_headers, data=data.replace('P_P_P_P', str(page)), verify=False)
             soup = BeautifulSoup(response.text, 'html.parser')
             mangas = soup.find_all('div', {'class': 'col-xs-12 picture-card mdl-card shadow-z-1'})
             if not mangas:

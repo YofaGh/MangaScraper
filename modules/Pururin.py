@@ -5,9 +5,9 @@ class Pururin(Doujin):
     domain = 'pururin.to'
     logo = 'https://pururin.to/assets/images/logo.png'
 
-    def get_info(code, wait=True):
+    def get_info(code):
         from contextlib import suppress
-        response = Pururin.send_request(f'https://pururin.to/gallery/{code}', wait=wait)
+        response = Pururin.send_request(f'https://pururin.to/gallery/{code}')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, pages, rating = 5 * ['']
         extras = {}
@@ -34,24 +34,24 @@ class Pururin(Doujin):
             'Extras': extras,
         }
 
-    def get_title(code, wait=True):
-        response = Pururin.send_request(f'https://pururin.to/gallery/{code}', wait=wait)
+    def get_title(code):
+        response = Pururin.send_request(f'https://pururin.to/gallery/{code}')
         soup = BeautifulSoup(response.text, 'html.parser')
         title = soup.find('h1').get_text(strip=True)
         return title
 
-    def get_images(code, wait=True):
-        response = Pururin.send_request(f'https://pururin.to/gallery/{code}', wait=wait)
+    def get_images(code):
+        response = Pururin.send_request(f'https://pururin.to/gallery/{code}')
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'class': 'gallery-preview'}).find_all('img')
         images = [image['data-src'] if image.get('data-src') else image['src'] for image in images]
         images = [image.replace('t.', '.') for image in images]
         return images, False
 
-    def search_by_keyword(keyword, absolute, wait=True):
+    def search_by_keyword(keyword, absolute):
         page = 1
         while True:
-            response = Pururin.send_request(f'https://pururin.to/search?q={keyword}&page={page}', wait=wait)
+            response = Pururin.send_request(f'https://pururin.to/search?q={keyword}&page={page}')
             soup = BeautifulSoup(response.text, 'html.parser')
             doujins = soup.find_all('a', {'class': 'card card-gallery'})
             if not doujins:
@@ -73,5 +73,5 @@ class Pururin(Doujin):
             yield results
             page += 1
 
-    def get_db(wait=True):
-        return Pururin.search_by_keyword('', False, wait=wait)
+    def get_db():
+        return Pururin.search_by_keyword('', False)

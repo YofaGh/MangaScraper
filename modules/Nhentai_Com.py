@@ -6,9 +6,9 @@ class Nhentai_Com(Doujin):
     headers = {'User-Agent': 'Leech/1051 CFNetwork/454.9.4 Darwin/10.3.0 (i386) (MacPro1%2C1)'}
     is_coded = False
 
-    def get_info(code, wait=True):
+    def get_info(code):
         from datetime import datetime
-        response = Nhentai_Com.send_request(f'https://nhentai.com/api/comics/{code}', headers=Nhentai_Com.headers, wait=wait).json()
+        response = Nhentai_Com.send_request(f'https://nhentai.com/api/comics/{code}', headers=Nhentai_Com.headers).json()
         return {
             'Cover': response['image_url'],
             'Title': response['title'],
@@ -30,21 +30,21 @@ class Nhentai_Com(Doujin):
             }
         }
 
-    def get_title(code, wait=True):
-        response = Nhentai_Com.send_request(f'https://nhentai.com/api/comics/{code}', headers=Nhentai_Com.headers, wait=wait).json()
+    def get_title(code):
+        response = Nhentai_Com.send_request(f'https://nhentai.com/api/comics/{code}', headers=Nhentai_Com.headers).json()
         return response['title']
 
-    def get_images(code, wait=True):
-        response = Nhentai_Com.send_request(f'https://nhentai.com/api/comics/{code}/images', headers=Nhentai_Com.headers, wait=wait).json()
+    def get_images(code):
+        response = Nhentai_Com.send_request(f'https://nhentai.com/api/comics/{code}/images', headers=Nhentai_Com.headers).json()
         images = [image['source_url'] for image in response['images']]
         return images, False
 
-    def search_by_keyword(keyword, absolute, wait=True):
+    def search_by_keyword(keyword, absolute):
         from contextlib import suppress
         page = 1
         tail = '&sort=title' if not keyword else ''
         while True:
-            response = Nhentai_Com.send_request(f'https://nhentai.com/api/comics?page={page}&q={keyword}{tail}', headers=Nhentai_Com.headers, wait=wait).json()
+            response = Nhentai_Com.send_request(f'https://nhentai.com/api/comics?page={page}&q={keyword}{tail}', headers=Nhentai_Com.headers).json()
             doujins = response['data']
             if not doujins:
                 yield {}
@@ -68,5 +68,5 @@ class Nhentai_Com(Doujin):
             yield results
             page += 1
 
-    def get_db(wait=True):
-        return Nhentai_Com.search_by_keyword('', False, wait=wait)
+    def get_db():
+        return Nhentai_Com.search_by_keyword('', False)

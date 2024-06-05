@@ -5,9 +5,9 @@ class Mangareader(Manga):
     domain = 'mangareader.mobi'
     logo = 'https://mangareader.mobi/frontend/imgs/favicon16.png'
 
-    def get_info(manga, wait=True):
+    def get_info(manga):
         from contextlib import suppress
-        response = Mangareader.send_request(f'https://mangareader.mobi/manga/{manga}', wait=wait)
+        response = Mangareader.send_request(f'https://mangareader.mobi/manga/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, summary, status, authors, views, genres = 8 * ['']
         info_box = soup.find('div', {'class': 'imgdesc'})
@@ -33,8 +33,8 @@ class Mangareader(Manga):
             }
         }
 
-    def get_chapters(manga, wait=True):
-        response = Mangareader.send_request(f'https://mangareader.mobi/manga/{manga}', verify=False, wait=wait)
+    def get_chapters(manga):
+        response = Mangareader.send_request(f'https://mangareader.mobi/manga/{manga}', verify=False)
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find('div', {'class':'cl'}).find_all('a')
         chapters = [div['href'].split('/')[-1] for div in divs[::-1]]
@@ -45,23 +45,23 @@ class Mangareader(Manga):
         } for chapter_url in chapters_urls]
         return chapters
 
-    def get_images(manga, chapter, wait=True):
+    def get_images(manga, chapter):
         chapter_url = chapter['url']
         if f'{manga}-' in chapter_url:
             chapter_url = chapter_url.replace(f'{manga}-','')
-        response = Mangareader.send_request(f'https://mangareader.mobi/chapter/{manga}-{chapter_url}', verify=False, wait=wait)
+        response = Mangareader.send_request(f'https://mangareader.mobi/chapter/{manga}-{chapter_url}', verify=False)
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'id':'readerarea'}).find('p').get_text(strip=True).split(',')
         save_names = [f'{i+1:03d}.{images[i].split(".")[-1]}' for i in range(len(images))]
         return images, save_names
 
-    def search_by_keyword(keyword, absolute, wait=True):
+    def search_by_keyword(keyword, absolute):
         from requests.exceptions import HTTPError
         from contextlib import suppress
         page = 1
         while True:
             try:
-                response = Mangareader.send_request(f'https://mangareader.mobi/search?s={keyword}&page={page}', verify=False, wait=wait)
+                response = Mangareader.send_request(f'https://mangareader.mobi/search?s={keyword}&page={page}', verify=False)
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -94,5 +94,5 @@ class Mangareader(Manga):
             yield results
             page += 1
 
-    def get_db(wait=True):
-        return Mangareader.search_by_keyword('', False, wait=wait)
+    def get_db():
+        return Mangareader.search_by_keyword('', False)

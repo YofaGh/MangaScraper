@@ -5,9 +5,9 @@ class Nhentai_Xxx(Doujin):
     domain = 'nhentai.xxx'
     logo = 'https://nhentai.xxx/front/logo.svg'
 
-    def get_info(code, wait=True):
+    def get_info(code):
         from contextlib import suppress
-        response = Nhentai_Xxx.send_request(f'https://nhentai.xxx/g/{code}', wait=wait)
+        response = Nhentai_Xxx.send_request(f'https://nhentai.xxx/g/{code}')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, pages, uploaded = 5 * ['']
         info_box = soup.find('div', {'id': 'info'})
@@ -34,14 +34,14 @@ class Nhentai_Xxx(Doujin):
             }
         }
 
-    def get_title(code, wait=True):
-        response = Nhentai_Xxx.send_request(f'https://nhentai.xxx/g/{code}', wait=wait)
+    def get_title(code):
+        response = Nhentai_Xxx.send_request(f'https://nhentai.xxx/g/{code}')
         soup = BeautifulSoup(response.text, 'html.parser')
         title = soup.find('div', {'class', 'info'}).find('h1').get_text(strip=True)
         return title
 
-    def get_images(code, wait=True):
-        response = Nhentai_Xxx.send_request(f'https://nhentai.xxx/g/{code}/', wait=wait)
+    def get_images(code):
+        response = Nhentai_Xxx.send_request(f'https://nhentai.xxx/g/{code}/')
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find('div', {'class': 'gallery_thumbs'}).find_all('a')
         images = [div.find('img')['data-src'] for div in divs]
@@ -51,12 +51,12 @@ class Nhentai_Xxx(Doujin):
             new_images.append(f'{image.rsplit("/", 1)[0]}/{name}')
         return new_images, False
 
-    def search_by_keyword(keyword, absolute, wait=True):
+    def search_by_keyword(keyword, absolute):
         from requests.exceptions import HTTPError
         page = 1
         while True:
             try:
-                response = Nhentai_Xxx.send_request(f'https://nhentai.xxx/search?q={keyword}&page={page}', wait=wait)
+                response = Nhentai_Xxx.send_request(f'https://nhentai.xxx/search?q={keyword}&page={page}')
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -76,5 +76,5 @@ class Nhentai_Xxx(Doujin):
             yield results
             page += 1
 
-    def get_db(wait=True):
-        return Nhentai_Xxx.search_by_keyword('', False, wait=wait)
+    def get_db():
+        return Nhentai_Xxx.search_by_keyword('', False)

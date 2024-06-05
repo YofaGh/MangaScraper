@@ -6,9 +6,9 @@ class Truemanga(Manga):
     logo = 'https://truemanga.com/static/sites/truemanga/icons/favicon.ico'
     download_images_headers = {'Referer': 'https://truemanga.com/'}
 
-    def get_info(manga, wait=True):
+    def get_info(manga):
         from contextlib import suppress
-        response = Truemanga.send_request(f'https://truemanga.com/{manga}', wait=wait)
+        response = Truemanga.send_request(f'https://truemanga.com/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, summary, status = 5 * ['']
         extras = {}
@@ -34,12 +34,12 @@ class Truemanga(Manga):
             'Extras': extras
         }
 
-    def get_chapters(manga, wait=True):
-        response = Truemanga.send_request(f'https://truemanga.com/{manga}', wait=wait)
+    def get_chapters(manga):
+        response = Truemanga.send_request(f'https://truemanga.com/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         script = soup.find(lambda tag:tag.name == 'script' and 'bookId' in tag.text).text
         book_id = script.split('bookId = ')[1].split(';', 1)[0]
-        response = Truemanga.send_request(f'https://truemanga.com/api/manga/{book_id}/chapters', wait=wait)
+        response = Truemanga.send_request(f'https://truemanga.com/api/manga/{book_id}/chapters')
         soup = BeautifulSoup(response.text, 'html.parser')
         chapters = [{
             'url': chapter['value'].split('/')[-1],
@@ -47,22 +47,22 @@ class Truemanga(Manga):
         } for chapter in soup.find_all('option')[::-1]]
         return chapters
 
-    def get_images(manga, chapter, wait=True):
-        response = Truemanga.send_request(f'https://truemanga.com/{manga}/{chapter["url"]}', wait=wait)
+    def get_images(manga, chapter):
+        response = Truemanga.send_request(f'https://truemanga.com/{manga}/{chapter["url"]}')
         soup = BeautifulSoup(response.text, 'html.parser')
         script = soup.find(lambda tag:tag.name == 'script' and 'chapImages' in tag.text).text
         images = script.replace("var chapImages = '", '').strip()[:-1].split(',')
         save_names = [f'{i+1:03d}.{images[i].split(".")[-1].split("?")[0]}' for i in range(len(images))]
         return images, save_names
 
-    def search_by_keyword(keyword, absolute, wait=True):
+    def search_by_keyword(keyword, absolute):
         from contextlib import suppress
         from requests.exceptions import HTTPError
         template = f'https://truemanga.com/search?q={keyword}&page=P_P_P_P' if keyword else 'https://truemanga.com/az-list?page=P_P_P_P'
         page = 1
         while True:
             try:
-                response = Truemanga.send_request(template.replace('P_P_P_P', str(page)), wait=wait)
+                response = Truemanga.send_request(template.replace('P_P_P_P', str(page)))
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -90,5 +90,5 @@ class Truemanga(Manga):
             yield results
             page += 1
 
-    def get_db(wait=True):
-        return Truemanga.search_by_keyword('', False, wait=wait)
+    def get_db():
+        return Truemanga.search_by_keyword('', False)

@@ -5,9 +5,9 @@ class Manga68(Manga):
     domain = 'manga68.com'
     logo = 'https://manga68.com/wp-content/uploads/2017/10/cropped-manga68-2-192x192.png'
 
-    def get_info(manga, wait=True):
+    def get_info(manga):
         from contextlib import suppress
-        response = Manga68.send_request(f'https://manga68.com/manga/{manga}', wait=wait)
+        response = Manga68.send_request(f'https://manga68.com/manga/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, summary, rating, status = 5 * ['']
         extras = {}
@@ -38,8 +38,8 @@ class Manga68(Manga):
             'Extras': extras
         }
 
-    def get_chapters(manga, wait=True):
-        response = Manga68.send_request(f'https://manga68.com/manga/{manga}/ajax/chapters/', method='POST', wait=wait)
+    def get_chapters(manga):
+        response = Manga68.send_request(f'https://manga68.com/manga/{manga}/ajax/chapters/', method='POST')
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find_all('li', {'class':'wp-manga-chapter'})
         chapters_urls = [div.find('a')['href'].split('/')[-2] for div in divs[::-1]]
@@ -49,20 +49,20 @@ class Manga68(Manga):
         } for chapter_url in chapters_urls]
         return chapters
 
-    def get_images(manga, chapter, wait=True):
-        response = Manga68.send_request(f'https://manga68.com/manga/{manga}/{chapter["url"]}/', wait=wait)
+    def get_images(manga, chapter):
+        response = Manga68.send_request(f'https://manga68.com/manga/{manga}/{chapter["url"]}/')
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'class':'reading-content'}).find_all('img')
         images = [image['data-src'].strip() for image in images]
         return images, False
 
-    def search_by_keyword(keyword, absolute, wait=True):
+    def search_by_keyword(keyword, absolute):
         from contextlib import suppress
         from requests.exceptions import HTTPError
         page = 1
         while True:
             try:
-                response = Manga68.send_request(f'https://manga68.com/page/{page}/?s={keyword}&post_type=wp-manga', wait=wait)
+                response = Manga68.send_request(f'https://manga68.com/page/{page}/?s={keyword}&post_type=wp-manga')
             except HTTPError:
                 yield {}
             if response.url == f'https://manga68.com?s={keyword}&post_type=wp-manga':
@@ -104,5 +104,5 @@ class Manga68(Manga):
             yield results
             page += 1
 
-    def get_db(wait=True):
-        return Manga68.search_by_keyword('', False, wait=wait)
+    def get_db():
+        return Manga68.search_by_keyword('', False)

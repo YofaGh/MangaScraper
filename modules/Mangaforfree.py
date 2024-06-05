@@ -5,9 +5,9 @@ class Mangaforfree(Manga):
     domain = 'mangaforfree.net'
     logo = 'https://mangaforfree.net/wp-content/uploads/2023/02/cropped-Favicol-mangaNet-192x192.png'
 
-    def get_info(manga, wait=True):
+    def get_info(manga):
         from contextlib import suppress
-        response = Mangaforfree.send_request(f'https://mangaforfree.net/manga/{manga}', wait=wait)
+        response = Mangaforfree.send_request(f'https://mangaforfree.net/manga/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, summary, rating, status = 6 * ['']
         extras = {}
@@ -40,13 +40,13 @@ class Mangaforfree(Manga):
             'Extras': extras
         }
 
-    def get_chapters(manga, wait=True):
-        response = Mangaforfree.send_request(f'https://mangaforfree.net/manga/{manga}', wait=wait)
+    def get_chapters(manga):
+        response = Mangaforfree.send_request(f'https://mangaforfree.net/manga/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         manga_id = soup.find('a', {'class': 'wp-manga-action-button'})['data-post']
         headers = {'content-type': 'application/x-www-form-urlencoded; charset=UTF-8'}
         data = f'action=manga_get_chapters&manga={manga_id}'
-        response = Mangaforfree.send_request('https://mangaforfree.net/wp-admin/admin-ajax.php', method='POST', headers=headers, data=data, wait=wait)
+        response = Mangaforfree.send_request('https://mangaforfree.net/wp-admin/admin-ajax.php', method='POST', headers=headers, data=data)
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find_all('li', {'class': 'wp-manga-chapter'})
         chapters_urls = [div.find('a')['href'].split('/')[-2] for div in divs[::-1]]
@@ -56,20 +56,20 @@ class Mangaforfree(Manga):
         } for chapter_url in chapters_urls]
         return chapters
 
-    def get_images(manga, chapter, wait=True):
-        response = Mangaforfree.send_request(f'https://mangaforfree.net/manga/{manga}/{chapter["url"]}/', wait=wait)
+    def get_images(manga, chapter):
+        response = Mangaforfree.send_request(f'https://mangaforfree.net/manga/{manga}/{chapter["url"]}/')
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'class': 'reading-content'}).find_all('img')
         images = [image['src'].strip() for image in images]
         return images, False
 
-    def search_by_keyword(keyword, absolute, wait=True):
+    def search_by_keyword(keyword, absolute):
         from contextlib import suppress
         from requests.exceptions import HTTPError
         page = 1
         while True:
             try:
-                response = Mangaforfree.send_request(f'https://mangaforfree.net/page/{page}?s={keyword}&post_type=wp-manga', wait=wait)
+                response = Mangaforfree.send_request(f'https://mangaforfree.net/page/{page}?s={keyword}&post_type=wp-manga')
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -107,8 +107,8 @@ class Mangaforfree(Manga):
             yield results
             page += 1
 
-    def get_db(wait=True):
-        return Mangaforfree.search_by_keyword('', False, wait=wait)
+    def get_db():
+        return Mangaforfree.search_by_keyword('', False)
 
     def rename_chapter(chapter):
         tail = ' Raw' if 'raw' in chapter else ''

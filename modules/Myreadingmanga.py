@@ -6,9 +6,9 @@ class Myreadingmanga(Doujin):
     logo = 'https://myreadingmanga.to/img/logoo.png'
     download_images_headers = {'Referer': 'https://myreadingmanga.to/'}
 
-    def get_info(code, wait=True):
+    def get_info(code):
         from contextlib import suppress
-        response = Myreadingmanga.send_request(f'https://myreadingmanga.to/g/{code}', wait=wait)
+        response = Myreadingmanga.send_request(f'https://myreadingmanga.to/g/{code}')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, pages, uploaded = 5 * ['']
         info_box = soup.find('div', {'id': 'info'})
@@ -33,14 +33,14 @@ class Myreadingmanga(Doujin):
             }
         }
 
-    def get_title(code, wait=True):
-        response = Myreadingmanga.send_request(f'https://myreadingmanga.to/g/{code}', wait=wait)
+    def get_title(code):
+        response = Myreadingmanga.send_request(f'https://myreadingmanga.to/g/{code}')
         soup = BeautifulSoup(response.text, 'html.parser')
         title = soup.find('div', {'class', 'container'}).find('h1').get_text(strip=True)
         return title
 
-    def get_images(code, wait=True):
-        response = Myreadingmanga.send_request(f'https://myreadingmanga.to/g/{code}/', wait=wait)
+    def get_images(code):
+        response = Myreadingmanga.send_request(f'https://myreadingmanga.to/g/{code}/')
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find_all('a', {'class': 'gallerythumb'})
         images = [div.find('img')['data-src'] for div in divs]
@@ -50,12 +50,12 @@ class Myreadingmanga(Doujin):
             new_images.append(f'{image.rsplit("/", 1)[0]}/{name}')
         return new_images, False
 
-    def search_by_keyword(keyword, absolute, wait=True):
+    def search_by_keyword(keyword, absolute):
         from requests.exceptions import HTTPError
         page = 1
         while True:
             try:
-                response = Myreadingmanga.send_request(f'https://myreadingmanga.to/search?q={keyword}&page={page}', wait=wait)
+                response = Myreadingmanga.send_request(f'https://myreadingmanga.to/search?q={keyword}&page={page}')
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -75,5 +75,5 @@ class Myreadingmanga(Doujin):
             yield results
             page += 1
 
-    def get_db(wait=True):
-        return Myreadingmanga.search_by_keyword('', False, wait=wait)
+    def get_db():
+        return Myreadingmanga.search_by_keyword('', False)

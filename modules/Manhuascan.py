@@ -5,9 +5,9 @@ class Manhuascan(Manga):
     domain = 'manhuascan.us'
     logo = 'https://manhuascan.us/fav.png?v=1'
 
-    def get_info(manga, wait=True):
+    def get_info(manga):
         from contextlib import suppress
-        response = Manhuascan.send_request(f'https://manhuascan.us/manga/{manga}', wait=wait)
+        response = Manhuascan.send_request(f'https://manhuascan.us/manga/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, summary, rating, status, authors, artists, posted_on, updated_on = 10 * ['']
         info_box = soup.find('div', {'class': 'tsinfo bixbox'})
@@ -38,8 +38,8 @@ class Manhuascan(Manga):
             },
         }
 
-    def get_chapters(manga, wait=True):
-        response = Manhuascan.send_request(f'https://manhuascan.us/manga/{manga}', wait=wait)
+    def get_chapters(manga):
+        response = Manhuascan.send_request(f'https://manhuascan.us/manga/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find_all('div', {'class': 'eph-num'})
         chapters_urls = [div.find('a')['href'].split('/')[-1] for div in divs[::-1]]
@@ -49,20 +49,20 @@ class Manhuascan(Manga):
         } for chapter_url in chapters_urls]
         return chapters
 
-    def get_images(manga, chapter, wait=True):
-        response = Manhuascan.send_request(f'https://manhuascan.us/manga/{manga}/{chapter["url"]}', wait=wait)
+    def get_images(manga, chapter):
+        response = Manhuascan.send_request(f'https://manhuascan.us/manga/{manga}/{chapter["url"]}')
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'id': 'readerarea'}).find_all('img')
         images = [image['src'] for image in images]
         return images, False
 
-    def search_by_keyword(keyword, absolute, wait=True):
+    def search_by_keyword(keyword, absolute):
         from contextlib import suppress
         from requests.exceptions import HTTPError
         page = 1
         while True:
             try:
-                response = Manhuascan.send_request(f'https://manhuascan.us/manga-list?search={keyword}&page={page}', wait=wait)
+                response = Manhuascan.send_request(f'https://manhuascan.us/manga-list?search={keyword}&page={page}')
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -86,5 +86,5 @@ class Manhuascan(Manga):
             yield results
             page += 1
 
-    def get_db(wait=True):
-        return Manhuascan.search_by_keyword('', False, wait=wait)
+    def get_db():
+        return Manhuascan.search_by_keyword('', False)
