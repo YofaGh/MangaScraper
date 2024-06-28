@@ -13,8 +13,8 @@ def download_doujins(json_file):
             while i < len(doujins[domain]):
                 if download_doujin(doujins[domain][i], get_modules(domain)):
                     del doujins[domain][i]
+                    save_json_file(json_file, doujins)
                 else:
                     i += 1
-                save_json_file(json_file, doujins)
         except MissingModuleException as error:
             log(error, 'red')
