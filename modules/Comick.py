@@ -1,12 +1,13 @@
 import json
 from bs4 import BeautifulSoup
 from utils.models import Manga
+from user_agents import LEECH
 
 class Comick(Manga):
     domain = 'comick.cc'
     logo = 'https://comick.cc/static/icons/unicorn-256_maskable.png'
-    headers = {'User-Agent': 'Leech/1051 CFNetwork/454.9.4 Darwin/10.3.0 (i386) (MacPro1%2C1)'}
-    download_images_headers = {'User-Agent': 'Leech/1051 CFNetwork/454.9.4 Darwin/10.3.0 (i386) (MacPro1%2C1)'}
+    headers = {'User-Agent': LEECH}
+    download_images_headers = headers
 
     def get_info(manga):
         response = Comick.send_request(f'https://comick.cc/comic/{manga}', headers=Comick.headers)

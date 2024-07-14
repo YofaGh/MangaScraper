@@ -1,9 +1,10 @@
 from utils.models import Doujin
+from user_agents import LEECH
 
 class Nhentai_Com(Doujin):
     domain = 'nhentai.com'
     logo = 'https://cdn.nhentai.com/nhentai/images/icon.png'
-    headers = {'User-Agent': 'Leech/1051 CFNetwork/454.9.4 Darwin/10.3.0 (i386) (MacPro1%2C1)'}
+    headers = {'User-Agent': LEECH}
     is_coded = False
 
     def get_info(code):

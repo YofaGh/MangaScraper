@@ -1,10 +1,11 @@
 from bs4 import BeautifulSoup
 from utils.models import Doujin
+from user_agents import MOZILLA
 
 class Hentairead(Doujin):
     domain = 'hentairead.com'
     logo = 'https://i0.wp.com/hentairead.com/wp-content/uploads/2022/01/cropped-favicon.png'
-    headers = {'User-Agent': 'Mozilla/5.0'}
+    headers = {'User-Agent': MOZILLA}
     is_coded = False
 
     def get_info(code):

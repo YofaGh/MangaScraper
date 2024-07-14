@@ -1,10 +1,11 @@
 from bs4 import BeautifulSoup
 from utils.models import Manga
+from user_agents import LEECH
 
 class Manhuamanhwa(Manga):
     domain = 'manhuamanhwa.com'
     headers = {
-        'User-Agent': 'Leech/1051 CFNetwork/454.9.4 Darwin/10.3.0 (i386) (MacPro1%2C1)',
+        'User-Agent': LEECH,
         'Referer': 'https://manhuamanhwa.com/'
     }
     download_images_headers = headers

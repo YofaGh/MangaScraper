@@ -1,10 +1,11 @@
 from bs4 import BeautifulSoup
 from utils.models import Doujin
+from user_agents import MOZILLA
 
 class _999hentai(Doujin):
     domain = '999hentai.net'
     logo = 'https://999hentai.net/icons/icon-32x32.ico'
-    headers = {'User-Agent': 'Mozilla/5.0'}
+    headers = {'User-Agent': MOZILLA}
     is_coded = False
 
     def get_info(code):
