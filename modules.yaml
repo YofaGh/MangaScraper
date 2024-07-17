@@ -55,6 +55,11 @@ doujins.com:
   type: Doujin
   test_sample:
     url: space-battleship-yamato-2199/circle-outerworld-niimi-kaoru-from-2198-62007
+e-hentai.org:
+  className: E_Hentai
+  type: Doujin
+  test_sample:
+    url: 2988216/164d96890f
 ehentai.to:
   className: Ehentai
   type: Doujin
