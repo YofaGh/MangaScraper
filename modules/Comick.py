@@ -31,14 +31,16 @@ class Comick(Manga):
         }
 
     def get_chapters(manga):
-        response = Comick.send_request(f'https://comick.cc/comic/{manga}', headers=Comick.headers)
+        session = Comick.create_session()
+        session.headers = Comick.headers
+        response = Comick.send_request(f'https://comick.cc/comic/{manga}', session=session)
         soup = BeautifulSoup(response.text, 'html.parser')
         script = soup.find('script', {'id': '__NEXT_DATA__'})
         hid = json.loads(script.get_text(strip=True))['props']['pageProps']['comic']['hid']
         chapters_urls = []
         page = 1
         while True:
-            response = Comick.send_request(f'https://api.comick.cc/comic/{hid}/chapters?lang=en&chap-order=1&page={page}', headers=Comick.headers).json()
+            response = Comick.send_request(f'https://api.comick.cc/comic/{hid}/chapters?lang=en&chap-order=1&page={page}', session=session).json()
             if not response['chapters']:
                 break
             chapters_urls.extend([f'{chapter["hid"]}-chapter-{chapter["chap"]}-en' for chapter in response['chapters'] if chapter['chap']])

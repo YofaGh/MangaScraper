@@ -47,11 +47,12 @@ class Luscious(Doujin):
 
     def get_images(code):
         data = 'https://apicdn.luscious.net/graphql/nobatch/?operationName=PictureListInsideAlbum&query=%2520query%2520PictureListInsideAlbum%28%2524input%253A%2520PictureListInput%21%29%2520%257B%2520picture%2520%257B%2520list%28input%253A%2520%2524input%29%2520%257B%2520info%2520%257B%2520...FacetCollectionInfo%2520%257D%2520items%2520%257B%2520url_to_original%2520position%2520%257B%2520category%2520text%2520url%2520%257D%2520thumbnails%2520%257B%2520width%2520height%2520size%2520url%2520%257D%2520%257D%2520%257D%2520%257D%2520%257D%2520fragment%2520FacetCollectionInfo%2520on%2520FacetCollectionInfo%2520%257B%2520page%2520total_pages%2520%257D%2520&variables=%7B%22input%22%3A%7B%22filters%22%3A%5B%7B%22name%22%3A%22album_id%22%2C%22value%22%3A%22__album__id__%22%7D%5D%2C%22display%22%3A%22position%22%2C%22items_per_page%22%3A50%2C%22page%22%3A__page__number__%7D%7D'
-        response = Luscious.send_request(data.replace('__album__id__', str(code)).replace('__page__number__', '1')).json()
+        session = Luscious.create_session()
+        response = Luscious.send_request(data.replace('__album__id__', str(code)).replace('__page__number__', '1'), session=session).json()
         total_pages = response['data']['picture']['list']['info']['total_pages']
         images = [item['url_to_original'] for item in response['data']['picture']['list']['items']]
         for page in range(2,total_pages + 1):
-            response = Luscious.send_request(data.replace('__album__id__', str(code)).replace('__page__number__', str(page))).json()
+            response = Luscious.send_request(data.replace('__album__id__', str(code)).replace('__page__number__', str(page)), session=session).json()
             new_images = [item['url_to_original'] for item in response['data']['picture']['list']['items']]
             images.extend(new_images)
         return images, False

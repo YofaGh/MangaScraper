@@ -35,11 +35,12 @@ class Truemanga(Manga):
         }
 
     def get_chapters(manga):
-        response = Truemanga.send_request(f'https://truemanga.com/{manga}')
+        session = Truemanga.create_session()
+        response = Truemanga.send_request(f'https://truemanga.com/{manga}', session=session)
         soup = BeautifulSoup(response.text, 'html.parser')
         script = soup.find(lambda tag:tag.name == 'script' and 'bookId' in tag.text).text
         book_id = script.split('bookId = ')[1].split(';', 1)[0]
-        response = Truemanga.send_request(f'https://truemanga.com/api/manga/{book_id}/chapters')
+        response = Truemanga.send_request(f'https://truemanga.com/api/manga/{book_id}/chapters', session=session)
         soup = BeautifulSoup(response.text, 'html.parser')
         chapters = [{
             'url': chapter['value'].split('/')[-1],

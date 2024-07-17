@@ -32,10 +32,11 @@ class Omegascans(Manga):
         }
 
     def get_chapters(manga):
-        response = Omegascans.send_request('https://omegascans.org/series/where-is-my-hammer')
+        session = Omegascans.create_session()
+        response = Omegascans.send_request('https://omegascans.org/series/where-is-my-hammer', session=session)
         soup = BeautifulSoup(response.text, 'html.parser')
         series_id = soup.find(lambda tag: tag.name == 'script' and 'series_id' in tag.text).text.split('{\\"series_id\\":')[1].split(',')[0]
-        response = Omegascans.send_request(f'https://api.omegascans.org/chapter/query?page=1&perPage=10000&series_id={series_id}')
+        response = Omegascans.send_request(f'https://api.omegascans.org/chapter/query?page=1&perPage=10000&series_id={series_id}', session=session)
         chapters = [{
             'url': chapter['chapter_slug'],
             'name': chapter['chapter_name']

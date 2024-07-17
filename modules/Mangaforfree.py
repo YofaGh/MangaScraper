@@ -41,12 +41,13 @@ class Mangaforfree(Manga):
         }
 
     def get_chapters(manga):
-        response = Mangaforfree.send_request(f'https://mangaforfree.net/manga/{manga}')
+        session = Mangaforfree.create_session()
+        response = Mangaforfree.send_request(f'https://mangaforfree.net/manga/{manga}', session=session)
         soup = BeautifulSoup(response.text, 'html.parser')
         manga_id = soup.find('a', {'class': 'wp-manga-action-button'})['data-post']
-        headers = {'content-type': 'application/x-www-form-urlencoded; charset=UTF-8'}
+        session.headers = {'content-type': 'application/x-www-form-urlencoded; charset=UTF-8'}
         data = f'action=manga_get_chapters&manga={manga_id}'
-        response = Mangaforfree.send_request('https://mangaforfree.net/wp-admin/admin-ajax.php', method='POST', headers=headers, data=data)
+        response = Mangaforfree.send_request('https://mangaforfree.net/wp-admin/admin-ajax.php', method='POST', session=session, data=data)
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find_all('li', {'class': 'wp-manga-chapter'})
         chapters_urls = [div.find('a')['href'].split('/')[-2] for div in divs[::-1]]

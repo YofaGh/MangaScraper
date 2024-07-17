@@ -35,12 +35,13 @@ class Hentaixcomic(Manga):
         }
 
     def get_chapters(manga):
-        response = Hentaixcomic.send_request(f'https://hentaixcomic.com/manga/{manga}')
+        session = Hentaixcomic.create_session()
+        response = Hentaixcomic.send_request(f'https://hentaixcomic.com/manga/{manga}', session=session)
         soup = BeautifulSoup(response.text, 'html.parser')
         manga_id = soup.find('a', {'class': 'wp-manga-action-button'})['data-post']
-        headers = {'content-type': 'application/x-www-form-urlencoded; charset=UTF-8'}
+        session.headers = {'content-type': 'application/x-www-form-urlencoded; charset=UTF-8'}
         data = f'action=manga_get_chapters&manga={manga_id}'
-        response = Hentaixcomic.send_request('https://hentaixcomic.com/wp-admin/admin-ajax.php', method='POST', headers=headers, data=data)
+        response = Hentaixcomic.send_request('https://hentaixcomic.com/wp-admin/admin-ajax.php', method='POST', session=session, data=data)
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find_all('li', {'class':'wp-manga-chapter'})
         chapters_urls = [div.find('a')['href'].split('/')[-2] for div in divs[::-1]]

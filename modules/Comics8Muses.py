@@ -16,7 +16,8 @@ class Comics8Muses(Manga):
     def get_chapters(manga):
         page = 1
         chapters_urls = []
-        response = Comics8Muses.send_request(f'https://comics.8muses.com/comics/album/{manga}/{page}')
+        session = Comics8Muses.create_session()
+        response = Comics8Muses.send_request(f'https://comics.8muses.com/comics/album/{manga}/{page}', session=session)
         soup = BeautifulSoup(response.text, 'html.parser')
         if not soup.find('div', {'class':'image-title'}):
             return ['']
@@ -26,7 +27,7 @@ class Comics8Muses(Manga):
                 break
             chapters_urls += [link.get('href').split('/')[-1] for link in links]
             page += 1
-            response = Comics8Muses.send_request(f'https://comics.8muses.com/comics/album/{manga}/{page}')
+            response = Comics8Muses.send_request(f'https://comics.8muses.com/comics/album/{manga}/{page}', session=session)
             soup = BeautifulSoup(response.text, 'html.parser')
         chapters = [{
             'url': chapter_url,
