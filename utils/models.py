@@ -1,18 +1,22 @@
+import requests
+
 class Module:
     type = 'Module'
     logo = None
     domain = None
     download_images_headers = None
 
+    def create_session():
+        return requests.Session()
+
     @staticmethod
-    def send_request(url, method='GET', **kwargs):
+    def send_request(url, method='GET', session=None, **kwargs):
         from utils.assets import waiter
-        import requests
         if kwargs.get('verify') is False:
             requests.packages.urllib3.disable_warnings(requests.packages.urllib3.exceptions.InsecureRequestWarning)
         while True:
             try:
-                response = requests.request(url=url, method=method, **kwargs)
+                response = session.request(url=url, method=method, **kwargs) if session else requests.request(url=url, method=method, **kwargs)
                 response.raise_for_status()
                 return response
             except (requests.exceptions.HTTPError, requests.exceptions.Timeout) as error:
@@ -21,9 +25,9 @@ class Module:
                 waiter()
 
     @classmethod
-    def download_image(cls, url, image_name, verify=None):
+    def download_image(cls, url, image_name, session=None, verify=None):
         try:
-            response = cls.send_request(url, headers=cls.download_images_headers, verify=verify)
+            response = cls.send_request(url, session=session, headers=cls.download_images_headers, verify=verify)
             with open(image_name, 'wb') as image:
                 image.write(response.content)
                 return image_name
