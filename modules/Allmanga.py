@@ -10,7 +10,7 @@ class Allmanga(Manga):
 
     def get_info(manga):
         from contextlib import suppress
-        response = Allmanga.send_request(f'https://allmanga.to/manga/{manga}')
+        response, _ = Allmanga.send_request(f'https://allmanga.to/manga/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, summary, rating, status = 6 * ['']
         info_box = soup.find('div', {'class': 'info-box col-12'})
@@ -39,7 +39,7 @@ class Allmanga(Manga):
         }
 
     def get_chapters(manga):
-        response = Allmanga.send_request(f'https://allmanga.to/manga/{manga}')
+        response, _ = Allmanga.send_request(f'https://allmanga.to/manga/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         script = soup.find(lambda tag: tag.name == 'script' and 'availableChaptersDetail' in tag.text).get_text(strip=True)
         inputs = script.split('function(', 1)[1].split(')')[0].split(',')
@@ -72,7 +72,7 @@ class Allmanga(Manga):
         return chapters
 
     def get_images(manga, chapter):
-        response = Allmanga.send_request(f'https://allmanga.to/read/{manga}/{chapter["url"]}')
+        response, _ = Allmanga.send_request(f'https://allmanga.to/read/{manga}/{chapter["url"]}')
         soup = BeautifulSoup(response.text, 'html.parser')
         script = soup.find(lambda tag: tag.name == 'script' and 'selectedPicturesServer' in tag.text).get_text(strip=True)
         inputs = script.split('function(', 1)[1].split(')')[0].split(',')
@@ -106,8 +106,9 @@ class Allmanga(Manga):
             }
         }'''
         page = 1
+        session = None
         while True:
-            response = Allmanga.send_request(query.replace('P_P_P_P', str(page)).replace('K_K_K_K', keyword), headers=Allmanga.search_headers)
+            response, session = Allmanga.send_request(query.replace('P_P_P_P', str(page)).replace('K_K_K_K', keyword), session=session, headers=Allmanga.search_headers)
             mangas = response.json()['data']['mangas']['edges']
             if not mangas:
                 yield {}
@@ -149,9 +150,10 @@ class Allmanga(Manga):
                     "sha256Hash":"a27e57ef5de5bae714db701fb7b5cf57e13d57938fc6256f7d5c70a975d11f3d"
                 }
         }'''
+        session = None
         page = 1
         while True:
-            response = Allmanga.send_request(query.replace('P_P_P_P', str(page)), headers=Allmanga.get_db_headers)
+            response, session = Allmanga.send_request(query.replace('P_P_P_P', str(page)), session=session, headers=Allmanga.get_db_headers)
             mangas = response.json()['data']['mangas']['edges']
             if not mangas:
                 yield {}

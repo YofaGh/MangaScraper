@@ -13,7 +13,7 @@ class Imhentai(Doujin):
 
     def get_info(code):
         from contextlib import suppress
-        response = Imhentai.send_request(f'https://imhentai.xxx/gallery/{code}')
+        response, _ = Imhentai.send_request(f'https://imhentai.xxx/gallery/{code}')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, pages = 4 * ['']
         extras = {}
@@ -35,14 +35,14 @@ class Imhentai(Doujin):
         }
 
     def get_title(code):
-        response = Imhentai.send_request(f'https://imhentai.xxx/gallery/{code}')
+        response, _ = Imhentai.send_request(f'https://imhentai.xxx/gallery/{code}')
         soup = BeautifulSoup(response.text, 'html.parser')
         title = soup.find('div', {'class', 'col-md-7 col-sm-7 col-lg-8 right_details'}).find('h1').get_text(strip=True)
         return title
 
     def get_images(code):
         import json
-        response = Imhentai.send_request(f'https://imhentai.xxx/gallery/{code}')
+        response, _ = Imhentai.send_request(f'https://imhentai.xxx/gallery/{code}')
         soup = BeautifulSoup(response.text, 'html.parser')
         path = soup.find('div', {'id': 'append_thumbs'}).find('img')['data-src'].rsplit('/', 1)[0]
         script = soup.find(lambda tag:tag.name == 'script' and 'var g_th' in tag.text).text
@@ -53,9 +53,10 @@ class Imhentai(Doujin):
     def search_by_keyword(keyword, absolute):
         from requests.exceptions import HTTPError
         page = 1
+        session = None
         while True:
             try:
-                response = Imhentai.send_request(f'https://imhentai.xxx/search/?key={keyword}&page={page}')
+                response, session = Imhentai.send_request(f'https://imhentai.xxx/search/?key={keyword}&page={page}', session=session)
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')

@@ -9,7 +9,7 @@ class Constellarcomic(Manga):
 
     def get_info(manga):
         from contextlib import suppress
-        response = Constellarcomic.send_request(f'https://constellarcomic.com/manga/{manga}/', headers=Constellarcomic.headers)
+        response, _ = Constellarcomic.send_request(f'https://constellarcomic.com/manga/{manga}/', headers=Constellarcomic.headers)
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, summary, rating, status = 6 * ['']
         info_box = soup.find('div', {'class': 'main-info'})
@@ -34,7 +34,7 @@ class Constellarcomic(Manga):
         }
 
     def get_chapters(manga):
-        response = Constellarcomic.send_request(f'https://constellarcomic.com/manga/{manga}/', headers=Constellarcomic.headers)
+        response, _ = Constellarcomic.send_request(f'https://constellarcomic.com/manga/{manga}/', headers=Constellarcomic.headers)
         soup = BeautifulSoup(response.text, 'html.parser')
         links = soup.find('div', {'id': 'chapterlist'}).find_all('a')
         chapters_urls = [link['href'].split('/')[-2].replace(f'{manga}-', '') for link in links[::-1]]
@@ -49,7 +49,7 @@ class Constellarcomic(Manga):
         chapter_url = chapter['url']
         if f'{manga}-' in chapter_url:
             chapter_url = chapter_url.replace(f'{manga}-', '')
-        response = Constellarcomic.send_request(f'https://constellarcomic.com/{manga}-{chapter_url}/', headers=Constellarcomic.headers)
+        response, _ = Constellarcomic.send_request(f'https://constellarcomic.com/{manga}-{chapter_url}/', headers=Constellarcomic.headers)
         soup = BeautifulSoup(response.text, 'html.parser')
         script = soup.find(lambda tag:tag.name == 'script' and 'NO IMAGE YET' in tag.text)
         images = json.loads(script.get_text(strip=True).replace('ts_rea_der_._run(', '')[:-2])
@@ -59,8 +59,9 @@ class Constellarcomic(Manga):
     def search_by_keyword(keyword, absolute):
         from contextlib import suppress
         page = 1
+        session = None
         while True:
-            response = Constellarcomic.send_request(f'https://constellarcomic.com/page/{page}/?s={keyword}', headers=Constellarcomic.headers)
+            response, session = Constellarcomic.send_request(f'https://constellarcomic.com/page/{page}/?s={keyword}', session=session, headers=Constellarcomic.headers)
             soup = BeautifulSoup(response.text, 'html.parser')
             mangas = soup.find_all('div', {'class': 'bs swiper-slide'})
             if not mangas or response.url == f'https://constellarcomic.com/?s={keyword}':

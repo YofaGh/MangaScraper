@@ -10,7 +10,7 @@ class E_Hentai(Doujin):
 
     def get_info(code):
         from contextlib import suppress
-        response = E_Hentai.send_request(f'https://e-hentai.org/g/{code}', headers=E_Hentai.headers)
+        response, _ = E_Hentai.send_request(f'https://e-hentai.org/g/{code}', headers=E_Hentai.headers)
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, pages, rating = 4 * ['']
         box = soup.find('div', {'class': 'gm'})
@@ -37,20 +37,19 @@ class E_Hentai(Doujin):
         }
 
     def get_title(code):
-        response = E_Hentai.send_request(f'https://e-hentai.org/g/{code}', headers=E_Hentai.headers)
+        response, _ = E_Hentai.send_request(f'https://e-hentai.org/g/{code}', headers=E_Hentai.headers)
         soup = BeautifulSoup(response.text, 'html.parser')
         title = soup.find('h1').get_text(strip=True)
         return title
 
     def get_images(code):
-        session = E_Hentai.create_session()
+        response, session = E_Hentai.send_request(f'https://e-hentai.org/g/{code}')
         session.headers = E_Hentai.headers
-        response = E_Hentai.send_request(f'https://e-hentai.org/g/{code}', session=session)
         soup = BeautifulSoup(response.text, 'html.parser')
         pages = [a['href'] for a in soup.find('div', {'id': 'gdt'}).find_all('a')]
         images, save_names = [], []
         for i in range(len(pages)):
-            response = E_Hentai.send_request(pages[i], session=session)
+            response, session = E_Hentai.send_request(pages[i], session=session)
             soup = BeautifulSoup(response.text, 'html.parser')
             image = soup.find('img', {'id': 'img'})['src']
             images.append(image)
@@ -58,12 +57,11 @@ class E_Hentai(Doujin):
         return images, save_names
 
     def search_by_keyword(keyword, absolute):
-        session = E_Hentai.create_session()
-        session.headers = E_Hentai.headers
         page = 1
         last = ''
+        session = None
         while True:
-            response = E_Hentai.send_request(f'https://e-hentai.org/?f_search={keyword}&next={last}', session=session)
+            response, session = E_Hentai.send_request(f'https://e-hentai.org/?f_search={keyword}&next={last}', session=session, headers=E_Hentai.headers)
             if 'No unfiltered results found' in response.text or 'No hits found' in response.text:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')

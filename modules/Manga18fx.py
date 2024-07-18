@@ -7,7 +7,7 @@ class Manga18fx(Manga):
 
     def get_info(manga):
         from contextlib import suppress
-        response = Manga18fx.send_request(f'https://manga18fx.com/manga/{manga}')
+        response, _ = Manga18fx.send_request(f'https://manga18fx.com/manga/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, summary, rating, status = 6 * ['']
         extras = {}
@@ -40,7 +40,7 @@ class Manga18fx(Manga):
         }
 
     def get_chapters(manga):
-        response = Manga18fx.send_request(f'https://manga18fx.com/manga/{manga}')
+        response, _ = Manga18fx.send_request(f'https://manga18fx.com/manga/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find_all('li', {'class': 'a-h'})
         chapters_urls = [div.find('a')['href'].split('/')[-1] for div in divs[::-1]]
@@ -51,7 +51,7 @@ class Manga18fx(Manga):
         return chapters
 
     def get_images(manga, chapter):
-        response = Manga18fx.send_request(f'https://manga18fx.com/manga/{manga}/{chapter["url"]}')
+        response, _ = Manga18fx.send_request(f'https://manga18fx.com/manga/{manga}/{chapter["url"]}')
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'class': 'read-content'}).find_all('img')
         images = [image['src'].strip() for image in images]
@@ -63,9 +63,10 @@ class Manga18fx(Manga):
         template = f'https://manga18fx.com/search?q={keyword}&page=P_P_P_P' if keyword else f'https://manga18fx.com/page/P_P_P_P'
         page = 1
         prev_page = []
+        session = None
         while True:
             try:
-                response = Manga18fx.send_request(template.replace('P_P_P_P', str(page)))
+                response, session = Manga18fx.send_request(template.replace('P_P_P_P', str(page)), session=session)
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')

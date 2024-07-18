@@ -9,7 +9,7 @@ class Nhentai_Com(Doujin):
 
     def get_info(code):
         from datetime import datetime
-        response = Nhentai_Com.send_request(f'https://nhentai.com/api/comics/{code}', headers=Nhentai_Com.headers).json()
+        response, _ = Nhentai_Com.send_request(f'https://nhentai.com/api/comics/{code}', headers=Nhentai_Com.headers).json()
         return {
             'Cover': response['image_url'],
             'Title': response['title'],
@@ -32,11 +32,11 @@ class Nhentai_Com(Doujin):
         }
 
     def get_title(code):
-        response = Nhentai_Com.send_request(f'https://nhentai.com/api/comics/{code}', headers=Nhentai_Com.headers).json()
+        response, _ = Nhentai_Com.send_request(f'https://nhentai.com/api/comics/{code}', headers=Nhentai_Com.headers).json()
         return response['title']
 
     def get_images(code):
-        response = Nhentai_Com.send_request(f'https://nhentai.com/api/comics/{code}/images', headers=Nhentai_Com.headers).json()
+        response, _ = Nhentai_Com.send_request(f'https://nhentai.com/api/comics/{code}/images', headers=Nhentai_Com.headers).json()
         images = [image['source_url'] for image in response['images']]
         return images, False
 
@@ -44,8 +44,9 @@ class Nhentai_Com(Doujin):
         from contextlib import suppress
         page = 1
         tail = '&sort=title' if not keyword else ''
+        session = None
         while True:
-            response = Nhentai_Com.send_request(f'https://nhentai.com/api/comics?page={page}&q={keyword}{tail}', headers=Nhentai_Com.headers).json()
+            response, session = Nhentai_Com.send_request(f'https://nhentai.com/api/comics?page={page}&q={keyword}{tail}', session=session, headers=Nhentai_Com.headers).json()
             doujins = response['data']
             if not doujins:
                 yield {}

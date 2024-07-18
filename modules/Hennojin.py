@@ -8,7 +8,7 @@ class Hennojin(Doujin):
 
     def get_info(code):
         from contextlib import suppress
-        response = Hennojin.send_request(f'https://hennojin.com/home/?manga={code}')
+        response, _ = Hennojin.send_request(f'https://hennojin.com/home/?manga={code}')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative = 3 * ['']
         info_box = soup.find('div', {'class': 'col-lg-9'})
@@ -36,26 +36,26 @@ class Hennojin(Doujin):
         }
 
     def get_title(code):
-        response = Hennojin.send_request(f'https://hennojin.com/home/?manga={code}')
+        response, _ = Hennojin.send_request(f'https://hennojin.com/home/?manga={code}')
         soup = BeautifulSoup(response.text, 'html.parser')
         title = soup.find('h3', {'class', 'manga-title'}).contents[0]
         return title
 
     def get_images(code):
         code = code.replace('-', ' ')
-        response = Hennojin.send_request(f'https://hennojin.com/home/manga-reader/?manga={code}&view=page')
+        response, _ = Hennojin.send_request(f'https://hennojin.com/home/manga-reader/?manga={code}&view=page')
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'class': 'slideshow-container'}).find_all('img')
         images = [f'https://hennojin.com{image["src"]}' for image in images]
         return images, False
 
     def search_by_keyword(keyword, absolute):
-        response = Hennojin.send_request('https://hennojin.com/home/')
+        response, session = Hennojin.send_request('https://hennojin.com/home/')
         soup = BeautifulSoup(response.text, 'html.parser')
         wpnonce = soup.find('input', {'id': '_wpnonce'})['value']
         data = {'action': 'post_grid_ajax_search_free', 'grid_id': '23', 'current_page': 1, 'formData': f'keyword={keyword}&_wpnonce={wpnonce}'}
         while True:
-            response = Hennojin.send_request(f'https://hennojin.com/home/wp-admin/admin-ajax.php', method='POST', data=data).json()
+            response, session = Hennojin.send_request(f'https://hennojin.com/home/wp-admin/admin-ajax.php', method='POST', session=session, data=data).json()
             if not response.get('html'):
                 yield {}
             soup = BeautifulSoup(response['html'], 'html.parser')

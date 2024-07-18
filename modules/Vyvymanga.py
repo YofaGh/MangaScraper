@@ -7,7 +7,7 @@ class Vyvymanga(Manga):
 
     def get_info(manga):
         from contextlib import suppress
-        response = Vyvymanga.send_request(f'https://vyvymanga.net/manga/{manga}')
+        response, _ = Vyvymanga.send_request(f'https://vyvymanga.net/manga/{manga}')
         box = BeautifulSoup(response.text, 'html.parser').find('div', {'class': 'div-manga'})
         cover, title, alternative, summary, rating, status, authors, view, genres = 9 * ['']
         bbox = box.find('div', {'class': 'col-md-7'})
@@ -35,7 +35,7 @@ class Vyvymanga(Manga):
         }
 
     def get_chapters(manga):
-        response = Vyvymanga.send_request(f'https://vyvymanga.net/manga/{manga}')
+        response, _ = Vyvymanga.send_request(f'https://vyvymanga.net/manga/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         aas = soup.find_all('a', {'class': 'list-group-item list-group-item-action list-chapter'})
         chapters = [{
@@ -45,7 +45,7 @@ class Vyvymanga(Manga):
         return chapters
 
     def get_images(manga, chapter):
-        response = Vyvymanga.send_request(chapter['url'])
+        response, _ = Vyvymanga.send_request(chapter['url'])
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'class': 'vview carousel-inner'}).find_all('img')
         images = [image['data-src'] for image in images]
@@ -55,8 +55,9 @@ class Vyvymanga(Manga):
     def search_by_keyword(keyword, absolute):
         from contextlib import suppress
         page = 1
+        session = None
         while True:
-            response = Vyvymanga.send_request(f'https://vyvymanga.net/search?q={keyword}&page={page}')
+            response, session = Vyvymanga.send_request(f'https://vyvymanga.net/search?q={keyword}&page={page}', session=session)
             soup = BeautifulSoup(response.text, 'html.parser')
             mangas = soup.find_all('div', {'class': 'comic-item'})
             if not mangas:
@@ -87,7 +88,7 @@ class Vyvymanga(Manga):
     @classmethod
     def download_image(cls, url, image_name, session=None, verify=None):
         try:
-            response = cls.send_request(url, session=session, headers=cls.download_images_headers, verify=verify)
+            response, _ = cls.send_request(url, session=session, headers=cls.download_images_headers, verify=verify)
             image_format = response.headers['Content-Disposition'].split('.')[-1].replace('"', '')
             saved_path = f'{image_name}.{image_format}'
             with open(saved_path, 'wb') as image:

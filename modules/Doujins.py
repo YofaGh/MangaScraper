@@ -9,7 +9,7 @@ class Doujins(Doujin):
     def get_info(code):
         from datetime import datetime
         from contextlib import suppress
-        response = Doujins.send_request(f'https://doujins.com/{code}')
+        response, _ = Doujins.send_request(f'https://doujins.com/{code}')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, tags, artists, pages, translated_by, uploaded = 7 * ['']
         with suppress(Exception): cover = soup.find('img', {'class': 'doujin active'})['data-file'].replace('&amp;', '&')
@@ -34,13 +34,13 @@ class Doujins(Doujin):
         }
 
     def get_title(code):
-        response = Doujins.send_request(f'https://doujins.com/{code}')
+        response, _ = Doujins.send_request(f'https://doujins.com/{code}')
         soup = BeautifulSoup(response.text, 'html.parser')
         title = soup.find('div', {'class', 'folder-title'}).find_all('a')[-1].get_text(strip=True)
         return title
 
     def get_images(code):
-        response = Doujins.send_request(f'https://doujins.com/{code}')
+        response, _ = Doujins.send_request(f'https://doujins.com/{code}')
         soup = BeautifulSoup(response.text, 'html.parser')
         if 'Upgrade to premium now!' in soup.find('div', {'id', 'thumbnails'}).get_text():
             return [], False
@@ -52,8 +52,9 @@ class Doujins(Doujin):
     def search_by_keyword(keyword, absolute):
         from contextlib import suppress
         page = 1
+        session = None
         while True:
-            response = Doujins.send_request(f'https://doujins.com/searches?words={keyword}&page={page}')
+            response, session = Doujins.send_request(f'https://doujins.com/searches?words={keyword}&page={page}', session=session)
             soup = BeautifulSoup(response.text, 'html.parser')
             divs = soup.select('#content > div > div:nth-child(5)')[0]
             try:

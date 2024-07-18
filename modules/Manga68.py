@@ -7,7 +7,7 @@ class Manga68(Manga):
 
     def get_info(manga):
         from contextlib import suppress
-        response = Manga68.send_request(f'https://manga68.com/manga/{manga}')
+        response, _ = Manga68.send_request(f'https://manga68.com/manga/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, summary, rating, status = 5 * ['']
         extras = {}
@@ -39,7 +39,7 @@ class Manga68(Manga):
         }
 
     def get_chapters(manga):
-        response = Manga68.send_request(f'https://manga68.com/manga/{manga}/ajax/chapters/', method='POST')
+        response, _ = Manga68.send_request(f'https://manga68.com/manga/{manga}/ajax/chapters/', method='POST')
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find_all('li', {'class':'wp-manga-chapter'})
         chapters_urls = [div.find('a')['href'].split('/')[-2] for div in divs[::-1]]
@@ -50,7 +50,7 @@ class Manga68(Manga):
         return chapters
 
     def get_images(manga, chapter):
-        response = Manga68.send_request(f'https://manga68.com/manga/{manga}/{chapter["url"]}/')
+        response, _ = Manga68.send_request(f'https://manga68.com/manga/{manga}/{chapter["url"]}/')
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'class':'reading-content'}).find_all('img')
         images = [image['data-src'].strip() for image in images]
@@ -60,9 +60,10 @@ class Manga68(Manga):
         from contextlib import suppress
         from requests.exceptions import HTTPError
         page = 1
+        session = None
         while True:
             try:
-                response = Manga68.send_request(f'https://manga68.com/page/{page}/?s={keyword}&post_type=wp-manga')
+                response, session = Manga68.send_request(f'https://manga68.com/page/{page}/?s={keyword}&post_type=wp-manga', session=session)
             except HTTPError:
                 yield {}
             if response.url == f'https://manga68.com?s={keyword}&post_type=wp-manga':

@@ -7,7 +7,7 @@ class Manhuamix(Manga):
 
     def get_info(manga):
         from contextlib import suppress
-        response = Manhuamix.send_request(f'https://manhuamix.com/manhua/{manga}')
+        response, _ = Manhuamix.send_request(f'https://manhuamix.com/manhua/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, summary, rating, status = 6 * ['']
         extras = {}
@@ -40,7 +40,7 @@ class Manhuamix(Manga):
         }
 
     def get_chapters(manga):
-        response = Manhuamix.send_request(f'https://manhuamix.com/manhua/{manga}/ajax/chapters/', 'POST')
+        response, _ = Manhuamix.send_request(f'https://manhuamix.com/manhua/{manga}/ajax/chapters/', 'POST')
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find_all('li', {'class': 'wp-manga-chapter'})
         chapters_urls = [div.find('a')['href'].split('/')[-2] for div in divs[::-1]]
@@ -51,7 +51,7 @@ class Manhuamix(Manga):
         return chapters
 
     def get_images(manga, chapter):
-        response = Manhuamix.send_request(f'https://manhuamix.com/manhua/{manga}/{chapter["url"]}/')
+        response, _ = Manhuamix.send_request(f'https://manhuamix.com/manhua/{manga}/{chapter["url"]}/')
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'class': 'reading-content'}).find_all('img')
         images = [image['src'].strip() for image in images]
@@ -61,9 +61,10 @@ class Manhuamix(Manga):
         from contextlib import suppress
         from requests.exceptions import HTTPError
         page = 1
+        session = None
         while True:
             try:
-                response = Manhuamix.send_request(f'https://manhuamix.com/page/{page}?s={keyword}&post_type=wp-manga')
+                response, session = Manhuamix.send_request(f'https://manhuamix.com/page/{page}?s={keyword}&post_type=wp-manga', session=session)
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')

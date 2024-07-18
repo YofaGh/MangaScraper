@@ -6,7 +6,7 @@ class Comics8Muses(Manga):
     logo = 'https://comics.8muses.com/favicon.ico'
 
     def get_info(manga):
-        response = Comics8Muses.send_request(f'https://comics.8muses.com/comics/album/{manga}/')
+        response, _ = Comics8Muses.send_request(f'https://comics.8muses.com/comics/album/{manga}/')
         soup = BeautifulSoup(response.text, 'html.parser')
         return {
             'Cover': f'https://comics.8muses.com{soup.find("div", {"class": "gallery"}).find("img")["data-src"]}',
@@ -16,8 +16,7 @@ class Comics8Muses(Manga):
     def get_chapters(manga):
         page = 1
         chapters_urls = []
-        session = Comics8Muses.create_session()
-        response = Comics8Muses.send_request(f'https://comics.8muses.com/comics/album/{manga}/{page}', session=session)
+        response, session = Comics8Muses.send_request(f'https://comics.8muses.com/comics/album/{manga}/{page}')
         soup = BeautifulSoup(response.text, 'html.parser')
         if not soup.find('div', {'class':'image-title'}):
             return ['']
@@ -27,7 +26,7 @@ class Comics8Muses(Manga):
                 break
             chapters_urls += [link.get('href').split('/')[-1] for link in links]
             page += 1
-            response = Comics8Muses.send_request(f'https://comics.8muses.com/comics/album/{manga}/{page}', session=session)
+            response, session = Comics8Muses.send_request(f'https://comics.8muses.com/comics/album/{manga}/{page}', session=session)
             soup = BeautifulSoup(response.text, 'html.parser')
         chapters = [{
             'url': chapter_url,
@@ -36,7 +35,7 @@ class Comics8Muses(Manga):
         return chapters
 
     def get_images(manga, chapter):
-        response = Comics8Muses.send_request(f'https://comics.8muses.com/comics/album/{manga}/{chapter["url"]}')
+        response, _ = Comics8Muses.send_request(f'https://comics.8muses.com/comics/album/{manga}/{chapter["url"]}')
         soup = BeautifulSoup(response.text, 'html.parser')
         links = soup.find_all('a', {'class': 'c-tile t-hover'})
         images = [link.find('img').get('data-src') for link in links]
@@ -47,8 +46,9 @@ class Comics8Muses(Manga):
     def search_by_keyword(keyword, absolute):
         page = 1
         links = []
+        session = None
         while True:
-            response = Comics8Muses.send_request(f'https://comics.8muses.com/search?q={keyword}&page={page}')
+            response, session = Comics8Muses.send_request(f'https://comics.8muses.com/search?q={keyword}&page={page}', session=session)
             soup = BeautifulSoup(response.text, 'html.parser')
             comics = soup.find_all('a', {'class': 'c-tile t-hover'}, href=True)
             results = {}
@@ -79,9 +79,10 @@ class Comics8Muses(Manga):
     def get_db():
         from requests.exceptions import HTTPError
         page = 1
+        session = None
         while True:
             try:
-                response = Comics8Muses.send_request(f'https://comics.8muses.com/sitemap/{page}.xml')
+                response, session = Comics8Muses.send_request(f'https://comics.8muses.com/sitemap/{page}.xml', session=session)
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'xml')

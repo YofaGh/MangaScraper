@@ -7,7 +7,7 @@ class Coloredmanga(Manga):
 
     def get_info(manga):
         from contextlib import suppress
-        response = Coloredmanga.send_request(f'https://coloredmanga.com/mangas/{manga}/')
+        response, _ = Coloredmanga.send_request(f'https://coloredmanga.com/mangas/{manga}/')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, rating, status = 5 * ['']
         extras = {}
@@ -39,7 +39,7 @@ class Coloredmanga(Manga):
         }
 
     def get_chapters(manga):
-        response = Coloredmanga.send_request(f'https://coloredmanga.com/mangas/{manga}/')
+        response, _ = Coloredmanga.send_request(f'https://coloredmanga.com/mangas/{manga}/')
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find_all('li', {'class':'wp-manga-chapter'})
         chapters_urls = [div.find('a')['href'].replace(f'https://coloredmanga.com/mangas/{manga}/', '')[:-1] for div in divs[::-1]]
@@ -50,7 +50,7 @@ class Coloredmanga(Manga):
         return chapters
 
     def get_images(manga, chapter):
-        response = Coloredmanga.send_request(f'https://coloredmanga.com/mangas/{manga}/{chapter["url"]}/')
+        response, _ = Coloredmanga.send_request(f'https://coloredmanga.com/mangas/{manga}/{chapter["url"]}/')
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'class': 'reading-content'}).find_all('img')
         images = [image['src'].strip() for image in images]
@@ -61,9 +61,10 @@ class Coloredmanga(Manga):
         from contextlib import suppress
         from requests.exceptions import HTTPError
         page = 1
+        session = None
         while True:
             try:
-                response = Coloredmanga.send_request(f'https://coloredmanga.com/page/{page}/?s={keyword}&post_type=wp-manga')
+                response, session = Coloredmanga.send_request(f'https://coloredmanga.com/page/{page}/?s={keyword}&post_type=wp-manga', session=session)
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')

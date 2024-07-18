@@ -8,7 +8,7 @@ class Toonily_Me(Manga):
 
     def get_info(manga):
         from contextlib import suppress
-        response = Toonily_Me.send_request(f'https://toonily.me/{manga}')
+        response, _ = Toonily_Me.send_request(f'https://toonily.me/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, summary, rating, status, authors, chapters, genres, last_update = 10 * ['']
         info_box = soup.find('div', {'class': 'book-info'})
@@ -45,7 +45,7 @@ class Toonily_Me(Manga):
         }
 
     def get_chapters(manga):
-        response = Toonily_Me.send_request(f'https://toonily.me/{manga}')
+        response, _ = Toonily_Me.send_request(f'https://toonily.me/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find('ul', {'class': 'chapter-list'}).find_all('li')
         chapters_urls = [div.find('a')['href'].split('/')[-1] for div in divs[::-1]]
@@ -56,7 +56,7 @@ class Toonily_Me(Manga):
         return chapters
 
     def get_images(manga, chapter):
-        response = Toonily_Me.send_request(f'https://toonily.me/{manga}/{chapter["url"]}')
+        response, _ = Toonily_Me.send_request(f'https://toonily.me/{manga}/{chapter["url"]}')
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'id': 'chapter-images'}).find_all('img')
         images = [image['data-src'].strip() for image in images]
@@ -66,8 +66,9 @@ class Toonily_Me(Manga):
         from contextlib import suppress
         template = f'https://toonily.me/search?q={keyword}&page=P_P_P_P' if keyword else f'https://toonily.me/az-list?page=P_P_P_P'
         page = 1
+        session = None
         while True:
-            response = Toonily_Me.send_request(template.replace('P_P_P_P', str(page)))
+            response, session = Toonily_Me.send_request(template.replace('P_P_P_P', str(page)), session=session)
             soup = BeautifulSoup(response.text, 'html.parser')
             mangas = soup.find_all('div', {'class': 'book-item'})
             if not mangas:

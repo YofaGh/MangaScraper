@@ -8,7 +8,7 @@ class Omegascans(Manga):
     def get_info(manga):
         from contextlib import suppress
         from urllib.parse import unquote
-        response = Omegascans.send_request(f'https://omegascans.org/series/{manga}')
+        response, _ = Omegascans.send_request(f'https://omegascans.org/series/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, summary, release_year, authors = 6 * ['']
         with suppress(Exception): 
@@ -32,11 +32,10 @@ class Omegascans(Manga):
         }
 
     def get_chapters(manga):
-        session = Omegascans.create_session()
-        response = Omegascans.send_request('https://omegascans.org/series/where-is-my-hammer', session=session)
+        response, session = Omegascans.send_request('https://omegascans.org/series/where-is-my-hammer')
         soup = BeautifulSoup(response.text, 'html.parser')
         series_id = soup.find(lambda tag: tag.name == 'script' and 'series_id' in tag.text).text.split('{\\"series_id\\":')[1].split(',')[0]
-        response = Omegascans.send_request(f'https://api.omegascans.org/chapter/query?page=1&perPage=10000&series_id={series_id}', session=session)
+        response, session = Omegascans.send_request(f'https://api.omegascans.org/chapter/query?page=1&perPage=10000&series_id={series_id}', session=session)
         chapters = [{
             'url': chapter['chapter_slug'],
             'name': chapter['chapter_name']
@@ -44,7 +43,7 @@ class Omegascans(Manga):
         return chapters
 
     def get_images(manga, chapter):
-        response = Omegascans.send_request(f'https://omegascans.org/series/{manga}/{chapter["url"]}')
+        response, _ = Omegascans.send_request(f'https://omegascans.org/series/{manga}/{chapter["url"]}')
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('p', {'class': 'flex flex-col justify-center items-center'})
         images = [image['src'] for image in images.find_all('img')]
@@ -53,8 +52,9 @@ class Omegascans(Manga):
     def search_by_keyword(keyword, absolute):
         from contextlib import suppress
         data = {'adult': 'true', 'query_string': keyword, 'page': 1}
+        session = None
         while True:
-            mangas = Omegascans.send_request(f'https://api.omegascans.org/query', params=data).json()['data']
+            mangas, session = Omegascans.send_request(f'https://api.omegascans.org/query', session=session, params=data).json()['data']
             results = {}
             if not mangas:
                 yield results

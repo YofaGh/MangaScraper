@@ -7,7 +7,7 @@ class Manhuascan(Manga):
 
     def get_info(manga):
         from contextlib import suppress
-        response = Manhuascan.send_request(f'https://manhuascan.us/manga/{manga}')
+        response, _ = Manhuascan.send_request(f'https://manhuascan.us/manga/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, summary, rating, status, authors, artists, posted_on, updated_on = 10 * ['']
         info_box = soup.find('div', {'class': 'tsinfo bixbox'})
@@ -39,7 +39,7 @@ class Manhuascan(Manga):
         }
 
     def get_chapters(manga):
-        response = Manhuascan.send_request(f'https://manhuascan.us/manga/{manga}')
+        response, _ = Manhuascan.send_request(f'https://manhuascan.us/manga/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find_all('div', {'class': 'eph-num'})
         chapters_urls = [div.find('a')['href'].split('/')[-1] for div in divs[::-1]]
@@ -50,7 +50,7 @@ class Manhuascan(Manga):
         return chapters
 
     def get_images(manga, chapter):
-        response = Manhuascan.send_request(f'https://manhuascan.us/manga/{manga}/{chapter["url"]}')
+        response, _ = Manhuascan.send_request(f'https://manhuascan.us/manga/{manga}/{chapter["url"]}')
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'id': 'readerarea'}).find_all('img')
         images = [image['src'] for image in images]
@@ -60,9 +60,10 @@ class Manhuascan(Manga):
         from contextlib import suppress
         from requests.exceptions import HTTPError
         page = 1
+        session = None
         while True:
             try:
-                response = Manhuascan.send_request(f'https://manhuascan.us/manga-list?search={keyword}&page={page}')
+                response, session = Manhuascan.send_request(f'https://manhuascan.us/manga-list?search={keyword}&page={page}', session=session)
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')

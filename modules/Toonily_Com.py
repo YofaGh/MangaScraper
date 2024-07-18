@@ -9,7 +9,7 @@ class Toonily_Com(Manga):
 
     def get_info(manga):
         from contextlib import suppress
-        response = Toonily_Com.send_request(f'https://toonily.com/webtoon/{manga}/')
+        response, _ = Toonily_Com.send_request(f'https://toonily.com/webtoon/{manga}/')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, summary, rating, status, authors, artists, genres, tags = 10 * ['']
         info_box = soup.find('div', {'class': 'tab-summary'})
@@ -44,7 +44,7 @@ class Toonily_Com(Manga):
         }
 
     def get_chapters(manga):
-        response = Toonily_Com.send_request(f'https://toonily.com/webtoon/{manga}/')
+        response, _ = Toonily_Com.send_request(f'https://toonily.com/webtoon/{manga}/')
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find_all('li', {'class': 'wp-manga-chapter'})
         chapters_urls = [div.find('a')['href'].split('/')[-2] for div in divs[::-1]]
@@ -55,7 +55,7 @@ class Toonily_Com(Manga):
         return chapters
 
     def get_images(manga, chapter):
-        response = Toonily_Com.send_request(f'https://toonily.com/webtoon/{manga}/{chapter["url"]}/')
+        response, _ = Toonily_Com.send_request(f'https://toonily.com/webtoon/{manga}/{chapter["url"]}/')
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'class': 'reading-content'}).find_all('img')
         images = [image['data-src'].strip() for image in images]
@@ -66,9 +66,10 @@ class Toonily_Com(Manga):
         from requests.exceptions import HTTPError
         template = f'https://toonily.com/search/{keyword}/page/P_P_P_P/' if keyword else f'https://toonily.com/search/page/P_P_P_P/'
         page = 1
+        session = None
         while True:
             try:
-                response = Toonily_Com.send_request(template.replace('P_P_P_P', str(page)), headers=Toonily_Com.search_headers)
+                response, session = Toonily_Com.send_request(template.replace('P_P_P_P', str(page)), session=session, headers=Toonily_Com.search_headers)
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')

@@ -7,7 +7,7 @@ class Mangareader(Manga):
 
     def get_info(manga):
         from contextlib import suppress
-        response = Mangareader.send_request(f'https://mangareader.mobi/manga/{manga}')
+        response, _ = Mangareader.send_request(f'https://mangareader.mobi/manga/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, summary, status, authors, views, genres = 8 * ['']
         info_box = soup.find('div', {'class': 'imgdesc'})
@@ -34,7 +34,7 @@ class Mangareader(Manga):
         }
 
     def get_chapters(manga):
-        response = Mangareader.send_request(f'https://mangareader.mobi/manga/{manga}', verify=False)
+        response, _ = Mangareader.send_request(f'https://mangareader.mobi/manga/{manga}', verify=False)
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find('div', {'class':'cl'}).find_all('a')
         chapters = [div['href'].split('/')[-1] for div in divs[::-1]]
@@ -49,7 +49,7 @@ class Mangareader(Manga):
         chapter_url = chapter['url']
         if f'{manga}-' in chapter_url:
             chapter_url = chapter_url.replace(f'{manga}-','')
-        response = Mangareader.send_request(f'https://mangareader.mobi/chapter/{manga}-{chapter_url}', verify=False)
+        response, _ = Mangareader.send_request(f'https://mangareader.mobi/chapter/{manga}-{chapter_url}', verify=False)
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'id':'readerarea'}).find('p').get_text(strip=True).split(',')
         save_names = [f'{i+1:03d}.{images[i].split(".")[-1]}' for i in range(len(images))]
@@ -59,9 +59,10 @@ class Mangareader(Manga):
         from requests.exceptions import HTTPError
         from contextlib import suppress
         page = 1
+        session = None
         while True:
             try:
-                response = Mangareader.send_request(f'https://mangareader.mobi/search?s={keyword}&page={page}', verify=False)
+                response, session = Mangareader.send_request(f'https://mangareader.mobi/search?s={keyword}&page={page}', session=session, verify=False)
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')

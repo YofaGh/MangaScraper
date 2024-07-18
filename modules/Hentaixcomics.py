@@ -13,7 +13,7 @@ class Hentaixcomics(Doujin):
 
     def get_info(code):
         from contextlib import suppress
-        response = Hentaixcomics.send_request(f'https://hentaixcomics.com/{code}/')
+        response, _ = Hentaixcomics.send_request(f'https://hentaixcomics.com/{code}/')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, summary, pages = 5 * ['']
         info_box = soup.find('div', {'id': 'info'})
@@ -38,14 +38,14 @@ class Hentaixcomics(Doujin):
         }
 
     def get_title(code):
-        response = Hentaixcomics.send_request(f'https://hentaixcomics.com/{code}/')
+        response, _ = Hentaixcomics.send_request(f'https://hentaixcomics.com/{code}/')
         soup = BeautifulSoup(response.text, 'html.parser')
         title = soup.find('div', {'id': 'info'}).find('h1').get_text(strip=True)
         return title
 
     def get_images(code):
         import json
-        response = Hentaixcomics.send_request(f'https://hentaixcomics.com/{code}/')
+        response, _ = Hentaixcomics.send_request(f'https://hentaixcomics.com/{code}/')
         soup = BeautifulSoup(response.text, 'html.parser')
         images_raw = soup.find('textarea').get_text(strip=True)
         images = json.loads(images_raw)
@@ -54,8 +54,9 @@ class Hentaixcomics(Doujin):
     def search_by_keyword(keyword, absolute):
         page = 1
         prev_page = []
+        session = None
         while True:
-            response = Hentaixcomics.send_request(f'https://hentaixcomics.com/search/?s={keyword}&page={page}')
+            response, session = Hentaixcomics.send_request(f'https://hentaixcomics.com/search/?s={keyword}&page={page}', session=session)
             soup = BeautifulSoup(response.text, 'html.parser')
             if soup.find('span', {'class': 'count'}).get_text(strip=True) == '(0)':
                 yield {}
@@ -81,8 +82,9 @@ class Hentaixcomics(Doujin):
         for category in ('manga', 'doujinshi'):
             page = 1
             prev_page = []
+            session = None
             while True:
-                response = Hentaixcomics.send_request(f'https://hentaixcomics.com/s/{category}/page/{page}')
+                response, session = Hentaixcomics.send_request(f'https://hentaixcomics.com/s/{category}/page/{page}', session=session)
                 soup = BeautifulSoup(response.text, 'html.parser')
                 if soup.find('span', {'class': 'count'}).get_text(strip=True) == '(0)':
                     break

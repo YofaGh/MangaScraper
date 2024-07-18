@@ -7,7 +7,7 @@ class Bibimanga(Manga):
 
     def get_info(manga):
         from contextlib import suppress
-        response = Bibimanga.send_request(f'https://bibimanga.com/manga/{manga}')
+        response, _ = Bibimanga.send_request(f'https://bibimanga.com/manga/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, summary, rating, status = 6 * ['']
         extras = {}
@@ -40,7 +40,7 @@ class Bibimanga(Manga):
         }
 
     def get_chapters(manga):
-        response = Bibimanga.send_request(f'https://bibimanga.com/manga/{manga}')
+        response, _ = Bibimanga.send_request(f'https://bibimanga.com/manga/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find_all('li', {'class': 'wp-manga-chapter'})
         chapters_urls = [div.find('a')['href'].split('/')[-2] for div in divs[::-1]]
@@ -51,7 +51,7 @@ class Bibimanga(Manga):
         return chapters
 
     def get_images(manga, chapter):
-        response = Bibimanga.send_request(f'https://bibimanga.com/manga/{manga}/{chapter["url"]}')
+        response, _ = Bibimanga.send_request(f'https://bibimanga.com/manga/{manga}/{chapter["url"]}')
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'class':'reading-content'}).find_all('img')
         images = [image['data-src'].strip() for image in images]
@@ -61,9 +61,10 @@ class Bibimanga(Manga):
         from contextlib import suppress
         from requests.exceptions import HTTPError
         page = 1
+        session = None
         while True:
             try:
-                response = Bibimanga.send_request(f'https://bibimanga.com/page/{page}?s={keyword}&post_type=wp-manga')
+                response, session = Bibimanga.send_request(f'https://bibimanga.com/page/{page}?s={keyword}&post_type=wp-manga', session=session)
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')

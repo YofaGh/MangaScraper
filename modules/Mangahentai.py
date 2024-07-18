@@ -7,7 +7,7 @@ class Mangahentai(Manga):
 
     def get_info(manga):
         from contextlib import suppress
-        response = Mangahentai.send_request(f'https://mangahentai.me/manga-hentai/{manga}')
+        response, _ = Mangahentai.send_request(f'https://mangahentai.me/manga-hentai/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, summary, rating, status = 6 * ['']
         extras = {}
@@ -41,7 +41,7 @@ class Mangahentai(Manga):
         }
 
     def get_chapters(manga):
-        response = Mangahentai.send_request(f'https://mangahentai.me/manga-hentai/{manga}/ajax/chapters/', method='POST')
+        response, _ = Mangahentai.send_request(f'https://mangahentai.me/manga-hentai/{manga}/ajax/chapters/', method='POST')
         soup = BeautifulSoup(response.text, 'html.parser')
         lis = soup.find_all('li', {'class': 'wp-manga-chapter'})
         chapters_urls = [li.find('a')['href'].split('/')[-2] for li in lis[::-1]]
@@ -52,7 +52,7 @@ class Mangahentai(Manga):
         return chapters
 
     def get_images(manga, chapter):
-        response = Mangahentai.send_request(f'https://mangahentai.me/manga-hentai/{manga}/{chapter["url"]}/')
+        response, _ = Mangahentai.send_request(f'https://mangahentai.me/manga-hentai/{manga}/{chapter["url"]}/')
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'class': 'reading-content'}).find_all('img')
         images = [image['src'].strip() for image in images]
@@ -62,9 +62,10 @@ class Mangahentai(Manga):
         from contextlib import suppress
         from requests.exceptions import HTTPError
         page = 1
+        session = None
         while True:
             try:
-                response = Mangahentai.send_request(f'https://mangahentai.me/page/{page}/?s={keyword}&post_type=wp-manga')
+                response, session = Mangahentai.send_request(f'https://mangahentai.me/page/{page}/?s={keyword}&post_type=wp-manga', session=session)
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')

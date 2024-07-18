@@ -9,7 +9,7 @@ class Manga18(Manga):
 
     def get_info(manga):
         from contextlib import suppress
-        response = Manga18.send_request(f'https://manga18.club/manhwa/{manga}', headers=Manga18.headers)
+        response, _ = Manga18.send_request(f'https://manga18.club/manhwa/{manga}', headers=Manga18.headers)
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, summary, rating, status, authors, artists, views, categories = 10 * ['']
         info_box = soup.find('div', {'class': 'detail_story'})
@@ -40,7 +40,7 @@ class Manga18(Manga):
         }
 
     def get_chapters(manga):
-        response = Manga18.send_request(f'https://manga18.club/manhwa/{manga}', headers=Manga18.headers)
+        response, _ = Manga18.send_request(f'https://manga18.club/manhwa/{manga}', headers=Manga18.headers)
         soup = BeautifulSoup(response.text, 'html.parser')
         lis = soup.find('div', {'class': 'chapter_box'}).find_all('li')
         chapters_urls = [li.find('a')['href'].split('/')[-1] for li in lis[::-1]]
@@ -52,7 +52,7 @@ class Manga18(Manga):
 
     def get_images(manga, chapter):
         import base64
-        response = Manga18.send_request(f'https://manga18.club/manhwa/{manga}/{chapter["url"]}', headers=Manga18.headers)
+        response, _ = Manga18.send_request(f'https://manga18.club/manhwa/{manga}/{chapter["url"]}', headers=Manga18.headers)
         soup = BeautifulSoup(response.text, 'html.parser')
         script = soup.find(lambda tag:tag.name == 'script' and 'slides_p_path' in tag.text)
         images = script.text.split('[', 1)[1].split(']', 1)[0][:-1]
@@ -63,8 +63,9 @@ class Manga18(Manga):
     def search_by_keyword(keyword, absolute):
         from contextlib import suppress
         page = 1
+        session = None
         while True:
-            response = Manga18.send_request(f'https://manga18.club/list-manga/{page}?search={keyword}', headers=Manga18.headers)
+            response, session = Manga18.send_request(f'https://manga18.club/list-manga/{page}?search={keyword}', session=session, headers=Manga18.headers)
             soup = BeautifulSoup(response.text, 'html.parser')
             mangas = soup.find_all('div', {'class': 'col-md-3 col-sm-4 col-xs-6'})
             if not mangas:

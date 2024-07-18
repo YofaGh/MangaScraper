@@ -8,7 +8,7 @@ class Mangapark(Manga):
     def get_info(manga):
         import json
         manga = manga.split('-')[0] if '-' in manga else manga
-        response = Mangapark.send_request(f'https://mangapark.to/title/{manga}')
+        response, _ = Mangapark.send_request(f'https://mangapark.to/title/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         script = soup.find('script', {'id': '__NEXT_DATA__'}).get_text(strip=True)
         data = json.loads(script)['props']['pageProps']['dehydratedState']['queries'][0]['state']['data']['data']
@@ -28,7 +28,7 @@ class Mangapark(Manga):
 
     def get_chapters(manga):
         import json
-        response = Mangapark.send_request(f'https://mangapark.to/title/{manga}')
+        response, _ = Mangapark.send_request(f'https://mangapark.to/title/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         script = soup.find('script', {'type': 'qwik/json'}).text
         data = json.loads(script)['objs']
@@ -40,7 +40,7 @@ class Mangapark(Manga):
 
     def get_images(manga, chapter):
         import json
-        response = Mangapark.send_request(f'https://mangapark.to/title/{manga}/{chapter["url"]}')
+        response, _ = Mangapark.send_request(f'https://mangapark.to/title/{manga}/{chapter["url"]}')
         soup = BeautifulSoup(response.text, 'html.parser')
         script = soup.find('script', {'type': 'qwik/json'})
         data = json.loads(script.text)['objs']
@@ -51,8 +51,9 @@ class Mangapark(Manga):
     def search_by_keyword(keyword, absolute):
         from contextlib import suppress
         page = 1
+        session = None
         while True:
-            response = Mangapark.send_request(f'https://mangapark.to/search?word={keyword}&page={page}')
+            response, session = Mangapark.send_request(f'https://mangapark.to/search?word={keyword}&page={page}', session=session)
             soup = BeautifulSoup(response.text, 'html.parser')
             mangas = soup.find_all('div', {'class': 'flex border-b border-b-base-200 pb-5'})
             if not mangas:

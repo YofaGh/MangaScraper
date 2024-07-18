@@ -7,7 +7,7 @@ class Mangadistrict(Manga):
 
     def get_info(manga):
         from contextlib import suppress
-        response = Mangadistrict.send_request(f'https://mangadistrict.com/read-scan/{manga}')
+        response, _ = Mangadistrict.send_request(f'https://mangadistrict.com/read-scan/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, summary, rating, status = 6 * ['']
         extras = {}
@@ -41,7 +41,7 @@ class Mangadistrict(Manga):
         }
 
     def get_chapters(manga):
-        response = Mangadistrict.send_request(f'https://mangadistrict.com/read-scan/{manga}/ajax/chapters/', method='POST')
+        response, _ = Mangadistrict.send_request(f'https://mangadistrict.com/read-scan/{manga}/ajax/chapters/', method='POST')
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find_all('li', {'class':'wp-manga-chapter'})
         chapters_urls = [div.find('a')['href'].split('/')[-2] for div in divs[::-1]]
@@ -52,7 +52,7 @@ class Mangadistrict(Manga):
         return chapters
 
     def get_images(manga, chapter):
-        response = Mangadistrict.send_request(f'https://mangadistrict.com/read-scan/{manga}/{chapter["url"]}/')
+        response, _ = Mangadistrict.send_request(f'https://mangadistrict.com/read-scan/{manga}/{chapter["url"]}/')
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'class':'reading-content'}).find_all('img')
         images = [image['src'].strip() for image in images]
@@ -66,9 +66,10 @@ class Mangadistrict(Manga):
         template = f'https://mangadistrict.com/page/P_P_P_P/?s={keyword}&post_type=wp-manga'
         if not keyword:
             template = 'https://mangadistrict.com/page/P_P_P_P/?s&post_type=wp-manga&m_orderby=alphabet'
+        session = None
         while True:
             try:
-                response = Mangadistrict.send_request(template.replace('P_P_P_P', str(page)))
+                response, session = Mangadistrict.send_request(template.replace('P_P_P_P', str(page)), session=session)
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')

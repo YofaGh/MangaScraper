@@ -7,7 +7,7 @@ class Pururin(Doujin):
 
     def get_info(code):
         from contextlib import suppress
-        response = Pururin.send_request(f'https://pururin.to/gallery/{code}')
+        response, _ = Pururin.send_request(f'https://pururin.to/gallery/{code}')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, pages, rating = 5 * ['']
         extras = {}
@@ -35,13 +35,13 @@ class Pururin(Doujin):
         }
 
     def get_title(code):
-        response = Pururin.send_request(f'https://pururin.to/gallery/{code}')
+        response, _ = Pururin.send_request(f'https://pururin.to/gallery/{code}')
         soup = BeautifulSoup(response.text, 'html.parser')
         title = soup.find('h1').get_text(strip=True)
         return title
 
     def get_images(code):
-        response = Pururin.send_request(f'https://pururin.to/gallery/{code}')
+        response, _ = Pururin.send_request(f'https://pururin.to/gallery/{code}')
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'class': 'gallery-preview'}).find_all('img')
         images = [image['data-src'] if image.get('data-src') else image['src'] for image in images]
@@ -50,8 +50,9 @@ class Pururin(Doujin):
 
     def search_by_keyword(keyword, absolute):
         page = 1
+        session = None
         while True:
-            response = Pururin.send_request(f'https://pururin.to/search?q={keyword}&page={page}')
+            response, session = Pururin.send_request(f'https://pururin.to/search?q={keyword}&page={page}', session=session)
             soup = BeautifulSoup(response.text, 'html.parser')
             doujins = soup.find_all('a', {'class': 'card card-gallery'})
             if not doujins:

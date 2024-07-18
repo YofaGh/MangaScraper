@@ -7,7 +7,7 @@ class Bato(Manga):
 
     def get_info(manga):
         from contextlib import suppress
-        response = Bato.send_request(f'https://bato.to/title/{manga}')
+        response, _ = Bato.send_request(f'https://bato.to/title/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, summary, rating, status = 6 * ['']
         info_box = soup.find('div', {'class': 'flex flex-col md:flex-row'})
@@ -32,7 +32,7 @@ class Bato(Manga):
         }
 
     def get_chapters(manga):
-        response = Bato.send_request(f'https://bato.to/title/{manga}')
+        response, _ = Bato.send_request(f'https://bato.to/title/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         links = soup.find('div', {'class': 'group flex flex-col-reverse'}).find_all('a', {'class': 'link-hover link-primary visited:text-accent'})
         chapters_urls = [link['href'].split('/')[-1] for link in links]
@@ -44,7 +44,7 @@ class Bato(Manga):
 
     def get_images(manga, chapter):
         import json
-        response = Bato.send_request(f'https://bato.to/title/{manga}/{chapter["url"]}')
+        response, _ = Bato.send_request(f'https://bato.to/title/{manga}/{chapter["url"]}')
         soup = BeautifulSoup(response.text, 'html.parser')
         props = soup.find(lambda tag: tag.name == 'astro-island' and 'imageFiles' in tag.get('props'))['props']
         images = json.loads(props)['imageFiles'][1]
@@ -56,9 +56,10 @@ class Bato(Manga):
         from contextlib import suppress
         from requests.exceptions import HTTPError
         page = 1
+        session = None
         while True:
             try:
-                response = Bato.send_request(f'https://bato.to/v3x-search?word={keyword}&page={page}')
+                response, session = Bato.send_request(f'https://bato.to/v3x-search?word={keyword}&page={page}', session=session)
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')

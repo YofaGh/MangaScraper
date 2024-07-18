@@ -8,7 +8,7 @@ class Truemanga(Manga):
 
     def get_info(manga):
         from contextlib import suppress
-        response = Truemanga.send_request(f'https://truemanga.com/{manga}')
+        response, _ = Truemanga.send_request(f'https://truemanga.com/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, summary, status = 5 * ['']
         extras = {}
@@ -35,12 +35,11 @@ class Truemanga(Manga):
         }
 
     def get_chapters(manga):
-        session = Truemanga.create_session()
-        response = Truemanga.send_request(f'https://truemanga.com/{manga}', session=session)
+        response, session = Truemanga.send_request(f'https://truemanga.com/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         script = soup.find(lambda tag:tag.name == 'script' and 'bookId' in tag.text).text
         book_id = script.split('bookId = ')[1].split(';', 1)[0]
-        response = Truemanga.send_request(f'https://truemanga.com/api/manga/{book_id}/chapters', session=session)
+        response, session = Truemanga.send_request(f'https://truemanga.com/api/manga/{book_id}/chapters', session=session)
         soup = BeautifulSoup(response.text, 'html.parser')
         chapters = [{
             'url': chapter['value'].split('/')[-1],
@@ -49,7 +48,7 @@ class Truemanga(Manga):
         return chapters
 
     def get_images(manga, chapter):
-        response = Truemanga.send_request(f'https://truemanga.com/{manga}/{chapter["url"]}')
+        response, _ = Truemanga.send_request(f'https://truemanga.com/{manga}/{chapter["url"]}')
         soup = BeautifulSoup(response.text, 'html.parser')
         script = soup.find(lambda tag:tag.name == 'script' and 'chapImages' in tag.text).text
         images = script.replace("var chapImages = '", '').strip()[:-1].split(',')
@@ -61,9 +60,10 @@ class Truemanga(Manga):
         from requests.exceptions import HTTPError
         template = f'https://truemanga.com/search?q={keyword}&page=P_P_P_P' if keyword else 'https://truemanga.com/az-list?page=P_P_P_P'
         page = 1
+        session = None
         while True:
             try:
-                response = Truemanga.send_request(template.replace('P_P_P_P', str(page)))
+                response, session = Truemanga.send_request(template.replace('P_P_P_P', str(page)), session=session)
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')

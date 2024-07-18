@@ -8,7 +8,7 @@ class Hqporncomics(Doujin):
 
     def get_info(code):
         from contextlib import suppress
-        response = Hqporncomics.send_request(f'https://hqporncomics.com/comics/{code}/')
+        response, _ = Hqporncomics.send_request(f'https://hqporncomics.com/comics/{code}/')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, summary, pages = 4 * ['']
         extras = {}
@@ -31,13 +31,13 @@ class Hqporncomics(Doujin):
         }
 
     def get_title(code):
-        response = Hqporncomics.send_request(f'https://hqporncomics.com/comics/{code}/')
+        response, _ = Hqporncomics.send_request(f'https://hqporncomics.com/comics/{code}/')
         soup = BeautifulSoup(response.text, 'html.parser')
         title = soup.find('h1', {'class': 'block-name-comix'}).get_text(strip=True).strip('Porn comic ')
         return title
 
     def get_images(code):
-        response = Hqporncomics.send_request(f'https://hqporncomics.com/comics/{code}/')
+        response, _ = Hqporncomics.send_request(f'https://hqporncomics.com/comics/{code}/')
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'id': 'block-image-slide'}).find_all('img')
         images = [image['data-src'] for image in images[::2]]
@@ -47,8 +47,9 @@ class Hqporncomics(Doujin):
     def search_by_keyword(keyword, absolute):
         page = 1
         prev_page = []
+        session = None
         while True:
-            response = Hqporncomics.send_request(f'https://hqporncomics.com/search/?q={keyword}&page={page}')
+            response, session = Hqporncomics.send_request(f'https://hqporncomics.com/search/?q={keyword}&page={page}', session=session)
             soup = BeautifulSoup(response.text, 'html.parser')
             doujins = soup.find_all('li', {'id': 'li-comix-set'})
             if not doujins or prev_page == doujins:

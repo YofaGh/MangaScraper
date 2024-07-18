@@ -8,7 +8,7 @@ class Myreadingmanga(Doujin):
 
     def get_info(code):
         from contextlib import suppress
-        response = Myreadingmanga.send_request(f'https://myreadingmanga.to/g/{code}')
+        response, _ = Myreadingmanga.send_request(f'https://myreadingmanga.to/g/{code}')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, pages, uploaded = 5 * ['']
         info_box = soup.find('div', {'id': 'info'})
@@ -34,13 +34,13 @@ class Myreadingmanga(Doujin):
         }
 
     def get_title(code):
-        response = Myreadingmanga.send_request(f'https://myreadingmanga.to/g/{code}')
+        response, _ = Myreadingmanga.send_request(f'https://myreadingmanga.to/g/{code}')
         soup = BeautifulSoup(response.text, 'html.parser')
         title = soup.find('div', {'class', 'container'}).find('h1').get_text(strip=True)
         return title
 
     def get_images(code):
-        response = Myreadingmanga.send_request(f'https://myreadingmanga.to/g/{code}/')
+        response, _ = Myreadingmanga.send_request(f'https://myreadingmanga.to/g/{code}/')
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find_all('a', {'class': 'gallerythumb'})
         images = [div.find('img')['data-src'] for div in divs]
@@ -53,9 +53,10 @@ class Myreadingmanga(Doujin):
     def search_by_keyword(keyword, absolute):
         from requests.exceptions import HTTPError
         page = 1
+        session = None
         while True:
             try:
-                response = Myreadingmanga.send_request(f'https://myreadingmanga.to/search?q={keyword}&page={page}')
+                response, session = Myreadingmanga.send_request(f'https://myreadingmanga.to/search?q={keyword}&page={page}', session=session)
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')

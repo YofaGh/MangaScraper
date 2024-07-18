@@ -7,7 +7,7 @@ class Hentaixcomic(Manga):
 
     def get_info(manga):
         from contextlib import suppress
-        response = Hentaixcomic.send_request(f'https://hentaixcomic.com/manga/{manga}')
+        response, _ = Hentaixcomic.send_request(f'https://hentaixcomic.com/manga/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, rating, status = 4 * ['']
         extras = {}
@@ -36,12 +36,12 @@ class Hentaixcomic(Manga):
 
     def get_chapters(manga):
         session = Hentaixcomic.create_session()
-        response = Hentaixcomic.send_request(f'https://hentaixcomic.com/manga/{manga}', session=session)
+        response, session = Hentaixcomic.send_request(f'https://hentaixcomic.com/manga/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         manga_id = soup.find('a', {'class': 'wp-manga-action-button'})['data-post']
         session.headers = {'content-type': 'application/x-www-form-urlencoded; charset=UTF-8'}
         data = f'action=manga_get_chapters&manga={manga_id}'
-        response = Hentaixcomic.send_request('https://hentaixcomic.com/wp-admin/admin-ajax.php', method='POST', session=session, data=data)
+        response, session = Hentaixcomic.send_request('https://hentaixcomic.com/wp-admin/admin-ajax.php', method='POST', session=session, data=data)
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find_all('li', {'class':'wp-manga-chapter'})
         chapters_urls = [div.find('a')['href'].split('/')[-2] for div in divs[::-1]]
@@ -52,7 +52,7 @@ class Hentaixcomic(Manga):
         return chapters
 
     def get_images(manga, chapter):
-        response = Hentaixcomic.send_request(f'https://hentaixcomic.com/manga/{manga}/{chapter["url"]}')
+        response, _ = Hentaixcomic.send_request(f'https://hentaixcomic.com/manga/{manga}/{chapter["url"]}')
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'class': 'reading-content'}).find_all('img')
         images = [image['src'].strip() for image in images]
@@ -62,9 +62,10 @@ class Hentaixcomic(Manga):
         from contextlib import suppress
         from requests.exceptions import HTTPError
         page = 1
+        session = None
         while True:
             try:
-                response = Hentaixcomic.send_request(f'https://hentaixcomic.com/page/{page}/?s={keyword}&post_type=wp-manga')
+                response, session = Hentaixcomic.send_request(f'https://hentaixcomic.com/page/{page}/?s={keyword}&post_type=wp-manga', session=session)
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')

@@ -7,7 +7,7 @@ class Manhwa18(Manga):
 
     def get_info(manga):
         from contextlib import suppress
-        response = Manhwa18.send_request(f'https://manhwa18.com/manga/{manga}')
+        response, _ = Manhwa18.send_request(f'https://manhwa18.com/manga/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, summary, rating, status, latest_reading, views = 8 * ['']
         info_box = soup.find('main', {'class': 'section-body'})
@@ -41,7 +41,7 @@ class Manhwa18(Manga):
         }
 
     def get_chapters(manga):
-        response = Manhwa18.send_request(f'https://manhwa18.com/manga/{manga}')
+        response, _ = Manhwa18.send_request(f'https://manhwa18.com/manga/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         aas = soup.find('ul', {'class':'list-chapters at-series'}).find_all('a')
         chapters_urls = [aa['href'].split('/')[-1] for aa in aas[::-1]]
@@ -52,7 +52,7 @@ class Manhwa18(Manga):
         return chapters
 
     def get_images(manga, chapter):
-        response = Manhwa18.send_request(f'https://manhwa18.com/manga/{manga}/{chapter["url"]}')
+        response, _ = Manhwa18.send_request(f'https://manhwa18.com/manga/{manga}/{chapter["url"]}')
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'id':'chapter-content'}).find_all('img')
         images = [image['data-src'] for image in images]
@@ -61,9 +61,10 @@ class Manhwa18(Manga):
     def search_by_keyword(keyword, absolute):
         from requests.exceptions import HTTPError
         page = 1
+        session = None
         while True:
             try:
-                response = Manhwa18.send_request(f'https://manhwa18.com/tim-kiem?q={keyword}&page={page}')
+                response, session = Manhwa18.send_request(f'https://manhwa18.com/tim-kiem?q={keyword}&page={page}', session=session)
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')

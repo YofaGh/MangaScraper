@@ -6,7 +6,7 @@ class Hentaihand(Doujin):
     is_coded = False
 
     def get_info(code):
-        response = Hentaihand.send_request(f'https://hentaihand.com/api/comics/{code}').json()
+        response, _ = Hentaihand.send_request(f'https://hentaihand.com/api/comics/{code}').json()
         extras = {
             'Description': response['description'],
             'Category': response.get('category', {}).get('name') or '',
@@ -31,11 +31,11 @@ class Hentaihand(Doujin):
         }
 
     def get_title(code):
-        response = Hentaihand.send_request(f'https://hentaihand.com/api/comics/{code}').json()
+        response, _ = Hentaihand.send_request(f'https://hentaihand.com/api/comics/{code}').json()
         return response['title']
 
     def get_images(code):
-        response = Hentaihand.send_request(f'https://hentaihand.com/api/comics/{code}/images').json()
+        response, _ = Hentaihand.send_request(f'https://hentaihand.com/api/comics/{code}/images').json()
         images = [image['source_url'] for image in response['images']]
         return images, False
 
@@ -45,8 +45,9 @@ class Hentaihand(Doujin):
             'q': keyword,
             'sort': 'title',
         }
+        session = None
         while True:
-            response = Hentaihand.send_request('https://hentaihand.com/api/comics', params=params).json()
+            response, session = Hentaihand.send_request('https://hentaihand.com/api/comics', session=session, params=params).json()
             if not response['data']:
                 yield {}
             results = {}

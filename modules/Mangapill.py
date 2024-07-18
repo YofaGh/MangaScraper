@@ -8,7 +8,7 @@ class Mangapill(Manga):
 
     def get_info(manga):
         from contextlib import suppress
-        response = Mangapill.send_request(f'https://mangapill.com/manga/{manga}')
+        response, _ = Mangapill.send_request(f'https://mangapill.com/manga/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, summary, status, genres, typee, year = 7 * ['']
         info_box = soup.find('div', {'class': 'grid grid-cols-1 md:grid-cols-3 gap-3 mb-3'}).find_all('div', recursive=False)
@@ -32,7 +32,7 @@ class Mangapill(Manga):
         }
 
     def get_chapters(manga):
-        response = Mangapill.send_request(f'https://mangapill.com/manga/{manga}')
+        response, _ = Mangapill.send_request(f'https://mangapill.com/manga/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         chapters = [aa['href'].replace('/chapters/', '') for aa in soup.find('div', {'id': 'chapters'}).find_all('a')]
         chapters = [{
@@ -42,7 +42,7 @@ class Mangapill(Manga):
         return chapters
 
     def get_images(manga, chapter):
-        response = Mangapill.send_request(f'https://mangapill.com/chapters/{chapter["url"]}')
+        response, _ = Mangapill.send_request(f'https://mangapill.com/chapters/{chapter["url"]}')
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find_all('chapter-page')
         images = [div.find('img')['data-src'] for div in divs]
@@ -52,8 +52,9 @@ class Mangapill(Manga):
     def search_by_keyword(keyword, absolute):
         from contextlib import suppress
         page = 1
+        session = None
         while True:
-            response = Mangapill.send_request(f'https://mangapill.com/search?q={keyword}&page={page}')
+            response, session = Mangapill.send_request(f'https://mangapill.com/search?q={keyword}&page={page}', session=session)
             soup = BeautifulSoup(response.text, 'html.parser')
             mangas = soup.find('div', {'class': 'my-3 grid justify-end gap-3 grid-cols-2 md:grid-cols-3 lg:grid-cols-5'}).find_all('div', recursive=False)
             if not mangas:
@@ -83,10 +84,11 @@ class Mangapill(Manga):
     def get_db():
         from contextlib import suppress
         statuses = ['publishing', 'finished', 'on hiatus', 'discontinued', 'not yet published']
+        session = None
         for status in statuses:
             page = 1
             while True:
-                response = Mangapill.send_request(f'https://mangapill.com/search?status={status}&page={page}')
+                response, session = Mangapill.send_request(f'https://mangapill.com/search?status={status}&page={page}', session=session)
                 soup = BeautifulSoup(response.text, 'html.parser')
                 mangas = soup.find('div', {'class': 'my-3 grid justify-end gap-3 grid-cols-2 md:grid-cols-3 lg:grid-cols-5'}).find_all('div', recursive=False)
                 if not mangas:

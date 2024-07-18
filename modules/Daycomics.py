@@ -11,7 +11,7 @@ class Daycomics(Manga):
         from contextlib import suppress
         manga = manga[:-5] if manga.endswith('.html') else manga
         manga = manga.replace('https://daycomics.me/en/', '')
-        response = Daycomics.send_request(f'https://daycomics.me/en/{manga}.html', headers=Daycomics.headers)
+        response, _ = Daycomics.send_request(f'https://daycomics.me/en/{manga}.html', headers=Daycomics.headers)
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, summary = '', '', ''
         info_box = soup.find('div', {'class': 'inner_ch'})
@@ -31,7 +31,7 @@ class Daycomics(Manga):
     def get_chapters(manga):
         manga = manga[:-5] if manga.endswith('.html') else manga
         manga = manga.replace('https://daycomics.me/en/', '')
-        response = Daycomics.send_request(f'https://daycomics.me/en/{manga}.html', headers=Daycomics.headers)
+        response, _ = Daycomics.send_request(f'https://daycomics.me/en/{manga}.html', headers=Daycomics.headers)
         soup = BeautifulSoup(response.text, 'html.parser')
         lis = soup.find_all('li', {'class': 'normal_ep'})
         chapters = [{
@@ -44,7 +44,7 @@ class Daycomics(Manga):
         manga = manga[:-5] if manga.endswith('.html') else manga
         chapter["url"] = chapter["url"][:-5] if chapter["url"].endswith('.html') else chapter["url"]
         chapter["url"] = chapter["url"].replace('https://daycomics.me/en/', '')
-        response = Daycomics.send_request(f'https://daycomics.me/en/{chapter["url"]}.html', headers=Daycomics.headers)
+        response, _ = Daycomics.send_request(f'https://daycomics.me/en/{chapter["url"]}.html', headers=Daycomics.headers)
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find('div', {'class': 'viewer-imgs'}).find_all('img')
         images = [div['data-src'].strip() if div.has_attr('data-src') else div['src'].strip() for div in divs]
@@ -53,9 +53,10 @@ class Daycomics(Manga):
     def search_by_keyword(keyword, absolute):
         from contextlib import suppress
         page = 1
+        session = None
         template = f'https://daycomics.me/en/search?keyword={keyword}&' if keyword else 'https://daycomics.me/en/genres?'
         while True:
-            response = Daycomics.send_request(f'{template}page={page}', headers=Daycomics.headers)
+            response, session = Daycomics.send_request(f'{template}page={page}', headers=Daycomics.headers, session=session)
             soup = BeautifulSoup(response.text, 'html.parser')
             mangas = soup.find_all('li', {'itemtype': 'https://schema.org/ComicSeries'})
             if not mangas:

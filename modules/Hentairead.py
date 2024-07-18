@@ -11,7 +11,7 @@ class Hentairead(Doujin):
     def get_info(code):
         from contextlib import suppress
         from datetime import datetime
-        response = Hentairead.send_request(f'https://hentairead.com/hentai/{code}/', headers=Hentairead.headers)
+        response, _ = Hentairead.send_request(f'https://hentairead.com/hentai/{code}/', headers=Hentairead.headers)
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, pages, uploaded, rating = 6 * ['']
         extras = {}
@@ -43,13 +43,13 @@ class Hentairead(Doujin):
         }
 
     def get_title(code):
-        response = Hentairead.send_request(f'https://hentairead.com/hentai/{code}/', headers=Hentairead.headers)
+        response, _ = Hentairead.send_request(f'https://hentairead.com/hentai/{code}/', headers=Hentairead.headers)
         soup = BeautifulSoup(response.text, 'html.parser')
         title = soup.find('h1').get_text(strip=True)
         return title
 
     def get_images(code):
-        response = Hentairead.send_request(f'https://hentairead.com/hentai/{code}/', headers=Hentairead.headers)
+        response, _ = Hentairead.send_request(f'https://hentairead.com/hentai/{code}/', headers=Hentairead.headers)
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('ul', {'class': 'chapter-images-list lazy-listing__list'}).find_all('img')
         images = [image['data-src'].split('?', 1)[0] for image in images]
@@ -59,12 +59,13 @@ class Hentairead(Doujin):
         from contextlib import suppress
         from requests.exceptions import HTTPError
         page = 1
+        session = None
         template = f'https://hentairead.com/page/P_P_P_P/?s={keyword}'
         if not keyword:
             template = f'https://hentairead.com/hentai/page/P_P_P_P/?m_orderby=alphabet&m_order=desc'
         while True:
             try:
-                response = Hentairead.send_request(template.replace('P_P_P_P', str(page)), headers=Hentairead.headers)
+                response, session = Hentairead.send_request(template.replace('P_P_P_P', str(page)), session=session, headers=Hentairead.headers)
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')

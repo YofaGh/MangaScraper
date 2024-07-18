@@ -8,7 +8,7 @@ class Magzino(Manga):
 
     def get_info(manga):
         from contextlib import suppress
-        response = Magzino.send_request(f'https://magzino.top/all-books/{manga}')
+        response, _ = Magzino.send_request(f'https://magzino.top/all-books/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, summary, rating, status = 5 * ['']
         info_box = soup.find_all('div', {'class': 'post-content_item'})
@@ -36,7 +36,7 @@ class Magzino(Manga):
         }
 
     def get_chapters(manga):
-        response = Magzino.send_request(f'https://magzino.top/all-books/{manga}/ajax/chapters', method='POST')
+        response, _ = Magzino.send_request(f'https://magzino.top/all-books/{manga}/ajax/chapters', method='POST')
         soup = BeautifulSoup(response.text, 'html.parser')
         aas = soup.find_all('div', {'class': 'chap-a-span'})
         chapters = [{
@@ -46,7 +46,7 @@ class Magzino(Manga):
         return chapters
 
     def get_images(manga, chapter):
-        response = Magzino.send_request(f'https://magzino.top/all-books/{manga}/{chapter["url"]}/', headers=Magzino.image_headers)
+        response, _ = Magzino.send_request(f'https://magzino.top/all-books/{manga}/{chapter["url"]}/', headers=Magzino.image_headers)
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find_all('img', {'class': 'wp-manga-chapter-img'})
         images = [div['data-src'].strip() for div in divs]
@@ -68,9 +68,10 @@ class Magzino(Manga):
             'vars[post_type]': 'wp-manga',
             'vars[order]': 'ASC'
         }
+        session = None
         class_name = 'row c-tabs-item__content' if keyword else 'col-12 col-md-6 badge-pos-1'
         while True:
-            response = Magzino.send_request(f'https://magzino.top/ajax-call', method='POST', data=data)
+            response, session = Magzino.send_request(f'https://magzino.top/ajax-call', session=session, method='POST', data=data)
             if not response.text:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')

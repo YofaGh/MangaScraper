@@ -9,7 +9,7 @@ class WMangairo(Manga):
     def get_info(manga):
         from contextlib import suppress
         from datetime import datetime
-        response = WMangairo.send_request(f'https://chap.mangairo.com/{manga}')
+        response, _ = WMangairo.send_request(f'https://chap.mangairo.com/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser').find('div', {'class': 'story_content'})
         contents = soup.find('ul', {'class': 'story_info_right'}).find_all('li')
         cover, title, alternative, summary, status, authors, genres, view, last_updated = 9 * ['']
@@ -39,7 +39,7 @@ class WMangairo(Manga):
         }
 
     def get_chapters(manga):
-        response = WMangairo.send_request(f'https://chap.mangairo.com/{manga}')
+        response, _ = WMangairo.send_request(f'https://chap.mangairo.com/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         lis = soup.find('div', {'class': 'chapter_list'}).find_all('li')
         chapters_urls = [li.find('a')['href'].split('/')[-1] for li in lis[::-1]]
@@ -50,7 +50,7 @@ class WMangairo(Manga):
         return chapters
 
     def get_images(manga, chapter):
-        response = WMangairo.send_request(f'https://chap.mangairo.com/{manga}/{chapter["url"]}')
+        response, _ = WMangairo.send_request(f'https://chap.mangairo.com/{manga}/{chapter["url"]}')
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'class': 'panel-read-story'}).find_all('img')
         images = [image['src'].strip() for image in images]
@@ -60,6 +60,7 @@ class WMangairo(Manga):
         from contextlib import suppress
         from requests.exceptions import HTTPError
         page = 1
+        session = None
         template = f'https://w.mangairo.com/list/search/{keyword}?page=P_P_P_P'
         if not keyword:
             template = 'https://w.mangairo.com/manga-list/type-latest/ctg-all/state-all/page-P_P_P_P'
@@ -67,7 +68,7 @@ class WMangairo(Manga):
         prev_page = []
         while True:
             try:
-                response = WMangairo.send_request(template.replace('P_P_P_P', str(page)))
+                response, session = WMangairo.send_request(template.replace('P_P_P_P', str(page)), session=session)
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')

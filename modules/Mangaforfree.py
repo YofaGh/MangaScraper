@@ -7,7 +7,7 @@ class Mangaforfree(Manga):
 
     def get_info(manga):
         from contextlib import suppress
-        response = Mangaforfree.send_request(f'https://mangaforfree.net/manga/{manga}')
+        response, _ = Mangaforfree.send_request(f'https://mangaforfree.net/manga/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, summary, rating, status = 6 * ['']
         extras = {}
@@ -41,13 +41,12 @@ class Mangaforfree(Manga):
         }
 
     def get_chapters(manga):
-        session = Mangaforfree.create_session()
-        response = Mangaforfree.send_request(f'https://mangaforfree.net/manga/{manga}', session=session)
+        response, session = Mangaforfree.send_request(f'https://mangaforfree.net/manga/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         manga_id = soup.find('a', {'class': 'wp-manga-action-button'})['data-post']
         session.headers = {'content-type': 'application/x-www-form-urlencoded; charset=UTF-8'}
         data = f'action=manga_get_chapters&manga={manga_id}'
-        response = Mangaforfree.send_request('https://mangaforfree.net/wp-admin/admin-ajax.php', method='POST', session=session, data=data)
+        response, session = Mangaforfree.send_request('https://mangaforfree.net/wp-admin/admin-ajax.php', method='POST', session=session, data=data)
         soup = BeautifulSoup(response.text, 'html.parser')
         divs = soup.find_all('li', {'class': 'wp-manga-chapter'})
         chapters_urls = [div.find('a')['href'].split('/')[-2] for div in divs[::-1]]
@@ -58,7 +57,7 @@ class Mangaforfree(Manga):
         return chapters
 
     def get_images(manga, chapter):
-        response = Mangaforfree.send_request(f'https://mangaforfree.net/manga/{manga}/{chapter["url"]}/')
+        response, _ = Mangaforfree.send_request(f'https://mangaforfree.net/manga/{manga}/{chapter["url"]}/')
         soup = BeautifulSoup(response.text, 'html.parser')
         images = soup.find('div', {'class': 'reading-content'}).find_all('img')
         images = [image['src'].strip() for image in images]
@@ -68,9 +67,10 @@ class Mangaforfree(Manga):
         from contextlib import suppress
         from requests.exceptions import HTTPError
         page = 1
+        session = None
         while True:
             try:
-                response = Mangaforfree.send_request(f'https://mangaforfree.net/page/{page}?s={keyword}&post_type=wp-manga')
+                response, session = Mangaforfree.send_request(f'https://mangaforfree.net/page/{page}?s={keyword}&post_type=wp-manga', session=session)
             except HTTPError:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')
