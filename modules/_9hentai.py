@@ -30,12 +30,14 @@ class _9hentai(Doujin):
         }
 
     def get_title(code):
-        response, _ = _9hentai.send_request('https://9hentai.com/api/getBookByID', method='POST', json={'id': code}).json()
-        return response['results']['title']
+        response, _ = _9hentai.send_request('https://9hentai.com/api/getBookByID', method='POST', json={'id': code})
+        return response.json()['results']['title']
 
     def get_images(code):
-        response, _ = _9hentai.send_request('https://9hentai.com/api/getBookByID', method='POST', json={'id': code}).json()
-        images = [f'{response["results"]["image_server"]}{code}/{i+1}.jpg' for i in range(response['results']['total_page'])]
+        response, _ = _9hentai.send_request('https://9hentai.com/api/getBookByID', method='POST', json={'id': code})
+        response = response.json()
+        image_server = response['results']['image_server']
+        images = [f'{image_server}{code}/{i+1}.jpg' for i in range(response['results']['total_page'])]
         return images, False
 
     def search_by_keyword(keyword, absolute):
@@ -60,8 +62,8 @@ class _9hentai(Doujin):
         }
         session = None
         while True:
-            response, session = _9hentai.send_request('https://9hentai.com/api/getBook', method='POST', session=session, json=json).json()
-            doujins = response['results']
+            response, session = _9hentai.send_request('https://9hentai.com/api/getBook', method='POST', session=session, json=json)
+            doujins = response.json()['results']
             if not doujins:
                 yield {}
             results = {}

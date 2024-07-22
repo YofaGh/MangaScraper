@@ -55,10 +55,11 @@ class Hennojin(Doujin):
         wpnonce = soup.find('input', {'id': '_wpnonce'})['value']
         data = {'action': 'post_grid_ajax_search_free', 'grid_id': '23', 'current_page': 1, 'formData': f'keyword={keyword}&_wpnonce={wpnonce}'}
         while True:
-            response, session = Hennojin.send_request(f'https://hennojin.com/home/wp-admin/admin-ajax.php', method='POST', session=session, data=data).json()
-            if not response.get('html'):
+            response, session = Hennojin.send_request(f'https://hennojin.com/home/wp-admin/admin-ajax.php', method='POST', session=session, data=data)
+            response = response.json().get('html')
+            if not response:
                 yield {}
-            soup = BeautifulSoup(response['html'], 'html.parser')
+            soup = BeautifulSoup(response, 'html.parser')
             doujins = soup.find_all('div', {'class': 'layer-content element_3'})
             results = {}
             for doujin in doujins:

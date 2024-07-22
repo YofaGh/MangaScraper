@@ -67,8 +67,8 @@ class Luscious(Doujin):
             if page > total_pages:
                 yield {}
             try:
-                response, session = Luscious.send_request(data.replace('__keyword__', keyword).replace('__page__number__', str(page)), session=session).json()
-                total_pages = response['data']['album']['list']['info']['total_pages']
+                response, session = Luscious.send_request(data.replace('__keyword__', keyword).replace('__page__number__', str(page)), session=session)
+                total_pages = response.json()['data']['album']['list']['info']['total_pages']
             except HTTPError:
                 yield {}
             doujins = response['data']['album']['list']['items']

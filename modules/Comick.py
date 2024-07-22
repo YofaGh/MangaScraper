@@ -1,7 +1,6 @@
 import json
 from bs4 import BeautifulSoup
 from utils.models import Manga
-from user_agents import LEECH
 
 class Comick(Manga):
     domain = 'comick.io'

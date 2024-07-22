@@ -6,7 +6,8 @@ class Hentaihand(Doujin):
     is_coded = False
 
     def get_info(code):
-        response, _ = Hentaihand.send_request(f'https://hentaihand.com/api/comics/{code}').json()
+        response, _ = Hentaihand.send_request(f'https://hentaihand.com/api/comics/{code}')
+        response = response.json()
         extras = {
             'Description': response['description'],
             'Category': response.get('category', {}).get('name') or '',
@@ -31,12 +32,12 @@ class Hentaihand(Doujin):
         }
 
     def get_title(code):
-        response, _ = Hentaihand.send_request(f'https://hentaihand.com/api/comics/{code}').json()
-        return response['title']
+        response, _ = Hentaihand.send_request(f'https://hentaihand.com/api/comics/{code}')
+        return response.json()['title']
 
     def get_images(code):
-        response, _ = Hentaihand.send_request(f'https://hentaihand.com/api/comics/{code}/images').json()
-        images = [image['source_url'] for image in response['images']]
+        response, _ = Hentaihand.send_request(f'https://hentaihand.com/api/comics/{code}/images')
+        images = [image['source_url'] for image in response.json()['images']]
         return images, False
 
     def search_by_keyword(keyword, absolute):
@@ -47,7 +48,8 @@ class Hentaihand(Doujin):
         }
         session = None
         while True:
-            response, session = Hentaihand.send_request('https://hentaihand.com/api/comics', session=session, params=params).json()
+            response, session = Hentaihand.send_request('https://hentaihand.com/api/comics', session=session, params=params)
+            response = response.json()
             if not response['data']:
                 yield {}
             results = {}
