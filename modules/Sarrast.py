@@ -43,8 +43,8 @@ class Sarrast(Manga):
         return chapters
 
     def get_images(manga, chapter):
-        response, _ = Sarrast.send_request(f'https://sarrast.com/series/{manga}/{chapter["url"]}/api').json()
-        images = [f'https://sarrast.com{image["path"]}' for image in response['files']]
+        response, _ = Sarrast.send_request(f'https://sarrast.com/series/{manga}/{chapter["url"]}/api')
+        images = [f'https://sarrast.com{image["path"]}' for image in response.json()['files']]
         save_names = [f'{i+1:03d}.{images[i].split(".")[-1]}' for i in range(len(images))]
         return images, save_names
 

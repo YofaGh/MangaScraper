@@ -54,7 +54,8 @@ class Omegascans(Manga):
         data = {'adult': 'true', 'query_string': keyword, 'page': 1}
         session = None
         while True:
-            mangas, session = Omegascans.send_request(f'https://api.omegascans.org/query', session=session, params=data).json()['data']
+            response, session = Omegascans.send_request(f'https://api.omegascans.org/query', session=session, params=data)
+            mangas = response.json()['data']
             results = {}
             if not mangas:
                 yield results

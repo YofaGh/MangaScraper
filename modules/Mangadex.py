@@ -38,7 +38,8 @@ class Mangadex(Manga):
             'offset': 0
         }
         while True:
-            response, _ = Mangadex.send_request(f'https://api.mangadex.org/manga/{manga}/feed', params=params).json()
+            response, _ = Mangadex.send_request(f'https://api.mangadex.org/manga/{manga}/feed', params=params)
+            response = response.json()
             if not response['data']:
                 break
             chapters.extend([{
@@ -49,7 +50,8 @@ class Mangadex(Manga):
         return chapters
 
     def get_images(manga, chapter):
-        response, _ = Mangadex.send_request(f'https://api.mangadex.org/at-home/server/{chapter["url"]}').json()
+        response, _ = Mangadex.send_request(f'https://api.mangadex.org/at-home/server/{chapter["url"]}')
+        response = response.json()
         images = [f'{response["baseUrl"]}/data/{response["chapter"]["hash"]}/{image}' for image in response['chapter']['data']]
         return images, False
 
@@ -62,10 +64,10 @@ class Mangadex(Manga):
         while True:
             params['offset'] = (page - 1) * 100
             try:
-                response, session = Mangadex.send_request(url, session=session, params=params).json()
+                response, session = Mangadex.send_request(url, session=session, params=params)
             except HTTPError:
                 yield {}
-            mangas = response['data']
+            mangas = response.json()['data']
             if not mangas:
                 yield {}
             results = {}

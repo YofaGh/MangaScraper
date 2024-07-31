@@ -9,7 +9,8 @@ class Nhentai_Com(Doujin):
 
     def get_info(code):
         from datetime import datetime
-        response, _ = Nhentai_Com.send_request(f'https://nhentai.com/api/comics/{code}', headers=Nhentai_Com.headers).json()
+        response, _ = Nhentai_Com.send_request(f'https://nhentai.com/api/comics/{code}', headers=Nhentai_Com.headers)
+        response = response.json()
         return {
             'Cover': response['image_url'],
             'Title': response['title'],
@@ -32,12 +33,12 @@ class Nhentai_Com(Doujin):
         }
 
     def get_title(code):
-        response, _ = Nhentai_Com.send_request(f'https://nhentai.com/api/comics/{code}', headers=Nhentai_Com.headers).json()
-        return response['title']
+        response, _ = Nhentai_Com.send_request(f'https://nhentai.com/api/comics/{code}', headers=Nhentai_Com.headers)
+        return response.json()['title']
 
     def get_images(code):
-        response, _ = Nhentai_Com.send_request(f'https://nhentai.com/api/comics/{code}/images', headers=Nhentai_Com.headers).json()
-        images = [image['source_url'] for image in response['images']]
+        response, _ = Nhentai_Com.send_request(f'https://nhentai.com/api/comics/{code}/images', headers=Nhentai_Com.headers)
+        images = [image['source_url'] for image in response.json()['images']]
         return images, False
 
     def search_by_keyword(keyword, absolute):
@@ -46,8 +47,8 @@ class Nhentai_Com(Doujin):
         tail = '&sort=title' if not keyword else ''
         session = None
         while True:
-            response, session = Nhentai_Com.send_request(f'https://nhentai.com/api/comics?page={page}&q={keyword}{tail}', session=session, headers=Nhentai_Com.headers).json()
-            doujins = response['data']
+            response, session = Nhentai_Com.send_request(f'https://nhentai.com/api/comics?page={page}&q={keyword}{tail}', session=session, headers=Nhentai_Com.headers)
+            doujins = response.json()['data']
             if not doujins:
                 yield {}
             results = {}
