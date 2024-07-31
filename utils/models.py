@@ -1,13 +1,13 @@
 import requests
 
 class Module:
-    type = 'Module'
+    type = __qualname__
     logo = None
     domain = None
     download_images_headers = None
 
     @staticmethod
-    def send_request(url, method='GET', session=None, **kwargs):
+    def send_request(url, method='GET', session=None, **kwargs) -> tuple[requests.Response, requests.Session]:
         from utils.assets import waiter
         if kwargs.get('verify') is False:
             requests.packages.urllib3.disable_warnings(requests.packages.urllib3.exceptions.InsecureRequestWarning)
@@ -23,7 +23,7 @@ class Module:
                 waiter()
 
     @classmethod
-    def download_image(cls, url, image_name, session=None, verify=None):
+    def download_image(cls, url, image_name, session=None, verify=None) -> str | None:
         try:
             response, _ = cls.send_request(url, session=session, headers=cls.download_images_headers, verify=verify)
             with open(image_name, 'wb') as image:
@@ -32,19 +32,19 @@ class Module:
         except:
             return None
 
-    def get_info():
+    def get_info() -> dict:
         return {}
 
-    def get_images():
+    def get_images() -> tuple[list[str], bool | list[str]]:
         return [], False
 
 class Manga(Module):
-    type = 'Manga'
+    type = __qualname__
 
-    def get_chapters():
+    def get_chapters() -> list[dict]:
         return []
 
-    def rename_chapter(chapter):
+    def rename_chapter(chapter) -> str:
         new_name = ''
         reached_number = False
         for ch in chapter:
@@ -62,8 +62,8 @@ class Manga(Module):
             return f'Chapter {new_name.split(".", 1)[0].zfill(3)}.{new_name.split(".", 1)[1]}'
 
 class Doujin(Module):
-    type = 'Doujin'
+    type = __qualname__
     is_coded = True
 
-    def get_title():
+    def get_title() -> str:
         return ''
