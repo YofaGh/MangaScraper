@@ -35,8 +35,8 @@ def validate_folder(path_to_folder):
     images_path = detect_images(path_to_folder)
     for image_path in images_path:
         if not (validate_corrupted_image(image_path) and validate_truncated_image(image_path)):
-            return False
-    return True
+            return image_path, images_path
+    return None, images_path
 
 def create_folder(path):
     import os
@@ -59,9 +59,9 @@ def sleep(secs=SLEEP_TIME):
     time.sleep(secs)
 
 def waiter():
-    from utils import logger
-    logger.log_over(' Connection lost.\n\rWaiting 1 minute to attempt a fresh connection.', 'red')
+    from utils.logger import log_over, CLEAR
+    log_over(' Connection lost.\n\rWaiting 1 minute to attempt a fresh connection.', 'red')
     for i in range(59, 0, -1):
         sleep(1)
-        logger.log_over(f'\rWaiting {i} seconds to attempt a fresh connection. ', 'red')
-    logger.log_over(logger.CLEAR)
+        log_over(f'\rWaiting {i} seconds to attempt a fresh connection. ', 'red')
+    log_over(CLEAR)

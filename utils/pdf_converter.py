@@ -1,16 +1,19 @@
 import img2pdf
 from utils.logger import log_over, log
-from utils.assets import validate_folder, create_folder, detect_images
+from utils.assets import validate_folder, create_folder
 
 def convert_folder(path_to_source, path_to_destination, pdf_name, name=None):
     name = name or path_to_source
     pdf_name = pdf_name if pdf_name.endswith('.pdf') else f'{pdf_name}.pdf'
-    if not validate_folder(path_to_source):
-        log(f'\rFailed to convert {path_to_source} because of a corrupted image.', 'red')
+    invalid_image, images_path = validate_folder(path_to_source)
+    if invalid_image:
+        log(f'\rFailed to convert {path_to_source} because this image is invalid: {invalid_image}', 'red')
+        return
+    if not images_path:
+        log(f'\rFailed to convert {path_to_source} because there was no image in the given folder.', 'red')
         return
     create_folder(path_to_destination)
     log_over(f'\r{name}: Converting to pdf...')
-    images_path = detect_images(path_to_source)
     with open(f'{path_to_destination}/{pdf_name}', 'wb') as pdf_file:
         pdf_file.write(img2pdf.convert(images_path))
     log(f'\r{name}: Converted to pdf.      ', 'green')
@@ -27,10 +30,14 @@ def convert_bulkone(path_to_source, path_to_destination):
     images = []
     log_over(f'\r{path_to_source}: Detecting images...')
     for sub_folder in sub_folders:
-        if not validate_folder(f'{path_to_source}/{sub_folder}'):
-            log(f'\rFailed to convert {path_to_source}/{sub_folder} because of a corrupted image.', 'red')
+        invalid_image, images_path = validate_folder(f'{path_to_source}/{sub_folder}')
+        if invalid_image:
+            log(f'\rFailed to convert {path_to_source}/{sub_folder} because this image is invalid: {invalid_image}', 'red')
             return
-        images += detect_images(f'{path_to_source}/{sub_folder}')
+        images += images_path
+    if not images:
+        log(f'\rFailed to convert {path_to_source} because there was no image in the given folder.', 'red')
+        return
     log_over(f'\r{path_to_source}: Creating pdf...    ')
     with open(f'{path_to_destination}/{path_to_source}.pdf', 'wb') as pdf_file:
         pdf_file.write(img2pdf.convert(images))
