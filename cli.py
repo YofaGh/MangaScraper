@@ -47,6 +47,8 @@ settings.SLEEP_TIME = args.t or settings.SLEEP_TIME
 settings.AUTO_MERGE = args.m or settings.AUTO_MERGE
 settings.AUTO_PDF_CONVERSION = args.p or settings.AUTO_PDF_CONVERSION
 settings.FIT_MERGE = args.fit or settings.FIT_MERGE
+settings.SEARCH_PAGE_LIMIT = args.page_limit or settings.SEARCH_PAGE_LIMIT
+settings.SEARCH_ABSOLUTE = args.absolute or settings.SEARCH_ABSOLUTE
 
 if args.task in ('manga', 'doujin', 'search', 'db') and not args.file:
     from utils.modules_contributer import get_modules
@@ -107,7 +109,7 @@ match args.task:
         if not args.n:
             parser.error('you should specify what you want to search using -n')
         from crawlers.search_engine import search_wrapper
-        search_wrapper(args.n, args.s, args.absolute, args.page_limit)
+        search_wrapper(args.n, args.s)
 
     case 'db':
         from crawlers.database_crawler import crawl

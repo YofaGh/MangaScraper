@@ -1,12 +1,13 @@
 from utils.logger import log_over, log
 from utils.assets import save_json_file, sleep
 from utils.exceptions import MissingFunctionException
+from settings import SEARCH_PAGE_LIMIT, SEARCH_ABSOLUTE
 
-def search_wrapper(keyword, modules, absolute, limit_page):
+def search_wrapper(keyword, modules):
     results = {}
     for module in modules:
         try:
-            temp_results = search(keyword, module, absolute, limit_page)
+            temp_results = search(keyword, module)
             if temp_results:
                 results[module.domain] = temp_results
         except MissingFunctionException as error:
@@ -15,12 +16,12 @@ def search_wrapper(keyword, modules, absolute, limit_page):
     print_output(results)
     log(f'This was a summary of the search.\nYou can see the full results in {keyword}_output.json', 'green')
 
-def search(keyword, module, absolute, limit_page):
+def search(keyword, module):
     if not hasattr(module, 'search_by_keyword'):
         raise MissingFunctionException(module.domain, 'search_by_keyword')
-    search = module.search_by_keyword(keyword, absolute)
+    search = module.search_by_keyword(keyword, SEARCH_ABSOLUTE)
     results, page = {}, 1
-    while page <= limit_page:
+    while page <= SEARCH_PAGE_LIMIT:
         try:
             log_over(f'\r{module.domain}: Searching page {page}...')
             last = next(search)
@@ -28,7 +29,7 @@ def search(keyword, module, absolute, limit_page):
                 break
             results.update(last)
             page += 1
-            if page < limit_page:
+            if page < SEARCH_PAGE_LIMIT:
                 sleep()
         except Exception as error:
             log(f'\r{module.domain}: Failed to search: {error}', 'red')
