@@ -7,20 +7,20 @@ from utils.assets import validate_corrupted_image, validate_truncated_image, loa
 
 def check_modules(domains):
     modules = load_modules_yaml_file()
-    if not domains: domains = modules.keys()
+    domains = domains or modules.keys()
     for domain in domains:
         module = get_modules(domain)
         if modules[domain]['type'] == 'Manga':
             check_manga(module, modules[domain]['test_sample'])
         elif modules[domain]['type'] == 'Doujin':
             check_doujin(module, modules[domain]['test_sample'])
-        search_by_keyword_checker(module, modules[domain]['test_sample'].get('keyword', 'a'))
-        get_db_checker(module)
+        se_db_checker(module, 'search_by_keyword', modules[domain]['test_sample'].get('keyword', 'a'), False)
+        se_db_checker(module, 'get_db')
 
 def check_manga(module, sample):
     chapters, images = chapter_checker(module, sample['url']), []
     if chapters:
-        images, save_names = manga_images_checker(module, sample['url'], chapters[0])
+        images, save_names = get_images_checker(module, f'{sample["url"]}: {chapters[0]["name"]}', sample['url'], chapters[0])
     else:
         log(f'\r{module.domain}: {sample["url"]}: Skipped images_checker due to chapter_checker failure', 'red')
     if images:
@@ -30,7 +30,7 @@ def check_manga(module, sample):
 
 def check_doujin(module, sample):
     title_checker(module, sample['url'])
-    images, save_names = doujin_images_checker(module, sample['url'])
+    images, save_names = get_images_checker(module, sample['url'], sample['url'])
     if images:
         download_checker(module, images[0], save_names[0] if save_names else f'{module.domain}_test.{images[0].split(".")[-1]}')
     else:
@@ -54,24 +54,14 @@ def title_checker(module, code):
     except:
         log(f'\r{module.domain}: {code}: Recieving title was a failure', 'red')
 
-def manga_images_checker(module, manga, chapter):
+def get_images_checker(module, info, *args):
     images, save_names = [], []
-    log_over(f'\r{module.domain}: {manga}: {chapter["name"]}: Getting images...')
-    with suppress(Exception): images, save_names = module.get_images(manga, chapter)
+    log_over(f'\r{module.domain}: {info}: Getting images...')
+    with suppress(Exception): images, save_names = module.get_images(*args)
     if images:
-        log(f'\r{module.domain}: {manga}: {chapter["name"]}: Recieved images links successfully', 'green')
+        log(f'\r{module.domain}: {info}: Recieved images links successfully', 'green')
     else:
-        log(f'\r{module.domain}: {manga}: {chapter["name"]}: Recieving images links was a failure', 'red')
-    return images, save_names
-
-def doujin_images_checker(module, code):
-    images, save_names = [], []
-    log_over(f'\r{module.domain}: {code}: Getting images...')
-    with suppress(Exception): images, save_names = module.get_images(code)
-    if images:
-        log(f'\r{module.domain}: {code}: Recieved images links successfully', 'green')
-    else:
-        log(f'\r{module.domain}: {code}: Recieving images links was a failure', 'red')
+        log(f'\r{module.domain}: {info}: Recieving images links was a failure', 'red')
     return images, save_names
 
 def download_checker(module, url, name):
@@ -86,44 +76,28 @@ def download_checker(module, url, name):
     except:
         log(f'\r{module.domain}: Downloading image was a failure', 'red')
 
-def se_db(func):
-    page = 1
-    results = {}
-    while page <= 2:
-        try:
-            last = next(func)
-            if not last:
+def se_db_checker(module, func_name, *args):
+    log_over(f'\r{module.domain}: Checking {func_name} function...')
+    try:
+        if not hasattr(module, func_name):
+            raise MissingFunctionException(module.domain, func_name)
+        func = getattr(module, func_name)(*args)
+        page = 1
+        results = {}
+        while page <= 2:
+            try:
+                last = next(func)
+                if not last:
+                    break
+                results.update(last)
+                page += 1
+                if page < 2:
+                    sleep()
+            except Exception:
                 break
-            results.update(last)
-            page += 1
-            if page < 2:
-                sleep()
-        except Exception:
-            break
-    return results
-
-def search_by_keyword_checker(module, keyword):
-    log_over(f'\r{module.domain}: Checking search function...')
-    try:
-        if not hasattr(module, 'search_by_keyword'):
-            raise MissingFunctionException(module.domain, 'search_by_keyword')
-        results = se_db(module.search_by_keyword(keyword, False))
         if results:
-            log(f'\r{module.domain}: Searched in module successfully', 'green')
+            log(f'\r{module.domain}: {func_name} was successfull     ', 'green')
         else:
             raise Exception('Empty results')
     except Exception as error:
-        log(f'\r{module.domain}: Searching by keyword was a failure: {error}', 'red')
-
-def get_db_checker(module):
-    log_over(f'\r{module.domain}: Checking get_db function...')
-    try:
-        if not hasattr(module, 'get_db'):
-            raise MissingFunctionException(module.domain, 'get_db')
-        results = se_db(module.get_db())
-        if results:
-            log(f'\r{module.domain}: Crawled database successfully', 'green')
-        else:
-            raise Exception('Empty results')
-    except Exception as error:
-        log(f'\r{module.domain}: Crawling database was a failure: {error}', 'red')
+        log(f'\r{module.domain}: {func_name} was a failure: {error}', 'red')
