@@ -1,9 +1,10 @@
 from utils.logger import log_over, log
+from utils.models import Manga, Doujin
 from utils.assets import save_json_file, sleep
 from utils.exceptions import MissingFunctionException
 from settings import SEARCH_PAGE_LIMIT, SEARCH_ABSOLUTE
 
-def search_wrapper(keyword, modules):
+def search_wrapper(keyword: str, modules: list[Manga | Doujin]) -> None:
     results = {}
     for module in modules:
         try:
@@ -16,7 +17,7 @@ def search_wrapper(keyword, modules):
     print_output(results)
     log(f'This was a summary of the search.\nYou can see the full results in {keyword}_output.json', 'green')
 
-def search(keyword, module):
+def search(keyword: str, module: Manga | Doujin) -> dict:
     if not hasattr(module, 'search_by_keyword'):
         raise MissingFunctionException(module.domain, 'search_by_keyword')
     search = module.search_by_keyword(keyword, SEARCH_ABSOLUTE)
@@ -37,7 +38,7 @@ def search(keyword, module):
     log(f'\r{module.domain}: {len(results)} results were found from {page-1} pages.', 'green' if results else 'yellow')
     return results
 
-def print_output(results):
+def print_output(results: dict[str, dict]) -> None:
     log('Summary:')
     for module, data in results.items():
         log(f'{module}:')

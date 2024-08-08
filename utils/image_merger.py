@@ -4,7 +4,7 @@ from utils.logger import log_over, log, CLEAR
 from utils.assets import validate_folder, create_folder
 from settings import FIT_MERGE
 
-def merge_folder(path_to_source, path_to_destination, name=None):
+def merge_folder(path_to_source: str, path_to_destination: str, name: str | None = None) -> None:
     name = name or path_to_source
     invalid_image, images_path = validate_folder(path_to_source)
     if invalid_image:
@@ -24,7 +24,7 @@ def merge_folder(path_to_source, path_to_destination, name=None):
     log_over(CLEAR)
     log(f'\r{name}: Merged {len(images_path)} images into {results}.', 'green')
 
-def merge(images, path_to_destination):
+def merge(images: list[Image.Image], path_to_destination: str) -> int:
     lists_to_merge = []
     temp_list = []
     temp_height = 0
@@ -51,7 +51,7 @@ def merge(images, path_to_destination):
         merged_image.save(f'{path_to_destination}/{index:03d}.jpg')
     return len(lists_to_merge)
 
-def merge_fit(images, path_to_destination):
+def merge_fit(images: list[Image.Image], path_to_destination: str) -> int:
     import math
     lists_to_merge = []
     min_width = images[0].width
@@ -83,7 +83,7 @@ def merge_fit(images, path_to_destination):
         merged_image.save(f'{path_to_destination}/{index:03d}.jpg')
     return len(lists_to_merge)
 
-def merge_bulk(path_to_source, path_to_destination):
+def merge_bulk(path_to_source: str, path_to_destination: str) -> None:
     import os
     sub_folders = os.listdir(path_to_source)
     for sub_folder in sub_folders:

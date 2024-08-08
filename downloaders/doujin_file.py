@@ -4,7 +4,7 @@ from utils.exceptions import MissingModuleException
 from downloaders.doujin_single import download_doujin
 from utils.assets import save_json_file, load_json_file
 
-def download_doujins(json_file):
+def download_doujins(json_file: str) -> None:
     doujins = load_json_file(json_file)
     valid_domains = [doujin for (doujin, detm) in doujins.items() if detm]
     for domain in valid_domains:

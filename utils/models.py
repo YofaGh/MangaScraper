@@ -7,7 +7,7 @@ class Module:
     download_images_headers = None
 
     @staticmethod
-    def send_request(url, method='GET', session=None, **kwargs) -> tuple[requests.Response, requests.Session]:
+    def send_request(url: str, method: str = 'GET', session: requests.Session | None = None, **kwargs) -> tuple[requests.Response, requests.Session]:
         from utils.assets import waiter
         if kwargs.get('verify') is False:
             requests.packages.urllib3.disable_warnings(requests.packages.urllib3.exceptions.InsecureRequestWarning)
@@ -23,7 +23,7 @@ class Module:
                 waiter()
 
     @classmethod
-    def download_image(cls, url, image_name, session=None, verify=None) -> str | None:
+    def download_image(cls, url: str, image_name: str, session: requests.Session | None = None, verify: bool | None = None) -> str | None:
         try:
             response, _ = cls.send_request(url, session=session, headers=cls.download_images_headers, verify=verify)
             with open(image_name, 'wb') as image:
@@ -44,7 +44,7 @@ class Manga(Module):
     def get_chapters() -> list[dict]:
         return []
 
-    def rename_chapter(chapter) -> str:
+    def rename_chapter(chapter: str) -> str:
         new_name = ''
         reached_number = False
         for ch in chapter:

@@ -4,7 +4,7 @@ from contextlib import suppress
 from utils.logger import log_over, log
 from utils.assets import save_json_file
 
-def yandex(url):
+def yandex(url: str) -> list[dict[str, str]]:
     response = requests.get(f'https://yandex.com/images/search?rpt=imageview&url={url}')
     soup = BeautifulSoup(response.text, 'html.parser')
     data_raw = soup.find('div', {'class': 'cbir-section cbir-section_name_sites'}).find('div', {'class': 'Root'})['data-state']
@@ -12,7 +12,7 @@ def yandex(url):
     sites = data['sites']
     return [{'url': site['url'], 'image': site['originalImage']['url']} for site in sites]
 
-def tineye(url):
+def tineye(url: str) -> list[dict[str, str]]:
     headers = {'content-type': 'multipart/form-data; boundary=----WebKitFormBoundaryVxauFLsZbD7Cr1Fa'}
     data = f'------WebKitFormBoundaryVxauFLsZbD7Cr1Fa\nContent-Disposition: form-data; name="url"\n\n{url}\n------WebKitFormBoundaryVxauFLsZbD7Cr1Fa--'
     response = requests.post('https://tineye.com/result_json/?sort=score&order=desc&page=1', data=data, headers=headers).json()
@@ -28,7 +28,7 @@ def tineye(url):
                 results.append({'url': backlink['backlink'], 'image': backlink['url']})
     return results
 
-def iqdb(url):
+def iqdb(url: str) -> list[dict[str, str]]:
     response = requests.get(f'https://iqdb.org/?url={url}')
     soup = BeautifulSoup(response.text, 'html.parser')
     divs = [div for div in soup.find('div', {'id': 'pages'}).find_all('div') if 'Your image' not in div.text]
@@ -45,7 +45,7 @@ def iqdb(url):
             results.append({'url': td_url, 'image': td_image})
     return results
 
-def saucenao(url):
+def saucenao(url: str) -> list[dict[str, str]]:
     response = requests.get(f'https://saucenao.com/search.php?db=999&url={url}')
     soup = BeautifulSoup(response.text, 'html.parser')
     divs = soup.find('div', {'id': 'middle'}).find_all('div', {'class': 'result'})
@@ -56,7 +56,7 @@ def saucenao(url):
         with suppress(Exception): results.append({'url': div.find('div', {'class': 'resultimage'}).find('a')['href'], 'image': None})
     return results
 
-def sauce_file(path_to_file):
+def sauce_file(path_to_file: str) -> str:
     log_over('\ruploading image to imgops.com')
     with open(path_to_file, 'rb') as file:
         bytes = file.read()
@@ -68,7 +68,7 @@ def sauce_file(path_to_file):
     log(f'    https:{link}', 'yellow')
     return f'https:{link}'
 
-def sauce_url(url):
+def sauce_url(url: str) -> None:
     results = {}
     for site in sites:
         temp_results = []
@@ -81,7 +81,7 @@ def sauce_url(url):
     print_output(results)
     log('This was a summary of the saucer.\nYou can see the full results in sauce_output.json', 'green')
 
-def print_output(results):
+def print_output(results: dict[str, list[dict[str, str]]]) -> None:
     log('Summary:')
     for site in results:
         log(f'{site}:')

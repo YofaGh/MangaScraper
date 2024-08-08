@@ -1,8 +1,9 @@
 from utils.logger import log_over, log
+from utils.models import Manga, Doujin
 from utils.assets import save_json_file, sleep
 from utils.exceptions import MissingFunctionException
 
-def crawl(module):
+def crawl(module: Manga | Doujin) -> None:
     try:
         if not hasattr(module, 'get_db'):
             raise MissingFunctionException(module.domain, 'get_db')

@@ -10,10 +10,10 @@ COLORS = {
 RESET = '\033[0m'
 CLEAR = '\x1b[2K'
 
-def log_over(text, color='white'):
+def log_over(text: str, color: str = 'white') -> None:
     if LOGGING:
         print(f'{COLORS[color]}{text}{RESET}', end='')
 
-def log(text, color='white'):
+def log(text: str, color: str = 'white') -> None:
     if LOGGING:
         print(f'{COLORS[color]}{text}{RESET}')
