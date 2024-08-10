@@ -1,18 +1,15 @@
 from PIL import Image
 from shutil import copy2
 from utils.logger import log_over, log, CLEAR
+from utils.exceptions import ImageMergerException
 from utils.assets import validate_folder, create_folder
 from settings import FIT_MERGE
 
 def merge_folder(path_to_source: str, path_to_destination: str, name: str | None = None) -> None:
     name = name or path_to_source
     invalid_image, images_path = validate_folder(path_to_source)
-    if invalid_image:
-        log(f'\rFailed to Merge {path_to_source} because this image is invalid: {invalid_image}', 'red')
-        return
-    if not images_path:
-        log(f'\rFailed to Merge {path_to_source} because there was no image in the given folder.', 'red')
-        return
+    if invalid_image or not images_path:
+        raise ImageMergerException(path_to_source, invalid_image, images_path)
     create_folder(path_to_destination)
     images = [Image.open(image_path) for image_path in images_path]
     if FIT_MERGE:
