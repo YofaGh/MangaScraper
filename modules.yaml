@@ -215,7 +215,7 @@ nhentai.net:
   className: Nhentai_Net
   type: Doujin
   test_sample:
-    url: 2
+    url: 1
 nhentai.xxx:
   className: Nhentai_Xxx
   type: Doujin
