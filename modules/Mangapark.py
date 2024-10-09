@@ -6,24 +6,28 @@ class Mangapark(Manga):
     logo = 'https://mangapark.to/public-assets/img/favicon.ico'
 
     def get_info(manga):
-        import json
+        from contextlib import suppress
         manga = manga.split('-')[0] if '-' in manga else manga
         response, _ = Mangapark.send_request(f'https://mangapark.to/title/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
-        script = soup.find('script', {'id': '__NEXT_DATA__'}).get_text(strip=True)
-        data = json.loads(script)['props']['pageProps']['dehydratedState']['queries'][0]['state']['data']['data']
+        cover, title, alternative, summary, status, rating = 6 * ['']
+        info_box = soup.find('div', {'class': 'flex flex-col md:flex-row'})
+        extras = {}
+        with suppress(Exception): cover = info_box.find('img')['src']
+        with suppress(Exception): title = info_box.find('h3').get_text(strip=True)
+        with suppress(Exception): alternative = info_box.find('div', {'q:key': 'tz_2'}).get_text(strip=True)
+        with suppress(Exception): summary = info_box.find('div', {'class': 'limit-html prose lg:prose-lg'}).get_text(strip=True)
+        with suppress(Exception): status = info_box.find('span', {'q:key': 'Yn_5'}).get_text(strip=True)
+        with suppress(Exception): extras['Genres'] = [a.get_text(strip=True) for a in info_box.find_all('span', {'q:key': 'kd_0'})]
+        with suppress(Exception): rating = float(info_box.find('span', {'q:key': 'lt_0'}).get_text(strip=True))
         return {
-            'Cover': data['urlCover600'],
-            'Title': data['name'],
-            'Alternative': ', '.join(data['altNames']) if data['altNames'] else '',
-            'Summary': data['summary']['code'] if data['summary'] else '',
-            'Rating': data['stat_score_avg'] if data['stat_score_avg'] else '',
-            'Status': data['originalStatus'] if data['originalStatus'] else '',
-            'Extras': {
-                'Authors': data['authors'] if data['authors'] else '',
-                'Artists': data['artists'] if data['artists'] else '',
-                'Genres': data['genres'] if data['genres'] else '',
-            },
+            'Cover': cover,
+            'Title': title,
+            'Alternative': alternative,
+            'Summary': summary,
+            'Status': status,
+            'Rating': rating,
+            'Extras': extras
         }
 
     def get_chapters(manga):

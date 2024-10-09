@@ -72,7 +72,7 @@ class Luscious(Doujin):
                 total_pages = response.json()['data']['album']['list']['info']['total_pages']
             except HTTPError:
                 yield {}
-            doujins = response['data']['album']['list']['items']
+            doujins = response.json()['data']['album']['list']['items']
             results = {}
             for doujin in doujins:
                 tags, genres = '', ''

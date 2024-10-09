@@ -12,7 +12,7 @@ class Simplyhentai(Doujin):
         cover, title, alternative, pages, uploaded = 5 * ['']
         info_box = soup.find('div', {'id': 'info'})
         extras = {}
-        with suppress(Exception): cover = soup.find('div', {'id': 'cover'}).find('img')['data-src']
+        with suppress(Exception): cover = soup.find('div', {'id': 'cover'}).find('img')['src']
         with suppress(Exception): title = info_box.find('h1').get_text(strip=True)
         with suppress(Exception): alternative = info_box.find('h2').get_text(strip=True)
         with suppress(Exception): uploaded = info_box.find('time')['datetime']
