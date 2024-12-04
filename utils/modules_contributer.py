@@ -1,10 +1,14 @@
+from typing import TypeVar, List
 from utils.assets import load_modules_yaml_file
 from utils.models import Manga, Doujin
+
+T = TypeVar('T', bound='NestedModule')
+NestedModule = Manga | Doujin | List[T]
 
 def __import_module(module_name: str) -> Manga | Doujin:
     return getattr(__import__(f'modules.{module_name}', fromlist=[module_name]), module_name)
 
-def get_modules(key: str | list[str | list] | None = None) -> Manga | Doujin | list[Manga | Doujin | list]:
+def get_modules(key: str | list[str | list] | None = None) -> NestedModule:
     modules = load_modules_yaml_file()
     if not key:
         return [__import_module(module['className']) for module in modules.values()]
