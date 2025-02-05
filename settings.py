@@ -7,4 +7,6 @@ AUTO_PDF_CONVERSION: bool = False
 FIT_MERGE: bool = False
 SEARCH_PAGE_LIMIT: int = 3
 SEARCH_ABSOLUTE: bool = False
-MODULES_FILE_PATH: str = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'modules.yaml')
+MODULES_FILE_PATH: str = os.path.join(
+    os.path.dirname(os.path.realpath(__file__)), "modules.yaml"
+)
