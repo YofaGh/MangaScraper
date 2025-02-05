@@ -61,7 +61,7 @@ class Comick(Manga):
 
     def search_by_keyword(keyword, absolute):
         from requests.exceptions import HTTPError
-        response, session = Comick.send_request(f'https://comick.io/search', headers=Comick.headers)
+        response, session = Comick.send_request('https://comick.io/search', headers=Comick.headers)
         session.headers = Comick.headers
         soup = BeautifulSoup(response.text, 'html.parser')
         script = soup.find('script', {'id': '__NEXT_DATA__'}).get_text(strip=True)
@@ -106,5 +106,5 @@ class Comick(Manga):
         new_name = new_name.rstrip('.')
         try:
             return f'Chapter {int(new_name):03d}'
-        except:
+        except ValueError:
             return f'Chapter {new_name.split(".", 1)[0].zfill(3)}.{new_name.split(".", 1)[1]}'

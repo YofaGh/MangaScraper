@@ -12,12 +12,18 @@ class Toonily_Me(Manga):
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, summary, rating, status, authors, chapters, genres, last_update = 10 * ['']
         info_box = soup.find('div', {'class': 'book-info'})
-        with suppress(Exception): cover = f'https:{info_box.find("img")["data-src"]}'
-        with suppress(Exception): title = info_box.find('div', {'class': 'name box'}).find('h1').get_text(strip=True)
-        with suppress(Exception): alternative = info_box.find('div', {'class': 'name box'}).find('h2').get_text(strip=True)
-        with suppress(Exception): summary = soup.find('div', {'class': 'section box mt-1 summary'}).find('p').get_text(strip=True)
-        with suppress(Exception): rating = float(soup.find('span', {'class': 'score'}).contents[-1].strip())
-        with suppress(Exception): status = info_box.find('div', {'class': 'post-status'}).find_all('div', {'class': 'summary-content'})[1].get_text(strip=True)
+        with suppress(Exception):
+            cover = f'https:{info_box.find("img")["data-src"]}'
+        with suppress(Exception):
+            title = info_box.find('div', {'class': 'name box'}).find('h1').get_text(strip=True)
+        with suppress(Exception):
+            alternative = info_box.find('div', {'class': 'name box'}).find('h2').get_text(strip=True)
+        with suppress(Exception):
+            summary = soup.find('div', {'class': 'section box mt-1 summary'}).find('p').get_text(strip=True)
+        with suppress(Exception):
+            rating = float(soup.find('span', {'class': 'score'}).contents[-1].strip())
+        with suppress(Exception):
+            status = info_box.find('div', {'class': 'post-status'}).find_all('div', {'class': 'summary-content'})[1].get_text(strip=True)
         for box in soup.find('div', {'class': 'meta box mt-1 p-10'}).find_all('p'):
             if 'Author' in box.get_text(strip=True):
                 authors = [a.get_text(strip=True) for a in box.find_all('a')]
@@ -64,7 +70,7 @@ class Toonily_Me(Manga):
 
     def search_by_keyword(keyword, absolute):
         from contextlib import suppress
-        template = f'https://toonily.me/search?q={keyword}&page=P_P_P_P' if keyword else f'https://toonily.me/az-list?page=P_P_P_P'
+        template = f'https://toonily.me/search?q={keyword}&page=P_P_P_P' if keyword else 'https://toonily.me/az-list?page=P_P_P_P'
         page = 1
         session = None
         while True:
@@ -79,9 +85,12 @@ class Toonily_Me(Manga):
                 if absolute and keyword.lower() not in ti['title'].lower():
                     continue
                 latest_chapter, genres, summary = '', '', ''
-                with suppress(Exception): latest_chapter = manga.find('span', {'class': 'latest-chapter'})['title']
-                with suppress(Exception): genres = manga.find('div', {'class': 'genres'}).get_text(strip=True, separator=', ')
-                with suppress(Exception): summary = manga.find('div', {'class': 'summary'}).get_text(strip=True)
+                with suppress(Exception):
+                    latest_chapter = manga.find('span', {'class': 'latest-chapter'})['title']
+                with suppress(Exception):
+                    genres = manga.find('div', {'class': 'genres'}).get_text(strip=True, separator=', ')
+                with suppress(Exception):
+                    summary = manga.find('div', {'class': 'summary'}).get_text(strip=True)
                 results[ti['title']] = {
                     'domain': Toonily_Me.domain,
                     'url': ti['href'].split('/')[-1],

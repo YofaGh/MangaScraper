@@ -11,14 +11,20 @@ class Omegascans(Manga):
         response, _ = Omegascans.send_request(f'https://omegascans.org/series/{manga}')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, summary, release_year, authors = 6 * ['']
-        with suppress(Exception): 
+        with suppress(Exception):
+
             cover = unquote(soup.find('div', {'class': 'lg:absolute flex flex-col items-center justify-center gap-y-2 w-full'}).find('img')['src'].replace('/_next/image?url=', ''))
-        with suppress(Exception): title = soup.find('div', {'class': 'col-span-12 lg:col-span-9'}).find('h1').get_text(strip=True)
-        with suppress(Exception): alternative = soup.find('div', {'class': 'col-span-12 lg:col-span-9'}).find('p').get_text(strip=True)
-        with suppress(Exception): summary = soup.find('div', {'class': 'bg-gray-800 text-gray-50 rounded-xl p-5'}).get_text(strip=True)
-        with suppress(Exception): 
+        with suppress(Exception):
+            title = soup.find('div', {'class': 'col-span-12 lg:col-span-9'}).find('h1').get_text(strip=True)
+        with suppress(Exception):
+            alternative = soup.find('div', {'class': 'col-span-12 lg:col-span-9'}).find('p').get_text(strip=True)
+        with suppress(Exception):
+            summary = soup.find('div', {'class': 'bg-gray-800 text-gray-50 rounded-xl p-5'}).get_text(strip=True)
+        with suppress(Exception):
+
             authors = soup.find('div', {'class': 'flex flex-col gap-y-2'}).find(lambda t: t.name == 'p' and 'Author' in t.text).find('strong').get_text(strip=True)
-        with suppress(Exception): 
+        with suppress(Exception):
+
             release_year = soup.find('div', {'class': 'flex flex-col gap-y-2'}).find(lambda t: t.name == 'p' and 'Release' in t.text).find('strong').get_text(strip=True)
         return {
             'Cover': cover,
@@ -54,7 +60,7 @@ class Omegascans(Manga):
         data = {'adult': 'true', 'query_string': keyword, 'page': 1}
         session = None
         while True:
-            response, session = Omegascans.send_request(f'https://api.omegascans.org/query', session=session, params=data)
+            response, session = Omegascans.send_request('https://api.omegascans.org/query', session=session, params=data)
             mangas = response.json()['data']
             results = {}
             if not mangas:
@@ -63,11 +69,16 @@ class Omegascans(Manga):
                 if absolute and keyword.lower() not in manga['title'].lower():
                     continue
                 summary, type, alternative, chapters_count, latest_chapter = '', '', '', '', ''
-                with suppress(Exception): summary = manga['description']
-                with suppress(Exception): type = manga['series_type']
-                with suppress(Exception): alternative = manga['alternative_names']
-                with suppress(Exception): chapters_count = manga['meta']['chapters_count']
-                with suppress(Exception): latest_chapter = manga['latest_chapter']['chapter_slug']
+                with suppress(Exception):
+                    summary = manga['description']
+                with suppress(Exception):
+                    type = manga['series_type']
+                with suppress(Exception):
+                    alternative = manga['alternative_names']
+                with suppress(Exception):
+                    chapters_count = manga['meta']['chapters_count']
+                with suppress(Exception):
+                    latest_chapter = manga['latest_chapter']['chapter_slug']
                 results[manga['title']] = {
                     'domain': Omegascans.domain,
                     'url': manga['series_slug'],

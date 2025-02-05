@@ -1,4 +1,8 @@
-import argparse, platform, settings, sys, os
+import argparse
+import platform
+import settings
+import sys
+import os
 
 class SetChapters(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
@@ -57,7 +61,8 @@ if args.task in ('manga', 'doujin', 'search', 'db') and not args.file:
 if (args.single or args.task == 'db') and len(args.s) > 1:
     parser.error('please specify one module using -s argument.\nyou can only set one module when downloading or getting database.')
 
-if platform.system() == 'Windows': os.system('color')
+if platform.system() == 'Windows':
+    os.system('color')
 
 match args.task:
     case 'manga':

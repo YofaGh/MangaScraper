@@ -12,13 +12,20 @@ class Mangapill(Manga):
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, summary, status, genres, typee, year = 7 * ['']
         info_box = soup.find('div', {'class': 'grid grid-cols-1 md:grid-cols-3 gap-3 mb-3'}).find_all('div', recursive=False)
-        with suppress(Exception): cover = soup.find('img')['data-src']
-        with suppress(Exception): title = soup.find('h1').get_text(strip=True)
-        with suppress(Exception): summary = soup.find('p').get_text(strip=True)
-        with suppress(Exception): typee = info_box[0].find('div').get_text(strip=True)
-        with suppress(Exception): status = info_box[1].find('div').get_text(strip=True)
-        with suppress(Exception): year = info_box[2].find('div').get_text(strip=True)
-        with suppress(Exception): genres = [a.get_text(strip=True) for a in soup.find('div', {'class': 'flex flex-col'}).find_all('a')]
+        with suppress(Exception):
+            cover = soup.find('img')['data-src']
+        with suppress(Exception):
+            title = soup.find('h1').get_text(strip=True)
+        with suppress(Exception):
+            summary = soup.find('p').get_text(strip=True)
+        with suppress(Exception):
+            typee = info_box[0].find('div').get_text(strip=True)
+        with suppress(Exception):
+            status = info_box[1].find('div').get_text(strip=True)
+        with suppress(Exception):
+            year = info_box[2].find('div').get_text(strip=True)
+        with suppress(Exception):
+            genres = [a.get_text(strip=True) for a in soup.find('div', {'class': 'flex flex-col'}).find_all('a')]
         return {
             'Cover': cover,
             'Title': title,
@@ -66,9 +73,12 @@ class Mangapill(Manga):
                     continue
                 typee, status, year = '', '', ''
                 info = manga.find('div', {'class': 'flex flex-wrap gap-1 mt-1'}).find_all('div')
-                with suppress(Exception): typee = info[0].get_text(strip=True)
-                with suppress(Exception): year = info[1].get_text(strip=True)
-                with suppress(Exception): status = info[2].get_text(strip=True)
+                with suppress(Exception):
+                    typee = info[0].get_text(strip=True)
+                with suppress(Exception):
+                    year = info[1].get_text(strip=True)
+                with suppress(Exception):
+                    status = info[2].get_text(strip=True)
                 results[ti.get_text(strip=True)] = {
                     'domain': Mangapill.domain,
                     'url': ti['href'].replace('/manga/', ''),
@@ -98,8 +108,10 @@ class Mangapill(Manga):
                     ti = manga.find('a', {'class': 'mb-2'})
                     typee, year = '', ''
                     info = manga.find('div', {'class': 'flex flex-wrap gap-1 mt-1'}).find_all('div')
-                    with suppress(Exception): typee = info[0].get_text(strip=True)
-                    with suppress(Exception): year = info[1].get_text(strip=True)
+                    with suppress(Exception):
+                        typee = info[0].get_text(strip=True)
+                    with suppress(Exception):
+                        year = info[1].get_text(strip=True)
                     results[ti.get_text(strip=True)] = {
                         'domain': Mangapill.domain,
                         'url': ti['href'].replace('/manga/', ''),

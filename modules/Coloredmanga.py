@@ -12,16 +12,21 @@ class Coloredmanga(Manga):
         cover, title, alternative, rating, status = 5 * ['']
         extras = {}
         info_box = soup.find('div', {'class': 'tab-summary'})
-        with suppress(Exception): cover = info_box.find('img')['src']
-        with suppress(Exception): title = soup.find('div', {'class': 'post-title'}).find('h1').get_text(strip=True)
-        with suppress(Exception): rating = float(info_box.find('div', {'class': 'post-total-rating'}).find('span').get_text(strip=True))
+        with suppress(Exception):
+            cover = info_box.find('img')['src']
+        with suppress(Exception):
+            title = soup.find('div', {'class': 'post-title'}).find('h1').get_text(strip=True)
+        with suppress(Exception):
+            rating = float(info_box.find('div', {'class': 'post-total-rating'}).find('span').get_text(strip=True))
         for box in soup.find('div', {'class': 'post-content'}).find_all('div', {'class': 'post-content_item'}):
             if 'Rating' in box.get_text(strip=True):
                 continue
             elif 'Alternative' in box.get_text(strip=True):
-                with suppress(Exception): alternative = box.find('div', {'class': 'summary-content'}).get_text(strip=True)
+                with suppress(Exception):
+                    alternative = box.find('div', {'class': 'summary-content'}).get_text(strip=True)
             elif 'Status' in box.get_text(strip=True):
-                with suppress(Exception): status = box.find('div', {'class': 'summary-content'}).get_text(strip=True)
+                with suppress(Exception):
+                    status = box.find('div', {'class': 'summary-content'}).get_text(strip=True)
             else:
                 heading = box.find('div', {'class': 'summary-heading'}).get_text(strip=True).replace('(s)', '')
                 info = box.find('div', {'class': 'summary-content'})
@@ -88,8 +93,10 @@ class Coloredmanga(Manga):
                             status = content.find('div', {'class': 'summary-content'}).get_text(strip=True)
                         if 'Release' in content.text:
                             release_date = content.find('div', {'class': 'summary-content'}).get_text(strip=True)
-                with suppress(Exception): latest_chapter = manga.find('span', {'class': 'font-meta chapter'}).find('a')['href'].split('/')[-2]
-                with suppress(Exception): thumbnail = manga.find('img')['src']
+                with suppress(Exception):
+                    latest_chapter = manga.find('span', {'class': 'font-meta chapter'}).find('a')['href'].split('/')[-2]
+                with suppress(Exception):
+                    thumbnail = manga.find('img')['src']
                 results[tilink.get_text(strip=True)] = {
                     'domain': Coloredmanga.domain,
                     'url': tilink.find('a')['href'].replace('https://coloredmanga.com/mangas/','')[:-1],
@@ -127,5 +134,5 @@ class Coloredmanga(Manga):
         new_name = new_name.rstrip('.')
         try:
             return f'{beginner} {int(new_name):03d}'
-        except:
+        except ValueError:
             return f'{beginner} {new_name.split(".", 1)[0].zfill(3)}.{new_name.split(".", 1)[1]}'

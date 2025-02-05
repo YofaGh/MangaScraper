@@ -16,11 +16,16 @@ class Daycomics(Manga):
         cover, title, summary = '', '', ''
         info_box = soup.find('div', {'class': 'inner_ch'})
         extras = {}
-        with suppress(Exception): cover = info_box['style'].split("url('")[1].split("')")[0]
-        with suppress(Exception): title = info_box.find('h2', {'class': 'episode-title'}).get_text(strip=True)
-        with suppress(Exception): summary = info_box.find('div', {'class': 'title_content'}).find_all('h2')[-1].get_text(strip=True)
-        with suppress(Exception): extras['Genres'] = [genre.strip() for genre in info_box.find('p', {'class': 'type_box'}).find('span', {'class': 'type'}).get_text(strip=True).split(' / ')]
-        with suppress(Exception): extras['Authors'] = info_box.find('p', {'class': 'type_box'}).find('span', {'class': 'writer'}).get_text(strip=True)
+        with suppress(Exception):
+            cover = info_box['style'].split("url('")[1].split("')")[0]
+        with suppress(Exception):
+            title = info_box.find('h2', {'class': 'episode-title'}).get_text(strip=True)
+        with suppress(Exception):
+            summary = info_box.find('div', {'class': 'title_content'}).find_all('h2')[-1].get_text(strip=True)
+        with suppress(Exception):
+            extras['Genres'] = [genre.strip() for genre in info_box.find('p', {'class': 'type_box'}).find('span', {'class': 'type'}).get_text(strip=True).split(' / ')]
+        with suppress(Exception):
+            extras['Authors'] = info_box.find('p', {'class': 'type_box'}).find('span', {'class': 'writer'}).get_text(strip=True)
         return {
             'Cover': cover,
             'Title': title,
@@ -67,9 +72,12 @@ class Daycomics(Manga):
                 if absolute and keyword.lower() not in ti.lower():
                     continue
                 status, authors, genres = '', '', ''
-                with suppress(Exception): status = 'Finished' if 'End' in manga.find('p', {'class': 'ico-box'}).get_text(strip=True) else 'Ongoing'
-                with suppress(Exception): authors = manga.find('p', {'class': 'writer'}).get_text(strip=True)
-                with suppress(Exception): genres = [genre.get_text(strip=True) for genre in manga.find('p', {'class': 'etc'}).find_all('span')]
+                with suppress(Exception):
+                    status = 'Finished' if 'End' in manga.find('p', {'class': 'ico-box'}).get_text(strip=True) else 'Ongoing'
+                with suppress(Exception):
+                    authors = manga.find('p', {'class': 'writer'}).get_text(strip=True)
+                with suppress(Exception):
+                    genres = [genre.get_text(strip=True) for genre in manga.find('p', {'class': 'etc'}).find_all('span')]
                 results[ti] = {
                     'domain': Daycomics.domain,
                     'url': manga.find('a')['href'].replace('https://daycomics.me/en/', '')[:-5],

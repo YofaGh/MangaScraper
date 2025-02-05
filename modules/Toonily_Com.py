@@ -13,12 +13,18 @@ class Toonily_Com(Manga):
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, summary, rating, status, authors, artists, genres, tags = 10 * ['']
         info_box = soup.find('div', {'class': 'tab-summary'})
-        with suppress(Exception): cover = info_box.find('img')['data-src']
-        with suppress(Exception): title = info_box.find('div', {'class': 'post-title'}).find('h1').contents[0].strip()
-        with suppress(Exception): summary = soup.find('div', {'class': 'summary__content'}).get_text(strip=True)
-        with suppress(Exception): rating = float(soup.find('span', {'id': 'averagerate'}).get_text(strip=True))
-        with suppress(Exception): status = info_box.find('div', {'class': 'post-status'}).find_all('div', {'class': 'summary-content'})[1].get_text(strip=True)
-        with suppress(Exception): tags = [tag.get_text(strip=True).replace('#', '') for tag in soup.find('div', {'class': 'wp-manga-tags-list'}).find_all('a')]
+        with suppress(Exception):
+            cover = info_box.find('img')['data-src']
+        with suppress(Exception):
+            title = info_box.find('div', {'class': 'post-title'}).find('h1').contents[0].strip()
+        with suppress(Exception):
+            summary = soup.find('div', {'class': 'summary__content'}).get_text(strip=True)
+        with suppress(Exception):
+            rating = float(soup.find('span', {'id': 'averagerate'}).get_text(strip=True))
+        with suppress(Exception):
+            status = info_box.find('div', {'class': 'post-status'}).find_all('div', {'class': 'summary-content'})[1].get_text(strip=True)
+        with suppress(Exception):
+            tags = [tag.get_text(strip=True).replace('#', '') for tag in soup.find('div', {'class': 'wp-manga-tags-list'}).find_all('a')]
         for box in soup.find('div', {'class': 'manga-info-row'}).find_all('div', {'class': 'post-content_item'}):
             if 'Alt Name' in box.get_text(strip=True):
                 alternative = box.find('div', {'class': 'summary-content'}).get_text(strip=True)
@@ -64,7 +70,7 @@ class Toonily_Com(Manga):
 
     def search_by_keyword(keyword, absolute):
         from requests.exceptions import HTTPError
-        template = f'https://toonily.com/search/{keyword}/page/P_P_P_P/' if keyword else f'https://toonily.com/search/page/P_P_P_P/'
+        template = f'https://toonily.com/search/{keyword}/page/P_P_P_P/' if keyword else 'https://toonily.com/search/page/P_P_P_P/'
         page = 1
         session = None
         while True:

@@ -1,4 +1,6 @@
-import requests, json, os
+import requests
+import json
+import os
 from bs4 import BeautifulSoup
 from contextlib import suppress
 from utils.logger import log_over, log
@@ -34,7 +36,8 @@ def iqdb(url: str) -> list[dict[str, str]]:
     divs = [div for div in soup.find('div', {'id': 'pages'}).find_all('div') if 'Your image' not in div.text]
     results = []
     for div in divs:
-        with suppress(Exception): 
+        with suppress(Exception):
+
             td = div.find('td', {'class': 'image'})
             td_url = td.find('a')['href']
             if 'https:' not in td_url:
@@ -53,7 +56,8 @@ def saucenao(url: str) -> list[dict[str, str]]:
     for div in divs:
         if 'Low similarity results have been hidden' in div.text:
             break
-        with suppress(Exception): results.append({'url': div.find('div', {'class': 'resultimage'}).find('a')['href'], 'image': None})
+        with suppress(Exception):
+            results.append({'url': div.find('div', {'class': 'resultimage'}).find('a')['href'], 'image': None})
     return results
 
 def sauce_file(path_to_file: str) -> str:
@@ -73,7 +77,8 @@ def sauce_url(url: str) -> None:
     for site in sites:
         temp_results = []
         log_over(f'\r{site.__name__}: searching image')
-        with suppress(Exception): temp_results = site(url)
+        with suppress(Exception):
+            temp_results = site(url)
         log(f'\r{site.__name__}: {len(temp_results)} results were found.', 'green' if temp_results else 'yellow')
         if temp_results:
             results[site.__name__] = temp_results

@@ -13,13 +13,20 @@ class Mangapark(Manga):
         cover, title, alternative, summary, status, rating = 6 * ['']
         info_box = soup.find('div', {'class': 'flex flex-col md:flex-row'})
         extras = {}
-        with suppress(Exception): cover = info_box.find('img')['src']
-        with suppress(Exception): title = info_box.find('h3').get_text(strip=True)
-        with suppress(Exception): alternative = info_box.find('div', {'q:key': 'tz_2'}).get_text(strip=True)
-        with suppress(Exception): summary = info_box.find('div', {'class': 'limit-html prose lg:prose-lg'}).get_text(strip=True)
-        with suppress(Exception): status = info_box.find('span', {'q:key': 'Yn_5'}).get_text(strip=True)
-        with suppress(Exception): extras['Genres'] = [a.get_text(strip=True) for a in info_box.find_all('span', {'q:key': 'kd_0'})]
-        with suppress(Exception): rating = float(info_box.find('span', {'q:key': 'lt_0'}).get_text(strip=True))
+        with suppress(Exception):
+            cover = info_box.find('img')['src']
+        with suppress(Exception):
+            title = info_box.find('h3').get_text(strip=True)
+        with suppress(Exception):
+            alternative = info_box.find('div', {'q:key': 'tz_2'}).get_text(strip=True)
+        with suppress(Exception):
+            summary = info_box.find('div', {'class': 'limit-html prose lg:prose-lg'}).get_text(strip=True)
+        with suppress(Exception):
+            status = info_box.find('span', {'q:key': 'Yn_5'}).get_text(strip=True)
+        with suppress(Exception):
+            extras['Genres'] = [a.get_text(strip=True) for a in info_box.find_all('span', {'q:key': 'kd_0'})]
+        with suppress(Exception):
+            rating = float(info_box.find('span', {'q:key': 'lt_0'}).get_text(strip=True))
         return {
             'Cover': cover,
             'Title': title,
@@ -67,10 +74,14 @@ class Mangapark(Manga):
                 name = manga.find('h3').get_text(strip=True)
                 url = manga.find('h3').find('a')['href'].split('/')[-1]
                 authors, alternatives, genres, latest_chapter = '', '', '', ''
-                with suppress(Exception): authors = ', '.join(manga.find('div', {'q:key': '6N_0'}).get_text(strip=True).split('/'))
-                with suppress(Exception): alternatives = ', '.join(manga.find('div', {'q:key': 'lA_0'}).get_text(strip=True).split('/'))
-                with suppress(Exception): genres = ', '.join(manga.find('div', {'q:key': 'HB_9'}).get_text(strip=True).split(','))
-                with suppress(Exception): latest_chapter = manga.find('div', {'q:key': 'R7_8'}).find('a')['href'].split('/')[-1]
+                with suppress(Exception):
+                    authors = ', '.join(manga.find('div', {'q:key': '6N_0'}).get_text(strip=True).split('/'))
+                with suppress(Exception):
+                    alternatives = ', '.join(manga.find('div', {'q:key': 'lA_0'}).get_text(strip=True).split('/'))
+                with suppress(Exception):
+                    genres = ', '.join(manga.find('div', {'q:key': 'HB_9'}).get_text(strip=True).split(','))
+                with suppress(Exception):
+                    latest_chapter = manga.find('div', {'q:key': 'R7_8'}).find('a')['href'].split('/')[-1]
                 if absolute and keyword.lower() not in name.lower():
                     continue
                 results[name] = {

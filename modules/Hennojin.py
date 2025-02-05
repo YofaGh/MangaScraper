@@ -13,9 +13,12 @@ class Hennojin(Doujin):
         cover, title, alternative = 3 * ['']
         info_box = soup.find('div', {'class': 'col-lg-9'})
         extras = {}
-        with suppress(Exception): cover = soup.find('div', {'class': 'manga-thumbnail'}).find('img')['src']
-        with suppress(Exception): title = soup.find('h3', {'class', 'manga-title'}).contents[0]
-        with suppress(Exception): alternative = soup.find('h3', {'class', 'manga-title'}).contents[-1].strip()
+        with suppress(Exception):
+            cover = soup.find('div', {'class': 'manga-thumbnail'}).find('img')['src']
+        with suppress(Exception):
+            title = soup.find('h3', {'class', 'manga-title'}).contents[0]
+        with suppress(Exception):
+            alternative = soup.find('h3', {'class', 'manga-title'}).contents[-1].strip()
         for box in info_box.find('p', {'data-pm-slice': '1 1 []'}).get_text().split('\n'):
             extras[box.split(': ')[0]] = box.split(': ')[1]
         attr, lis = None, []
@@ -55,7 +58,7 @@ class Hennojin(Doujin):
         wpnonce = soup.find('input', {'id': '_wpnonce'})['value']
         data = {'action': 'post_grid_ajax_search_free', 'grid_id': '23', 'current_page': 1, 'formData': f'keyword={keyword}&_wpnonce={wpnonce}'}
         while True:
-            response, session = Hennojin.send_request(f'https://hennojin.com/home/wp-admin/admin-ajax.php', method='POST', session=session, data=data)
+            response, session = Hennojin.send_request('https://hennojin.com/home/wp-admin/admin-ajax.php', method='POST', session=session, data=data)
             response = response.json().get('html')
             if not response:
                 yield {}

@@ -18,13 +18,19 @@ class E_Hentai(Doujin):
             info.find('td').get_text(strip=True)[:-1]: info.find('td', {'class': 'gdt2'}).get_text(strip=True)
         for info in box.find('div', {'id': 'gdd'}).find_all('tr')}
         extras = {}
-        with suppress(Exception): cover = soup.find('div', {'id': 'gd1'}).find('div')['style'].split('url(')[1].split(')')[0]
-        with suppress(Exception): title = box.find('h1').get_text(strip=True)
-        with suppress(Exception): extras['Size'] = infos['File Size']
-        with suppress(Exception): pages = infos['Length'].replace(' pages', '')
-        with suppress(Exception): rating = float(box.find('td', {'id': 'rating_label'}).get_text(strip=True).replace('Average:', ''))
+        with suppress(Exception):
+            cover = soup.find('div', {'id': 'gd1'}).find('div')['style'].split('url(')[1].split(')')[0]
+        with suppress(Exception):
+            title = box.find('h1').get_text(strip=True)
+        with suppress(Exception):
+            extras['Size'] = infos['File Size']
+        with suppress(Exception):
+            pages = infos['Length'].replace(' pages', '')
+        with suppress(Exception):
+            rating = float(box.find('td', {'id': 'rating_label'}).get_text(strip=True).replace('Average:', ''))
         for bx in box.find('div', {'id': 'taglist'}).find_all('tr'):
-            with suppress(Exception): extras[bx.find('td').get_text(strip=True)] = [link.get_text(strip=True) for link in bx.find_all('div')]
+            with suppress(Exception):
+                extras[bx.find('td').get_text(strip=True)] = [link.get_text(strip=True) for link in bx.find_all('div')]
         return {
             'Cover': cover,
             'Title': title,

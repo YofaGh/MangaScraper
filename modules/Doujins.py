@@ -12,13 +12,20 @@ class Doujins(Doujin):
         response, _ = Doujins.send_request(f'https://doujins.com/{code}')
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, tags, artists, pages, translated_by, uploaded = 7 * ['']
-        with suppress(Exception): cover = soup.find('img', {'class': 'doujin active'})['data-file'].replace('&amp;', '&')
-        with suppress(Exception): title = soup.find('div', {'class', 'folder-title'}).find_all('a')[-1].get_text(strip=True)
-        with suppress(Exception): artists = [a.get_text(strip=True) for a in soup.find('div', {'class': 'gallery-artist'}).find_all('a')]
-        with suppress(Exception): tags = [a.get_text(strip=True) for a in soup.find('li', {'class': 'tag-area'}).find_all('a')]
-        with suppress(Exception): pages = soup.find_all('div', {'class': 'folder-message'})[1].get_text(strip=True).split('•')[-1].replace('images', '').strip()
-        with suppress(Exception): uploaded = soup.find_all('div', {'class': 'folder-message'})[1].get_text(strip=True).split('•')[0].strip()
-        with suppress(Exception): translated_by = soup.find('div', {'class': 'folder-message'}).get_text(strip=True).replace('Translated by: ', '')
+        with suppress(Exception):
+            cover = soup.find('img', {'class': 'doujin active'})['data-file'].replace('&amp;', '&')
+        with suppress(Exception):
+            title = soup.find('div', {'class', 'folder-title'}).find_all('a')[-1].get_text(strip=True)
+        with suppress(Exception):
+            artists = [a.get_text(strip=True) for a in soup.find('div', {'class': 'gallery-artist'}).find_all('a')]
+        with suppress(Exception):
+            tags = [a.get_text(strip=True) for a in soup.find('li', {'class': 'tag-area'}).find_all('a')]
+        with suppress(Exception):
+            pages = soup.find_all('div', {'class': 'folder-message'})[1].get_text(strip=True).split('•')[-1].replace('images', '').strip()
+        with suppress(Exception):
+            uploaded = soup.find_all('div', {'class': 'folder-message'})[1].get_text(strip=True).split('•')[0].strip()
+        with suppress(Exception):
+            translated_by = soup.find('div', {'class': 'folder-message'}).get_text(strip=True).replace('Translated by: ', '')
         return {
             'Cover': cover,
             'Title': title,
@@ -59,7 +66,7 @@ class Doujins(Doujin):
             divs = soup.select('#content > div > div:nth-child(5)')[0]
             try:
                 divs.find_all('div', {'class': 'col-6 col-sm-4 col-md-3 col-lg-2 px-1'})[0].find('img')['srcset']
-            except:
+            except Exception:
                 divs = soup.select('#content > div > div:nth-child(4)')[0]
             doujins = divs.find_all('div', {'class': 'col-6 col-sm-4 col-md-3 col-lg-2 px-1'})
             if not doujins:
@@ -70,7 +77,8 @@ class Doujins(Doujin):
                 if absolute and keyword.lower() not in tilink.get_text(strip=True).lower():
                     continue
                 artist = ''
-                with suppress(Exception): artist = doujin.find_all(lambda tag:tag.name == 'div' and 'Artist: ' in tag.text)[-1].get_text(strip=True)
+                with suppress(Exception):
+                    artist = doujin.find_all(lambda tag:tag.name == 'div' and 'Artist: ' in tag.text)[-1].get_text(strip=True)
                 results[tilink.get_text(strip=True)] = {
                     'domain': Doujins.domain,
                     'code': tilink['href'][1:],

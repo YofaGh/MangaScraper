@@ -13,21 +13,30 @@ class Luscious(Doujin):
         cover, title, alternative, pages = 4 * ['']
         info_box = soup.find('div', {'class': 'album-info-wrapper'})
         extras, dates, tags = {}, {}, []
-        with suppress(Exception): cover = soup.find('div', {'class': 'picture-card-outer'}).find('img')['src']
-        with suppress(Exception): title = soup.find('h1', {'class': 'o-h1 album-heading'}).get_text(strip=True)
-        with suppress(Exception): alternative = info_box.find('h2').get_text(strip=True)
-        with suppress(Exception): extras['Language'] = info_box.find('a', {'class': 'language_flags-module__link--dp0Rr'}).get_text(strip=True)
+        with suppress(Exception):
+            cover = soup.find('div', {'class': 'picture-card-outer'}).find('img')['src']
+        with suppress(Exception):
+            title = soup.find('h1', {'class': 'o-h1 album-heading'}).get_text(strip=True)
+        with suppress(Exception):
+            alternative = info_box.find('h2').get_text(strip=True)
+        with suppress(Exception):
+            extras['Language'] = info_box.find('a', {'class': 'language_flags-module__link--dp0Rr'}).get_text(strip=True)
         for box in info_box.find_all('span', {'class': 'album-info-item'}):
             if 'pictures' in box.text:
-                with suppress(Exception): pages = box.get_text(strip=True).replace(' pictures', '')
+                with suppress(Exception):
+                    pages = box.get_text(strip=True).replace(' pictures', '')
             else:
-                with suppress(Exception): dates[box.find('strong').get_text(strip=True)] = datetime.strptime(box.contents[-1], '%B %dth, %Y').strftime('%Y-%m-%d %H:%M:%S')
+                with suppress(Exception):
+                    dates[box.find('strong').get_text(strip=True)] = datetime.strptime(box.contents[-1], '%B %dth, %Y').strftime('%Y-%m-%d %H:%M:%S')
         for box in info_box.find_all('div', {'class': 'album-info-item'}):
-            with suppress(Exception): extras[box.find('strong').get_text(strip=True)[:-1]] = [a.get_text(strip=True) for a in box.find_all('a')]
+            with suppress(Exception):
+                extras[box.find('strong').get_text(strip=True)[:-1]] = [a.get_text(strip=True) for a in box.find_all('a')]
         for box in info_box.find_all('div', {'class': 'o-tag--category'}):
-            with suppress(Exception): extras[box.find('strong').get_text(strip=True)[:-1]] = [a.get_text(strip=True) for a in box.find_all('a')]
+            with suppress(Exception):
+                extras[box.find('strong').get_text(strip=True)[:-1]] = [a.get_text(strip=True) for a in box.find_all('a')]
         for box in info_box.find_all('div', {'class': 'o-tag--secondary'}):
-            with suppress(Exception): tags.append(box.contents[0])
+            with suppress(Exception):
+                tags.append(box.contents[0])
         extras['Album Description'] = soup.find('div', {'class': 'album-description'}).get_text(strip=True)
         extras['Tags'] = tags
         return {
@@ -76,8 +85,10 @@ class Luscious(Doujin):
             results = {}
             for doujin in doujins:
                 tags, genres = '', ''
-                with suppress(Exception): tags = ', '.join([tag['text'] for tag in doujin['tags']])
-                with suppress(Exception): genres = ', '.join([tag['title'] for tag in doujin['genres']])
+                with suppress(Exception):
+                    tags = ', '.join([tag['text'] for tag in doujin['tags']])
+                with suppress(Exception):
+                    genres = ', '.join([tag['title'] for tag in doujin['genres']])
                 if absolute and keyword.lower() not in doujin['title'].lower():
                     continue
                 results[doujin['title']] = {

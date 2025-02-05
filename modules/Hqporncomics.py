@@ -14,10 +14,14 @@ class Hqporncomics(Doujin):
         extras = {}
         images = soup.find('div', {'id': 'block-image-slide'}).find_all('img')
         images = [image['data-src'] for image in images[::2]]
-        with suppress(Exception): cover = images[0]
-        with suppress(Exception): title = soup.find('h1', {'class': 'block-name-comix'}).get_text(strip=True).strip('Porn comic ')
-        with suppress(Exception): pages = len(images)
-        with suppress(Exception): summary = soup.find('div', {'class': 'mini-description'}).get_text(strip=True)
+        with suppress(Exception):
+            cover = images[0]
+        with suppress(Exception):
+            title = soup.find('h1', {'class': 'block-name-comix'}).get_text(strip=True).strip('Porn comic ')
+        with suppress(Exception):
+            pages = len(images)
+        with suppress(Exception):
+            summary = soup.find('div', {'class': 'mini-description'}).get_text(strip=True)
         extras_raw = soup.find_all('div', {'class': 'category-spisok'})
         for extra_raw in extras_raw:
             with suppress(Exception): 

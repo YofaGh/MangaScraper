@@ -1,4 +1,5 @@
-import textwrap, os
+import textwrap
+import os
 from requests.exceptions import HTTPError, Timeout
 from utils.models import Doujin
 from utils.logger import log, log_over

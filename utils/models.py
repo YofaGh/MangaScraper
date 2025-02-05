@@ -19,7 +19,7 @@ class Module:
                 return response, session
             except (requests.exceptions.HTTPError, requests.exceptions.Timeout) as error:
                 raise error
-            except requests.exceptions.RequestException as error:
+            except requests.exceptions.RequestException:
                 waiter()
 
     @classmethod
@@ -29,7 +29,7 @@ class Module:
             with open(image_name, 'wb') as image:
                 image.write(response.content)
                 return image_name
-        except:
+        except Exception:
             return None
 
     def get_info() -> dict:
@@ -58,7 +58,7 @@ class Manga(Module):
         new_name = new_name.rstrip('.')
         try:
             return f'Chapter {int(new_name):03d}'
-        except:
+        except ValueError:
             return f'Chapter {new_name.split(".", 1)[0].zfill(3)}.{new_name.split(".", 1)[1]}'
 
 class Doujin(Module):

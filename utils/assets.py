@@ -5,7 +5,7 @@ def validate_corrupted_image(path_to_image: str) -> bool:
     try:
         Image.open(path_to_image).verify()
         return True
-    except:
+    except Exception:
         return False
 
 def validate_truncated_image(path_to_image: str) -> bool:
@@ -13,7 +13,7 @@ def validate_truncated_image(path_to_image: str) -> bool:
     try:
         Image.open(path_to_image).load()
         return True
-    except:
+    except Exception:
         return False
 
 def load_modules_yaml_file() -> dict:

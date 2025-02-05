@@ -12,13 +12,20 @@ class Bato(Manga):
         cover, title, alternative, summary, rating, status = 6 * ['']
         info_box = soup.find('div', {'class': 'flex flex-col md:flex-row'})
         extras = {}
-        with suppress(Exception): cover = info_box.find('img')['src']
-        with suppress(Exception): title = info_box.find('h3').get_text(strip=True)
-        with suppress(Exception): alternative = info_box.find('div', {'class': 'mt-1 text-xs md:text-base opacity-80'}).get_text(strip=True)
-        with suppress(Exception): summary = info_box.find('div', {'class': 'relative w-full'}).find('astro-island').get_text(strip=True)
-        with suppress(Exception): rating = float(soup.find('span', {'class': 'font-black text-[2.0rem] md:text-[2.5rem] text-yellow-500'}).get_text(strip=True))/2
-        with suppress(Exception): status = info_box.find(lambda tag: 'Status' in tag.text).find('i').get_text(strip=True)
-        with suppress(Exception): extras['By'] = [a.get_text(strip=True) for a in info_box.find('div', {'class': 'mt-2 text-sm md:text-base opacity-80'}).find_all('a')]
+        with suppress(Exception):
+            cover = info_box.find('img')['src']
+        with suppress(Exception):
+            title = info_box.find('h3').get_text(strip=True)
+        with suppress(Exception):
+            alternative = info_box.find('div', {'class': 'mt-1 text-xs md:text-base opacity-80'}).get_text(strip=True)
+        with suppress(Exception):
+            summary = info_box.find('div', {'class': 'relative w-full'}).find('astro-island').get_text(strip=True)
+        with suppress(Exception):
+            rating = float(soup.find('span', {'class': 'font-black text-[2.0rem] md:text-[2.5rem] text-yellow-500'}).get_text(strip=True))/2
+        with suppress(Exception):
+            status = info_box.find(lambda tag: 'Status' in tag.text).find('i').get_text(strip=True)
+        with suppress(Exception):
+            extras['By'] = [a.get_text(strip=True) for a in info_box.find('div', {'class': 'mt-2 text-sm md:text-base opacity-80'}).find_all('a')]
         with suppress(Exception): 
             extras['Genres'] = [f.find('span').get_text(strip=True) for f in info_box.find('div', {'class': 'flex items-center flex-wrap'}).find_all('span', recursive=False)]
         return {
@@ -72,9 +79,12 @@ class Bato(Manga):
                 if absolute and keyword.lower() not in ti.get_text(strip=True).lower():
                     continue
                 alias, genres, latest_chapter = '', '', ''
-                with suppress(Exception): alias = manga.find('div', {'data-hk': f'0-0-3-{index}-4-0'}).get_text(strip=True)
-                with suppress(Exception): genres = manga.find('div', {'data-hk': f'0-0-3-{index}-6-0'}).get_text(strip=True)
-                with suppress(Exception): latest_chapter = manga.find('div', {'data-hk': f'0-0-3-{index}-7-1-0-0'}).find('a')['href'].split('/')[-1]
+                with suppress(Exception):
+                    alias = manga.find('div', {'data-hk': f'0-0-3-{index}-4-0'}).get_text(strip=True)
+                with suppress(Exception):
+                    genres = manga.find('div', {'data-hk': f'0-0-3-{index}-6-0'}).get_text(strip=True)
+                with suppress(Exception):
+                    latest_chapter = manga.find('div', {'data-hk': f'0-0-3-{index}-7-1-0-0'}).find('a')['href'].split('/')[-1]
                 results[ti.get_text(strip=True)] = {
                     'domain': Bato.domain,
                     'url': ti['href'].replace('/title/', ''),
@@ -105,5 +115,5 @@ class Bato(Manga):
         new_name = new_name.rstrip('.')
         try:
             return f'Chapter {int(new_name):03d}'
-        except:
+        except ValueError:
             return f'Chapter {new_name.split(".", 1)[0].zfill(3)}.{new_name.split(".", 1)[1]}'

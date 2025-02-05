@@ -12,13 +12,19 @@ class Manhwa18(Manga):
         cover, title, alternative, summary, rating, status, latest_reading, views = 8 * ['']
         info_box = soup.find('main', {'class': 'section-body'})
         extras = {}
-        with suppress(Exception): cover = soup.find('meta', {'property': 'og:image'})['content']
-        with suppress(Exception): title = info_box.find('span', {'class': 'series-name'}).get_text(strip=True)
-        with suppress(Exception): summary = info_box.find('div', {'class': 'summary-content'}).get_text(strip=True)
-        with suppress(Exception): 
+        with suppress(Exception):
+            cover = soup.find('meta', {'property': 'og:image'})['content']
+        with suppress(Exception):
+            title = info_box.find('span', {'class': 'series-name'}).get_text(strip=True)
+        with suppress(Exception):
+            summary = info_box.find('div', {'class': 'summary-content'}).get_text(strip=True)
+        with suppress(Exception):
+
             rating = float(info_box.find_all('div', {'class': 'col-4 statistic-item'})[0].find('div', {'class': 'statistic-value'}).get_text(strip=True).replace('/5', ''))
-        with suppress(Exception): views = info_box.find_all('div', {'class': 'col-4 statistic-item'})[1].find('div', {'class': 'statistic-value'}).get_text(strip=True)
-        with suppress(Exception): latest_reading = info_box.find('time')['datetime']
+        with suppress(Exception):
+            views = info_box.find_all('div', {'class': 'col-4 statistic-item'})[1].find('div', {'class': 'statistic-value'}).get_text(strip=True)
+        with suppress(Exception):
+            latest_reading = info_box.find('time')['datetime']
         for box in info_box.find('div', {'class': 'series-information'}).find_all('div', {'class': 'info-item'}):
             if 'Other name' in box.text:
                 alternative = box.find('span', {'class': 'info-value'}).get_text(strip=True)
@@ -103,5 +109,5 @@ class Manhwa18(Manga):
         new_name = new_name.rstrip('.').rsplit('.', 1)[0]
         try:
             return f'Chapter {int(new_name):03d}'
-        except:
+        except ValueError:
             return f'Chapter {new_name.split(".", 1)[0].zfill(3)}.{new_name.split(".", 1)[1]}'

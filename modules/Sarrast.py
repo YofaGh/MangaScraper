@@ -10,14 +10,22 @@ class Sarrast(Manga):
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, summary, rating, status, chapters, posted_on, type = 8 * ['']
         info_boxes = soup.find('div', {'class': 'flex mt-4 w-full bg-black bg-opacity-70 py-4 rounded-2xl text-white'}).find_all('div', {'class': 'flex-1 text-center'})
-        with suppress(Exception): cover = f'https://sarrast.com/{soup.find("div", {"class": "flex-1"}).find("img")["src"]}'
-        with suppress(Exception): title = soup.find('h1', {'class': 'text-xl font-black mt-2'}).get_text(strip=True)
-        with suppress(Exception): summary = soup.find('p', {'class': 'mt-4 mb-2 text-sm'}).get_text(strip=True)
-        with suppress(Exception): rating = float(info_boxes[1].find('div').get_text(strip=True))
-        with suppress(Exception): status = info_boxes[2].find('div').get_text(strip=True)
-        with suppress(Exception): chapters = info_boxes[0].find('div').get_text(strip=True)
-        with suppress(Exception): posted_on = soup.find('div', {'id': 'postCreated'}).get_text(strip=True)
-        with suppress(Exception): type = soup.find('a', {'class': 'ml-2'}).get_text(strip=True)
+        with suppress(Exception):
+            cover = f'https://sarrast.com/{soup.find("div", {"class": "flex-1"}).find("img")["src"]}'
+        with suppress(Exception):
+            title = soup.find('h1', {'class': 'text-xl font-black mt-2'}).get_text(strip=True)
+        with suppress(Exception):
+            summary = soup.find('p', {'class': 'mt-4 mb-2 text-sm'}).get_text(strip=True)
+        with suppress(Exception):
+            rating = float(info_boxes[1].find('div').get_text(strip=True))
+        with suppress(Exception):
+            status = info_boxes[2].find('div').get_text(strip=True)
+        with suppress(Exception):
+            chapters = info_boxes[0].find('div').get_text(strip=True)
+        with suppress(Exception):
+            posted_on = soup.find('div', {'id': 'postCreated'}).get_text(strip=True)
+        with suppress(Exception):
+            type = soup.find('a', {'class': 'ml-2'}).get_text(strip=True)
         return {
             'Cover': cover,
             'Title': title,

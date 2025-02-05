@@ -56,9 +56,12 @@ class Nhentai_Com(Doujin):
                 if absolute and keyword.lower() not in doujin['title'].lower():
                     continue
                 category, language, tags = '', '', ''
-                with suppress(Exception): category = doujin['category']['name']
-                with suppress(Exception): language = doujin['language']['name']
-                with suppress(Exception): tags = ', '.join([tag['name'] for tag in doujin['tags']])
+                with suppress(Exception):
+                    category = doujin['category']['name']
+                with suppress(Exception):
+                    language = doujin['language']['name']
+                with suppress(Exception):
+                    tags = ', '.join([tag['name'] for tag in doujin['tags']])
                 results[doujin['title']] = {
                     'domain': Nhentai_Com.domain,
                     'code': doujin['slug'],

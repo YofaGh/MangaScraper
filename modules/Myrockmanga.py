@@ -20,13 +20,19 @@ class Myrockmanga(Manga):
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, summary, rating, status, genres = 7 * ['']
         extras = {}
-        with suppress(Exception): cover = soup.find('div', {'class': 'manga-top-img'}).find('img')['src']
-        with suppress(Exception): title = soup.find('h1', {'class': 'title text-lg-left'}).get_text(strip=True)
-        with suppress(Exception): 
+        with suppress(Exception):
+            cover = soup.find('div', {'class': 'manga-top-img'}).find('img')['src']
+        with suppress(Exception):
+            title = soup.find('h1', {'class': 'title text-lg-left'}).get_text(strip=True)
+        with suppress(Exception):
+
             alternative = soup.find('table').find(lambda tag: tag.name == 'tr' and not tag.find('th') and tag.find('td')).find('td').get_text(strip=True)
-        with suppress(Exception): summary = soup.find('div', {'class': 'summary'}).find('p').get_text(strip=True)
-        with suppress(Exception): rating = float(soup.find('div', {'class': 'rating'}).find('span').get_text(strip=True).replace('/ 10', ''))/2
-        with suppress(Exception): genres = [a.get_text(strip=True) for a in soup.find('div', {'class': 'genres'}).find_all('a')]
+        with suppress(Exception):
+            summary = soup.find('div', {'class': 'summary'}).find('p').get_text(strip=True)
+        with suppress(Exception):
+            rating = float(soup.find('div', {'class': 'rating'}).find('span').get_text(strip=True).replace('/ 10', ''))/2
+        with suppress(Exception):
+            genres = [a.get_text(strip=True) for a in soup.find('div', {'class': 'genres'}).find_all('a')]
         for box in soup.find('table').find_all(lambda tag: tag.name == 'tr' and tag.find('th') and tag.find('td')):
             if 'Status' in box.text:
                 status = box.find('td').get_text(strip=True)
@@ -85,9 +91,12 @@ class Myrockmanga(Manga):
                 if absolute and keyword.lower() not in ti['title'].lower():
                     continue
                 type, lang, latest_chapter = '', '', ''
-                with suppress(Exception): type = header.find_all('a')[1].get_text(strip=True)
-                with suppress(Exception): lang = header.find('img', {'class': 'flag'})['src'].split('/')[-1].split('.')[0]
-                with suppress(Exception): latest_chapter = manga.find('div', {'class': 'mdl-card__actions mdl-card--border'}).find('a')['href']
+                with suppress(Exception):
+                    type = header.find_all('a')[1].get_text(strip=True)
+                with suppress(Exception):
+                    lang = header.find('img', {'class': 'flag'})['src'].split('/')[-1].split('.')[0]
+                with suppress(Exception):
+                    latest_chapter = manga.find('div', {'class': 'mdl-card__actions mdl-card--border'}).find('a')['href']
                 results[ti['title']] = {
                     'domain': Myrockmanga.domain,
                     'url': ti['href'].replace('/manga-detail/', ''),
@@ -106,7 +115,7 @@ class Myrockmanga(Manga):
         data = 'Type=1&Page=P_P_P_P&Lang=all&Dir=NewPostedDate&filterCategory=All'
         session = None
         while True:
-            response, session = Myrockmanga.send_request(f'https://myrockmanga.com/Manga/Newest', session=session, method='POST', headers=Myrockmanga.get_db_headers, data=data.replace('P_P_P_P', str(page)), verify=False)
+            response, session = Myrockmanga.send_request('https://myrockmanga.com/Manga/Newest', session=session, method='POST', headers=Myrockmanga.get_db_headers, data=data.replace('P_P_P_P', str(page)), verify=False)
             soup = BeautifulSoup(response.text, 'html.parser')
             mangas = soup.find_all('div', {'class': 'col-xs-12 picture-card mdl-card shadow-z-1'})
             if not mangas:
@@ -116,9 +125,12 @@ class Myrockmanga(Manga):
                 header = manga.find('div', {'class': 'mdl-card__supporting-text mdl-color-text--grey-600'})
                 ti = header.find('h4').find('a')
                 type, lang, latest_chapter = '', '', ''
-                with suppress(Exception): type = header.find_all('a')[1].get_text(strip=True)
-                with suppress(Exception): lang = header.find('img', {'class': 'flag'})['src'].split('/')[-1].split('.')[0]
-                with suppress(Exception): latest_chapter = manga.find('div', {'class': 'mdl-card__actions mdl-card--border'}).find('a')['href']
+                with suppress(Exception):
+                    type = header.find_all('a')[1].get_text(strip=True)
+                with suppress(Exception):
+                    lang = header.find('img', {'class': 'flag'})['src'].split('/')[-1].split('.')[0]
+                with suppress(Exception):
+                    latest_chapter = manga.find('div', {'class': 'mdl-card__actions mdl-card--border'}).find('a')['href']
                 results[ti.get_text(strip=True)] = {
                     'domain': Myrockmanga.domain,
                     'url': ti['href'].replace('/manga-detail/', ''),
@@ -145,5 +157,5 @@ class Myrockmanga(Manga):
         new_name = new_name.rstrip('.')
         try:
             return f'Chapter {int(new_name):03d}'
-        except:
+        except ValueError:
             return f'Chapter {new_name.split(".", 1)[0].zfill(3)}.{new_name.split(".", 1)[1]}'

@@ -18,12 +18,18 @@ class Hentaixcomics(Doujin):
         cover, title, alternative, summary, pages = 5 * ['']
         info_box = soup.find('div', {'id': 'info'})
         extras = {}
-        with suppress(Exception): cover = soup.find('div', {'id': 'cover'}).find('img')['data-src']
-        with suppress(Exception): title = info_box.find('h1').get_text(strip=True)
-        with suppress(Exception): alternative = info_box.find('h4').get_text(strip=True)
-        with suppress(Exception): extras['Uploaded'] = info_box.find('time').get_text(strip=True)
-        with suppress(Exception): pages = info_box.find_all(lambda tag: tag.name == 'div' and 'pages' in tag.text)[-1].get_text(strip=True).split(' ')[0]
-        with suppress(Exception): summary = soup.find('p', {'class': 'grey tleft'}).get_text(strip=True).replace('\n', '').replace('\t', '').replace('\r', '')
+        with suppress(Exception):
+            cover = soup.find('div', {'id': 'cover'}).find('img')['data-src']
+        with suppress(Exception):
+            title = info_box.find('h1').get_text(strip=True)
+        with suppress(Exception):
+            alternative = info_box.find('h4').get_text(strip=True)
+        with suppress(Exception):
+            extras['Uploaded'] = info_box.find('time').get_text(strip=True)
+        with suppress(Exception):
+            pages = info_box.find_all(lambda tag: tag.name == 'div' and 'pages' in tag.text)[-1].get_text(strip=True).split(' ')[0]
+        with suppress(Exception):
+            summary = soup.find('p', {'class': 'grey tleft'}).get_text(strip=True).replace('\n', '').replace('\t', '').replace('\r', '')
         tag_box = soup.find('section', {'id': 'tags'}).find_all('div', {'class': 'tag-container field-name'})
         for box in tag_box:
             with suppress(Exception): 

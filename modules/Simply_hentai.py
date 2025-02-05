@@ -16,13 +16,18 @@ class Simply_hentai(Doujin):
         cover, title, pages, uploaded = 4 * ['']
         info_box = soup.find('section', {'class': 'album-info'})
         extras = {}
-        with suppress(Exception): cover = info_box.find('img')['data-src']
-        with suppress(Exception): title = info_box.find('h1').get_text(strip=True)
-        with suppress(Exception): 
+        with suppress(Exception):
+            cover = info_box.find('img')['data-src']
+        with suppress(Exception):
+            title = info_box.find('h1').get_text(strip=True)
+        with suppress(Exception):
+
             extras['Views'] = info_box.find('div', {'class': 'row mb-2 align-items-center'}).find('div', {'class': 'col-4'}).find('div').get_text(strip=True)
-        with suppress(Exception): 
+        with suppress(Exception):
+
             uploaded = info_box.find('div', {'class': 'row mb-2 align-items-center'}).find('div', {'class': 'col-5'}).find('div').get_text(strip=True)
-        with suppress(Exception): pages = info_box.find('div', {'class': 'col-12 col-lg-4'}).find_all('a')[-1].get_text(strip=True)[11:-1]
+        with suppress(Exception):
+            pages = info_box.find('div', {'class': 'col-12 col-lg-4'}).find_all('a')[-1].get_text(strip=True)[11:-1]
         attr, lis = None, []
         for child in info_box.find_all('div', {'class': 'col-12 col-sm-6 col-lg-4'})[1].find('div', {'class': 'data-wrapper'}).children:
             if child.name == 'div':

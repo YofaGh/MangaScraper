@@ -13,11 +13,16 @@ class Ehentai(Doujin):
         cover, title, alternative, pages, uploaded = 5 * ['']
         info_box = soup.find('div', {'id': 'info'})
         extras = {}
-        with suppress(Exception): cover = soup.find('div', {'id': 'cover'}).find('img')['data-src']
-        with suppress(Exception): title = info_box.find('h1').get_text(strip=True)
-        with suppress(Exception): alternative = info_box.find('h2').get_text(strip=True)
-        with suppress(Exception): uploaded = info_box.find('time')['datetime']
-        with suppress(Exception): pages = info_box.find(lambda tag: 'pages' in tag.text).get_text(strip=True).replace(' pages', '')
+        with suppress(Exception):
+            cover = soup.find('div', {'id': 'cover'}).find('img')['data-src']
+        with suppress(Exception):
+            title = info_box.find('h1').get_text(strip=True)
+        with suppress(Exception):
+            alternative = info_box.find('h2').get_text(strip=True)
+        with suppress(Exception):
+            uploaded = info_box.find('time')['datetime']
+        with suppress(Exception):
+            pages = info_box.find(lambda tag: 'pages' in tag.text).get_text(strip=True).replace(' pages', '')
         tag_box = soup.find('section', {'id': 'tags'}).find_all('div', {'class': 'tag-container field-name'})
         for box in tag_box:
             with suppress(Exception): 

@@ -14,16 +14,26 @@ class Manga18(Manga):
         cover, title, alternative, summary, rating, status, authors, artists, views, categories = 10 * ['']
         info_box = soup.find('div', {'class': 'detail_story'})
         item_box = soup.find('div', {'class': 'detail_listInfo'})
-        with suppress(Exception): cover = info_box.find('img')['src']
-        with suppress(Exception): title = info_box.find('h1').get_text(strip=True)
-        with suppress(Exception): summary = soup.find('div', {'class': 'detail_reviewContent'}).get_text(strip=True)
-        with suppress(Exception): rating = float(info_box.find('div', {'class': 'detail_rate'}).find('span').get_text(strip=True).replace('/5', ''))
-        with suppress(Exception): alternative = item_box.find(lambda tag: 'Other name' in tag.text).find('span').get_text(strip=True)
-        with suppress(Exception): status = item_box.find(lambda tag: 'Status' in tag.text).find('span').get_text(strip=True)
-        with suppress(Exception): authors = [a.get_text(strip=True) for a in item_box.find(lambda tag: 'Author' in tag.text).find_all('a')]
-        with suppress(Exception): artists = [a.get_text(strip=True) for a in item_box.find(lambda tag: 'Artist' in tag.text).find_all('a')]
-        with suppress(Exception): views = item_box.find(lambda tag: 'Views' in tag.text).find('span').get_text(strip=True)
-        with suppress(Exception): categories = [a.get_text(strip=True) for a in item_box.find(lambda tag: 'Categories' in tag.text).find_all('a')]
+        with suppress(Exception):
+            cover = info_box.find('img')['src']
+        with suppress(Exception):
+            title = info_box.find('h1').get_text(strip=True)
+        with suppress(Exception):
+            summary = soup.find('div', {'class': 'detail_reviewContent'}).get_text(strip=True)
+        with suppress(Exception):
+            rating = float(info_box.find('div', {'class': 'detail_rate'}).find('span').get_text(strip=True).replace('/5', ''))
+        with suppress(Exception):
+            alternative = item_box.find(lambda tag: 'Other name' in tag.text).find('span').get_text(strip=True)
+        with suppress(Exception):
+            status = item_box.find(lambda tag: 'Status' in tag.text).find('span').get_text(strip=True)
+        with suppress(Exception):
+            authors = [a.get_text(strip=True) for a in item_box.find(lambda tag: 'Author' in tag.text).find_all('a')]
+        with suppress(Exception):
+            artists = [a.get_text(strip=True) for a in item_box.find(lambda tag: 'Artist' in tag.text).find_all('a')]
+        with suppress(Exception):
+            views = item_box.find(lambda tag: 'Views' in tag.text).find('span').get_text(strip=True)
+        with suppress(Exception):
+            categories = [a.get_text(strip=True) for a in item_box.find(lambda tag: 'Categories' in tag.text).find_all('a')]
         return {
             'Cover': cover,
             'Title': title,
@@ -76,7 +86,8 @@ class Manga18(Manga):
                 if absolute and keyword.lower() not in ti.get_text(strip=True).lower():
                     continue
                 latest_chapter = ''
-                with suppress(Exception): latest_chapter = manga.find('div', {'class': 'mg_chapter'}).find('a')['href'].split('/')[-1]
+                with suppress(Exception):
+                    latest_chapter = manga.find('div', {'class': 'mg_chapter'}).find('a')['href'].split('/')[-1]
                 results[ti.get_text(strip=True)] = {
                     'domain': Manga18.domain,
                     'url': ti['href'].split('/')[-1],

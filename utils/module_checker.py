@@ -40,7 +40,8 @@ def check_doujin(module: Doujin, sample: dict) -> None:
 def chapter_checker(module: Manga, manga: str) -> list[dict]:
     chapters = []
     log_over(f'\r{module.domain}: {manga}: Getting chapters...')
-    with suppress(Exception): chapters = module.get_chapters(manga)
+    with suppress(Exception):
+        chapters = module.get_chapters(manga)
     if chapters:
         log(f'\r{module.domain}: {manga}: Recieved chapters successfully', 'green')
     else:
@@ -52,13 +53,14 @@ def title_checker(module: Doujin, code: str) -> None:
     try:
         module.get_title(code)
         log(f'\r{module.domain}: {code}: Recieved title successfully', 'green')
-    except:
+    except Exception:
         log(f'\r{module.domain}: {code}: Recieving title was a failure', 'red')
 
 def get_images_checker(module: Manga | Doujin, info: str, *args) -> tuple[list[str], list[str] | bool]:
     images, save_names = [], []
     log_over(f'\r{module.domain}: {info}: Getting images...')
-    with suppress(Exception): images, save_names = module.get_images(*args)
+    with suppress(Exception):
+        images, save_names = module.get_images(*args)
     if images:
         log(f'\r{module.domain}: {info}: Recieved images links successfully', 'green')
     else:
@@ -74,7 +76,7 @@ def download_checker(module: Manga | Doujin, url: str, name: str) -> None:
             log(f'\r{module.domain}: Downloaded an image successfully', 'green')
         else:
             raise Exception
-    except:
+    except Exception:
         log(f'\r{module.domain}: Downloading image was a failure', 'red')
 
 def se_db_checker(module: Manga | Doujin, func_name: str, *args) -> None:

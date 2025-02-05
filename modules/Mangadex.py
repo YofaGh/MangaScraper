@@ -83,7 +83,8 @@ class Mangadex(Manga):
                         if relationship['type'] == 'cover_art':
                             cover = f'https://mangadex.org/covers/{manga["id"]}/{relationship["attributes"]["fileName"]}'
                             break
-                except: pass
+                except Exception:
+                    pass
                 results[title] = {
                     'domain': Mangadex.domain,
                     'url': manga['id'],

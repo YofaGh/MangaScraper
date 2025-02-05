@@ -13,19 +13,26 @@ class Magzino(Manga):
         cover, title, summary, rating, status = 5 * ['']
         info_box = soup.find_all('div', {'class': 'post-content_item'})
         extras = {}
-        with suppress(Exception): cover = soup.find('div', {'class': 'summary_image'}).find('img')['data-src']
-        with suppress(Exception): title = soup.find('h1').get_text(strip=True)
-        with suppress(Exception): summary = soup.find('div', {'class': 'summary__content'}).find('p').get_text(strip=True)
-        with suppress(Exception): rating = float(soup.find('span', {'class': 'score font-meta total_votes'}).get_text(strip=True))
-        with suppress(Exception): status = info_box[-1].find('div', {'class': 'summary-content'}).get_text(strip=True)
+        with suppress(Exception):
+            cover = soup.find('div', {'class': 'summary_image'}).find('img')['data-src']
+        with suppress(Exception):
+            title = soup.find('h1').get_text(strip=True)
+        with suppress(Exception):
+            summary = soup.find('div', {'class': 'summary__content'}).find('p').get_text(strip=True)
+        with suppress(Exception):
+            rating = float(soup.find('span', {'class': 'score font-meta total_votes'}).get_text(strip=True))
+        with suppress(Exception):
+            status = info_box[-1].find('div', {'class': 'summary-content'}).get_text(strip=True)
         for div in info_box[3:-1]:
             head = div.find('div', {'class': 'summary-heading'}).get_text(strip=True)
             if not head:
                 head = 'genres'
             if div.find('div', {'class': 'asar-type-summary'}):
-                with suppress(Exception): extras[head] = [link.get_text(strip=True).strip() for link in div.find_all('span')]
+                with suppress(Exception):
+                    extras[head] = [link.get_text(strip=True).strip() for link in div.find_all('span')]
             else:
-                with suppress(Exception): extras[head] = [link.get_text(strip=True).strip() for link in div.find_all('a')]
+                with suppress(Exception):
+                    extras[head] = [link.get_text(strip=True).strip() for link in div.find_all('a')]
         return {
             'Cover': cover,
             'Title': title,
@@ -71,7 +78,7 @@ class Magzino(Manga):
         session = None
         class_name = 'row c-tabs-item__content' if keyword else 'col-12 col-md-6 badge-pos-1'
         while True:
-            response, session = Magzino.send_request(f'https://magzino.top/ajax-call', session=session, method='POST', data=data)
+            response, session = Magzino.send_request('https://magzino.top/ajax-call', session=session, method='POST', data=data)
             if not response.text:
                 yield {}
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -82,13 +89,20 @@ class Magzino(Manga):
                 if absolute and keyword.lower() not in ti.get_text(strip=True).lower():
                     continue
                 thumbnail, author, translators, genres, release_year, status, latest_chapter = 7 * ['']
-                with suppress(Exception): thumbnail = manga.find('img')['src']
-                with suppress(Exception): author = manga.find('div', {'class': 'mg_author'}).find('a').get_text(strip=True)
-                with suppress(Exception): translators = [a.get_text(strip=True) for a in manga.find('div', {'class': 'mg_artists'}).find_all('a')]
-                with suppress(Exception): genres = [a.get_text(strip=True) for a in manga.find('div', {'class': 'mg_genres'}).find_all('a')]
-                with suppress(Exception): release_year = manga.find('div', {'class': 'release-year'}).find('a').get_text(strip=True)
-                with suppress(Exception): status = manga.find('div', {'class': 'mg_status'}).find('div', {'class': 'summary-content'}).get_text(strip=True)
-                with suppress(Exception): latest_chapter = manga.find('span', {'class': 'font-meta chapter'}).find('a')['href'].split('/', 5)[-1]
+                with suppress(Exception):
+                    thumbnail = manga.find('img')['src']
+                with suppress(Exception):
+                    author = manga.find('div', {'class': 'mg_author'}).find('a').get_text(strip=True)
+                with suppress(Exception):
+                    translators = [a.get_text(strip=True) for a in manga.find('div', {'class': 'mg_artists'}).find_all('a')]
+                with suppress(Exception):
+                    genres = [a.get_text(strip=True) for a in manga.find('div', {'class': 'mg_genres'}).find_all('a')]
+                with suppress(Exception):
+                    release_year = manga.find('div', {'class': 'release-year'}).find('a').get_text(strip=True)
+                with suppress(Exception):
+                    status = manga.find('div', {'class': 'mg_status'}).find('div', {'class': 'summary-content'}).get_text(strip=True)
+                with suppress(Exception):
+                    latest_chapter = manga.find('span', {'class': 'font-meta chapter'}).find('a')['href'].split('/', 5)[-1]
                 results[ti.get_text(strip=True)] = {
                     'domain': Magzino.domain,
                     'url': ti['href'].split('/')[-2],

@@ -15,18 +15,25 @@ class Hentairead(Doujin):
         soup = BeautifulSoup(response.text, 'html.parser')
         cover, title, alternative, pages, uploaded, rating = 6 * ['']
         extras = {}
-        with suppress(Exception): cover = soup.find('div', {'class': 'c-image-hover'}).find('img')['data-src'].rsplit('?', 1)[0]
-        with suppress(Exception): title = soup.find('h1').get_text(strip=True)
-        with suppress(Exception): alternative = soup.find('h2').get_text(strip=True)
-        with suppress(Exception): rating = float(soup.find('span', {'class': 'score font-meta total_votes'}).get_text(strip=True).split(' ')[0])
+        with suppress(Exception):
+            cover = soup.find('div', {'class': 'c-image-hover'}).find('img')['data-src'].rsplit('?', 1)[0]
+        with suppress(Exception):
+            title = soup.find('h1').get_text(strip=True)
+        with suppress(Exception):
+            alternative = soup.find('h2').get_text(strip=True)
+        with suppress(Exception):
+            rating = float(soup.find('span', {'class': 'score font-meta total_votes'}).get_text(strip=True).split(' ')[0])
         tag_box = soup.find('div', {'class': 'post-summary'}).find_all('div', {'class': 'post-meta'})
         for box in tag_box:
             if 'Pages' in box.text:
-                with suppress(Exception): pages = box.find('div', {'class': 'tag-name'}).get_text(strip=True)
+                with suppress(Exception):
+                    pages = box.find('div', {'class': 'tag-name'}).get_text(strip=True)
             elif 'Uploaded' in box.text:
-                with suppress(Exception): uploaded = box.find('span', {'class': 'post-meta-value'}).get_text(strip=True)
+                with suppress(Exception):
+                    uploaded = box.find('span', {'class': 'post-meta-value'}).get_text(strip=True)
             elif 'Views' in box.text:
-                with suppress(Exception): extras['Views'] = box.find('div', {'class': 'tag-name'}).get_text(strip=True)
+                with suppress(Exception):
+                    extras['Views'] = box.find('div', {'class': 'tag-name'}).get_text(strip=True)
             else:
                 with suppress(Exception): 
                     extras[box.find('span').contents[0].strip()] = [tag.get_text(strip=True) for tag in box.find_all('span', {'class': 'tag-name'})]
@@ -62,7 +69,7 @@ class Hentairead(Doujin):
         session = None
         template = f'https://hentairead.com/page/P_P_P_P/?s={keyword}'
         if not keyword:
-            template = f'https://hentairead.com/hentai/page/P_P_P_P/?m_orderby=alphabet&m_order=desc'
+            template = 'https://hentairead.com/hentai/page/P_P_P_P/?m_orderby=alphabet&m_order=desc'
         while True:
             try:
                 response, session = Hentairead.send_request(template.replace('P_P_P_P', str(page)), session=session, headers=Hentairead.headers)
@@ -78,13 +85,20 @@ class Hentairead(Doujin):
                 if absolute and keyword.lower() not in ti.get_text(strip=True).lower():
                     continue
                 alternative, parody, artist, views, rating, total_pages, tags = '', '', '', '', '', '', []
-                with suppress(Exception): alternative = doujin.find('div', {'class': 'item-alter-title'}).get_text(strip=True)
-                with suppress(Exception): parody = doujin.find('div', {'class': 'item-parody'}).get_text(strip=True)
-                with suppress(Exception): artist = doujin.find('div', {'class': 'item-by-artist'}).get_text(strip=True)
-                with suppress(Exception): tags = [tag.get_text(strip=True) for tag in doujin.find_all('span', {'class': 'tag-name'})]
-                with suppress(Exception): views = doujin.find('div', {'class': 'item__total-views'}).get_text(strip=True)
-                with suppress(Exception): rating = float(doujin.find('div', {'class': 'item__rating'}).get_text(strip=True))
-                with suppress(Exception): total_pages = int(doujin.find('div', {'class': 'item__total-pages'}).get_text(strip=True))
+                with suppress(Exception):
+                    alternative = doujin.find('div', {'class': 'item-alter-title'}).get_text(strip=True)
+                with suppress(Exception):
+                    parody = doujin.find('div', {'class': 'item-parody'}).get_text(strip=True)
+                with suppress(Exception):
+                    artist = doujin.find('div', {'class': 'item-by-artist'}).get_text(strip=True)
+                with suppress(Exception):
+                    tags = [tag.get_text(strip=True) for tag in doujin.find_all('span', {'class': 'tag-name'})]
+                with suppress(Exception):
+                    views = doujin.find('div', {'class': 'item__total-views'}).get_text(strip=True)
+                with suppress(Exception):
+                    rating = float(doujin.find('div', {'class': 'item__rating'}).get_text(strip=True))
+                with suppress(Exception):
+                    total_pages = int(doujin.find('div', {'class': 'item__total-pages'}).get_text(strip=True))
                 results[ti.get_text(strip=True)] = {
                     'domain': Hentairead.domain,
                     'code': ti['href'].split('/')[-2],

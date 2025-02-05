@@ -15,17 +15,23 @@ class Allmanga(Manga):
         cover, title, alternative, summary, rating, status = 6 * ['']
         info_box = soup.find('div', {'class': 'info-box col-12'})
         extras = {}
-        with suppress(Exception): cover = soup.find('div', {'class': 'hooper-list'}).find('img')['src']
-        with suppress(Exception): title = soup.find('ol', {'class': 'breadcrumb'}).find_all('span')[-1].get_text(strip=True)
-        with suppress(Exception): alternative = [alt.text.replace('⚪', '').strip() for alt in soup.find_all('span', {'class': 'mr-1 altnames'})]
-        with suppress(Exception): summary = soup.find('div', {'class': 'article-description'}).get_text(strip=True)
-        with suppress(Exception): rating = json.loads(soup.find(lambda tag: tag.name == 'script' and manga in tag.text).text)['@graph'][0]['aggregateRating']['ratingValue']/2
+        with suppress(Exception):
+            cover = soup.find('div', {'class': 'hooper-list'}).find('img')['src']
+        with suppress(Exception):
+            title = soup.find('ol', {'class': 'breadcrumb'}).find_all('span')[-1].get_text(strip=True)
+        with suppress(Exception):
+            alternative = [alt.text.replace('⚪', '').strip() for alt in soup.find_all('span', {'class': 'mr-1 altnames'})]
+        with suppress(Exception):
+            summary = soup.find('div', {'class': 'article-description'}).get_text(strip=True)
+        with suppress(Exception):
+            rating = json.loads(soup.find(lambda tag: tag.name == 'script' and manga in tag.text).text)['@graph'][0]['aggregateRating']['ratingValue']/2
         for box in info_box.find_all('div', {'class': 'info info-season'}):
             if 'Status' in box.find('h4').text:
                 status = box.find('li').get_text(strip=True)
             elif 'Date' in box.find('h4').text:
                 extras['Date'] = box.find('li').get_text(strip=True)
-            else: extras[box.find('h4').get_text(strip=True)] = [ex.get_text(strip=True) for ex in box.find_all('li')]
+            else:
+                extras[box.find('h4').get_text(strip=True)] = [ex.get_text(strip=True) for ex in box.find_all('li')]
         for box in soup.find_all('div', {'class': 'col-12 mt'}):
             extras[box.find('dt').get_text(strip=True)[:-1]] = [ex.get_text(strip=True) for ex in box.find_all('a')]
         return {
@@ -160,7 +166,8 @@ class Allmanga(Manga):
             results = {}
             for manga in mangas:
                 latest_chapter = ''
-                with suppress(Exception): latest_chapter = f'chapter-{manga["lastChapterInfo"]["sub"]["chapterString"]}-sub'
+                with suppress(Exception):
+                    latest_chapter = f'chapter-{manga["lastChapterInfo"]["sub"]["chapterString"]}-sub'
                 results[manga['name']] = {
                     'domain': Allmanga.domain,
                     'url': manga['_id'],
@@ -185,5 +192,5 @@ class Allmanga(Manga):
         new_name = new_name.rstrip('.')
         try:
             return f'Chapter {int(new_name):03d}{tail}'
-        except:
+        except ValueError:
             return f'Chapter {new_name.split(".", 1)[0].zfill(3)}.{new_name.split(".", 1)[1]}{tail}'

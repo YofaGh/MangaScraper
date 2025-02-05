@@ -12,16 +12,22 @@ class Manga18fx(Manga):
         cover, title, alternative, summary, rating, status = 6 * ['']
         extras = {}
         info_box = soup.find('div', {'class': 'tab-summary'})
-        with suppress(Exception): cover = info_box.find('img')['data-src']
-        with suppress(Exception): title = soup.find('div', {'class': 'post-title'}).find('h1').get_text(strip=True)
-        with suppress(Exception): summary = soup.find('div', {'class': 'dsct'}).get_text(strip=True)
-        with suppress(Exception): rating = float(info_box.find('span', {'class': 'avgrate'}).get_text(strip=True))
-        with suppress(Exception): status = info_box.find('div', {'class': 'post-status'}).find_all('div', {'class': 'summary-content'})[1].get_text(strip=True)
+        with suppress(Exception):
+            cover = info_box.find('img')['data-src']
+        with suppress(Exception):
+            title = soup.find('div', {'class': 'post-title'}).find('h1').get_text(strip=True)
+        with suppress(Exception):
+            summary = soup.find('div', {'class': 'dsct'}).get_text(strip=True)
+        with suppress(Exception):
+            rating = float(info_box.find('span', {'class': 'avgrate'}).get_text(strip=True))
+        with suppress(Exception):
+            status = info_box.find('div', {'class': 'post-status'}).find_all('div', {'class': 'summary-content'})[1].get_text(strip=True)
         for box in soup.find('div', {'class': 'post-content'}).find_all('div', {'class': 'post-content_item'}):
             if 'Rating' in box.get_text(strip=True):
                 continue
             elif 'Alternative' in box.get_text(strip=True):
-                with suppress(Exception): alternative = box.find('div', {'class': 'summary-content'}).get_text(strip=True)
+                with suppress(Exception):
+                    alternative = box.find('div', {'class': 'summary-content'}).get_text(strip=True)
             else:
                 heading = box.find('div', {'class': 'summary-heading'}).get_text(strip=True).replace('(s)', '')
                 info = box.find('div', {'class': 'summary-content'})
@@ -60,7 +66,7 @@ class Manga18fx(Manga):
     def search_by_keyword(keyword, absolute):
         from requests.exceptions import HTTPError
         from contextlib import suppress
-        template = f'https://manga18fx.com/search?q={keyword}&page=P_P_P_P' if keyword else f'https://manga18fx.com/page/P_P_P_P'
+        template = f'https://manga18fx.com/search?q={keyword}&page=P_P_P_P' if keyword else 'https://manga18fx.com/page/P_P_P_P'
         page = 1
         prev_page = []
         session = None
@@ -79,7 +85,8 @@ class Manga18fx(Manga):
                 ti = details.find('h3', {'class': 'tt'}).find('a')
                 if absolute and keyword.lower() not in ti['title'].lower():
                     continue
-                with suppress(Exception): latest_chapter = details.find('div', {'class': 'list-chapter'}).find('a')['href'].split('/')[-1]
+                with suppress(Exception):
+                    latest_chapter = details.find('div', {'class': 'list-chapter'}).find('a')['href'].split('/')[-1]
                 results[ti['title']] = {
                     'domain': Manga18fx.domain,
                     'url': ti['href'].split('/')[-1],
