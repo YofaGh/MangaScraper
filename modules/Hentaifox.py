@@ -8,7 +8,8 @@ class Hentaifox(Doujin):
         'j': 'jpg',
         'p': 'png',
         'b': 'bmp',
-        'g': 'gif'
+        'g': 'gif',
+        'w': 'webp'
     }
 
     def get_info(code):
@@ -42,9 +43,11 @@ class Hentaifox(Doujin):
         import json
         response, _ = Hentaifox.send_request(f'https://hentaifox.com/gallery/{code}')
         soup = BeautifulSoup(response.text, 'html.parser')
+        print(soup.find('div', {'class': 'gallery_thumb'}).find('img')['data-src'])
         path = soup.find('div', {'class': 'gallery_thumb'}).find('img')['data-src'].rsplit('/', 1)[0]
         script = soup.find(lambda tag:tag.name == 'script' and 'var g_th' in tag.text).text
         images = json.loads(script.replace("var g_th = $.parseJSON('", '')[:-4])
+        print(images)
         images = [f'{path}/{image}.{Hentaifox.image_formats[images[image][0]]}' for image in images]
         return images, False
 

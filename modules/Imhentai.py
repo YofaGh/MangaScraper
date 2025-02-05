@@ -8,7 +8,8 @@ class Imhentai(Doujin):
         'j': 'jpg',
         'p': 'png',
         'b': 'bmp',
-        'g': 'gif'
+        'g': 'gif',
+        'w': 'webp'
     }
 
     def get_info(code):
