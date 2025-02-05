@@ -176,11 +176,6 @@ manhuamanhwa.com:
   type: Manga
   test_sample:
     url: the-boy-out-of-my-reach
-manhuamix.com:
-  className: Manhuamix
-  type: Manga
-  test_sample:
-    url: reborn-as-a-monster
 manhuascan.us:
   className: Manhuascan
   type: Manga
