@@ -90,9 +90,7 @@ class Toonily_Me(Manga):
         return chapters
 
     def get_images(self, manga, chapter):
-        response, _ = self.send_request(
-            f"https://toonily.me/{manga}/{chapter['url']}"
-        )
+        response, _ = self.send_request(f"https://toonily.me/{manga}/{chapter['url']}")
         soup = self.get_html_parser(response.text)
         images = soup.find("div", {"id": "chapter-images"}).find_all("img")
         images = [image["data-src"].strip() for image in images]

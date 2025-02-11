@@ -8,9 +8,7 @@ class Mangareader(Manga):
     def get_info(self, manga):
         from contextlib import suppress
 
-        response, _ = self.send_request(
-            f"https://mangareader.mobi/manga/{manga}"
-        )
+        response, _ = self.send_request(f"https://mangareader.mobi/manga/{manga}")
         soup = self.get_html_parser(response.text)
         cover, title, alternative, summary, status, authors, views, genres = 8 * [""]
         info_box = soup.find("div", {"class": "imgdesc"})

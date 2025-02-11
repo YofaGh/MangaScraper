@@ -9,9 +9,7 @@ class Hqporncomics(Doujin):
     def get_info(self, code):
         from contextlib import suppress
 
-        response, _ = self.send_request(
-            f"https://hqporncomics.com/comics/{code}/"
-        )
+        response, _ = self.send_request(f"https://hqporncomics.com/comics/{code}/")
         soup = self.get_html_parser(response.text)
         cover, title, summary, pages = 4 * [""]
         extras = {}
@@ -46,9 +44,7 @@ class Hqporncomics(Doujin):
         }
 
     def get_title(self, code):
-        response, _ = self.send_request(
-            f"https://hqporncomics.com/comics/{code}/"
-        )
+        response, _ = self.send_request(f"https://hqporncomics.com/comics/{code}/")
         soup = self.get_html_parser(response.text)
         title = (
             soup.find("h1", {"class": "block-name-comix"})
@@ -58,9 +54,7 @@ class Hqporncomics(Doujin):
         return title
 
     def get_images(self, code):
-        response, _ = self.send_request(
-            f"https://hqporncomics.com/comics/{code}/"
-        )
+        response, _ = self.send_request(f"https://hqporncomics.com/comics/{code}/")
         soup = self.get_html_parser(response.text)
         images = soup.find("div", {"id": "block-image-slide"}).find_all("img")
         images = [image["data-src"] for image in images[::2]]

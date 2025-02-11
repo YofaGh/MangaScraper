@@ -8,9 +8,7 @@ class Coloredmanga(Manga):
     def get_info(self, manga):
         from contextlib import suppress
 
-        response, _ = self.send_request(
-            f"https://coloredmanga.com/mangas/{manga}/"
-        )
+        response, _ = self.send_request(f"https://coloredmanga.com/mangas/{manga}/")
         soup = self.get_html_parser(response.text)
         cover, title, alternative, rating, status = 5 * [""]
         extras = {}
@@ -69,9 +67,7 @@ class Coloredmanga(Manga):
         }
 
     def get_chapters(self, manga):
-        response, _ = self.send_request(
-            f"https://coloredmanga.com/mangas/{manga}/"
-        )
+        response, _ = self.send_request(f"https://coloredmanga.com/mangas/{manga}/")
         soup = self.get_html_parser(response.text)
         divs = soup.find_all("li", {"class": "wp-manga-chapter"})
         chapters_urls = [

@@ -8,9 +8,7 @@ class Hentaixcomic(Manga):
     def get_info(self, manga):
         from contextlib import suppress
 
-        response, _ = self.send_request(
-            f"https://hentaixcomic.com/manga/{manga}"
-        )
+        response, _ = self.send_request(f"https://hentaixcomic.com/manga/{manga}")
         soup = self.get_html_parser(response.text)
         cover, title, rating, status = 4 * [""]
         extras = {}
@@ -65,9 +63,7 @@ class Hentaixcomic(Manga):
 
     def get_chapters(self, manga):
         session = Hentaixcomic.create_session()
-        response, session = self.send_request(
-            f"https://hentaixcomic.com/manga/{manga}"
-        )
+        response, session = self.send_request(f"https://hentaixcomic.com/manga/{manga}")
         soup = self.get_html_parser(response.text)
         manga_id = soup.find("a", {"class": "wp-manga-action-button"})["data-post"]
         self.headers = {

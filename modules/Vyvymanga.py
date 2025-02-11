@@ -9,9 +9,7 @@ class Vyvymanga(Manga):
         from contextlib import suppress
 
         response, _ = self.send_request(f"https://vyvymanga.net/manga/{manga}")
-        box = self.get_html_parser(response.text).find(
-            "div", {"class": "div-manga"}
-        )
+        box = self.get_html_parser(response.text).find("div", {"class": "div-manga"})
         cover, title, alternative, summary, rating, status, authors, view, genres = (
             9 * [""]
         )

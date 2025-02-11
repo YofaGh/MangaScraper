@@ -97,9 +97,7 @@ class Hentaixcomics(Doujin):
                     "domain": self.domain,
                     "code": doujin.find("a")["href"].split("/")[-2],
                     "thumbnail": doujin.find("img")["data-src"],
-                    "language": self.language_codes[
-                        doujin.find("span")["class"][1]
-                    ],
+                    "language": self.language_codes[doujin.find("span")["class"][1]],
                     "page": page,
                 }
             prev_page = doujins

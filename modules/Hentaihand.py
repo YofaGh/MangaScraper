@@ -7,9 +7,7 @@ class Hentaihand(Doujin):
     is_coded = False
 
     def get_info(self, code):
-        response, _ = self.send_request(
-            f"https://hentaihand.com/api/comics/{code}"
-        )
+        response, _ = self.send_request(f"https://hentaihand.com/api/comics/{code}")
         response = response.json()
         extras = {
             "Description": response["description"],
@@ -35,9 +33,7 @@ class Hentaihand(Doujin):
         }
 
     def get_title(self, code):
-        response, _ = self.send_request(
-            f"https://hentaihand.com/api/comics/{code}"
-        )
+        response, _ = self.send_request(f"https://hentaihand.com/api/comics/{code}")
         return response.json()["title"]
 
     def get_images(self, code):

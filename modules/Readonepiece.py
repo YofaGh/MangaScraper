@@ -6,9 +6,7 @@ class Readonepiece(Manga):
     logo = "https://ww9.readonepiece.com/apple-touch-icon.png"
 
     def get_info(self, manga):
-        response, _ = self.send_request(
-            f"https://ww9.readonepiece.com/manga/{manga}/"
-        )
+        response, _ = self.send_request(f"https://ww9.readonepiece.com/manga/{manga}/")
         soup = self.get_html_parser(response.text)
         cover = soup.find("div", {"class": "py-4 px-6 mb-3"}).find("img")["src"]
         title = soup.find(
@@ -26,9 +24,7 @@ class Readonepiece(Manga):
         }
 
     def get_chapters(self, manga):
-        response, _ = self.send_request(
-            f"https://ww9.readonepiece.com/manga/{manga}/"
-        )
+        response, _ = self.send_request(f"https://ww9.readonepiece.com/manga/{manga}/")
         soup = self.get_html_parser(response.text)
         divs = soup.find_all(
             "div", {"class": "bg-bg-secondary p-3 rounded mb-3 shadow"}
@@ -54,9 +50,7 @@ class Readonepiece(Manga):
         return images, False
 
     def search_by_keyword(self, keyword, absolute):
-        response, _ = self.send_request(
-            "https://ww11.readonepiece.com/sitemap.xml"
-        )
+        response, _ = self.send_request("https://ww11.readonepiece.com/sitemap.xml")
         soup = self.get_xml_parser(response.text)
         results = {}
         urls = soup.find_all("url")

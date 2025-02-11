@@ -67,9 +67,7 @@ class Mangadex(Manga):
                 [
                     {
                         "url": chapter["id"],
-                        "name": self.rename_chapter(
-                            chapter["attributes"]["chapter"]
-                        ),
+                        "name": self.rename_chapter(chapter["attributes"]["chapter"]),
                     }
                     for chapter in response["data"]
                     if chapter["attributes"]["pages"]

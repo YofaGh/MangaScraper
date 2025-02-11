@@ -67,8 +67,7 @@ class Imhentai(Doujin):
         ).text
         images = json.loads(script.replace("var g_th = $.parseJSON('", "")[:-4])
         images = [
-            f"{path}/{image}.{self.image_formats[images[image][0]]}"
-            for image in images
+            f"{path}/{image}.{self.image_formats[images[image][0]]}" for image in images
         ]
         return images, False
 

@@ -8,9 +8,7 @@ class Mangadistrict(Manga):
     def get_info(self, manga):
         from contextlib import suppress
 
-        response, _ = self.send_request(
-            f"https://mangadistrict.com/read-scan/{manga}"
-        )
+        response, _ = self.send_request(f"https://mangadistrict.com/read-scan/{manga}")
         soup = self.get_html_parser(response.text)
         cover, title, alternative, summary, rating, status = 6 * [""]
         extras = {}

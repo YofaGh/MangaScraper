@@ -53,9 +53,7 @@ class Myreadingmanga(Doujin):
         return title
 
     def get_images(self, code):
-        response, _ = self.send_request(
-            f"https://myreadingmanga.to/g/{code}/"
-        )
+        response, _ = self.send_request(f"https://myreadingmanga.to/g/{code}/")
         soup = self.get_html_parser(response.text)
         divs = soup.find_all("a", {"class": "gallerythumb"})
         images = [div.find("img")["data-src"] for div in divs]

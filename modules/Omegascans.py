@@ -62,9 +62,7 @@ class Omegascans(Manga):
         }
 
     def get_chapters(self, manga):
-        response, session = self.send_request(
-            f"https://omegascans.org/series/{manga}"
-        )
+        response, session = self.send_request(f"https://omegascans.org/series/{manga}")
         soup = self.get_html_parser(response.text)
         series_id = (
             soup.find(lambda tag: tag.name == "script" and "series_id" in tag.text)

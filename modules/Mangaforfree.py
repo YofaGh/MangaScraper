@@ -8,9 +8,7 @@ class Mangaforfree(Manga):
     def get_info(self, manga):
         from contextlib import suppress
 
-        response, _ = self.send_request(
-            f"https://mangaforfree.net/manga/{manga}"
-        )
+        response, _ = self.send_request(f"https://mangaforfree.net/manga/{manga}")
         soup = self.get_html_parser(response.text)
         cover, title, alternative, summary, rating, status = 6 * [""]
         extras = {}
@@ -85,9 +83,7 @@ class Mangaforfree(Manga):
         }
 
     def get_chapters(self, manga):
-        response, session = self.send_request(
-            f"https://mangaforfree.net/manga/{manga}"
-        )
+        response, session = self.send_request(f"https://mangaforfree.net/manga/{manga}")
         soup = self.get_html_parser(response.text)
         manga_id = soup.find("a", {"class": "wp-manga-action-button"})["data-post"]
         self.headers = {
