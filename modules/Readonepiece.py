@@ -53,3 +53,29 @@ class Readonepiece(Manga):
         images = soup.find_all("img", {"class", "mb-3 mx-auto js-page"})
         images = [image["src"] for image in images]
         return images, False
+
+    def search_by_keyword(keyword, absolute):
+        response, _ = Readonepiece.send_request(
+            "https://ww11.readonepiece.com/sitemap.xml"
+        )
+        soup = BeautifulSoup(response.text, "xml")
+        results = {}
+        urls = soup.find_all("url")
+        for url in urls:
+            priority = url.find("priority").get_text()
+            if priority != "0.8":
+                break
+            manga_url = url.find("loc").get_text().split("/")[-2]
+            name = manga_url.replace("-", " ")
+            if absolute and keyword.lower() not in name.lower():
+                continue
+            results[name] = {
+                "domain": Readonepiece.domain,
+                "url": manga_url,
+                "page": 1,
+            }
+        yield results
+        yield {}
+
+    def get_db():
+        return Readonepiece.search_by_keyword("", False)
