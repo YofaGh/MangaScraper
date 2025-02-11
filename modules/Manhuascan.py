@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from utils.models import Manga
 
 
@@ -10,7 +9,7 @@ class Manhuascan(Manga):
         from contextlib import suppress
 
         response, _ = Manhuascan.send_request(f"https://manhuascan.us/manga/{manga}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Manhuascan.get_html_parser(response.text)
         (
             cover,
             title,
@@ -86,7 +85,7 @@ class Manhuascan(Manga):
 
     def get_chapters(manga):
         response, _ = Manhuascan.send_request(f"https://manhuascan.us/manga/{manga}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Manhuascan.get_html_parser(response.text)
         divs = soup.find_all("div", {"class": "eph-num"})
         chapters_urls = [div.find("a")["href"].split("/")[-1] for div in divs[::-1]]
         chapters = [
@@ -99,7 +98,7 @@ class Manhuascan(Manga):
         response, _ = Manhuascan.send_request(
             f"https://manhuascan.us/manga/{manga}/{chapter['url']}"
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Manhuascan.get_html_parser(response.text)
         images = soup.find("div", {"id": "readerarea"}).find_all("img")
         images = [image["src"] for image in images]
         return images, False
@@ -118,7 +117,7 @@ class Manhuascan(Manga):
                 )
             except HTTPError:
                 yield {}
-            soup = BeautifulSoup(response.text, "html.parser")
+            soup = Manhuascan.get_html_parser(response.text)
             mangas = soup.find_all("div", {"class": "bsx"})
             if not mangas:
                 yield {}

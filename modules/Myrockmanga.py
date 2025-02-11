@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from utils.models import Manga
 
 
@@ -24,7 +23,7 @@ class Myrockmanga(Manga):
         response, _ = Myrockmanga.send_request(
             f"https://myrockmanga.com/manga-detail/{manga}", headers=Myrockmanga.headers
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Myrockmanga.get_html_parser(response.text)
         cover, title, alternative, summary, rating, status, genres = 7 * [""]
         extras = {}
         with suppress(Exception):
@@ -87,7 +86,7 @@ class Myrockmanga(Manga):
         response, _ = Myrockmanga.send_request(
             f"https://myrockmanga.com/manga-detail/{manga}", verify=False
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Myrockmanga.get_html_parser(response.text)
         divs = soup.find_all("tr", {"class": "chapter"})
         chapters_urls = [
             div.find("a")["href"].replace("/chapter/", "") for div in divs[::-1]
@@ -102,7 +101,7 @@ class Myrockmanga(Manga):
         response, _ = Myrockmanga.send_request(
             f"https://myrockmanga.com/chapter/{chapter['url']}", verify=False
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Myrockmanga.get_html_parser(response.text)
         images = soup.find("div", {"id": "rendering"}).find_all("img")
         images = [image["src"] for image in images if image.has_attr("page")]
         save_names = [
@@ -125,7 +124,7 @@ class Myrockmanga(Manga):
                 )
             except HTTPError:
                 yield {}
-            soup = BeautifulSoup(response.text, "html.parser")
+            soup = Myrockmanga.get_html_parser(response.text)
             sections = soup.find_all("div", {"class": "row"})
             mangas = []
             for section in sections:
@@ -189,7 +188,7 @@ class Myrockmanga(Manga):
                 data=data.replace("P_P_P_P", str(page)),
                 verify=False,
             )
-            soup = BeautifulSoup(response.text, "html.parser")
+            soup = Myrockmanga.get_html_parser(response.text)
             mangas = soup.find_all(
                 "div", {"class": "col-xs-12 picture-card mdl-card shadow-z-1"}
             )

@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from utils.models import Doujin
 
 
@@ -13,7 +12,7 @@ class Hqporncomics(Doujin):
         response, _ = Hqporncomics.send_request(
             f"https://hqporncomics.com/comics/{code}/"
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Hqporncomics.get_html_parser(response.text)
         cover, title, summary, pages = 4 * [""]
         extras = {}
         images = soup.find("div", {"id": "block-image-slide"}).find_all("img")
@@ -50,7 +49,7 @@ class Hqporncomics(Doujin):
         response, _ = Hqporncomics.send_request(
             f"https://hqporncomics.com/comics/{code}/"
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Hqporncomics.get_html_parser(response.text)
         title = (
             soup.find("h1", {"class": "block-name-comix"})
             .get_text(strip=True)
@@ -62,7 +61,7 @@ class Hqporncomics(Doujin):
         response, _ = Hqporncomics.send_request(
             f"https://hqporncomics.com/comics/{code}/"
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Hqporncomics.get_html_parser(response.text)
         images = soup.find("div", {"id": "block-image-slide"}).find_all("img")
         images = [image["data-src"] for image in images[::2]]
         save_names = [
@@ -79,7 +78,7 @@ class Hqporncomics(Doujin):
                 f"https://hqporncomics.com/search/?q={keyword}&page={page}",
                 session=session,
             )
-            soup = BeautifulSoup(response.text, "html.parser")
+            soup = Hqporncomics.get_html_parser(response.text)
             doujins = soup.find_all("li", {"id": "li-comix-set"})
             if not doujins or prev_page == doujins:
                 yield {}

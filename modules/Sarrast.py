@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from utils.models import Manga
 
 
@@ -9,7 +8,7 @@ class Sarrast(Manga):
         from contextlib import suppress
 
         response, _ = Sarrast.send_request(f"https://sarrast.com/series/{manga}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Sarrast.get_html_parser(response.text)
         cover, title, summary, rating, status, chapters, posted_on, type = 8 * [""]
         info_boxes = soup.find(
             "div",
@@ -48,7 +47,7 @@ class Sarrast(Manga):
 
     def get_chapters(manga):
         response, _ = Sarrast.send_request(f"https://sarrast.com/series/{manga}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Sarrast.get_html_parser(response.text)
         divs = soup.find(
             "div", {"class": "text-white mb-20 mt-8 relative px-4"}
         ).find_all("a")

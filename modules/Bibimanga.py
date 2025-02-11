@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from utils.models import Manga
 
 
@@ -10,7 +9,7 @@ class Bibimanga(Manga):
         from contextlib import suppress
 
         response, _ = Bibimanga.send_request(f"https://bibimanga.com/manga/{manga}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Bibimanga.get_html_parser(response.text)
         cover, title, alternative, summary, rating, status = 6 * [""]
         extras = {}
         info_box = soup.find("div", {"class": "tab-summary"})
@@ -75,7 +74,7 @@ class Bibimanga(Manga):
 
     def get_chapters(manga):
         response, _ = Bibimanga.send_request(f"https://bibimanga.com/manga/{manga}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Bibimanga.get_html_parser(response.text)
         divs = soup.find_all("li", {"class": "wp-manga-chapter"})
         chapters_urls = [div.find("a")["href"].split("/")[-2] for div in divs[::-1]]
         chapters = [
@@ -88,7 +87,7 @@ class Bibimanga(Manga):
         response, _ = Bibimanga.send_request(
             f"https://bibimanga.com/manga/{manga}/{chapter['url']}"
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Bibimanga.get_html_parser(response.text)
         images = soup.find("div", {"class": "reading-content"}).find_all("img")
         images = [image["data-src"].strip() for image in images]
         return images, False
@@ -107,7 +106,7 @@ class Bibimanga(Manga):
                 )
             except HTTPError:
                 yield {}
-            soup = BeautifulSoup(response.text, "html.parser")
+            soup = Bibimanga.get_html_parser(response.text)
             mangas = soup.find_all("div", {"class": "row c-tabs-item__content"})
             results = {}
             for manga in mangas:

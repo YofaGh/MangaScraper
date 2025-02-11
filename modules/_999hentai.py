@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from utils.models import Doujin
 from user_agents import MOZILLA
 
@@ -15,7 +14,7 @@ class _999hentai(Doujin):
         response, _ = _999hentai.send_request(
             f"https://999hentai.net/hchapter/{code}", headers=_999hentai.headers
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = _999hentai.get_html_parser(response.text)
         cover, title, pages = "", "", ""
         extras = {}
         with suppress(Exception):
@@ -54,7 +53,7 @@ class _999hentai(Doujin):
         response, _ = _999hentai.send_request(
             f"https://999hentai.net/hchapter/{code}", headers=_999hentai.headers
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = _999hentai.get_html_parser(response.text)
         title = soup.find("h1").get_text(strip=True)
         return title
 
@@ -62,7 +61,7 @@ class _999hentai(Doujin):
         response, _ = _999hentai.send_request(
             f"https://999hentai.net/hchapter/{code}", headers=_999hentai.headers
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = _999hentai.get_html_parser(response.text)
         images = (
             soup.find(lambda tag: tag.name == "script" and "__NUXT__" in tag.text)
             .get_text(strip=True)

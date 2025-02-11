@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from utils.models import Doujin
 
 
@@ -12,7 +11,7 @@ class Hentaixcomics(Doujin):
         from contextlib import suppress
 
         response, _ = Hentaixcomics.send_request(f"https://hentaixcomics.com/{code}/")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Hentaixcomics.get_html_parser(response.text)
         cover, title, alternative, summary, pages = 5 * [""]
         info_box = soup.find("div", {"id": "info"})
         extras = {}
@@ -59,7 +58,7 @@ class Hentaixcomics(Doujin):
 
     def get_title(code):
         response, _ = Hentaixcomics.send_request(f"https://hentaixcomics.com/{code}/")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Hentaixcomics.get_html_parser(response.text)
         title = soup.find("div", {"id": "info"}).find("h1").get_text(strip=True)
         return title
 
@@ -67,7 +66,7 @@ class Hentaixcomics(Doujin):
         import json
 
         response, _ = Hentaixcomics.send_request(f"https://hentaixcomics.com/{code}/")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Hentaixcomics.get_html_parser(response.text)
         images_raw = soup.find("textarea").get_text(strip=True)
         images = json.loads(images_raw)
         return images, False
@@ -81,7 +80,7 @@ class Hentaixcomics(Doujin):
                 f"https://hentaixcomics.com/search/?s={keyword}&page={page}",
                 session=session,
             )
-            soup = BeautifulSoup(response.text, "html.parser")
+            soup = Hentaixcomics.get_html_parser(response.text)
             if soup.find("span", {"class": "count"}).get_text(strip=True) == "(0)":
                 yield {}
             doujins = soup.find_all("div", {"class": "gallery"})
@@ -117,7 +116,7 @@ class Hentaixcomics(Doujin):
                     f"https://hentaixcomics.com/s/{category}/page/{page}",
                     session=session,
                 )
-                soup = BeautifulSoup(response.text, "html.parser")
+                soup = Hentaixcomics.get_html_parser(response.text)
                 if soup.find("span", {"class": "count"}).get_text(strip=True) == "(0)":
                     break
                 doujins = soup.find_all("div", {"class": "gallery"})

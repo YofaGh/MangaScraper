@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from utils.models import Doujin
 from user_agents import LEECH
 
@@ -16,7 +15,7 @@ class Simply_hentai(Doujin):
         response, _ = Simply_hentai.send_request(
             f"https://www.simply-hentai.com/{code}", headers=Simply_hentai.headers
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Simply_hentai.get_html_parser(response.text)
         cover, title, pages, uploaded = 4 * [""]
         info_box = soup.find("section", {"class": "album-info"})
         extras = {}
@@ -74,7 +73,7 @@ class Simply_hentai(Doujin):
         response, _ = Simply_hentai.send_request(
             f"https://www.simply-hentai.com/{code}", headers=Simply_hentai.headers
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Simply_hentai.get_html_parser(response.text)
         title = (
             soup.find("section", {"class", "album-info"})
             .find("h1")
@@ -89,7 +88,7 @@ class Simply_hentai(Doujin):
             f"https://www.simply-hentai.com/{code}/all-pages",
             headers=Simply_hentai.headers,
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Simply_hentai.get_html_parser(response.text)
         script = soup.find("script", {"id": "__NEXT_DATA__"}).get_text(strip=True)
         data_raw = json.loads(script)
         images = [
@@ -138,7 +137,7 @@ class Simply_hentai(Doujin):
                 session=session,
                 headers=Simply_hentai.headers,
             )
-            soup = BeautifulSoup(response.text, "html.parser")
+            soup = Simply_hentai.get_html_parser(response.text)
             results = {}
             divs = soup.find_all("div", {"class", "col-6 col-lg-3"})
             if divs == prev_page:

@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from utils.models import Manga
 from user_agents import LEECH
 
@@ -14,7 +13,7 @@ class Manga18(Manga):
         response, _ = Manga18.send_request(
             f"https://manga18.club/manhwa/{manga}", headers=Manga18.headers
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Manga18.get_html_parser(response.text)
         (
             cover,
             title,
@@ -98,7 +97,7 @@ class Manga18(Manga):
         response, _ = Manga18.send_request(
             f"https://manga18.club/manhwa/{manga}", headers=Manga18.headers
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Manga18.get_html_parser(response.text)
         lis = soup.find("div", {"class": "chapter_box"}).find_all("li")
         chapters_urls = [li.find("a")["href"].split("/")[-1] for li in lis[::-1]]
         chapters = [
@@ -114,7 +113,7 @@ class Manga18(Manga):
             f"https://manga18.club/manhwa/{manga}/{chapter['url']}",
             headers=Manga18.headers,
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Manga18.get_html_parser(response.text)
         script = soup.find(
             lambda tag: tag.name == "script" and "slides_p_path" in tag.text
         )
@@ -134,7 +133,7 @@ class Manga18(Manga):
                 session=session,
                 headers=Manga18.headers,
             )
-            soup = BeautifulSoup(response.text, "html.parser")
+            soup = Manga18.get_html_parser(response.text)
             mangas = soup.find_all("div", {"class": "col-md-3 col-sm-4 col-xs-6"})
             if not mangas:
                 yield {}

@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from utils.models import Manga
 
 
@@ -16,7 +15,7 @@ class Daycomics(Manga):
         response, _ = Daycomics.send_request(
             f"https://daycomics.me/en/{manga}.html", headers=Daycomics.headers
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Daycomics.get_html_parser(response.text)
         cover, title, summary = "", "", ""
         info_box = soup.find("div", {"class": "inner_ch"})
         extras = {}
@@ -57,7 +56,7 @@ class Daycomics(Manga):
         response, _ = Daycomics.send_request(
             f"https://daycomics.me/en/{manga}.html", headers=Daycomics.headers
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Daycomics.get_html_parser(response.text)
         lis = soup.find_all("li", {"class": "normal_ep"})
         chapters = [
             {
@@ -79,7 +78,7 @@ class Daycomics(Manga):
         response, _ = Daycomics.send_request(
             f"https://daycomics.me/en/{chapter['url']}.html", headers=Daycomics.headers
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Daycomics.get_html_parser(response.text)
         divs = soup.find("div", {"class": "viewer-imgs"}).find_all("img")
         images = [
             div["data-src"].strip() if div.has_attr("data-src") else div["src"].strip()
@@ -101,7 +100,7 @@ class Daycomics(Manga):
             response, session = Daycomics.send_request(
                 f"{template}page={page}", headers=Daycomics.headers, session=session
             )
-            soup = BeautifulSoup(response.text, "html.parser")
+            soup = Daycomics.get_html_parser(response.text)
             mangas = soup.find_all("li", {"itemtype": "https://schema.org/ComicSeries"})
             if not mangas:
                 yield {}

@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from utils.models import Doujin
 
 
@@ -11,7 +10,7 @@ class Hentaifox(Doujin):
         from contextlib import suppress
 
         response, _ = Hentaifox.send_request(f"https://hentaifox.com/gallery/{code}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Hentaifox.get_html_parser(response.text)
         cover, title, pages = 3 * [""]
         info_box = soup.find("div", {"class": "info"})
         extras = {}
@@ -42,7 +41,7 @@ class Hentaifox(Doujin):
 
     def get_title(code):
         response, _ = Hentaifox.send_request(f"https://hentaifox.com/gallery/{code}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Hentaifox.get_html_parser(response.text)
         title = soup.find("div", {"class", "info"}).find("h1").get_text(strip=True)
         return title
 
@@ -50,7 +49,7 @@ class Hentaifox(Doujin):
         import json
 
         response, _ = Hentaifox.send_request(f"https://hentaifox.com/gallery/{code}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Hentaifox.get_html_parser(response.text)
         print(soup.find("div", {"class": "gallery_thumb"}).find("img")["data-src"])
         path = (
             soup.find("div", {"class": "gallery_thumb"})
@@ -81,7 +80,7 @@ class Hentaifox(Doujin):
                 )
             except HTTPError:
                 yield {}
-            soup = BeautifulSoup(response.text, "html.parser")
+            soup = Hentaifox.get_html_parser(response.text)
             doujins = soup.find_all("div", {"class": "thumb"})
             if not doujins:
                 yield {}
@@ -105,7 +104,7 @@ class Hentaifox(Doujin):
         from requests.exceptions import HTTPError
 
         response, session = Hentaifox.send_request("https://hentaifox.com/categories/")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Hentaifox.get_html_parser(response.text)
         categories = soup.find("div", {"class": "list_tags"}).find_all("a")
         categories = [a["href"] for a in categories]
         for category in categories:
@@ -117,7 +116,7 @@ class Hentaifox(Doujin):
                     )
                 except HTTPError:
                     break
-                soup = BeautifulSoup(response.text, "html.parser")
+                soup = Hentaifox.get_html_parser(response.text)
                 doujins = soup.find_all("div", {"class": "thumb"})
                 if not doujins:
                     break

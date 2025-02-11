@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from utils.models import Doujin
 from user_agents import MOZILLA
 
@@ -16,7 +15,7 @@ class Hentairead(Doujin):
         response, _ = Hentairead.send_request(
             f"https://hentairead.com/hentai/{code}/", headers=Hentairead.headers
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Hentairead.get_html_parser(response.text)
         cover, title, alternative, pages, uploaded, rating = 6 * [""]
         extras = {}
         with suppress(Exception):
@@ -76,7 +75,7 @@ class Hentairead(Doujin):
         response, _ = Hentairead.send_request(
             f"https://hentairead.com/hentai/{code}/", headers=Hentairead.headers
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Hentairead.get_html_parser(response.text)
         title = soup.find("h1").get_text(strip=True)
         return title
 
@@ -84,7 +83,7 @@ class Hentairead(Doujin):
         response, _ = Hentairead.send_request(
             f"https://hentairead.com/hentai/{code}/", headers=Hentairead.headers
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Hentairead.get_html_parser(response.text)
         images = soup.find(
             "ul", {"class": "chapter-images-list lazy-listing__list"}
         ).find_all("img")
@@ -109,7 +108,7 @@ class Hentairead(Doujin):
                 )
             except HTTPError:
                 yield {}
-            soup = BeautifulSoup(response.text, "html.parser")
+            soup = Hentairead.get_html_parser(response.text)
             doujins = soup.find_all("div", {"class": "grid-item badge-pos-1"})
             if not doujins:
                 yield {}

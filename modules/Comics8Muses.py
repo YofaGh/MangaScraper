@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from utils.models import Manga
 
 
@@ -10,7 +9,7 @@ class Comics8Muses(Manga):
         response, _ = Comics8Muses.send_request(
             f"https://comics.8muses.com/comics/album/{manga}/"
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Comics8Muses.get_html_parser(response.text)
         return {
             "Cover": f"https://comics.8muses.com{soup.find('div', {'class': 'gallery'}).find('img')['data-src']}",
             "Title": soup.find("div", {"class": "top-menu-breadcrumb"})
@@ -25,7 +24,7 @@ class Comics8Muses(Manga):
         response, session = Comics8Muses.send_request(
             f"https://comics.8muses.com/comics/album/{manga}/{page}"
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Comics8Muses.get_html_parser(response.text)
         if not soup.find("div", {"class": "image-title"}):
             return [""]
         while True:
@@ -38,7 +37,7 @@ class Comics8Muses(Manga):
                 f"https://comics.8muses.com/comics/album/{manga}/{page}",
                 session=session,
             )
-            soup = BeautifulSoup(response.text, "html.parser")
+            soup = Comics8Muses.get_html_parser(response.text)
         chapters = [
             {"url": chapter_url, "name": Comics8Muses.rename_chapter(chapter_url)}
             for chapter_url in chapters_urls
@@ -49,7 +48,7 @@ class Comics8Muses(Manga):
         response, _ = Comics8Muses.send_request(
             f"https://comics.8muses.com/comics/album/{manga}/{chapter['url']}"
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Comics8Muses.get_html_parser(response.text)
         links = soup.find_all("a", {"class": "c-tile t-hover"})
         images = [link.find("img").get("data-src") for link in links]
         images = [
@@ -70,7 +69,7 @@ class Comics8Muses(Manga):
                 f"https://comics.8muses.com/search?q={keyword}&page={page}",
                 session=session,
             )
-            soup = BeautifulSoup(response.text, "html.parser")
+            soup = Comics8Muses.get_html_parser(response.text)
             comics = soup.find_all("a", {"class": "c-tile t-hover"}, href=True)
             results = {}
             if not comics:
@@ -114,7 +113,7 @@ class Comics8Muses(Manga):
                 )
             except HTTPError:
                 yield {}
-            soup = BeautifulSoup(response.text, "xml")
+            soup = Comics8Muses.get_xml_parser(response.text)
             results = {}
             urls = soup.find_all("loc")
             for url in urls:

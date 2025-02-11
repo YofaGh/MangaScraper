@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from utils.models import Doujin
 
 
@@ -11,7 +10,7 @@ class Luscious(Doujin):
         from contextlib import suppress
 
         response, _ = Luscious.send_request(f"https://www.luscious.net/albums/{code}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Luscious.get_html_parser(response.text)
         cover, title, alternative, pages = 4 * [""]
         info_box = soup.find("div", {"class": "album-info-wrapper"})
         extras, dates, tags = {}, {}, []
@@ -64,7 +63,7 @@ class Luscious(Doujin):
 
     def get_title(code):
         response, _ = Luscious.send_request(f"https://www.luscious.net/albums/{code}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Luscious.get_html_parser(response.text)
         title = soup.find("h1", {"class", "o-h1 album-heading"}).get_text(strip=True)
         return title
 

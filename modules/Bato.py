@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from utils.models import Manga
 
 
@@ -10,7 +9,7 @@ class Bato(Manga):
         from contextlib import suppress
 
         response, _ = Bato.send_request(f"https://bato.to/title/{manga}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Bato.get_html_parser(response.text)
         cover, title, alternative, summary, rating, status = 6 * [""]
         info_box = soup.find("div", {"class": "flex flex-col md:flex-row"})
         extras = {}
@@ -72,7 +71,7 @@ class Bato(Manga):
 
     def get_chapters(manga):
         response, _ = Bato.send_request(f"https://bato.to/title/{manga}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Bato.get_html_parser(response.text)
         links = soup.find("div", {"class": "group flex flex-col-reverse"}).find_all(
             "a", {"class": "link-hover link-primary visited:text-accent"}
         )
@@ -89,7 +88,7 @@ class Bato(Manga):
         response, _ = Bato.send_request(
             f"https://bato.to/title/{manga}/{chapter['url']}"
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Bato.get_html_parser(response.text)
         props = soup.find(
             lambda tag: tag.name == "astro-island" and "imageFiles" in tag.get("props")
         )["props"]
@@ -115,7 +114,7 @@ class Bato(Manga):
                 )
             except HTTPError:
                 yield {}
-            soup = BeautifulSoup(response.text, "html.parser")
+            soup = Bato.get_html_parser(response.text)
             mangas = soup.find_all(
                 "div", {"class": "flex border-b border-b-base-200 pb-5"}
             )

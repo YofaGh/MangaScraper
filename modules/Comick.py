@@ -1,5 +1,4 @@
 import json
-from bs4 import BeautifulSoup
 from utils.models import Manga
 
 
@@ -13,7 +12,7 @@ class Comick(Manga):
         response, _ = Comick.send_request(
             f"https://comick.io/comic/{manga}", headers=Comick.headers
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Comick.get_html_parser(response.text)
         data = json.loads(
             soup.find("script", {"id": "__NEXT_DATA__"}).get_text(strip=True)
         )["props"]["pageProps"]
@@ -54,7 +53,7 @@ class Comick(Manga):
             f"https://comick.io/comic/{manga}", headers=Comick.headers
         )
         session.headers = Comick.headers
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Comick.get_html_parser(response.text)
         script = soup.find("script", {"id": "__NEXT_DATA__"})
         hid = json.loads(script.get_text(strip=True))["props"]["pageProps"]["comic"][
             "hid"
@@ -87,7 +86,7 @@ class Comick(Manga):
         response, _ = Comick.send_request(
             f"https://comick.io/comic/{manga}/{chapter['url']}", headers=Comick.headers
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Comick.get_html_parser(response.text)
         script = soup.find("script", {"id": "__NEXT_DATA__"})
         images = json.loads(script.get_text(strip=True))["props"]["pageProps"][
             "chapter"
@@ -105,7 +104,7 @@ class Comick(Manga):
             "https://comick.io/search", headers=Comick.headers
         )
         session.headers = Comick.headers
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Comick.get_html_parser(response.text)
         script = soup.find("script", {"id": "__NEXT_DATA__"}).get_text(strip=True)
         genres = {
             genre["id"]: genre["name"]

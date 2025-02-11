@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from utils.models import Manga
 
 
@@ -11,7 +10,7 @@ class Truemanga(Manga):
         from contextlib import suppress
 
         response, _ = Truemanga.send_request(f"https://truemanga.com/{manga}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Truemanga.get_html_parser(response.text)
         cover, title, alternative, summary, status = 5 * [""]
         extras = {}
         info_box = soup.find("div", {"class": "book-info"})
@@ -61,7 +60,7 @@ class Truemanga(Manga):
 
     def get_chapters(manga):
         response, session = Truemanga.send_request(f"https://truemanga.com/{manga}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Truemanga.get_html_parser(response.text)
         script = soup.find(
             lambda tag: tag.name == "script" and "bookId" in tag.text
         ).text
@@ -69,7 +68,7 @@ class Truemanga(Manga):
         response, session = Truemanga.send_request(
             f"https://truemanga.com/api/manga/{book_id}/chapters", session=session
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Truemanga.get_html_parser(response.text)
         chapters = [
             {
                 "url": chapter["value"].split("/")[-1],
@@ -83,7 +82,7 @@ class Truemanga(Manga):
         response, _ = Truemanga.send_request(
             f"https://truemanga.com/{manga}/{chapter['url']}"
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Truemanga.get_html_parser(response.text)
         script = soup.find(
             lambda tag: tag.name == "script" and "chapImages" in tag.text
         ).text
@@ -112,7 +111,7 @@ class Truemanga(Manga):
                 )
             except HTTPError:
                 yield {}
-            soup = BeautifulSoup(response.text, "html.parser")
+            soup = Truemanga.get_html_parser(response.text)
             mangas = soup.find_all("div", {"class": "book-item"})
             if not mangas:
                 yield {}

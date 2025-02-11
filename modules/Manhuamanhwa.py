@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from utils.models import Manga
 from user_agents import LEECH
 
@@ -14,7 +13,7 @@ class Manhuamanhwa(Manga):
         response, _ = Manhuamanhwa.send_request(
             f"https://manhuamanhwa.com/manga/{manga}", headers=Manhuamanhwa.headers
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Manhuamanhwa.get_html_parser(response.text)
         cover, title, alternative, summary, rating, status = 6 * [""]
         extras = {}
         info_box = soup.find("div", {"class": "tab-summary"})
@@ -91,7 +90,7 @@ class Manhuamanhwa(Manga):
             method="POST",
             headers=Manhuamanhwa.headers,
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Manhuamanhwa.get_html_parser(response.text)
         divs = soup.find_all("li", {"class": "wp-manga-chapter"})
         chapters_urls = [div.find("a")["href"].split("/")[-2] for div in divs[::-1]]
         chapters = [
@@ -105,7 +104,7 @@ class Manhuamanhwa(Manga):
             f"https://manhuamanhwa.com/manga/{manga}/{chapter['url']}/",
             headers=Manhuamanhwa.headers,
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Manhuamanhwa.get_html_parser(response.text)
         images = soup.find("div", {"class": "reading-content"}).find_all("img")
         images = [image["data-src"] for image in images]
         return images, False
@@ -125,7 +124,7 @@ class Manhuamanhwa(Manga):
                 )
             except HTTPError:
                 yield {}
-            soup = BeautifulSoup(response.text, "html.parser")
+            soup = Manhuamanhwa.get_html_parser(response.text)
             mangas = soup.find_all("div", {"class": "row c-tabs-item__content"})
             results = {}
             for manga in mangas:

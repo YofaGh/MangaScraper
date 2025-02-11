@@ -1,5 +1,4 @@
 import json
-from bs4 import BeautifulSoup
 from utils.models import Manga
 
 
@@ -13,7 +12,7 @@ class Allmanga(Manga):
         from contextlib import suppress
 
         response, _ = Allmanga.send_request(f"https://allmanga.to/manga/{manga}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Allmanga.get_html_parser(response.text)
         cover, title, alternative, summary, rating, status = 6 * [""]
         info_box = soup.find("div", {"class": "info-box col-12"})
         extras = {}
@@ -68,7 +67,7 @@ class Allmanga(Manga):
 
     def get_chapters(manga):
         response, _ = Allmanga.send_request(f"https://allmanga.to/manga/{manga}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Allmanga.get_html_parser(response.text)
         script = soup.find(
             lambda tag: tag.name == "script" and "availableChaptersDetail" in tag.text
         ).get_text(strip=True)
@@ -107,7 +106,7 @@ class Allmanga(Manga):
         response, _ = Allmanga.send_request(
             f"https://allmanga.to/read/{manga}/{chapter['url']}"
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Allmanga.get_html_parser(response.text)
         script = soup.find(
             lambda tag: tag.name == "script" and "selectedPicturesServer" in tag.text
         ).get_text(strip=True)

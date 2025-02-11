@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from utils.models import Manga
 
 
@@ -12,7 +11,7 @@ class Mangadistrict(Manga):
         response, _ = Mangadistrict.send_request(
             f"https://mangadistrict.com/read-scan/{manga}"
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Mangadistrict.get_html_parser(response.text)
         cover, title, alternative, summary, rating, status = 6 * [""]
         extras = {}
         info_box = soup.find("div", {"class": "tab-summary"})
@@ -85,7 +84,7 @@ class Mangadistrict(Manga):
         response, _ = Mangadistrict.send_request(
             f"https://mangadistrict.com/read-scan/{manga}/ajax/chapters/", method="POST"
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Mangadistrict.get_html_parser(response.text)
         divs = soup.find_all("li", {"class": "wp-manga-chapter"})
         chapters_urls = [div.find("a")["href"].split("/")[-2] for div in divs[::-1]]
         chapters = [
@@ -98,7 +97,7 @@ class Mangadistrict(Manga):
         response, _ = Mangadistrict.send_request(
             f"https://mangadistrict.com/read-scan/{manga}/{chapter['url']}/"
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Mangadistrict.get_html_parser(response.text)
         images = soup.find("div", {"class": "reading-content"}).find_all("img")
         images = [image["src"].strip() for image in images]
         save_names = [
@@ -124,7 +123,7 @@ class Mangadistrict(Manga):
                 )
             except HTTPError:
                 yield {}
-            soup = BeautifulSoup(response.text, "html.parser")
+            soup = Mangadistrict.get_html_parser(response.text)
             mangas = soup.find_all("div", {"class": "row c-tabs-item__content"})
             results = {}
             for manga in mangas:

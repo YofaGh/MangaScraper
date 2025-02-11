@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from utils.models import Manga
 
 
@@ -12,7 +11,7 @@ class Toonily_Com(Manga):
         from contextlib import suppress
 
         response, _ = Toonily_Com.send_request(f"https://toonily.com/webtoon/{manga}/")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Toonily_Com.get_html_parser(response.text)
         (
             cover,
             title,
@@ -86,7 +85,7 @@ class Toonily_Com(Manga):
 
     def get_chapters(manga):
         response, _ = Toonily_Com.send_request(f"https://toonily.com/webtoon/{manga}/")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Toonily_Com.get_html_parser(response.text)
         divs = soup.find_all("li", {"class": "wp-manga-chapter"})
         chapters_urls = [div.find("a")["href"].split("/")[-2] for div in divs[::-1]]
         chapters = [
@@ -99,7 +98,7 @@ class Toonily_Com(Manga):
         response, _ = Toonily_Com.send_request(
             f"https://toonily.com/webtoon/{manga}/{chapter['url']}/"
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Toonily_Com.get_html_parser(response.text)
         images = soup.find("div", {"class": "reading-content"}).find_all("img")
         images = [image["data-src"].strip() for image in images]
         save_names = [
@@ -126,7 +125,7 @@ class Toonily_Com(Manga):
                 )
             except HTTPError:
                 yield {}
-            soup = BeautifulSoup(response.text, "html.parser")
+            soup = Toonily_Com.get_html_parser(response.text)
             mangas = soup.find_all("div", {"class": "col-6 col-sm-3 col-lg-2"})
             results = {}
             for manga in mangas:

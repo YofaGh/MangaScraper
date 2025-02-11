@@ -6,11 +6,10 @@ class _9hentai(Doujin):
     logo = "https://9hentai.com/images/logo.png"
 
     def get_info(code):
-        from bs4 import BeautifulSoup
         from contextlib import suppress
 
         response, _ = _9hentai.send_request(f"https://9hentai.com/g/{code}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = _9hentai.get_html_parser(response.text)
         cover, title, alternative, pages, uploaded = 5 * [""]
         info_box = soup.find("div", {"id": "info"})
         extras = {}

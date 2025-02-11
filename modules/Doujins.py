@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from utils.models import Doujin
 
 
@@ -12,7 +11,7 @@ class Doujins(Doujin):
         from contextlib import suppress
 
         response, _ = Doujins.send_request(f"https://doujins.com/{code}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Doujins.get_html_parser(response.text)
         cover, title, tags, artists, pages, translated_by, uploaded = 7 * [""]
         with suppress(Exception):
             cover = soup.find("img", {"class": "doujin active"})["data-file"].replace(
@@ -73,7 +72,7 @@ class Doujins(Doujin):
 
     def get_title(code):
         response, _ = Doujins.send_request(f"https://doujins.com/{code}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Doujins.get_html_parser(response.text)
         title = (
             soup.find("div", {"class", "folder-title"})
             .find_all("a")[-1]
@@ -83,7 +82,7 @@ class Doujins(Doujin):
 
     def get_images(code):
         response, _ = Doujins.send_request(f"https://doujins.com/{code}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Doujins.get_html_parser(response.text)
         if (
             "Upgrade to premium now!"
             in soup.find("div", {"id", "thumbnails"}).get_text()
@@ -107,7 +106,7 @@ class Doujins(Doujin):
                 f"https://doujins.com/searches?words={keyword}&page={page}",
                 session=session,
             )
-            soup = BeautifulSoup(response.text, "html.parser")
+            soup = Doujins.get_html_parser(response.text)
             divs = soup.select("#content > div > div:nth-child(5)")[0]
             try:
                 divs.find_all(

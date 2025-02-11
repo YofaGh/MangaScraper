@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from utils.models import Manga
 from user_agents import LEECH
 
@@ -15,7 +14,7 @@ class Constellarcomic(Manga):
             f"https://constellarcomic.com/manga/{manga}/",
             headers=Constellarcomic.headers,
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Constellarcomic.get_html_parser(response.text)
         cover, title, alternative, summary, rating, status = 6 * [""]
         info_box = soup.find("div", {"class": "main-info"})
         extras = {}
@@ -69,7 +68,7 @@ class Constellarcomic(Manga):
             f"https://constellarcomic.com/manga/{manga}/",
             headers=Constellarcomic.headers,
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Constellarcomic.get_html_parser(response.text)
         links = soup.find("div", {"id": "chapterlist"}).find_all("a")
         chapters_urls = [
             link["href"].split("/")[-2].replace(f"{manga}-", "") for link in links[::-1]
@@ -90,7 +89,7 @@ class Constellarcomic(Manga):
             f"https://constellarcomic.com/{manga}-{chapter_url}/",
             headers=Constellarcomic.headers,
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Constellarcomic.get_html_parser(response.text)
         script = soup.find(
             lambda tag: tag.name == "script" and "NO IMAGE YET" in tag.text
         )
@@ -111,7 +110,7 @@ class Constellarcomic(Manga):
                 session=session,
                 headers=Constellarcomic.headers,
             )
-            soup = BeautifulSoup(response.text, "html.parser")
+            soup = Constellarcomic.get_html_parser(response.text)
             mangas = soup.find_all("div", {"class": "bs swiper-slide"})
             if (
                 not mangas

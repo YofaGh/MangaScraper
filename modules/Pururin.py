@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from utils.models import Doujin
 
 
@@ -10,7 +9,7 @@ class Pururin(Doujin):
         from contextlib import suppress
 
         response, _ = Pururin.send_request(f"https://pururin.to/gallery/{code}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Pururin.get_html_parser(response.text)
         cover, title, alternative, pages, rating = 5 * [""]
         extras = {}
         with suppress(Exception):
@@ -50,13 +49,13 @@ class Pururin(Doujin):
 
     def get_title(code):
         response, _ = Pururin.send_request(f"https://pururin.to/gallery/{code}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Pururin.get_html_parser(response.text)
         title = soup.find("h1").get_text(strip=True)
         return title
 
     def get_images(code):
         response, _ = Pururin.send_request(f"https://pururin.to/gallery/{code}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Pururin.get_html_parser(response.text)
         images = soup.find("div", {"class": "gallery-preview"}).find_all("img")
         images = [
             image["data-src"] if image.get("data-src") else image["src"]
@@ -72,7 +71,7 @@ class Pururin(Doujin):
             response, session = Pururin.send_request(
                 f"https://pururin.to/search?q={keyword}&page={page}", session=session
             )
-            soup = BeautifulSoup(response.text, "html.parser")
+            soup = Pururin.get_html_parser(response.text)
             doujins = soup.find_all("a", {"class": "card card-gallery"})
             if not doujins:
                 yield {}

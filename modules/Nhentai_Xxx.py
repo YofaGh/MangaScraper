@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from utils.models import Doujin
 
 
@@ -10,7 +9,7 @@ class Nhentai_Xxx(Doujin):
         from contextlib import suppress
 
         response, _ = Nhentai_Xxx.send_request(f"https://nhentai.xxx/g/{code}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Nhentai_Xxx.get_html_parser(response.text)
         cover, title, alternative, pages, uploaded = 5 * [""]
         info_box = soup.find("div", {"id": "info"})
         extras = {}
@@ -51,13 +50,13 @@ class Nhentai_Xxx(Doujin):
 
     def get_title(code):
         response, _ = Nhentai_Xxx.send_request(f"https://nhentai.xxx/g/{code}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Nhentai_Xxx.get_html_parser(response.text)
         title = soup.find("div", {"class", "info"}).find("h1").get_text(strip=True)
         return title
 
     def get_images(code):
         response, _ = Nhentai_Xxx.send_request(f"https://nhentai.xxx/g/{code}/")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Nhentai_Xxx.get_html_parser(response.text)
         divs = soup.find("div", {"class": "gallery_thumbs"}).find_all("a")
         images = [div.find("img")["data-src"] for div in divs]
         new_images = []
@@ -79,7 +78,7 @@ class Nhentai_Xxx(Doujin):
                 )
             except HTTPError:
                 yield {}
-            soup = BeautifulSoup(response.text, "html.parser")
+            soup = Nhentai_Xxx.get_html_parser(response.text)
             doujins = soup.find_all("div", {"class": "gallery_item"})
             if not doujins:
                 yield {}

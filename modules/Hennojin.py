@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from utils.models import Doujin
 
 
@@ -11,7 +10,7 @@ class Hennojin(Doujin):
         from contextlib import suppress
 
         response, _ = Hennojin.send_request(f"https://hennojin.com/home/?manga={code}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Hennojin.get_html_parser(response.text)
         cover, title, alternative = 3 * [""]
         info_box = soup.find("div", {"class": "col-lg-9"})
         extras = {}
@@ -44,7 +43,7 @@ class Hennojin(Doujin):
 
     def get_title(code):
         response, _ = Hennojin.send_request(f"https://hennojin.com/home/?manga={code}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Hennojin.get_html_parser(response.text)
         title = soup.find("h3", {"class", "manga-title"}).contents[0]
         return title
 
@@ -53,14 +52,14 @@ class Hennojin(Doujin):
         response, _ = Hennojin.send_request(
             f"https://hennojin.com/home/manga-reader/?manga={code}&view=page"
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Hennojin.get_html_parser(response.text)
         images = soup.find("div", {"class": "slideshow-container"}).find_all("img")
         images = [f"https://hennojin.com{image['src']}" for image in images]
         return images, False
 
     def search_by_keyword(keyword, absolute):
         response, session = Hennojin.send_request("https://hennojin.com/home/")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Hennojin.get_html_parser(response.text)
         wpnonce = soup.find("input", {"id": "_wpnonce"})["value"]
         data = {
             "action": "post_grid_ajax_search_free",
@@ -78,7 +77,7 @@ class Hennojin(Doujin):
             response = response.json().get("html")
             if not response:
                 yield {}
-            soup = BeautifulSoup(response, "html.parser")
+            soup = Hennojin.get_html_parser(response)
             doujins = soup.find_all("div", {"class": "layer-content element_3"})
             results = {}
             for doujin in doujins:

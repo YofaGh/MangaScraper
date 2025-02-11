@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from utils.models import Doujin
 
 
@@ -11,7 +10,7 @@ class Imhentai(Doujin):
         from contextlib import suppress
 
         response, _ = Imhentai.send_request(f"https://imhentai.xxx/gallery/{code}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Imhentai.get_html_parser(response.text)
         cover, title, alternative, pages = 4 * [""]
         extras = {}
         with suppress(Exception):
@@ -45,7 +44,7 @@ class Imhentai(Doujin):
 
     def get_title(code):
         response, _ = Imhentai.send_request(f"https://imhentai.xxx/gallery/{code}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Imhentai.get_html_parser(response.text)
         title = (
             soup.find("div", {"class", "col-md-7 col-sm-7 col-lg-8 right_details"})
             .find("h1")
@@ -57,7 +56,7 @@ class Imhentai(Doujin):
         import json
 
         response, _ = Imhentai.send_request(f"https://imhentai.xxx/gallery/{code}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Imhentai.get_html_parser(response.text)
         path = (
             soup.find("div", {"id": "append_thumbs"})
             .find("img")["data-src"]
@@ -86,7 +85,7 @@ class Imhentai(Doujin):
                 )
             except HTTPError:
                 yield {}
-            soup = BeautifulSoup(response.text, "html.parser")
+            soup = Imhentai.get_html_parser(response.text)
             doujins = soup.find_all("div", {"class": "thumb"})
             if not doujins:
                 yield {}

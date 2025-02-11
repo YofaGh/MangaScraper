@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from utils.models import Manga
 
 
@@ -10,7 +9,7 @@ class Manga18fx(Manga):
         from contextlib import suppress
 
         response, _ = Manga18fx.send_request(f"https://manga18fx.com/manga/{manga}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Manga18fx.get_html_parser(response.text)
         cover, title, alternative, summary, rating, status = 6 * [""]
         extras = {}
         info_box = soup.find("div", {"class": "tab-summary"})
@@ -71,7 +70,7 @@ class Manga18fx(Manga):
 
     def get_chapters(manga):
         response, _ = Manga18fx.send_request(f"https://manga18fx.com/manga/{manga}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Manga18fx.get_html_parser(response.text)
         divs = soup.find_all("li", {"class": "a-h"})
         chapters_urls = [div.find("a")["href"].split("/")[-1] for div in divs[::-1]]
         chapters = [
@@ -84,7 +83,7 @@ class Manga18fx(Manga):
         response, _ = Manga18fx.send_request(
             f"https://manga18fx.com/manga/{manga}/{chapter['url']}"
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Manga18fx.get_html_parser(response.text)
         images = soup.find("div", {"class": "read-content"}).find_all("img")
         images = [image["src"].strip() for image in images]
         return images, False
@@ -108,7 +107,7 @@ class Manga18fx(Manga):
                 )
             except HTTPError:
                 yield {}
-            soup = BeautifulSoup(response.text, "html.parser")
+            soup = Manga18fx.get_html_parser(response.text)
             mangas = soup.find_all("div", {"class": "page-item"})
             results = {}
             if mangas == prev_page:

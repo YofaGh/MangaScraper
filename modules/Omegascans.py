@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from utils.models import Manga
 
 
@@ -11,7 +10,7 @@ class Omegascans(Manga):
         from urllib.parse import unquote
 
         response, _ = Omegascans.send_request(f"https://omegascans.org/series/{manga}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Omegascans.get_html_parser(response.text)
         cover, title, alternative, summary, release_year, authors = 6 * [""]
         with suppress(Exception):
             cover = unquote(
@@ -66,7 +65,7 @@ class Omegascans(Manga):
         response, session = Omegascans.send_request(
             "https://omegascans.org/series/where-is-my-hammer"
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Omegascans.get_html_parser(response.text)
         series_id = (
             soup.find(lambda tag: tag.name == "script" and "series_id" in tag.text)
             .text.split('{\\"series_id\\":')[1]
@@ -86,7 +85,7 @@ class Omegascans(Manga):
         response, _ = Omegascans.send_request(
             f"https://omegascans.org/series/{manga}/{chapter['url']}"
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Omegascans.get_html_parser(response.text)
         images = soup.find("p", {"class": "flex flex-col justify-center items-center"})
         images = [image["src"] for image in images.find_all("img")]
         return images, False

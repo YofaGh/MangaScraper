@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from utils.models import Manga
 
 
@@ -11,7 +10,7 @@ class Magzino(Manga):
         from contextlib import suppress
 
         response, _ = Magzino.send_request(f"https://magzino.top/all-books/{manga}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Magzino.get_html_parser(response.text)
         cover, title, summary, rating, status = 5 * [""]
         info_box = soup.find_all("div", {"class": "post-content_item"})
         extras = {}
@@ -65,7 +64,7 @@ class Magzino(Manga):
         response, _ = Magzino.send_request(
             f"https://magzino.top/all-books/{manga}/ajax/chapters", method="POST"
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Magzino.get_html_parser(response.text)
         aas = soup.find_all("div", {"class": "chap-a-span"})
         chapters = [
             {
@@ -87,7 +86,7 @@ class Magzino(Manga):
             f"https://magzino.top/all-books/{manga}/{chapter['url']}/",
             headers=Magzino.image_headers,
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Magzino.get_html_parser(response.text)
         divs = soup.find_all("img", {"class": "wp-manga-chapter-img"})
         images = [div["data-src"].strip() for div in divs]
         return images, False
@@ -126,7 +125,7 @@ class Magzino(Manga):
             )
             if not response.text:
                 yield {}
-            soup = BeautifulSoup(response.text, "html.parser")
+            soup = Magzino.get_html_parser(response.text)
             mangas = soup.find_all("div", {"class": class_name})
             results = {}
             for manga in mangas:

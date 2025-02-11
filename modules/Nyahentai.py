@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from utils.models import Doujin
 
 
@@ -10,7 +9,7 @@ class Nyahentai(Doujin):
         from contextlib import suppress
 
         response, _ = Nyahentai.send_request(f"https://nyahentai.red/g/{code}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Nyahentai.get_html_parser(response.text)
         cover, title, alternative, pages, uploaded = 5 * [""]
         info_box = soup.find("div", {"id": "info"})
         extras = {}
@@ -51,13 +50,13 @@ class Nyahentai(Doujin):
 
     def get_title(code):
         response, _ = Nyahentai.send_request(f"https://nyahentai.red/g/{code}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Nyahentai.get_html_parser(response.text)
         title = soup.find("h1", {"class", "title"}).find("span").get_text(strip=True)
         return title
 
     def get_images(code):
         response, _ = Nyahentai.send_request(f"https://nyahentai.red/g/{code}/")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Nyahentai.get_html_parser(response.text)
         divs = soup.find_all("a", {"class": "gallerythumb"})
         images = [div.find("img")["data-src"] for div in divs]
         new_images = []
@@ -79,7 +78,7 @@ class Nyahentai(Doujin):
                 )
             except HTTPError:
                 yield {}
-            soup = BeautifulSoup(response.text, "html.parser")
+            soup = Nyahentai.get_html_parser(response.text)
             doujins = soup.find_all("div", {"class": "gallery"})
             if not doujins:
                 yield {}

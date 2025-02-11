@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from utils.models import Manga
 
 
@@ -12,7 +11,7 @@ class Mangareader(Manga):
         response, _ = Mangareader.send_request(
             f"https://mangareader.mobi/manga/{manga}"
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Mangareader.get_html_parser(response.text)
         cover, title, alternative, summary, status, authors, views, genres = 8 * [""]
         info_box = soup.find("div", {"class": "imgdesc"})
         with suppress(Exception):
@@ -75,7 +74,7 @@ class Mangareader(Manga):
         response, _ = Mangareader.send_request(
             f"https://mangareader.mobi/manga/{manga}", verify=False
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Mangareader.get_html_parser(response.text)
         divs = soup.find("div", {"class": "cl"}).find_all("a")
         chapters = [div["href"].split("/")[-1] for div in divs[::-1]]
         chapters_urls = [chapter.replace(f"{manga}-", "") for chapter in chapters]
@@ -92,7 +91,7 @@ class Mangareader(Manga):
         response, _ = Mangareader.send_request(
             f"https://mangareader.mobi/chapter/{manga}-{chapter_url}", verify=False
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Mangareader.get_html_parser(response.text)
         images = (
             soup.find("div", {"id": "readerarea"})
             .find("p")
@@ -119,7 +118,7 @@ class Mangareader(Manga):
                 )
             except HTTPError:
                 yield {}
-            soup = BeautifulSoup(response.text, "html.parser")
+            soup = Mangareader.get_html_parser(response.text)
             mangas = soup.find("div", {"id": "content"}).find("ul").find_all("li")
             if not mangas:
                 yield {}

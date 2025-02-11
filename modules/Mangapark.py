@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from utils.models import Manga
 
 
@@ -11,7 +10,7 @@ class Mangapark(Manga):
 
         manga = manga.split("-")[0] if "-" in manga else manga
         response, _ = Mangapark.send_request(f"https://mangapark.to/title/{manga}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Mangapark.get_html_parser(response.text)
         cover, title, alternative, summary, status, rating = 6 * [""]
         info_box = soup.find("div", {"class": "flex flex-col md:flex-row"})
         extras = {}
@@ -50,7 +49,7 @@ class Mangapark(Manga):
         import json
 
         response, _ = Mangapark.send_request(f"https://mangapark.to/title/{manga}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Mangapark.get_html_parser(response.text)
         script = soup.find("script", {"type": "qwik/json"}).text
         data = json.loads(script)["objs"]
         chapters = [
@@ -69,7 +68,7 @@ class Mangapark(Manga):
         response, _ = Mangapark.send_request(
             f"https://mangapark.to/title/{manga}/{chapter['url']}"
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Mangapark.get_html_parser(response.text)
         script = soup.find("script", {"type": "qwik/json"})
         data = json.loads(script.text)["objs"]
         images = [item for item in data if isinstance(item, str) and "/comic/" in item]
@@ -88,7 +87,7 @@ class Mangapark(Manga):
                 f"https://mangapark.to/search?word={keyword}&page={page}",
                 session=session,
             )
-            soup = BeautifulSoup(response.text, "html.parser")
+            soup = Mangapark.get_html_parser(response.text)
             mangas = soup.find_all(
                 "div", {"class": "flex border-b border-b-base-200 pb-5"}
             )

@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from utils.models import Manga
 
 
@@ -12,7 +11,7 @@ class Manga68(Manga):
         from contextlib import suppress
 
         response, _ = Manga68.send_request(f"https://manga68.com/manga/{manga}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Manga68.get_html_parser(response.text)
         cover, title, summary, rating, status = 5 * [""]
         extras = {}
         info_box = soup.find("div", {"class": "tab-summary"})
@@ -71,7 +70,7 @@ class Manga68(Manga):
         response, _ = Manga68.send_request(
             f"https://manga68.com/manga/{manga}/ajax/chapters/", method="POST"
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Manga68.get_html_parser(response.text)
         divs = soup.find_all("li", {"class": "wp-manga-chapter"})
         chapters_urls = [div.find("a")["href"].split("/")[-2] for div in divs[::-1]]
         chapters = [
@@ -84,7 +83,7 @@ class Manga68(Manga):
         response, _ = Manga68.send_request(
             f"https://manga68.com/manga/{manga}/{chapter['url']}/"
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Manga68.get_html_parser(response.text)
         images = soup.find("div", {"class": "reading-content"}).find_all("img")
         images = [image["data-src"].strip() for image in images]
         return images, False
@@ -105,7 +104,7 @@ class Manga68(Manga):
                 yield {}
             if response.url == f"https://manga68.com?s={keyword}&post_type=wp-manga":
                 yield {}
-            soup = BeautifulSoup(response.text, "html.parser")
+            soup = Manga68.get_html_parser(response.text)
             mangas = soup.find_all("div", {"class": "row c-tabs-item__content"})
             results = {}
             for manga in mangas:

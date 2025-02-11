@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from utils.models import Manga
 
 
@@ -11,7 +10,7 @@ class Mangapill(Manga):
         from contextlib import suppress
 
         response, _ = Mangapill.send_request(f"https://mangapill.com/manga/{manga}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Mangapill.get_html_parser(response.text)
         cover, title, summary, status, genres, typee, year = 7 * [""]
         info_box = soup.find(
             "div", {"class": "grid grid-cols-1 md:grid-cols-3 gap-3 mb-3"}
@@ -43,7 +42,7 @@ class Mangapill(Manga):
 
     def get_chapters(manga):
         response, _ = Mangapill.send_request(f"https://mangapill.com/manga/{manga}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Mangapill.get_html_parser(response.text)
         chapters = [
             aa["href"].replace("/chapters/", "")
             for aa in soup.find("div", {"id": "chapters"}).find_all("a")
@@ -58,7 +57,7 @@ class Mangapill(Manga):
         response, _ = Mangapill.send_request(
             f"https://mangapill.com/chapters/{chapter['url']}"
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Mangapill.get_html_parser(response.text)
         divs = soup.find_all("chapter-page")
         images = [div.find("img")["data-src"] for div in divs]
         save_names = [
@@ -76,7 +75,7 @@ class Mangapill(Manga):
             response, session = Mangapill.send_request(
                 f"https://mangapill.com/search?q={keyword}&page={page}", session=session
             )
-            soup = BeautifulSoup(response.text, "html.parser")
+            soup = Mangapill.get_html_parser(response.text)
             mangas = soup.find(
                 "div",
                 {
@@ -130,7 +129,7 @@ class Mangapill(Manga):
                     f"https://mangapill.com/search?status={status}&page={page}",
                     session=session,
                 )
-                soup = BeautifulSoup(response.text, "html.parser")
+                soup = Mangapill.get_html_parser(response.text)
                 mangas = soup.find(
                     "div",
                     {

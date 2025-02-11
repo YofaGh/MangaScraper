@@ -1,4 +1,5 @@
 import requests
+from bs4 import BeautifulSoup
 
 
 class Module:
@@ -48,6 +49,12 @@ class Module:
                 return image_name
         except Exception:
             return None
+
+    def get_html_parser(text):
+        return BeautifulSoup(text, "html.parser")
+
+    def get_xml_parser(text):
+        return BeautifulSoup(text, "xml")
 
     def get_info() -> dict:
         return {}

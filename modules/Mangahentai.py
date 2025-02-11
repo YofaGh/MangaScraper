@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from utils.models import Manga
 
 
@@ -12,7 +11,7 @@ class Mangahentai(Manga):
         response, _ = Mangahentai.send_request(
             f"https://mangahentai.me/manga-hentai/{manga}"
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Mangahentai.get_html_parser(response.text)
         cover, title, alternative, summary, rating, status = 6 * [""]
         extras = {}
         info_box = soup.find("div", {"class": "tab-summary"})
@@ -89,7 +88,7 @@ class Mangahentai(Manga):
         response, _ = Mangahentai.send_request(
             f"https://mangahentai.me/manga-hentai/{manga}/ajax/chapters/", method="POST"
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Mangahentai.get_html_parser(response.text)
         lis = soup.find_all("li", {"class": "wp-manga-chapter"})
         chapters_urls = [li.find("a")["href"].split("/")[-2] for li in lis[::-1]]
         chapters = [
@@ -102,7 +101,7 @@ class Mangahentai(Manga):
         response, _ = Mangahentai.send_request(
             f"https://mangahentai.me/manga-hentai/{manga}/{chapter['url']}/"
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Mangahentai.get_html_parser(response.text)
         images = soup.find("div", {"class": "reading-content"}).find_all("img")
         images = [image["src"].strip() for image in images]
         return images, False
@@ -121,7 +120,7 @@ class Mangahentai(Manga):
                 )
             except HTTPError:
                 yield {}
-            soup = BeautifulSoup(response.text, "html.parser")
+            soup = Mangahentai.get_html_parser(response.text)
             mangas = soup.find_all("div", {"class": "row c-tabs-item__content"})
             results = {}
             for manga in mangas:

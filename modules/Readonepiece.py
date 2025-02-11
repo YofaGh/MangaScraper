@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from utils.models import Manga
 
 
@@ -10,7 +9,7 @@ class Readonepiece(Manga):
         response, _ = Readonepiece.send_request(
             f"https://ww9.readonepiece.com/manga/{manga}/"
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Readonepiece.get_html_parser(response.text)
         cover = soup.find("div", {"class": "py-4 px-6 mb-3"}).find("img")["src"]
         title = soup.find(
             "h1", {"class": "my-3 font-bold text-2xl md:text-3xl"}
@@ -30,7 +29,7 @@ class Readonepiece(Manga):
         response, _ = Readonepiece.send_request(
             f"https://ww9.readonepiece.com/manga/{manga}/"
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Readonepiece.get_html_parser(response.text)
         divs = soup.find_all(
             "div", {"class": "bg-bg-secondary p-3 rounded mb-3 shadow"}
         )
@@ -49,7 +48,7 @@ class Readonepiece(Manga):
         response, _ = Readonepiece.send_request(
             f"https://ww9.readonepiece.com/chapter/{manga}-{chapter_url}"
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Readonepiece.get_html_parser(response.text)
         images = soup.find_all("img", {"class", "mb-3 mx-auto js-page"})
         images = [image["src"] for image in images]
         return images, False
@@ -58,7 +57,7 @@ class Readonepiece(Manga):
         response, _ = Readonepiece.send_request(
             "https://ww11.readonepiece.com/sitemap.xml"
         )
-        soup = BeautifulSoup(response.text, "xml")
+        soup = Readonepiece.get_xml_parser(response.text)
         results = {}
         urls = soup.find_all("url")
         for url in urls:

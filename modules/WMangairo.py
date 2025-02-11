@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from utils.models import Manga
 
 
@@ -12,7 +11,7 @@ class WMangairo(Manga):
         from datetime import datetime
 
         response, _ = WMangairo.send_request(f"https://chap.mangairo.com/{manga}")
-        soup = BeautifulSoup(response.text, "html.parser").find(
+        soup = WMangairo.get_html_parser(response.text).find(
             "div", {"class": "story_content"}
         )
         contents = soup.find("ul", {"class": "story_info_right"}).find_all("li")
@@ -65,7 +64,7 @@ class WMangairo(Manga):
 
     def get_chapters(manga):
         response, _ = WMangairo.send_request(f"https://chap.mangairo.com/{manga}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = WMangairo.get_html_parser(response.text)
         lis = soup.find("div", {"class": "chapter_list"}).find_all("li")
         chapters_urls = [li.find("a")["href"].split("/")[-1] for li in lis[::-1]]
         chapters = [
@@ -78,7 +77,7 @@ class WMangairo(Manga):
         response, _ = WMangairo.send_request(
             f"https://chap.mangairo.com/{manga}/{chapter['url']}"
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = WMangairo.get_html_parser(response.text)
         images = soup.find("div", {"class": "panel-read-story"}).find_all("img")
         images = [image["src"].strip() for image in images]
         return images, False
@@ -101,7 +100,7 @@ class WMangairo(Manga):
                 )
             except HTTPError:
                 yield {}
-            soup = BeautifulSoup(response.text, "html.parser")
+            soup = WMangairo.get_html_parser(response.text)
             mangas = soup.find_all("div", {"class": "story-item"})
             if not mangas:
                 yield {}

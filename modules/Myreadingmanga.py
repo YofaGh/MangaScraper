@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from utils.models import Doujin
 
 
@@ -11,7 +10,7 @@ class Myreadingmanga(Doujin):
         from contextlib import suppress
 
         response, _ = Myreadingmanga.send_request(f"https://myreadingmanga.to/g/{code}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Myreadingmanga.get_html_parser(response.text)
         cover, title, alternative, pages, uploaded = 5 * [""]
         info_box = soup.find("div", {"id": "info"})
         extras = {}
@@ -49,7 +48,7 @@ class Myreadingmanga(Doujin):
 
     def get_title(code):
         response, _ = Myreadingmanga.send_request(f"https://myreadingmanga.to/g/{code}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Myreadingmanga.get_html_parser(response.text)
         title = soup.find("div", {"class", "container"}).find("h1").get_text(strip=True)
         return title
 
@@ -57,7 +56,7 @@ class Myreadingmanga(Doujin):
         response, _ = Myreadingmanga.send_request(
             f"https://myreadingmanga.to/g/{code}/"
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Myreadingmanga.get_html_parser(response.text)
         divs = soup.find_all("a", {"class": "gallerythumb"})
         images = [div.find("img")["data-src"] for div in divs]
         new_images = []
@@ -79,7 +78,7 @@ class Myreadingmanga(Doujin):
                 )
             except HTTPError:
                 yield {}
-            soup = BeautifulSoup(response.text, "html.parser")
+            soup = Myreadingmanga.get_html_parser(response.text)
             doujins = soup.find_all("div", {"class": "gallery"})
             if not doujins:
                 yield {}

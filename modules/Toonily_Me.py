@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from utils.models import Manga
 
 
@@ -11,7 +10,7 @@ class Toonily_Me(Manga):
         from contextlib import suppress
 
         response, _ = Toonily_Me.send_request(f"https://toonily.me/{manga}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Toonily_Me.get_html_parser(response.text)
         (
             cover,
             title,
@@ -81,7 +80,7 @@ class Toonily_Me(Manga):
 
     def get_chapters(manga):
         response, _ = Toonily_Me.send_request(f"https://toonily.me/{manga}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Toonily_Me.get_html_parser(response.text)
         divs = soup.find("ul", {"class": "chapter-list"}).find_all("li")
         chapters_urls = [div.find("a")["href"].split("/")[-1] for div in divs[::-1]]
         chapters = [
@@ -94,7 +93,7 @@ class Toonily_Me(Manga):
         response, _ = Toonily_Me.send_request(
             f"https://toonily.me/{manga}/{chapter['url']}"
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Toonily_Me.get_html_parser(response.text)
         images = soup.find("div", {"id": "chapter-images"}).find_all("img")
         images = [image["data-src"].strip() for image in images]
         return images, False
@@ -113,7 +112,7 @@ class Toonily_Me(Manga):
             response, session = Toonily_Me.send_request(
                 template.replace("P_P_P_P", str(page)), session=session
             )
-            soup = BeautifulSoup(response.text, "html.parser")
+            soup = Toonily_Me.get_html_parser(response.text)
             mangas = soup.find_all("div", {"class": "book-item"})
             if not mangas:
                 yield {}

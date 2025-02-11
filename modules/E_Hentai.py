@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from utils.models import Doujin
 from user_agents import MOZILLA
 
@@ -15,7 +14,7 @@ class E_Hentai(Doujin):
         response, _ = E_Hentai.send_request(
             f"https://e-hentai.org/g/{code}", headers=E_Hentai.headers
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = E_Hentai.get_html_parser(response.text)
         cover, title, pages, rating = 4 * [""]
         box = soup.find("div", {"class": "gm"})
         infos = {
@@ -62,19 +61,19 @@ class E_Hentai(Doujin):
         response, _ = E_Hentai.send_request(
             f"https://e-hentai.org/g/{code}", headers=E_Hentai.headers
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = E_Hentai.get_html_parser(response.text)
         title = soup.find("h1").get_text(strip=True)
         return title
 
     def get_images(code):
         response, session = E_Hentai.send_request(f"https://e-hentai.org/g/{code}")
         session.headers = E_Hentai.headers
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = E_Hentai.get_html_parser(response.text)
         pages = [a["href"] for a in soup.find("div", {"id": "gdt"}).find_all("a")]
         images, save_names = [], []
         for i in range(len(pages)):
             response, session = E_Hentai.send_request(pages[i], session=session)
-            soup = BeautifulSoup(response.text, "html.parser")
+            soup = E_Hentai.get_html_parser(response.text)
             image = soup.find("img", {"id": "img"})["src"]
             images.append(image)
             save_names.append(f"{i + 1:03d}.{image.split('.')[-1]}")
@@ -95,7 +94,7 @@ class E_Hentai(Doujin):
                 or "No hits found" in response.text
             ):
                 yield {}
-            soup = BeautifulSoup(response.text, "html.parser")
+            soup = E_Hentai.get_html_parser(response.text)
             doujins = soup.find("table", {"class": "itg"}).find_all("tr")[1:]
             results = {}
             for doujin in doujins:

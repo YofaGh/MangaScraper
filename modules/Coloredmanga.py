@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from utils.models import Manga
 
 
@@ -12,7 +11,7 @@ class Coloredmanga(Manga):
         response, _ = Coloredmanga.send_request(
             f"https://coloredmanga.com/mangas/{manga}/"
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Coloredmanga.get_html_parser(response.text)
         cover, title, alternative, rating, status = 5 * [""]
         extras = {}
         info_box = soup.find("div", {"class": "tab-summary"})
@@ -73,7 +72,7 @@ class Coloredmanga(Manga):
         response, _ = Coloredmanga.send_request(
             f"https://coloredmanga.com/mangas/{manga}/"
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Coloredmanga.get_html_parser(response.text)
         divs = soup.find_all("li", {"class": "wp-manga-chapter"})
         chapters_urls = [
             div.find("a")["href"].replace(
@@ -91,7 +90,7 @@ class Coloredmanga(Manga):
         response, _ = Coloredmanga.send_request(
             f"https://coloredmanga.com/mangas/{manga}/{chapter['url']}/"
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Coloredmanga.get_html_parser(response.text)
         images = soup.find("div", {"class": "reading-content"}).find_all("img")
         images = [image["src"].strip() for image in images]
         save_names = [
@@ -113,7 +112,7 @@ class Coloredmanga(Manga):
                 )
             except HTTPError:
                 yield {}
-            soup = BeautifulSoup(response.text, "html.parser")
+            soup = Coloredmanga.get_html_parser(response.text)
             mangas = soup.find_all("div", {"class": "row c-tabs-item__content"})
             results = {}
             for manga in mangas:

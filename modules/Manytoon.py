@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from utils.models import Manga
 
 
@@ -10,7 +9,7 @@ class Manytoon(Manga):
         from contextlib import suppress
 
         response, _ = Manytoon.send_request(f"https://manytoon.com/comic/{manga}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Manytoon.get_html_parser(response.text)
         cover, title, alternative, summary, rating, status = 6 * [""]
         extras = {}
         info_box = soup.find("div", {"class": "tab-summary"})
@@ -85,7 +84,7 @@ class Manytoon(Manga):
 
     def get_chapters(manga):
         response, session = Manytoon.send_request(f"https://manytoon.com/comic/{manga}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Manytoon.get_html_parser(response.text)
         post_id = soup.find("a", {"class": "wp-manga-action-button"})["data-post"]
         data = {"action": "ajax_chap", "post_id": int(post_id)}
         response, _ = Manytoon.send_request(
@@ -94,7 +93,7 @@ class Manytoon(Manga):
             session=session,
             data=data,
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Manytoon.get_html_parser(response.text)
         lis = soup.find_all("li", {"class": "wp-manga-chapter"})
         chapters_urls = [li.find("a")["href"].split("/")[-2] for li in lis[::-1]]
         chapters = [
@@ -107,7 +106,7 @@ class Manytoon(Manga):
         response, _ = Manytoon.send_request(
             f"https://manytoon.com/comic/{manga}/{chapter['url']}/"
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Manytoon.get_html_parser(response.text)
         images = soup.find("div", {"class": "reading-content"}).find_all("img")
         images = [image["src"].strip() for image in images]
         return images, False
@@ -126,7 +125,7 @@ class Manytoon(Manga):
                 )
             except HTTPError:
                 yield {}
-            soup = BeautifulSoup(response.text, "html.parser")
+            soup = Manytoon.get_html_parser(response.text)
             mangas = soup.find_all("div", {"class": "col-6 col-md-3 badge-pos-1"})
             results = {}
             for manga in mangas:

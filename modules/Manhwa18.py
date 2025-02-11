@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from utils.models import Manga
 
 
@@ -10,7 +9,7 @@ class Manhwa18(Manga):
         from contextlib import suppress
 
         response, _ = Manhwa18.send_request(f"https://manhwa18.com/manga/{manga}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Manhwa18.get_html_parser(response.text)
         cover, title, alternative, summary, rating, status, latest_reading, views = (
             8 * [""]
         )
@@ -68,7 +67,7 @@ class Manhwa18(Manga):
 
     def get_chapters(manga):
         response, _ = Manhwa18.send_request(f"https://manhwa18.com/manga/{manga}")
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Manhwa18.get_html_parser(response.text)
         aas = soup.find("ul", {"class": "list-chapters at-series"}).find_all("a")
         chapters_urls = [aa["href"].split("/")[-1] for aa in aas[::-1]]
         chapters = [
@@ -81,7 +80,7 @@ class Manhwa18(Manga):
         response, _ = Manhwa18.send_request(
             f"https://manhwa18.com/manga/{manga}/{chapter['url']}"
         )
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = Manhwa18.get_html_parser(response.text)
         images = soup.find("div", {"id": "chapter-content"}).find_all("img")
         images = [image["data-src"] for image in images]
         return images, False
@@ -99,7 +98,7 @@ class Manhwa18(Manga):
                 )
             except HTTPError:
                 yield {}
-            soup = BeautifulSoup(response.text, "html.parser")
+            soup = Manhwa18.get_html_parser(response.text)
             mangas = soup.find_all("div", {"class": "thumb-item-flow col-6 col-md-2"})
             if not mangas:
                 yield {}
