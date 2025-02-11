@@ -5,11 +5,11 @@ class Comics8Muses(Manga):
     domain = "comics.8muses.com"
     logo = "https://comics.8muses.com/favicon.ico"
 
-    def get_info(manga):
-        response, _ = Comics8Muses.send_request(
+    def get_info(self, manga):
+        response, _ = self.send_request(
             f"https://comics.8muses.com/comics/album/{manga}/"
         )
-        soup = Comics8Muses.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         return {
             "Cover": f"https://comics.8muses.com{soup.find('div', {'class': 'gallery'}).find('img')['data-src']}",
             "Title": soup.find("div", {"class": "top-menu-breadcrumb"})
@@ -18,13 +18,13 @@ class Comics8Muses(Manga):
             .get_text(strip=True),
         }
 
-    def get_chapters(manga):
+    def get_chapters(self, manga):
         page = 1
         chapters_urls = []
-        response, session = Comics8Muses.send_request(
+        response, session = self.send_request(
             f"https://comics.8muses.com/comics/album/{manga}/{page}"
         )
-        soup = Comics8Muses.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         if not soup.find("div", {"class": "image-title"}):
             return [""]
         while True:
@@ -33,22 +33,22 @@ class Comics8Muses(Manga):
                 break
             chapters_urls += [link.get("href").split("/")[-1] for link in links]
             page += 1
-            response, session = Comics8Muses.send_request(
+            response, session = self.send_request(
                 f"https://comics.8muses.com/comics/album/{manga}/{page}",
                 session=session,
             )
-            soup = Comics8Muses.get_html_parser(response.text)
+            soup = self.get_html_parser(response.text)
         chapters = [
-            {"url": chapter_url, "name": Comics8Muses.rename_chapter(chapter_url)}
+            {"url": chapter_url, "name": self.rename_chapter(chapter_url)}
             for chapter_url in chapters_urls
         ]
         return chapters
 
-    def get_images(manga, chapter):
-        response, _ = Comics8Muses.send_request(
+    def get_images(self, manga, chapter):
+        response, _ = self.send_request(
             f"https://comics.8muses.com/comics/album/{manga}/{chapter['url']}"
         )
-        soup = Comics8Muses.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         links = soup.find_all("a", {"class": "c-tile t-hover"})
         images = [link.find("img").get("data-src") for link in links]
         images = [
@@ -60,16 +60,16 @@ class Comics8Muses(Manga):
         ]
         return images, save_names
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(self, keyword, absolute):
         page = 1
         links = []
         session = None
         while True:
-            response, session = Comics8Muses.send_request(
+            response, session = self.send_request(
                 f"https://comics.8muses.com/search?q={keyword}&page={page}",
                 session=session,
             )
-            soup = Comics8Muses.get_html_parser(response.text)
+            soup = self.get_html_parser(response.text)
             comics = soup.find_all("a", {"class": "c-tile t-hover"}, href=True)
             results = {}
             if not comics:
@@ -93,7 +93,7 @@ class Comics8Muses(Manga):
                 if not sublink:
                     links.append(url)
                     results[comic.get_text(strip=True)] = {
-                        "domain": Comics8Muses.domain,
+                        "domain": self.domain,
                         "url": url,
                         "thumbnail": f"https://comics.8muses.com{comic.find('img')['data-src']}",
                         "page": page,
@@ -101,24 +101,24 @@ class Comics8Muses(Manga):
             yield results
             page += 1
 
-    def get_db():
+    def get_db(self):
         from requests.exceptions import HTTPError
 
         page = 1
         session = None
         while True:
             try:
-                response, session = Comics8Muses.send_request(
+                response, session = self.send_request(
                     f"https://comics.8muses.com/sitemap/{page}.xml", session=session
                 )
             except HTTPError:
                 yield {}
-            soup = Comics8Muses.get_xml_parser(response.text)
+            soup = self.get_xml_parser(response.text)
             results = {}
             urls = soup.find_all("loc")
             for url in urls:
                 results[url.get_text().split("/")[-1].replace("-", " ")] = {
-                    "domain": Comics8Muses.domain,
+                    "domain": self.domain,
                     "url": url.get_text().replace(
                         "https://comics.8muses.com/comics/album/", ""
                     ),
@@ -127,5 +127,6 @@ class Comics8Muses(Manga):
             yield results
             page += 1
 
+    @staticmethod
     def rename_chapter(name):
         return name.replace("-", " ")

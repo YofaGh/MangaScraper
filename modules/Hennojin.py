@@ -6,11 +6,11 @@ class Hennojin(Doujin):
     logo = "https://hennojin.com/favicon.ico"
     is_coded = False
 
-    def get_info(code):
+    def get_info(self, code):
         from contextlib import suppress
 
-        response, _ = Hennojin.send_request(f"https://hennojin.com/home/?manga={code}")
-        soup = Hennojin.get_html_parser(response.text)
+        response, _ = self.send_request(f"https://hennojin.com/home/?manga={code}")
+        soup = self.get_html_parser(response.text)
         cover, title, alternative = 3 * [""]
         info_box = soup.find("div", {"class": "col-lg-9"})
         extras = {}
@@ -41,25 +41,25 @@ class Hennojin(Doujin):
             "Extras": extras,
         }
 
-    def get_title(code):
-        response, _ = Hennojin.send_request(f"https://hennojin.com/home/?manga={code}")
-        soup = Hennojin.get_html_parser(response.text)
+    def get_title(self, code):
+        response, _ = self.send_request(f"https://hennojin.com/home/?manga={code}")
+        soup = self.get_html_parser(response.text)
         title = soup.find("h3", {"class", "manga-title"}).contents[0]
         return title
 
-    def get_images(code):
+    def get_images(self, code):
         code = code.replace("-", " ")
-        response, _ = Hennojin.send_request(
+        response, _ = self.send_request(
             f"https://hennojin.com/home/manga-reader/?manga={code}&view=page"
         )
-        soup = Hennojin.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         images = soup.find("div", {"class": "slideshow-container"}).find_all("img")
         images = [f"https://hennojin.com{image['src']}" for image in images]
         return images, False
 
-    def search_by_keyword(keyword, absolute):
-        response, session = Hennojin.send_request("https://hennojin.com/home/")
-        soup = Hennojin.get_html_parser(response.text)
+    def search_by_keyword(self, keyword, absolute):
+        response, session = self.send_request("https://hennojin.com/home/")
+        soup = self.get_html_parser(response.text)
         wpnonce = soup.find("input", {"id": "_wpnonce"})["value"]
         data = {
             "action": "post_grid_ajax_search_free",
@@ -68,7 +68,7 @@ class Hennojin(Doujin):
             "formData": f"keyword={keyword}&_wpnonce={wpnonce}",
         }
         while True:
-            response, session = Hennojin.send_request(
+            response, session = self.send_request(
                 "https://hennojin.com/home/wp-admin/admin-ajax.php",
                 method="POST",
                 session=session,
@@ -77,7 +77,7 @@ class Hennojin(Doujin):
             response = response.json().get("html")
             if not response:
                 yield {}
-            soup = Hennojin.get_html_parser(response)
+            soup = self.get_html_parser(response)
             doujins = soup.find_all("div", {"class": "layer-content element_3"})
             results = {}
             for doujin in doujins:
@@ -88,7 +88,7 @@ class Hennojin(Doujin):
                 ):
                     continue
                 results[tilink.get_text(strip=True)] = {
-                    "domain": Hennojin.domain,
+                    "domain": self.domain,
                     "code": tilink["href"],
                     "thumbnail": doujin.find("img")["src"],
                     "page": data["current_page"],
@@ -96,5 +96,5 @@ class Hennojin(Doujin):
             yield results
             data["current_page"] += 1
 
-    def get_db():
-        return Hennojin.search_by_keyword("", False)
+    def get_db(self):
+        return self.search_by_keyword("", False)

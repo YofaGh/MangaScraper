@@ -5,11 +5,11 @@ class Manhuascan(Manga):
     domain = "manhuascan.us"
     logo = "https://manhuascan.us/fav.png?v=1"
 
-    def get_info(manga):
+    def get_info(self, manga):
         from contextlib import suppress
 
-        response, _ = Manhuascan.send_request(f"https://manhuascan.us/manga/{manga}")
-        soup = Manhuascan.get_html_parser(response.text)
+        response, _ = self.send_request(f"https://manhuascan.us/manga/{manga}")
+        soup = self.get_html_parser(response.text)
         (
             cover,
             title,
@@ -83,27 +83,27 @@ class Manhuascan(Manga):
             "Dates": {"Posted On": posted_on, "Updated On": updated_on},
         }
 
-    def get_chapters(manga):
-        response, _ = Manhuascan.send_request(f"https://manhuascan.us/manga/{manga}")
-        soup = Manhuascan.get_html_parser(response.text)
+    def get_chapters(self, manga):
+        response, _ = self.send_request(f"https://manhuascan.us/manga/{manga}")
+        soup = self.get_html_parser(response.text)
         divs = soup.find_all("div", {"class": "eph-num"})
         chapters_urls = [div.find("a")["href"].split("/")[-1] for div in divs[::-1]]
         chapters = [
-            {"url": chapter_url, "name": Manhuascan.rename_chapter(chapter_url)}
+            {"url": chapter_url, "name": self.rename_chapter(chapter_url)}
             for chapter_url in chapters_urls
         ]
         return chapters
 
-    def get_images(manga, chapter):
-        response, _ = Manhuascan.send_request(
+    def get_images(self, manga, chapter):
+        response, _ = self.send_request(
             f"https://manhuascan.us/manga/{manga}/{chapter['url']}"
         )
-        soup = Manhuascan.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         images = soup.find("div", {"id": "readerarea"}).find_all("img")
         images = [image["src"] for image in images]
         return images, False
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(self, keyword, absolute):
         from contextlib import suppress
         from requests.exceptions import HTTPError
 
@@ -111,13 +111,13 @@ class Manhuascan(Manga):
         session = None
         while True:
             try:
-                response, session = Manhuascan.send_request(
+                response, session = self.send_request(
                     f"https://manhuascan.us/manga-list?search={keyword}&page={page}",
                     session=session,
                 )
             except HTTPError:
                 yield {}
-            soup = Manhuascan.get_html_parser(response.text)
+            soup = self.get_html_parser(response.text)
             mangas = soup.find_all("div", {"class": "bsx"})
             if not mangas:
                 yield {}
@@ -134,7 +134,7 @@ class Manhuascan(Manga):
                         .split("/")[-1]
                     )
                 results[ti] = {
-                    "domain": Manhuascan.domain,
+                    "domain": self.domain,
                     "url": manga.find("a")["href"].split("/")[-1],
                     "latest_chapter": latest_chapter,
                     "thumbnail": manga.find("img")["src"],
@@ -143,5 +143,5 @@ class Manhuascan(Manga):
             yield results
             page += 1
 
-    def get_db():
-        return Manhuascan.search_by_keyword("", False)
+    def get_db(self):
+        return self.search_by_keyword("", False)

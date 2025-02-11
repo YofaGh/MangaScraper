@@ -5,12 +5,12 @@ class Mangapark(Manga):
     domain = "mangapark.to"
     logo = "https://mangapark.to/public-assets/img/favicon.ico"
 
-    def get_info(manga):
+    def get_info(self, manga):
         from contextlib import suppress
 
         manga = manga.split("-")[0] if "-" in manga else manga
-        response, _ = Mangapark.send_request(f"https://mangapark.to/title/{manga}")
-        soup = Mangapark.get_html_parser(response.text)
+        response, _ = self.send_request(f"https://mangapark.to/title/{manga}")
+        soup = self.get_html_parser(response.text)
         cover, title, alternative, summary, status, rating = 6 * [""]
         info_box = soup.find("div", {"class": "flex flex-col md:flex-row"})
         extras = {}
@@ -45,30 +45,30 @@ class Mangapark(Manga):
             "Extras": extras,
         }
 
-    def get_chapters(manga):
+    def get_chapters(self, manga):
         import json
 
-        response, _ = Mangapark.send_request(f"https://mangapark.to/title/{manga}")
-        soup = Mangapark.get_html_parser(response.text)
+        response, _ = self.send_request(f"https://mangapark.to/title/{manga}")
+        soup = self.get_html_parser(response.text)
         script = soup.find("script", {"type": "qwik/json"}).text
         data = json.loads(script)["objs"]
         chapters = [
             {
                 "url": item.split("/")[-1],
-                "name": Mangapark.rename_chapter(str(data[i - 1])),
+                "name": self.rename_chapter(str(data[i - 1])),
             }
             for i, item in enumerate(data)
             if isinstance(item, str) and f"{manga}/" in item
         ]
         return chapters
 
-    def get_images(manga, chapter):
+    def get_images(self, manga, chapter):
         import json
 
-        response, _ = Mangapark.send_request(
+        response, _ = self.send_request(
             f"https://mangapark.to/title/{manga}/{chapter['url']}"
         )
-        soup = Mangapark.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         script = soup.find("script", {"type": "qwik/json"})
         data = json.loads(script.text)["objs"]
         images = [item for item in data if isinstance(item, str) and "/comic/" in item]
@@ -77,17 +77,17 @@ class Mangapark(Manga):
         ]
         return images, save_names
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(self, keyword, absolute):
         from contextlib import suppress
 
         page = 1
         session = None
         while True:
-            response, session = Mangapark.send_request(
+            response, session = self.send_request(
                 f"https://mangapark.to/search?word={keyword}&page={page}",
                 session=session,
             )
-            soup = Mangapark.get_html_parser(response.text)
+            soup = self.get_html_parser(response.text)
             mangas = soup.find_all(
                 "div", {"class": "flex border-b border-b-base-200 pb-5"}
             )
@@ -125,7 +125,7 @@ class Mangapark(Manga):
                 if absolute and keyword.lower() not in name.lower():
                     continue
                 results[name] = {
-                    "domain": Mangapark.domain,
+                    "domain": self.domain,
                     "url": url,
                     "thumbnail": manga.find("img")["src"],
                     "alternatives": alternatives,
@@ -137,5 +137,5 @@ class Mangapark(Manga):
             yield results
             page += 1
 
-    def get_db():
-        return Mangapark.search_by_keyword("", False)
+    def get_db(self):
+        return self.search_by_keyword("", False)

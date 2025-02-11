@@ -5,11 +5,11 @@ class Manhwa18(Manga):
     domain = "manhwa18.com"
     logo = "https://manhwa18.com/favicon1.ico"
 
-    def get_info(manga):
+    def get_info(self, manga):
         from contextlib import suppress
 
-        response, _ = Manhwa18.send_request(f"https://manhwa18.com/manga/{manga}")
-        soup = Manhwa18.get_html_parser(response.text)
+        response, _ = self.send_request(f"https://manhwa18.com/manga/{manga}")
+        soup = self.get_html_parser(response.text)
         cover, title, alternative, summary, rating, status, latest_reading, views = (
             8 * [""]
         )
@@ -65,40 +65,40 @@ class Manhwa18(Manga):
             },
         }
 
-    def get_chapters(manga):
-        response, _ = Manhwa18.send_request(f"https://manhwa18.com/manga/{manga}")
-        soup = Manhwa18.get_html_parser(response.text)
+    def get_chapters(self, manga):
+        response, _ = self.send_request(f"https://manhwa18.com/manga/{manga}")
+        soup = self.get_html_parser(response.text)
         aas = soup.find("ul", {"class": "list-chapters at-series"}).find_all("a")
         chapters_urls = [aa["href"].split("/")[-1] for aa in aas[::-1]]
         chapters = [
-            {"url": chapter_url, "name": Manhwa18.rename_chapter(chapter_url)}
+            {"url": chapter_url, "name": self.rename_chapter(chapter_url)}
             for chapter_url in chapters_urls
         ]
         return chapters
 
-    def get_images(manga, chapter):
-        response, _ = Manhwa18.send_request(
+    def get_images(self, manga, chapter):
+        response, _ = self.send_request(
             f"https://manhwa18.com/manga/{manga}/{chapter['url']}"
         )
-        soup = Manhwa18.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         images = soup.find("div", {"id": "chapter-content"}).find_all("img")
         images = [image["data-src"] for image in images]
         return images, False
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(self, keyword, absolute):
         from requests.exceptions import HTTPError
 
         page = 1
         session = None
         while True:
             try:
-                response, session = Manhwa18.send_request(
+                response, session = self.send_request(
                     f"https://manhwa18.com/tim-kiem?q={keyword}&page={page}",
                     session=session,
                 )
             except HTTPError:
                 yield {}
-            soup = Manhwa18.get_html_parser(response.text)
+            soup = self.get_html_parser(response.text)
             mangas = soup.find_all("div", {"class": "thumb-item-flow col-6 col-md-2"})
             if not mangas:
                 yield {}
@@ -110,7 +110,7 @@ class Manhwa18(Manga):
                 if absolute and keyword.lower() not in ti.lower():
                     continue
                 results[ti] = {
-                    "domain": Manhwa18.domain,
+                    "domain": self.domain,
                     "url": manga.find("a")["href"].split("/")[-1],
                     "latest_chapter": manga.find("div", {"class": "thumb-detail"})
                     .find("a")["href"]
@@ -123,9 +123,10 @@ class Manhwa18(Manga):
             yield results
             page += 1
 
-    def get_db():
-        return Manhwa18.search_by_keyword("", False)
+    def get_db(self):
+        return self.search_by_keyword("", False)
 
+    @staticmethod
     def rename_chapter(chapter):
         new_name = ""
         reached_number = False

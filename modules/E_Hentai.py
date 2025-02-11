@@ -8,13 +8,13 @@ class E_Hentai(Doujin):
     headers = {"User-Agent": MOZILLA}
     is_coded = False
 
-    def get_info(code):
+    def get_info(self, code):
         from contextlib import suppress
 
-        response, _ = E_Hentai.send_request(
-            f"https://e-hentai.org/g/{code}", headers=E_Hentai.headers
+        response, _ = self.send_request(
+            f"https://e-hentai.org/g/{code}", headers=self.headers
         )
-        soup = E_Hentai.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         cover, title, pages, rating = 4 * [""]
         box = soup.find("div", {"class": "gm"})
         infos = {
@@ -57,44 +57,44 @@ class E_Hentai(Doujin):
             "Dates": {"Posted": f"{infos['Posted']}:00"},
         }
 
-    def get_title(code):
-        response, _ = E_Hentai.send_request(
-            f"https://e-hentai.org/g/{code}", headers=E_Hentai.headers
+    def get_title(self, code):
+        response, _ = self.send_request(
+            f"https://e-hentai.org/g/{code}", headers=self.headers
         )
-        soup = E_Hentai.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         title = soup.find("h1").get_text(strip=True)
         return title
 
-    def get_images(code):
-        response, session = E_Hentai.send_request(f"https://e-hentai.org/g/{code}")
-        session.headers = E_Hentai.headers
-        soup = E_Hentai.get_html_parser(response.text)
+    def get_images(self, code):
+        response, session = self.send_request(f"https://e-hentai.org/g/{code}")
+        self.headers = self.headers
+        soup = self.get_html_parser(response.text)
         pages = [a["href"] for a in soup.find("div", {"id": "gdt"}).find_all("a")]
         images, save_names = [], []
         for i in range(len(pages)):
-            response, session = E_Hentai.send_request(pages[i], session=session)
-            soup = E_Hentai.get_html_parser(response.text)
+            response, session = self.send_request(pages[i], session=session)
+            soup = self.get_html_parser(response.text)
             image = soup.find("img", {"id": "img"})["src"]
             images.append(image)
             save_names.append(f"{i + 1:03d}.{image.split('.')[-1]}")
         return images, save_names
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(self, keyword, absolute):
         page = 1
         last = ""
         session = None
         while True:
-            response, session = E_Hentai.send_request(
+            response, session = self.send_request(
                 f"https://e-hentai.org/?f_search={keyword}&next={last}",
                 session=session,
-                headers=E_Hentai.headers,
+                headers=self.headers,
             )
             if (
                 "No unfiltered results found" in response.text
                 or "No hits found" in response.text
             ):
                 yield {}
-            soup = E_Hentai.get_html_parser(response.text)
+            soup = self.get_html_parser(response.text)
             doujins = soup.find("table", {"class": "itg"}).find_all("tr")[1:]
             results = {}
             for doujin in doujins:
@@ -115,7 +115,7 @@ class E_Hentai(Doujin):
                     else thumbnail["src"]
                 )
                 results[ti] = {
-                    "domain": E_Hentai.domain,
+                    "domain": self.domain,
                     "code": code,
                     "category": doujin.find("div", {"class": "cn"}).get_text(
                         strip=True
@@ -127,5 +127,5 @@ class E_Hentai(Doujin):
             yield results
             page += 1
 
-    def get_db():
-        return E_Hentai.search_by_keyword("", False)
+    def get_db(self):
+        return self.search_by_keyword("", False)

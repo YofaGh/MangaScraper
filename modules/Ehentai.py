@@ -6,11 +6,11 @@ class Ehentai(Doujin):
     logo = "https://ehentai.to/favicon.ico"
     download_images_headers = {"Referer": "https://ehentai.to/"}
 
-    def get_info(code):
+    def get_info(self, code):
         from contextlib import suppress
 
-        response, _ = Ehentai.send_request(f"https://ehentai.to/g/{code}")
-        soup = Ehentai.get_html_parser(response.text)
+        response, _ = self.send_request(f"https://ehentai.to/g/{code}")
+        soup = self.get_html_parser(response.text)
         cover, title, alternative, pages, uploaded = 5 * [""]
         info_box = soup.find("div", {"id": "info"})
         extras = {}
@@ -46,15 +46,15 @@ class Ehentai(Doujin):
             "Dates": {"Uploaded": uploaded},
         }
 
-    def get_title(code):
-        response, _ = Ehentai.send_request(f"https://ehentai.to/g/{code}")
-        soup = Ehentai.get_html_parser(response.text)
+    def get_title(self, code):
+        response, _ = self.send_request(f"https://ehentai.to/g/{code}")
+        soup = self.get_html_parser(response.text)
         title = soup.find("div", {"class", "container"}).find("h1").get_text(strip=True)
         return title
 
-    def get_images(code):
-        response, _ = Ehentai.send_request(f"https://ehentai.to/g/{code}/")
-        soup = Ehentai.get_html_parser(response.text)
+    def get_images(self, code):
+        response, _ = self.send_request(f"https://ehentai.to/g/{code}/")
+        soup = self.get_html_parser(response.text)
         divs = soup.find_all("a", {"class": "gallerythumb"})
         images = [div.find("img")["data-src"] for div in divs]
         new_images = []
@@ -63,20 +63,20 @@ class Ehentai(Doujin):
             new_images.append(f"{image.rsplit('/', 1)[0]}/{name}")
         return new_images, False
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(self, keyword, absolute):
         from requests.exceptions import HTTPError
 
         page = 1
         session = None
         while True:
             try:
-                response, session = Ehentai.send_request(
+                response, session = self.send_request(
                     f"https://ehentai.to/search?q={keyword}&page={page}",
                     session=session,
                 )
             except HTTPError:
                 yield {}
-            soup = Ehentai.get_html_parser(response.text)
+            soup = self.get_html_parser(response.text)
             doujins = soup.find_all("div", {"class": "gallery"})
             if not doujins:
                 yield {}
@@ -87,7 +87,7 @@ class Ehentai(Doujin):
                 if absolute and keyword.lower() not in ti.lower():
                     continue
                 results[ti] = {
-                    "domain": Ehentai.domain,
+                    "domain": self.domain,
                     "code": doj["href"].split("/")[-2],
                     "thumbnail": doj.find("img")["data-src"],
                     "page": page,
@@ -95,5 +95,5 @@ class Ehentai(Doujin):
             yield results
             page += 1
 
-    def get_db():
-        return Ehentai.search_by_keyword("", False)
+    def get_db(self):
+        return self.search_by_keyword("", False)

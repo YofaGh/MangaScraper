@@ -5,11 +5,11 @@ class Manga18fx(Manga):
     domain = "manga18fx.com"
     logo = "https://manga18fx.com/images/favicon-160x160.jpg"
 
-    def get_info(manga):
+    def get_info(self, manga):
         from contextlib import suppress
 
-        response, _ = Manga18fx.send_request(f"https://manga18fx.com/manga/{manga}")
-        soup = Manga18fx.get_html_parser(response.text)
+        response, _ = self.send_request(f"https://manga18fx.com/manga/{manga}")
+        soup = self.get_html_parser(response.text)
         cover, title, alternative, summary, rating, status = 6 * [""]
         extras = {}
         info_box = soup.find("div", {"class": "tab-summary"})
@@ -68,27 +68,27 @@ class Manga18fx(Manga):
             "Extras": extras,
         }
 
-    def get_chapters(manga):
-        response, _ = Manga18fx.send_request(f"https://manga18fx.com/manga/{manga}")
-        soup = Manga18fx.get_html_parser(response.text)
+    def get_chapters(self, manga):
+        response, _ = self.send_request(f"https://manga18fx.com/manga/{manga}")
+        soup = self.get_html_parser(response.text)
         divs = soup.find_all("li", {"class": "a-h"})
         chapters_urls = [div.find("a")["href"].split("/")[-1] for div in divs[::-1]]
         chapters = [
-            {"url": chapter_url, "name": Manga18fx.rename_chapter(chapter_url)}
+            {"url": chapter_url, "name": self.rename_chapter(chapter_url)}
             for chapter_url in chapters_urls
         ]
         return chapters
 
-    def get_images(manga, chapter):
-        response, _ = Manga18fx.send_request(
+    def get_images(self, manga, chapter):
+        response, _ = self.send_request(
             f"https://manga18fx.com/manga/{manga}/{chapter['url']}"
         )
-        soup = Manga18fx.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         images = soup.find("div", {"class": "read-content"}).find_all("img")
         images = [image["src"].strip() for image in images]
         return images, False
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(self, keyword, absolute):
         from requests.exceptions import HTTPError
         from contextlib import suppress
 
@@ -102,12 +102,12 @@ class Manga18fx(Manga):
         session = None
         while True:
             try:
-                response, session = Manga18fx.send_request(
+                response, session = self.send_request(
                     template.replace("P_P_P_P", str(page)), session=session
                 )
             except HTTPError:
                 yield {}
-            soup = Manga18fx.get_html_parser(response.text)
+            soup = self.get_html_parser(response.text)
             mangas = soup.find_all("div", {"class": "page-item"})
             results = {}
             if mangas == prev_page:
@@ -124,7 +124,7 @@ class Manga18fx(Manga):
                         .split("/")[-1]
                     )
                 results[ti["title"]] = {
-                    "domain": Manga18fx.domain,
+                    "domain": self.domain,
                     "url": ti["href"].split("/")[-1],
                     "latest_chapter": latest_chapter,
                     "thumbnail": manga.find("img")["data-src"],
@@ -134,5 +134,5 @@ class Manga18fx(Manga):
             yield results
             page += 1
 
-    def get_db():
-        return Manga18fx.search_by_keyword("", False)
+    def get_db(self):
+        return self.search_by_keyword("", False)

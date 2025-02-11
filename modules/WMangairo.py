@@ -6,12 +6,12 @@ class WMangairo(Manga):
     logo = "https://w.mangairo.com/themes/home/images/favicon.png"
     download_images_headers = {"Referer": "https://chap.mangairo.com/"}
 
-    def get_info(manga):
+    def get_info(self, manga):
         from contextlib import suppress
         from datetime import datetime
 
-        response, _ = WMangairo.send_request(f"https://chap.mangairo.com/{manga}")
-        soup = WMangairo.get_html_parser(response.text).find(
+        response, _ = self.send_request(f"https://chap.mangairo.com/{manga}")
+        soup = self.get_html_parser(response.text).find(
             "div", {"class": "story_content"}
         )
         contents = soup.find("ul", {"class": "story_info_right"}).find_all("li")
@@ -62,27 +62,27 @@ class WMangairo(Manga):
             "Dates": {"Last updated": last_updated},
         }
 
-    def get_chapters(manga):
-        response, _ = WMangairo.send_request(f"https://chap.mangairo.com/{manga}")
-        soup = WMangairo.get_html_parser(response.text)
+    def get_chapters(self, manga):
+        response, _ = self.send_request(f"https://chap.mangairo.com/{manga}")
+        soup = self.get_html_parser(response.text)
         lis = soup.find("div", {"class": "chapter_list"}).find_all("li")
         chapters_urls = [li.find("a")["href"].split("/")[-1] for li in lis[::-1]]
         chapters = [
-            {"url": chapter_url, "name": WMangairo.rename_chapter(chapter_url)}
+            {"url": chapter_url, "name": self.rename_chapter(chapter_url)}
             for chapter_url in chapters_urls
         ]
         return chapters
 
-    def get_images(manga, chapter):
-        response, _ = WMangairo.send_request(
+    def get_images(self, manga, chapter):
+        response, _ = self.send_request(
             f"https://chap.mangairo.com/{manga}/{chapter['url']}"
         )
-        soup = WMangairo.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         images = soup.find("div", {"class": "panel-read-story"}).find_all("img")
         images = [image["src"].strip() for image in images]
         return images, False
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(self, keyword, absolute):
         from contextlib import suppress
         from requests.exceptions import HTTPError
 
@@ -95,12 +95,12 @@ class WMangairo(Manga):
         prev_page = []
         while True:
             try:
-                response, session = WMangairo.send_request(
+                response, session = self.send_request(
                     template.replace("P_P_P_P", str(page)), session=session
                 )
             except HTTPError:
                 yield {}
-            soup = WMangairo.get_html_parser(response.text)
+            soup = self.get_html_parser(response.text)
             mangas = soup.find_all("div", {"class": "story-item"})
             if not mangas:
                 yield {}
@@ -121,7 +121,7 @@ class WMangairo(Manga):
                         lambda tag: tag.name == "span" and "Author" in tag.text
                     ).get_text(strip=True)
                 results[ti.get_text(strip=True)] = {
-                    "domain": WMangairo.domain,
+                    "domain": self.domain,
                     "url": ti.find("a")["href"].split("/")[-1],
                     "thumbnail": manga.find("img")["src"],
                     "Authors": authors.replace("Author : ", "").replace(
@@ -134,5 +134,5 @@ class WMangairo(Manga):
             yield results
             page += 1
 
-    def get_db():
-        return WMangairo.search_by_keyword("", False)
+    def get_db(self):
+        return self.search_by_keyword("", False)

@@ -8,11 +8,11 @@ class Allmanga(Manga):
     search_headers = {"if-none-match": "87272", "Referer": "https://allmanga.to/"}
     get_db_headers = {"Referer": "https://allmanga.to/"}
 
-    def get_info(manga):
+    def get_info(self, manga):
         from contextlib import suppress
 
-        response, _ = Allmanga.send_request(f"https://allmanga.to/manga/{manga}")
-        soup = Allmanga.get_html_parser(response.text)
+        response, _ = self.send_request(f"https://allmanga.to/manga/{manga}")
+        soup = self.get_html_parser(response.text)
         cover, title, alternative, summary, rating, status = 6 * [""]
         info_box = soup.find("div", {"class": "info-box col-12"})
         extras = {}
@@ -65,9 +65,9 @@ class Allmanga(Manga):
             "Extras": extras,
         }
 
-    def get_chapters(manga):
-        response, _ = Allmanga.send_request(f"https://allmanga.to/manga/{manga}")
-        soup = Allmanga.get_html_parser(response.text)
+    def get_chapters(self, manga):
+        response, _ = self.send_request(f"https://allmanga.to/manga/{manga}")
+        soup = self.get_html_parser(response.text)
         script = soup.find(
             lambda tag: tag.name == "script" and "availableChaptersDetail" in tag.text
         ).get_text(strip=True)
@@ -97,16 +97,16 @@ class Allmanga(Manga):
             f"chapter-{raw}-raw" for raw in raws[::-1]
         ]
         chapters = [
-            {"url": chapter_url, "name": Allmanga.rename_chapter(chapter_url)}
+            {"url": chapter_url, "name": self.rename_chapter(chapter_url)}
             for chapter_url in chapters_urls
         ]
         return chapters
 
-    def get_images(manga, chapter):
-        response, _ = Allmanga.send_request(
+    def get_images(self, manga, chapter):
+        response, _ = self.send_request(
             f"https://allmanga.to/read/{manga}/{chapter['url']}"
         )
-        soup = Allmanga.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         script = soup.find(
             lambda tag: tag.name == "script" and "selectedPicturesServer" in tag.text
         ).get_text(strip=True)
@@ -124,7 +124,7 @@ class Allmanga(Manga):
         images = [image.replace("\\u002F", "/") for image in images]
         return images, False
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(self, keyword, absolute):
         query = """https://api.allmanga.to/api?variables=
         {
             "search":{
@@ -143,10 +143,10 @@ class Allmanga(Manga):
         page = 1
         session = None
         while True:
-            response, session = Allmanga.send_request(
+            response, session = self.send_request(
                 query.replace("P_P_P_P", str(page)).replace("K_K_K_K", keyword),
                 session=session,
-                headers=Allmanga.search_headers,
+                headers=self.search_headers,
             )
             mangas = response.json()["data"]["mangas"]["edges"]
             if not mangas:
@@ -162,7 +162,7 @@ class Allmanga(Manga):
                     elif manga["lastChapterInfo"]["raw"]:
                         latest_chapter = f"chapter-{manga['lastChapterInfo']['raw']['chapterString']}-raw"
                 results[manga["name"]] = {
-                    "domain": Allmanga.domain,
+                    "domain": self.domain,
                     "url": manga["_id"],
                     "latest_chapter": latest_chapter,
                     "thumbnail": f"https://wp.youtube-anime.com/aln.youtube-anime.com/{manga['thumbnail']}",
@@ -171,7 +171,7 @@ class Allmanga(Manga):
             yield results
             page += 1
 
-    def get_db():
+    def get_db(self):
         from contextlib import suppress
 
         query = """https://api.allmanga.to/api?variables=
@@ -193,7 +193,7 @@ class Allmanga(Manga):
         session = None
         page = 1
         while True:
-            response, session = Allmanga.send_request(
+            response, session = self.send_request(
                 query.replace("P_P_P_P", str(page)),
                 session=session,
                 headers=Allmanga.get_db_headers,
@@ -207,7 +207,7 @@ class Allmanga(Manga):
                 with suppress(Exception):
                     latest_chapter = f"chapter-{manga['lastChapterInfo']['sub']['chapterString']}-sub"
                 results[manga["name"]] = {
-                    "domain": Allmanga.domain,
+                    "domain": self.domain,
                     "url": manga["_id"],
                     "latest_chapter": latest_chapter,
                     "page": page,
@@ -215,6 +215,7 @@ class Allmanga(Manga):
             yield results
             page += 1
 
+    @staticmethod
     def rename_chapter(chapter):
         tail = " Raw" if "raw" in chapter else ""
         new_name = ""

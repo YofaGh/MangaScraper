@@ -9,7 +9,7 @@ NestedModule = Manga | Doujin | List[T]
 def __import_module(module_name: str) -> Manga | Doujin:
     return getattr(
         __import__(f"modules.{module_name}", fromlist=[module_name]), module_name
-    )
+    )()
 
 
 def get_modules(key: str | list[str | list] | None = None) -> NestedModule:

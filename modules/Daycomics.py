@@ -7,15 +7,15 @@ class Daycomics(Manga):
     headers = {"cookie": "hc_vfs=Y"}
     download_images_headers = {"Referer": "https://daycomics.me"}
 
-    def get_info(manga):
+    def get_info(self, manga):
         from contextlib import suppress
 
         manga = manga[:-5] if manga.endswith(".html") else manga
         manga = manga.replace("https://daycomics.me/en/", "")
-        response, _ = Daycomics.send_request(
-            f"https://daycomics.me/en/{manga}.html", headers=Daycomics.headers
+        response, _ = self.send_request(
+            f"https://daycomics.me/en/{manga}.html", headers=self.headers
         )
-        soup = Daycomics.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         cover, title, summary = "", "", ""
         info_box = soup.find("div", {"class": "inner_ch"})
         extras = {}
@@ -50,18 +50,18 @@ class Daycomics(Manga):
             "Extras": extras,
         }
 
-    def get_chapters(manga):
+    def get_chapters(self, manga):
         manga = manga[:-5] if manga.endswith(".html") else manga
         manga = manga.replace("https://daycomics.me/en/", "")
-        response, _ = Daycomics.send_request(
-            f"https://daycomics.me/en/{manga}.html", headers=Daycomics.headers
+        response, _ = self.send_request(
+            f"https://daycomics.me/en/{manga}.html", headers=self.headers
         )
-        soup = Daycomics.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         lis = soup.find_all("li", {"class": "normal_ep"})
         chapters = [
             {
                 "url": li.find("a")["href"],
-                "name": Manga.rename_chapter(
+                "name": self.rename_chapter(
                     li.find("span", {"class": "num"}).get_text(strip=True)
                 ),
             }
@@ -69,16 +69,16 @@ class Daycomics(Manga):
         ]
         return chapters
 
-    def get_images(manga, chapter):
+    def get_images(self, manga, chapter):
         manga = manga[:-5] if manga.endswith(".html") else manga
         chapter["url"] = (
             chapter["url"][:-5] if chapter["url"].endswith(".html") else chapter["url"]
         )
         chapter["url"] = chapter["url"].replace("https://daycomics.me/en/", "")
-        response, _ = Daycomics.send_request(
-            f"https://daycomics.me/en/{chapter['url']}.html", headers=Daycomics.headers
+        response, _ = self.send_request(
+            f"https://daycomics.me/en/{chapter['url']}.html", headers=self.headers
         )
-        soup = Daycomics.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         divs = soup.find("div", {"class": "viewer-imgs"}).find_all("img")
         images = [
             div["data-src"].strip() if div.has_attr("data-src") else div["src"].strip()
@@ -86,7 +86,7 @@ class Daycomics(Manga):
         ]
         return images, False
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(self, keyword, absolute):
         from contextlib import suppress
 
         page = 1
@@ -97,10 +97,10 @@ class Daycomics(Manga):
             else "https://daycomics.me/en/genres?"
         )
         while True:
-            response, session = Daycomics.send_request(
-                f"{template}page={page}", headers=Daycomics.headers, session=session
+            response, session = self.send_request(
+                f"{template}page={page}", headers=self.headers, session=session
             )
-            soup = Daycomics.get_html_parser(response.text)
+            soup = self.get_html_parser(response.text)
             mangas = soup.find_all("li", {"itemtype": "https://schema.org/ComicSeries"})
             if not mangas:
                 yield {}
@@ -125,7 +125,7 @@ class Daycomics(Manga):
                         for genre in manga.find("p", {"class": "etc"}).find_all("span")
                     ]
                 results[ti] = {
-                    "domain": Daycomics.domain,
+                    "domain": self.domain,
                     "url": manga.find("a")["href"].replace(
                         "https://daycomics.me/en/", ""
                     )[:-5],
@@ -138,5 +138,5 @@ class Daycomics(Manga):
             yield results
             page += 1
 
-    def get_db():
-        return Daycomics.search_by_keyword("", False)
+    def get_db(self):
+        return self.search_by_keyword("", False)

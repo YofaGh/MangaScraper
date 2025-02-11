@@ -6,11 +6,11 @@ class Magzino(Manga):
     logo = "https://magzino.top/storage/2023/06/cropped-nafiicon-192x192.png"
     image_headers = {"cookie": "_lscache_vary=621c4b8eafb4287a9451c2bda1936d41"}
 
-    def get_info(manga):
+    def get_info(self, manga):
         from contextlib import suppress
 
-        response, _ = Magzino.send_request(f"https://magzino.top/all-books/{manga}")
-        soup = Magzino.get_html_parser(response.text)
+        response, _ = self.send_request(f"https://magzino.top/all-books/{manga}")
+        soup = self.get_html_parser(response.text)
         cover, title, summary, rating, status = 5 * [""]
         info_box = soup.find_all("div", {"class": "post-content_item"})
         extras = {}
@@ -60,18 +60,18 @@ class Magzino(Manga):
             "Extras": extras,
         }
 
-    def get_chapters(manga):
-        response, _ = Magzino.send_request(
+    def get_chapters(self, manga):
+        response, _ = self.send_request(
             f"https://magzino.top/all-books/{manga}/ajax/chapters", method="POST"
         )
-        soup = Magzino.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         aas = soup.find_all("div", {"class": "chap-a-span"})
         chapters = [
             {
                 "url": aa.find("a")["href"]
                 .replace(f"https://magzino.top/all-books/{manga}/", "")
                 .rstrip("/"),
-                "name": Magzino.rename_chapter(
+                "name": self.rename_chapter(
                     aa.find("a")["href"].replace(
                         f"https://magzino.top/all-books/{manga}/", ""
                     )
@@ -81,17 +81,17 @@ class Magzino(Manga):
         ]
         return chapters
 
-    def get_images(manga, chapter):
-        response, _ = Magzino.send_request(
+    def get_images(self, manga, chapter):
+        response, _ = self.send_request(
             f"https://magzino.top/all-books/{manga}/{chapter['url']}/",
-            headers=Magzino.image_headers,
+            headers=self.image_headers,
         )
-        soup = Magzino.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         divs = soup.find_all("img", {"class": "wp-manga-chapter-img"})
         images = [div["data-src"].strip() for div in divs]
         return images, False
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(self, keyword, absolute):
         from contextlib import suppress
 
         data = (
@@ -117,7 +117,7 @@ class Magzino(Manga):
             "row c-tabs-item__content" if keyword else "col-12 col-md-6 badge-pos-1"
         )
         while True:
-            response, session = Magzino.send_request(
+            response, session = self.send_request(
                 "https://magzino.top/ajax-call",
                 session=session,
                 method="POST",
@@ -125,7 +125,7 @@ class Magzino(Manga):
             )
             if not response.text:
                 yield {}
-            soup = Magzino.get_html_parser(response.text)
+            soup = self.get_html_parser(response.text)
             mangas = soup.find_all("div", {"class": class_name})
             results = {}
             for manga in mangas:
@@ -180,7 +180,7 @@ class Magzino(Manga):
                         .split("/", 5)[-1]
                     )
                 results[ti.get_text(strip=True)] = {
-                    "domain": Magzino.domain,
+                    "domain": self.domain,
                     "url": ti["href"].split("/")[-2],
                     "latest_chapter": latest_chapter.rstrip("/"),
                     "thumbnail": thumbnail,
@@ -194,9 +194,10 @@ class Magzino(Manga):
             yield results
             data["page"] += 1
 
-    def get_db():
-        return Magzino.search_by_keyword("", False)
+    def get_db(self):
+        return self.search_by_keyword("", False)
 
+    @staticmethod
     def rename_chapter(chapter):
         return " ".join(
             [ch.capitalize() for ch in chapter.strip("/").split("-")]

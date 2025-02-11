@@ -6,11 +6,11 @@ class Toonily_Me(Manga):
     logo = "https://toonily.me/static/sites/toonily/icons/favicon.ico"
     download_images_headers = {"Referer": "https://toonily.me/"}
 
-    def get_info(manga):
+    def get_info(self, manga):
         from contextlib import suppress
 
-        response, _ = Toonily_Me.send_request(f"https://toonily.me/{manga}")
-        soup = Toonily_Me.get_html_parser(response.text)
+        response, _ = self.send_request(f"https://toonily.me/{manga}")
+        soup = self.get_html_parser(response.text)
         (
             cover,
             title,
@@ -78,27 +78,27 @@ class Toonily_Me(Manga):
             },
         }
 
-    def get_chapters(manga):
-        response, _ = Toonily_Me.send_request(f"https://toonily.me/{manga}")
-        soup = Toonily_Me.get_html_parser(response.text)
+    def get_chapters(self, manga):
+        response, _ = self.send_request(f"https://toonily.me/{manga}")
+        soup = self.get_html_parser(response.text)
         divs = soup.find("ul", {"class": "chapter-list"}).find_all("li")
         chapters_urls = [div.find("a")["href"].split("/")[-1] for div in divs[::-1]]
         chapters = [
-            {"url": chapter_url, "name": Toonily_Me.rename_chapter(chapter_url)}
+            {"url": chapter_url, "name": self.rename_chapter(chapter_url)}
             for chapter_url in chapters_urls
         ]
         return chapters
 
-    def get_images(manga, chapter):
-        response, _ = Toonily_Me.send_request(
+    def get_images(self, manga, chapter):
+        response, _ = self.send_request(
             f"https://toonily.me/{manga}/{chapter['url']}"
         )
-        soup = Toonily_Me.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         images = soup.find("div", {"id": "chapter-images"}).find_all("img")
         images = [image["data-src"].strip() for image in images]
         return images, False
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(self, keyword, absolute):
         from contextlib import suppress
 
         template = (
@@ -109,10 +109,10 @@ class Toonily_Me(Manga):
         page = 1
         session = None
         while True:
-            response, session = Toonily_Me.send_request(
+            response, session = self.send_request(
                 template.replace("P_P_P_P", str(page)), session=session
             )
-            soup = Toonily_Me.get_html_parser(response.text)
+            soup = self.get_html_parser(response.text)
             mangas = soup.find_all("div", {"class": "book-item"})
             if not mangas:
                 yield {}
@@ -135,7 +135,7 @@ class Toonily_Me(Manga):
                         strip=True
                     )
                 results[ti["title"]] = {
-                    "domain": Toonily_Me.domain,
+                    "domain": self.domain,
                     "url": ti["href"].split("/")[-1],
                     "latest_chapter": latest_chapter,
                     "thumbnail": f"https:{manga.find('img')['data-src']}",
@@ -146,5 +146,5 @@ class Toonily_Me(Manga):
             yield results
             page += 1
 
-    def get_db():
-        return Toonily_Me.search_by_keyword("", False)
+    def get_db(self):
+        return self.search_by_keyword("", False)

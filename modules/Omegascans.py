@@ -5,12 +5,12 @@ class Omegascans(Manga):
     domain = "omegascans.org"
     logo = "https://omegascans.org/icon.png"
 
-    def get_info(manga):
+    def get_info(self, manga):
         from contextlib import suppress
         from urllib.parse import unquote
 
-        response, _ = Omegascans.send_request(f"https://omegascans.org/series/{manga}")
-        soup = Omegascans.get_html_parser(response.text)
+        response, _ = self.send_request(f"https://omegascans.org/series/{manga}")
+        soup = self.get_html_parser(response.text)
         cover, title, alternative, summary, release_year, authors = 6 * [""]
         with suppress(Exception):
             cover = unquote(
@@ -61,17 +61,17 @@ class Omegascans(Manga):
             "Extras": {"Authors": authors, "Release Year": release_year},
         }
 
-    def get_chapters(manga):
-        response, session = Omegascans.send_request(
-            "https://omegascans.org/series/where-is-my-hammer"
+    def get_chapters(self, manga):
+        response, session = self.send_request(
+            f"https://omegascans.org/series/{manga}"
         )
-        soup = Omegascans.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         series_id = (
             soup.find(lambda tag: tag.name == "script" and "series_id" in tag.text)
             .text.split('{\\"series_id\\":')[1]
             .split(",")[0]
         )
-        response, session = Omegascans.send_request(
+        response, session = self.send_request(
             f"https://api.omegascans.org/chapter/query?page=1&perPage=10000&series_id={series_id}",
             session=session,
         )
@@ -81,22 +81,22 @@ class Omegascans(Manga):
         ]
         return chapters
 
-    def get_images(manga, chapter):
-        response, _ = Omegascans.send_request(
+    def get_images(self, manga, chapter):
+        response, _ = self.send_request(
             f"https://omegascans.org/series/{manga}/{chapter['url']}"
         )
-        soup = Omegascans.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         images = soup.find("p", {"class": "flex flex-col justify-center items-center"})
         images = [image["src"] for image in images.find_all("img")]
         return images, False
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(self, keyword, absolute):
         from contextlib import suppress
 
         data = {"adult": "true", "query_string": keyword, "page": 1}
         session = None
         while True:
-            response, session = Omegascans.send_request(
+            response, session = self.send_request(
                 "https://api.omegascans.org/query", session=session, params=data
             )
             mangas = response.json()["data"]
@@ -124,7 +124,7 @@ class Omegascans(Manga):
                 with suppress(Exception):
                     latest_chapter = manga["latest_chapter"]["chapter_slug"]
                 results[manga["title"]] = {
-                    "domain": Omegascans.domain,
+                    "domain": self.domain,
                     "url": manga["series_slug"],
                     "thumbnail": manga["thumbnail"],
                     "summary": summary.replace("<p>", "").replace("</p>", ""),
@@ -137,5 +137,5 @@ class Omegascans(Manga):
             yield results
             data["page"] += 1
 
-    def get_db():
-        return Omegascans.search_by_keyword("", False)
+    def get_db(self):
+        return self.search_by_keyword("", False)

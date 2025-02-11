@@ -6,12 +6,12 @@ class Doujins(Doujin):
     logo = "https://doujins.com/img/logo32x32.png"
     is_coded = False
 
-    def get_info(code):
+    def get_info(self, code):
         from datetime import datetime
         from contextlib import suppress
 
-        response, _ = Doujins.send_request(f"https://doujins.com/{code}")
-        soup = Doujins.get_html_parser(response.text)
+        response, _ = self.send_request(f"https://doujins.com/{code}")
+        soup = self.get_html_parser(response.text)
         cover, title, tags, artists, pages, translated_by, uploaded = 7 * [""]
         with suppress(Exception):
             cover = soup.find("img", {"class": "doujin active"})["data-file"].replace(
@@ -70,9 +70,9 @@ class Doujins(Doujin):
             },
         }
 
-    def get_title(code):
-        response, _ = Doujins.send_request(f"https://doujins.com/{code}")
-        soup = Doujins.get_html_parser(response.text)
+    def get_title(self, code):
+        response, _ = self.send_request(f"https://doujins.com/{code}")
+        soup = self.get_html_parser(response.text)
         title = (
             soup.find("div", {"class", "folder-title"})
             .find_all("a")[-1]
@@ -80,9 +80,9 @@ class Doujins(Doujin):
         )
         return title
 
-    def get_images(code):
-        response, _ = Doujins.send_request(f"https://doujins.com/{code}")
-        soup = Doujins.get_html_parser(response.text)
+    def get_images(self, code):
+        response, _ = self.send_request(f"https://doujins.com/{code}")
+        soup = self.get_html_parser(response.text)
         if (
             "Upgrade to premium now!"
             in soup.find("div", {"id", "thumbnails"}).get_text()
@@ -96,17 +96,17 @@ class Doujins(Doujin):
         ]
         return images, save_names
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(self, keyword, absolute):
         from contextlib import suppress
 
         page = 1
         session = None
         while True:
-            response, session = Doujins.send_request(
+            response, session = self.send_request(
                 f"https://doujins.com/searches?words={keyword}&page={page}",
                 session=session,
             )
-            soup = Doujins.get_html_parser(response.text)
+            soup = self.get_html_parser(response.text)
             divs = soup.select("#content > div > div:nth-child(5)")[0]
             try:
                 divs.find_all(
@@ -133,7 +133,7 @@ class Doujins(Doujin):
                         lambda tag: tag.name == "div" and "Artist: " in tag.text
                     )[-1].get_text(strip=True)
                 results[tilink.get_text(strip=True)] = {
-                    "domain": Doujins.domain,
+                    "domain": self.domain,
                     "code": tilink["href"][1:],
                     "thumbnail": doujin.find("img")["srcset"],
                     "artists": artist.replace("Artist: ", ""),

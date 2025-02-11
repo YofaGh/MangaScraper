@@ -5,11 +5,11 @@ class Pururin(Doujin):
     domain = "pururin.to"
     logo = "https://pururin.to/assets/images/logo.png"
 
-    def get_info(code):
+    def get_info(self, code):
         from contextlib import suppress
 
-        response, _ = Pururin.send_request(f"https://pururin.to/gallery/{code}")
-        soup = Pururin.get_html_parser(response.text)
+        response, _ = self.send_request(f"https://pururin.to/gallery/{code}")
+        soup = self.get_html_parser(response.text)
         cover, title, alternative, pages, rating = 5 * [""]
         extras = {}
         with suppress(Exception):
@@ -47,15 +47,15 @@ class Pururin(Doujin):
             "Extras": extras,
         }
 
-    def get_title(code):
-        response, _ = Pururin.send_request(f"https://pururin.to/gallery/{code}")
-        soup = Pururin.get_html_parser(response.text)
+    def get_title(self, code):
+        response, _ = self.send_request(f"https://pururin.to/gallery/{code}")
+        soup = self.get_html_parser(response.text)
         title = soup.find("h1").get_text(strip=True)
         return title
 
-    def get_images(code):
-        response, _ = Pururin.send_request(f"https://pururin.to/gallery/{code}")
-        soup = Pururin.get_html_parser(response.text)
+    def get_images(self, code):
+        response, _ = self.send_request(f"https://pururin.to/gallery/{code}")
+        soup = self.get_html_parser(response.text)
         images = soup.find("div", {"class": "gallery-preview"}).find_all("img")
         images = [
             image["data-src"] if image.get("data-src") else image["src"]
@@ -64,14 +64,14 @@ class Pururin(Doujin):
         images = [image.replace("t.", ".") for image in images]
         return images, False
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(self, keyword, absolute):
         page = 1
         session = None
         while True:
-            response, session = Pururin.send_request(
+            response, session = self.send_request(
                 f"https://pururin.to/search?q={keyword}&page={page}", session=session
             )
-            soup = Pururin.get_html_parser(response.text)
+            soup = self.get_html_parser(response.text)
             doujins = soup.find_all("a", {"class": "card card-gallery"})
             if not doujins:
                 yield {}
@@ -85,7 +85,7 @@ class Pururin(Doujin):
                     .split(", ")
                 )
                 results[doujin["title"]] = {
-                    "domain": Pururin.domain,
+                    "domain": self.domain,
                     "code": doujin["href"].split("/")[-1],
                     "thumbnail": doujin.find("img")["src"],
                     "author": info[0].split(" by ")[-1],
@@ -96,5 +96,5 @@ class Pururin(Doujin):
             yield results
             page += 1
 
-    def get_db():
-        return Pururin.search_by_keyword("", False)
+    def get_db(self):
+        return self.search_by_keyword("", False)

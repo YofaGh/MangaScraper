@@ -5,11 +5,11 @@ class Bibimanga(Manga):
     domain = "bibimanga.com"
     logo = "https://bibimanga.com/wp-content/uploads/2021/06/FAV-300x300.png"
 
-    def get_info(manga):
+    def get_info(self, manga):
         from contextlib import suppress
 
-        response, _ = Bibimanga.send_request(f"https://bibimanga.com/manga/{manga}")
-        soup = Bibimanga.get_html_parser(response.text)
+        response, _ = self.send_request(f"https://bibimanga.com/manga/{manga}")
+        soup = self.get_html_parser(response.text)
         cover, title, alternative, summary, rating, status = 6 * [""]
         extras = {}
         info_box = soup.find("div", {"class": "tab-summary"})
@@ -72,27 +72,27 @@ class Bibimanga(Manga):
             "Extras": extras,
         }
 
-    def get_chapters(manga):
-        response, _ = Bibimanga.send_request(f"https://bibimanga.com/manga/{manga}")
-        soup = Bibimanga.get_html_parser(response.text)
+    def get_chapters(self, manga):
+        response, _ = self.send_request(f"https://bibimanga.com/manga/{manga}")
+        soup = self.get_html_parser(response.text)
         divs = soup.find_all("li", {"class": "wp-manga-chapter"})
         chapters_urls = [div.find("a")["href"].split("/")[-2] for div in divs[::-1]]
         chapters = [
-            {"url": chapter_url, "name": Bibimanga.rename_chapter(chapter_url)}
+            {"url": chapter_url, "name": self.rename_chapter(chapter_url)}
             for chapter_url in chapters_urls
         ]
         return chapters
 
-    def get_images(manga, chapter):
-        response, _ = Bibimanga.send_request(
+    def get_images(self, manga, chapter):
+        response, _ = self.send_request(
             f"https://bibimanga.com/manga/{manga}/{chapter['url']}"
         )
-        soup = Bibimanga.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         images = soup.find("div", {"class": "reading-content"}).find_all("img")
         images = [image["data-src"].strip() for image in images]
         return images, False
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(self, keyword, absolute):
         from contextlib import suppress
         from requests.exceptions import HTTPError
 
@@ -100,13 +100,13 @@ class Bibimanga(Manga):
         session = None
         while True:
             try:
-                response, session = Bibimanga.send_request(
+                response, session = self.send_request(
                     f"https://bibimanga.com/page/{page}?s={keyword}&post_type=wp-manga",
                     session=session,
                 )
             except HTTPError:
                 yield {}
-            soup = Bibimanga.get_html_parser(response.text)
+            soup = self.get_html_parser(response.text)
             mangas = soup.find_all("div", {"class": "row c-tabs-item__content"})
             results = {}
             for manga in mangas:
@@ -147,7 +147,7 @@ class Bibimanga(Manga):
                         .split("/")[-2]
                     )
                 results[ti] = {
-                    "domain": Bibimanga.domain,
+                    "domain": self.domain,
                     "url": link,
                     "latest_chapter": latest_chapter,
                     "thumbnail": manga.find("img")["data-src"],
@@ -160,5 +160,5 @@ class Bibimanga(Manga):
             yield results
             page += 1
 
-    def get_db():
-        return Bibimanga.search_by_keyword("", False)
+    def get_db(self):
+        return self.search_by_keyword("", False)

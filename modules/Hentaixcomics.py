@@ -7,11 +7,11 @@ class Hentaixcomics(Doujin):
     is_coded = False
     language_codes = {"us": "English", "jp": "Japanese", "cn": "Chinese"}
 
-    def get_info(code):
+    def get_info(self, code):
         from contextlib import suppress
 
-        response, _ = Hentaixcomics.send_request(f"https://hentaixcomics.com/{code}/")
-        soup = Hentaixcomics.get_html_parser(response.text)
+        response, _ = self.send_request(f"https://hentaixcomics.com/{code}/")
+        soup = self.get_html_parser(response.text)
         cover, title, alternative, summary, pages = 5 * [""]
         info_box = soup.find("div", {"id": "info"})
         extras = {}
@@ -56,31 +56,31 @@ class Hentaixcomics(Doujin):
             "Extras": extras,
         }
 
-    def get_title(code):
-        response, _ = Hentaixcomics.send_request(f"https://hentaixcomics.com/{code}/")
-        soup = Hentaixcomics.get_html_parser(response.text)
+    def get_title(self, code):
+        response, _ = self.send_request(f"https://hentaixcomics.com/{code}/")
+        soup = self.get_html_parser(response.text)
         title = soup.find("div", {"id": "info"}).find("h1").get_text(strip=True)
         return title
 
-    def get_images(code):
+    def get_images(self, code):
         import json
 
-        response, _ = Hentaixcomics.send_request(f"https://hentaixcomics.com/{code}/")
-        soup = Hentaixcomics.get_html_parser(response.text)
+        response, _ = self.send_request(f"https://hentaixcomics.com/{code}/")
+        soup = self.get_html_parser(response.text)
         images_raw = soup.find("textarea").get_text(strip=True)
         images = json.loads(images_raw)
         return images, False
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(self, keyword, absolute):
         page = 1
         prev_page = []
         session = None
         while True:
-            response, session = Hentaixcomics.send_request(
+            response, session = self.send_request(
                 f"https://hentaixcomics.com/search/?s={keyword}&page={page}",
                 session=session,
             )
-            soup = Hentaixcomics.get_html_parser(response.text)
+            soup = self.get_html_parser(response.text)
             if soup.find("span", {"class": "count"}).get_text(strip=True) == "(0)":
                 yield {}
             doujins = soup.find_all("div", {"class": "gallery"})
@@ -94,10 +94,10 @@ class Hentaixcomics(Doujin):
                 ):
                     continue
                 results[doujin.get_text(strip=True)] = {
-                    "domain": Hentaixcomics.domain,
+                    "domain": self.domain,
                     "code": doujin.find("a")["href"].split("/")[-2],
                     "thumbnail": doujin.find("img")["data-src"],
-                    "language": Hentaixcomics.language_codes[
+                    "language": self.language_codes[
                         doujin.find("span")["class"][1]
                     ],
                     "page": page,
@@ -106,17 +106,17 @@ class Hentaixcomics(Doujin):
             yield results
             page += 1
 
-    def get_db():
+    def get_db(self):
         for category in ("manga", "doujinshi"):
             page = 1
             prev_page = []
             session = None
             while True:
-                response, session = Hentaixcomics.send_request(
+                response, session = self.send_request(
                     f"https://hentaixcomics.com/s/{category}/page/{page}",
                     session=session,
                 )
-                soup = Hentaixcomics.get_html_parser(response.text)
+                soup = self.get_html_parser(response.text)
                 if soup.find("span", {"class": "count"}).get_text(strip=True) == "(0)":
                     break
                 doujins = soup.find_all("div", {"class": "gallery"})
@@ -125,10 +125,10 @@ class Hentaixcomics(Doujin):
                 results = {}
                 for doujin in doujins:
                     results[doujin.get_text(strip=True)] = {
-                        "domain": Hentaixcomics.domain,
+                        "domain": self.domain,
                         "code": doujin.find("a")["href"].split("/")[-2],
                         "thumbnail": doujin.find("img")["data-src"],
-                        "language": Hentaixcomics.language_codes[
+                        "language": self.language_codes[
                             doujin.find("span")["class"][1]
                         ],
                         "category": category,

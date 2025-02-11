@@ -5,13 +5,13 @@ class Mangareader(Manga):
     domain = "mangareader.mobi"
     logo = "https://mangareader.mobi/frontend/imgs/favicon16.png"
 
-    def get_info(manga):
+    def get_info(self, manga):
         from contextlib import suppress
 
-        response, _ = Mangareader.send_request(
+        response, _ = self.send_request(
             f"https://mangareader.mobi/manga/{manga}"
         )
-        soup = Mangareader.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         cover, title, alternative, summary, status, authors, views, genres = 8 * [""]
         info_box = soup.find("div", {"class": "imgdesc"})
         with suppress(Exception):
@@ -70,28 +70,28 @@ class Mangareader(Manga):
             "Extras": {"Authors": authors, "Views": views, "Genres": genres},
         }
 
-    def get_chapters(manga):
-        response, _ = Mangareader.send_request(
+    def get_chapters(self, manga):
+        response, _ = self.send_request(
             f"https://mangareader.mobi/manga/{manga}", verify=False
         )
-        soup = Mangareader.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         divs = soup.find("div", {"class": "cl"}).find_all("a")
         chapters = [div["href"].split("/")[-1] for div in divs[::-1]]
         chapters_urls = [chapter.replace(f"{manga}-", "") for chapter in chapters]
         chapters = [
-            {"url": chapter_url, "name": Mangareader.rename_chapter(chapter_url)}
+            {"url": chapter_url, "name": self.rename_chapter(chapter_url)}
             for chapter_url in chapters_urls
         ]
         return chapters
 
-    def get_images(manga, chapter):
+    def get_images(self, manga, chapter):
         chapter_url = chapter["url"]
         if f"{manga}-" in chapter_url:
             chapter_url = chapter_url.replace(f"{manga}-", "")
-        response, _ = Mangareader.send_request(
+        response, _ = self.send_request(
             f"https://mangareader.mobi/chapter/{manga}-{chapter_url}", verify=False
         )
-        soup = Mangareader.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         images = (
             soup.find("div", {"id": "readerarea"})
             .find("p")
@@ -103,7 +103,7 @@ class Mangareader(Manga):
         ]
         return images, save_names
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(self, keyword, absolute):
         from requests.exceptions import HTTPError
         from contextlib import suppress
 
@@ -111,14 +111,14 @@ class Mangareader(Manga):
         session = None
         while True:
             try:
-                response, session = Mangareader.send_request(
+                response, session = self.send_request(
                     f"https://mangareader.mobi/search?s={keyword}&page={page}",
                     session=session,
                     verify=False,
                 )
             except HTTPError:
                 yield {}
-            soup = Mangareader.get_html_parser(response.text)
+            soup = self.get_html_parser(response.text)
             mangas = soup.find("div", {"id": "content"}).find("ul").find_all("li")
             if not mangas:
                 yield {}
@@ -140,7 +140,7 @@ class Mangareader(Manga):
                         with suppress(Exception):
                             latest_chapter = content.find("a")["href"].split("/")[-1]
                 results[ti.get_text(strip=True)] = {
-                    "domain": Mangareader.domain,
+                    "domain": self.domain,
                     "url": ti["href"].split("/")[-1],
                     "latest_chapter": latest_chapter,
                     "thumbnail": manga.find("img")["src"],
@@ -151,5 +151,5 @@ class Mangareader(Manga):
             yield results
             page += 1
 
-    def get_db():
-        return Mangareader.search_by_keyword("", False)
+    def get_db(self):
+        return self.search_by_keyword("", False)

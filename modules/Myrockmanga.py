@@ -17,13 +17,13 @@ class Myrockmanga(Manga):
         "es": "Spanish",
     }
 
-    def get_info(manga):
+    def get_info(self, manga):
         from contextlib import suppress
 
-        response, _ = Myrockmanga.send_request(
-            f"https://myrockmanga.com/manga-detail/{manga}", headers=Myrockmanga.headers
+        response, _ = self.send_request(
+            f"https://myrockmanga.com/manga-detail/{manga}", headers=self.headers
         )
-        soup = Myrockmanga.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         cover, title, alternative, summary, rating, status, genres = 7 * [""]
         extras = {}
         with suppress(Exception):
@@ -82,26 +82,26 @@ class Myrockmanga(Manga):
             "Extras": extras,
         }
 
-    def get_chapters(manga):
-        response, _ = Myrockmanga.send_request(
+    def get_chapters(self, manga):
+        response, _ = self.send_request(
             f"https://myrockmanga.com/manga-detail/{manga}", verify=False
         )
-        soup = Myrockmanga.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         divs = soup.find_all("tr", {"class": "chapter"})
         chapters_urls = [
             div.find("a")["href"].replace("/chapter/", "") for div in divs[::-1]
         ]
         chapters = [
-            {"url": chapter_url, "name": Myrockmanga.rename_chapter(chapter_url)}
+            {"url": chapter_url, "name": self.rename_chapter(chapter_url)}
             for chapter_url in chapters_urls
         ]
         return chapters
 
-    def get_images(manga, chapter):
-        response, _ = Myrockmanga.send_request(
+    def get_images(self, manga, chapter):
+        response, _ = self.send_request(
             f"https://myrockmanga.com/chapter/{chapter['url']}", verify=False
         )
-        soup = Myrockmanga.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         images = soup.find("div", {"id": "rendering"}).find_all("img")
         images = [image["src"] for image in images if image.has_attr("page")]
         save_names = [
@@ -109,22 +109,22 @@ class Myrockmanga(Manga):
         ]
         return images, save_names
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(self, keyword, absolute):
         from contextlib import suppress
         from requests.exceptions import HTTPError
 
         session = None
         while True:
             try:
-                response, session = Myrockmanga.send_request(
+                response, session = self.send_request(
                     f"https://myrockmanga.com/Home/Search?search={keyword}",
                     session=session,
-                    headers=Myrockmanga.headers,
+                    headers=self.headers,
                     verify=False,
                 )
             except HTTPError:
                 yield {}
-            soup = Myrockmanga.get_html_parser(response.text)
+            soup = self.get_html_parser(response.text)
             sections = soup.find_all("div", {"class": "row"})
             mangas = []
             for section in sections:
@@ -162,10 +162,10 @@ class Myrockmanga(Manga):
                         "div", {"class": "mdl-card__actions mdl-card--border"}
                     ).find("a")["href"]
                 results[ti["title"]] = {
-                    "domain": Myrockmanga.domain,
+                    "domain": self.domain,
                     "url": ti["href"].replace("/manga-detail/", ""),
                     "type": type,
-                    "lang": Myrockmanga.langs[lang],
+                    "lang": self.langs[lang],
                     "latest_chapter": latest_chapter.replace("/chapter/", ""),
                     "thumbnail": manga.find("img")["src"],
                     "page": 1,
@@ -173,22 +173,22 @@ class Myrockmanga(Manga):
             yield results
             yield {}
 
-    def get_db():
+    def get_db(self):
         from contextlib import suppress
 
         page = 1
         data = "Type=1&Page=P_P_P_P&Lang=all&Dir=NewPostedDate&filterCategory=All"
         session = None
         while True:
-            response, session = Myrockmanga.send_request(
+            response, session = self.send_request(
                 "https://myrockmanga.com/Manga/Newest",
                 session=session,
                 method="POST",
-                headers=Myrockmanga.get_db_headers,
+                headers=self.get_db_headers,
                 data=data.replace("P_P_P_P", str(page)),
                 verify=False,
             )
-            soup = Myrockmanga.get_html_parser(response.text)
+            soup = self.get_html_parser(response.text)
             mangas = soup.find_all(
                 "div", {"class": "col-xs-12 picture-card mdl-card shadow-z-1"}
             )
@@ -215,16 +215,17 @@ class Myrockmanga(Manga):
                         "div", {"class": "mdl-card__actions mdl-card--border"}
                     ).find("a")["href"]
                 results[ti.get_text(strip=True)] = {
-                    "domain": Myrockmanga.domain,
+                    "domain": self.domain,
                     "url": ti["href"].replace("/manga-detail/", ""),
                     "type": type,
-                    "lang": Myrockmanga.langs[lang],
+                    "lang": self.langs[lang],
                     "latest_chapter": latest_chapter.replace("/chapter/", ""),
                     "page": page,
                 }
             yield results
             page += 1
 
+    @staticmethod
     def rename_chapter(chapter):
         chapter = chapter.split("/")[-1]
         new_name = ""

@@ -5,13 +5,13 @@ class Mangahentai(Manga):
     domain = "mangahentai.me"
     logo = "https://mangahentai.me/favicon.ico"
 
-    def get_info(manga):
+    def get_info(self, manga):
         from contextlib import suppress
 
-        response, _ = Mangahentai.send_request(
+        response, _ = self.send_request(
             f"https://mangahentai.me/manga-hentai/{manga}"
         )
-        soup = Mangahentai.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         cover, title, alternative, summary, rating, status = 6 * [""]
         extras = {}
         info_box = soup.find("div", {"class": "tab-summary"})
@@ -84,29 +84,29 @@ class Mangahentai(Manga):
             "Extras": extras,
         }
 
-    def get_chapters(manga):
-        response, _ = Mangahentai.send_request(
+    def get_chapters(self, manga):
+        response, _ = self.send_request(
             f"https://mangahentai.me/manga-hentai/{manga}/ajax/chapters/", method="POST"
         )
-        soup = Mangahentai.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         lis = soup.find_all("li", {"class": "wp-manga-chapter"})
         chapters_urls = [li.find("a")["href"].split("/")[-2] for li in lis[::-1]]
         chapters = [
-            {"url": chapter_url, "name": Mangahentai.rename_chapter(chapter_url)}
+            {"url": chapter_url, "name": self.rename_chapter(chapter_url)}
             for chapter_url in chapters_urls
         ]
         return chapters
 
-    def get_images(manga, chapter):
-        response, _ = Mangahentai.send_request(
+    def get_images(self, manga, chapter):
+        response, _ = self.send_request(
             f"https://mangahentai.me/manga-hentai/{manga}/{chapter['url']}/"
         )
-        soup = Mangahentai.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         images = soup.find("div", {"class": "reading-content"}).find_all("img")
         images = [image["src"].strip() for image in images]
         return images, False
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(self, keyword, absolute):
         from contextlib import suppress
         from requests.exceptions import HTTPError
 
@@ -114,13 +114,13 @@ class Mangahentai(Manga):
         session = None
         while True:
             try:
-                response, session = Mangahentai.send_request(
+                response, session = self.send_request(
                     f"https://mangahentai.me/page/{page}/?s={keyword}&post_type=wp-manga",
                     session=session,
                 )
             except HTTPError:
                 yield {}
-            soup = Mangahentai.get_html_parser(response.text)
+            soup = self.get_html_parser(response.text)
             mangas = soup.find_all("div", {"class": "row c-tabs-item__content"})
             results = {}
             for manga in mangas:
@@ -161,7 +161,7 @@ class Mangahentai(Manga):
                         .split("/")[-2]
                     )
                 results[ti] = {
-                    "domain": Mangahentai.domain,
+                    "domain": self.domain,
                     "url": link,
                     "latest_chapter": latest_chapter,
                     "thumbnail": manga.find("img")["src"],
@@ -174,5 +174,5 @@ class Mangahentai(Manga):
             yield results
             page += 1
 
-    def get_db():
-        return Mangahentai.search_by_keyword("", False)
+    def get_db(self):
+        return self.search_by_keyword("", False)

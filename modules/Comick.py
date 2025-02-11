@@ -8,11 +8,11 @@ class Comick(Manga):
     headers = {"Referer": "https://comick.io/"}
     download_images_headers = headers
 
-    def get_info(manga):
-        response, _ = Comick.send_request(
-            f"https://comick.io/comic/{manga}", headers=Comick.headers
+    def get_info(self, manga):
+        response, _ = self.send_request(
+            f"https://comick.io/comic/{manga}", headers=self.headers
         )
-        soup = Comick.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         data = json.loads(
             soup.find("script", {"id": "__NEXT_DATA__"}).get_text(strip=True)
         )["props"]["pageProps"]
@@ -48,12 +48,12 @@ class Comick(Manga):
             "Extras": extras,
         }
 
-    def get_chapters(manga):
-        response, session = Comick.send_request(
-            f"https://comick.io/comic/{manga}", headers=Comick.headers
+    def get_chapters(self, manga):
+        response, session = self.send_request(
+            f"https://comick.io/comic/{manga}", headers=self.headers
         )
-        session.headers = Comick.headers
-        soup = Comick.get_html_parser(response.text)
+        self.headers = self.headers
+        soup = self.get_html_parser(response.text)
         script = soup.find("script", {"id": "__NEXT_DATA__"})
         hid = json.loads(script.get_text(strip=True))["props"]["pageProps"]["comic"][
             "hid"
@@ -61,7 +61,7 @@ class Comick(Manga):
         chapters_urls = []
         page = 1
         while True:
-            response, session = Comick.send_request(
+            response, session = self.send_request(
                 f"https://api.comick.io/comic/{hid}/chapters?lang=en&chap-order=1&page={page}",
                 session=session,
             )
@@ -77,16 +77,16 @@ class Comick(Manga):
             )
             page += 1
         chapters = [
-            {"url": chapter_url, "name": Comick.rename_chapter(chapter_url)}
+            {"url": chapter_url, "name": self.rename_chapter(chapter_url)}
             for chapter_url in chapters_urls
         ]
         return chapters
 
-    def get_images(manga, chapter):
-        response, _ = Comick.send_request(
-            f"https://comick.io/comic/{manga}/{chapter['url']}", headers=Comick.headers
+    def get_images(self, manga, chapter):
+        response, _ = self.send_request(
+            f"https://comick.io/comic/{manga}/{chapter['url']}", headers=self.headers
         )
-        soup = Comick.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         script = soup.find("script", {"id": "__NEXT_DATA__"})
         images = json.loads(script.get_text(strip=True))["props"]["pageProps"][
             "chapter"
@@ -97,14 +97,14 @@ class Comick(Manga):
         ]
         return images, save_names
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(self, keyword, absolute):
         from requests.exceptions import HTTPError
 
-        response, session = Comick.send_request(
-            "https://comick.io/search", headers=Comick.headers
+        response, session = self.send_request(
+            "https://comick.io/search", headers=self.headers
         )
-        session.headers = Comick.headers
-        soup = Comick.get_html_parser(response.text)
+        self.headers = self.headers
+        soup = self.get_html_parser(response.text)
         script = soup.find("script", {"id": "__NEXT_DATA__"}).get_text(strip=True)
         genres = {
             genre["id"]: genre["name"]
@@ -113,7 +113,7 @@ class Comick(Manga):
         page = 1
         while True:
             try:
-                response, session = Comick.send_request(
+                response, session = self.send_request(
                     f"https://api.comick.io/v1.0/search?q={keyword}&limit=300&page={page}",
                     session=session,
                 )
@@ -125,7 +125,7 @@ class Comick(Manga):
                 if absolute and keyword.lower() not in manga["title"].lower():
                     continue
                 results[manga["title"]] = {
-                    "domain": Comick.domain,
+                    "domain": self.domain,
                     "url": manga["slug"],
                     "latest_chapter": manga["last_chapter"],
                     "thumbnail": f"https://meo.comick.pictures/{manga['md_covers'][0]['b2key']}"
@@ -139,9 +139,10 @@ class Comick(Manga):
             yield results
             page += 1
 
-    def get_db():
-        return Comick.search_by_keyword("", False)
+    def get_db(self):
+        return self.search_by_keyword("", False)
 
+    @staticmethod
     def rename_chapter(chapter):
         chapter = chapter.split("-", 1)[1]
         new_name = ""

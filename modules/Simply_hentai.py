@@ -8,14 +8,14 @@ class Simply_hentai(Doujin):
     headers = {"User-Agent": LEECH}
     is_coded = False
 
-    def get_info(code):
+    def get_info(self, code):
         from contextlib import suppress
         from datetime import datetime
 
-        response, _ = Simply_hentai.send_request(
-            f"https://www.simply-hentai.com/{code}", headers=Simply_hentai.headers
+        response, _ = self.send_request(
+            f"https://www.simply-hentai.com/{code}", headers=self.headers
         )
-        soup = Simply_hentai.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         cover, title, pages, uploaded = 4 * [""]
         info_box = soup.find("section", {"class": "album-info"})
         extras = {}
@@ -69,11 +69,11 @@ class Simply_hentai(Doujin):
             },
         }
 
-    def get_title(code):
-        response, _ = Simply_hentai.send_request(
-            f"https://www.simply-hentai.com/{code}", headers=Simply_hentai.headers
+    def get_title(self, code):
+        response, _ = self.send_request(
+            f"https://www.simply-hentai.com/{code}", headers=self.headers
         )
-        soup = Simply_hentai.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         title = (
             soup.find("section", {"class", "album-info"})
             .find("h1")
@@ -81,14 +81,14 @@ class Simply_hentai(Doujin):
         )
         return title
 
-    def get_images(code):
+    def get_images(self, code):
         import json
 
-        response, _ = Simply_hentai.send_request(
+        response, _ = self.send_request(
             f"https://www.simply-hentai.com/{code}/all-pages",
-            headers=Simply_hentai.headers,
+            headers=self.headers,
         )
-        soup = Simply_hentai.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         script = soup.find("script", {"id": "__NEXT_DATA__"}).get_text(strip=True)
         data_raw = json.loads(script)
         images = [
@@ -101,14 +101,14 @@ class Simply_hentai(Doujin):
         ]
         return images, save_names
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(self, keyword, absolute):
         page = 1
         session = None
         while True:
-            response, session = Simply_hentai.send_request(
+            response, session = self.send_request(
                 f"https://api.simply-hentai.com/v3/search/complex?filter[class_name][0]=Manga&query={keyword}&page={page}",
                 session=session,
-                headers=Simply_hentai.headers,
+                headers=self.headers,
             )
             datas = response.json()["data"]
             if not datas:
@@ -119,7 +119,7 @@ class Simply_hentai(Doujin):
                 if absolute and keyword.lower() not in doujin["title"].lower():
                     continue
                 results[doujin["title"]] = {
-                    "domain": Simply_hentai.domain,
+                    "domain": self.domain,
                     "code": f"{doujin['series']['slug']}/{doujin['slug']}",
                     "thumbnail": doujin["preview"]["sizes"]["thumb"],
                     "page": page,
@@ -127,17 +127,17 @@ class Simply_hentai(Doujin):
             page += 1
             yield results
 
-    def get_db():
+    def get_db(self):
         page = 1
         prev_page = None
         session = None
         while True:
-            response, session = Simply_hentai.send_request(
+            response, session = self.send_request(
                 f"https://www.simply-hentai.com/2-mangas/page-{page}",
                 session=session,
-                headers=Simply_hentai.headers,
+                headers=self.headers,
             )
-            soup = Simply_hentai.get_html_parser(response.text)
+            soup = self.get_html_parser(response.text)
             results = {}
             divs = soup.find_all("div", {"class", "col-6 col-lg-3"})
             if divs == prev_page:
@@ -152,7 +152,7 @@ class Simply_hentai(Doujin):
                     "div", {"class", "col-8 text-right count-col"}
                 ).get_text(strip=True)
                 results[tilink.get_text(strip=True)] = {
-                    "domain": Simply_hentai.domain,
+                    "domain": self.domain,
                     "code": tilink["href"][1:],
                     "language": language,
                     "number_of_pages": number_of_pages,

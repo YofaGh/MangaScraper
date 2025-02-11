@@ -6,11 +6,11 @@ class Mangapill(Manga):
     logo = "https://mangapill.com/static/favicon/favicon.ico"
     download_images_headers = {"Referer": "https://mangapill.com/"}
 
-    def get_info(manga):
+    def get_info(self, manga):
         from contextlib import suppress
 
-        response, _ = Mangapill.send_request(f"https://mangapill.com/manga/{manga}")
-        soup = Mangapill.get_html_parser(response.text)
+        response, _ = self.send_request(f"https://mangapill.com/manga/{manga}")
+        soup = self.get_html_parser(response.text)
         cover, title, summary, status, genres, typee, year = 7 * [""]
         info_box = soup.find(
             "div", {"class": "grid grid-cols-1 md:grid-cols-3 gap-3 mb-3"}
@@ -40,24 +40,24 @@ class Mangapill(Manga):
             "Extras": {"Year": year, "Type": typee, "Genres": genres},
         }
 
-    def get_chapters(manga):
-        response, _ = Mangapill.send_request(f"https://mangapill.com/manga/{manga}")
-        soup = Mangapill.get_html_parser(response.text)
+    def get_chapters(self, manga):
+        response, _ = self.send_request(f"https://mangapill.com/manga/{manga}")
+        soup = self.get_html_parser(response.text)
         chapters = [
             aa["href"].replace("/chapters/", "")
             for aa in soup.find("div", {"id": "chapters"}).find_all("a")
         ]
         chapters = [
-            {"url": url, "name": Mangapill.rename_chapter(url.split("/")[-1])}
+            {"url": url, "name": self.rename_chapter(url.split("/")[-1])}
             for url in chapters[::-1]
         ]
         return chapters
 
-    def get_images(manga, chapter):
-        response, _ = Mangapill.send_request(
+    def get_images(self, manga, chapter):
+        response, _ = self.send_request(
             f"https://mangapill.com/chapters/{chapter['url']}"
         )
-        soup = Mangapill.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         divs = soup.find_all("chapter-page")
         images = [div.find("img")["data-src"] for div in divs]
         save_names = [
@@ -66,16 +66,16 @@ class Mangapill(Manga):
         ]
         return images, save_names
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(self, keyword, absolute):
         from contextlib import suppress
 
         page = 1
         session = None
         while True:
-            response, session = Mangapill.send_request(
+            response, session = self.send_request(
                 f"https://mangapill.com/search?q={keyword}&page={page}", session=session
             )
-            soup = Mangapill.get_html_parser(response.text)
+            soup = self.get_html_parser(response.text)
             mangas = soup.find(
                 "div",
                 {
@@ -100,7 +100,7 @@ class Mangapill(Manga):
                 with suppress(Exception):
                     status = info[2].get_text(strip=True)
                 results[ti.get_text(strip=True)] = {
-                    "domain": Mangapill.domain,
+                    "domain": self.domain,
                     "url": ti["href"].replace("/manga/", ""),
                     "thumbnail": manga.find("img")["data-src"],
                     "type": typee,
@@ -111,7 +111,7 @@ class Mangapill(Manga):
             yield results
             page += 1
 
-    def get_db():
+    def get_db(self):
         from contextlib import suppress
 
         statuses = [
@@ -125,11 +125,11 @@ class Mangapill(Manga):
         for status in statuses:
             page = 1
             while True:
-                response, session = Mangapill.send_request(
+                response, session = self.send_request(
                     f"https://mangapill.com/search?status={status}&page={page}",
                     session=session,
                 )
-                soup = Mangapill.get_html_parser(response.text)
+                soup = self.get_html_parser(response.text)
                 mangas = soup.find(
                     "div",
                     {
@@ -150,7 +150,7 @@ class Mangapill(Manga):
                     with suppress(Exception):
                         year = info[1].get_text(strip=True)
                     results[ti.get_text(strip=True)] = {
-                        "domain": Mangapill.domain,
+                        "domain": self.domain,
                         "url": ti["href"].replace("/manga/", ""),
                         "thumbnail": manga.find("img")["data-src"],
                         "type": typee,

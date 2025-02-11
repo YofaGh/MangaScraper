@@ -6,13 +6,13 @@ class Hqporncomics(Doujin):
     logo = "https://hqporncomics.com/images/favicon.ico"
     is_coded = False
 
-    def get_info(code):
+    def get_info(self, code):
         from contextlib import suppress
 
-        response, _ = Hqporncomics.send_request(
+        response, _ = self.send_request(
             f"https://hqporncomics.com/comics/{code}/"
         )
-        soup = Hqporncomics.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         cover, title, summary, pages = 4 * [""]
         extras = {}
         images = soup.find("div", {"id": "block-image-slide"}).find_all("img")
@@ -45,11 +45,11 @@ class Hqporncomics(Doujin):
             "Extras": extras,
         }
 
-    def get_title(code):
-        response, _ = Hqporncomics.send_request(
+    def get_title(self, code):
+        response, _ = self.send_request(
             f"https://hqporncomics.com/comics/{code}/"
         )
-        soup = Hqporncomics.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         title = (
             soup.find("h1", {"class": "block-name-comix"})
             .get_text(strip=True)
@@ -57,11 +57,11 @@ class Hqporncomics(Doujin):
         )
         return title
 
-    def get_images(code):
-        response, _ = Hqporncomics.send_request(
+    def get_images(self, code):
+        response, _ = self.send_request(
             f"https://hqporncomics.com/comics/{code}/"
         )
-        soup = Hqporncomics.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         images = soup.find("div", {"id": "block-image-slide"}).find_all("img")
         images = [image["data-src"] for image in images[::2]]
         save_names = [
@@ -69,16 +69,16 @@ class Hqporncomics(Doujin):
         ]
         return images, save_names
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(self, keyword, absolute):
         page = 1
         prev_page = []
         session = None
         while True:
-            response, session = Hqporncomics.send_request(
+            response, session = self.send_request(
                 f"https://hqporncomics.com/search/?q={keyword}&page={page}",
                 session=session,
             )
-            soup = Hqporncomics.get_html_parser(response.text)
+            soup = self.get_html_parser(response.text)
             doujins = soup.find_all("li", {"id": "li-comix-set"})
             if not doujins or prev_page == doujins:
                 yield {}
@@ -99,7 +99,7 @@ class Hqporncomics(Doujin):
                         )[1:]
                     ]
                 results[title] = {
-                    "domain": Hqporncomics.domain,
+                    "domain": self.domain,
                     "code": doujin.find("a")["href"].split("/")[-2],
                     "thumbnail": doujin.find("img")["data-src"],
                     "page": page,
@@ -112,5 +112,5 @@ class Hqporncomics(Doujin):
             yield results
             page += 1
 
-    def get_db():
-        return Hqporncomics.search_by_keyword("", False)
+    def get_db(self):
+        return self.search_by_keyword("", False)

@@ -7,11 +7,11 @@ class Toonily_Com(Manga):
     download_images_headers = {"Referer": "https://toonily.com/"}
     search_headers = {"cookie": "toonily-mature=1"}
 
-    def get_info(manga):
+    def get_info(self, manga):
         from contextlib import suppress
 
-        response, _ = Toonily_Com.send_request(f"https://toonily.com/webtoon/{manga}/")
-        soup = Toonily_Com.get_html_parser(response.text)
+        response, _ = self.send_request(f"https://toonily.com/webtoon/{manga}/")
+        soup = self.get_html_parser(response.text)
         (
             cover,
             title,
@@ -83,22 +83,22 @@ class Toonily_Com(Manga):
             },
         }
 
-    def get_chapters(manga):
-        response, _ = Toonily_Com.send_request(f"https://toonily.com/webtoon/{manga}/")
-        soup = Toonily_Com.get_html_parser(response.text)
+    def get_chapters(self, manga):
+        response, _ = self.send_request(f"https://toonily.com/webtoon/{manga}/")
+        soup = self.get_html_parser(response.text)
         divs = soup.find_all("li", {"class": "wp-manga-chapter"})
         chapters_urls = [div.find("a")["href"].split("/")[-2] for div in divs[::-1]]
         chapters = [
-            {"url": chapter_url, "name": Toonily_Com.rename_chapter(chapter_url)}
+            {"url": chapter_url, "name": self.rename_chapter(chapter_url)}
             for chapter_url in chapters_urls
         ]
         return chapters
 
-    def get_images(manga, chapter):
-        response, _ = Toonily_Com.send_request(
+    def get_images(self, manga, chapter):
+        response, _ = self.send_request(
             f"https://toonily.com/webtoon/{manga}/{chapter['url']}/"
         )
-        soup = Toonily_Com.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         images = soup.find("div", {"class": "reading-content"}).find_all("img")
         images = [image["data-src"].strip() for image in images]
         save_names = [
@@ -106,7 +106,7 @@ class Toonily_Com(Manga):
         ]
         return images, save_names
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(self, keyword, absolute):
         from requests.exceptions import HTTPError
 
         template = (
@@ -118,14 +118,14 @@ class Toonily_Com(Manga):
         session = None
         while True:
             try:
-                response, session = Toonily_Com.send_request(
+                response, session = self.send_request(
                     template.replace("P_P_P_P", str(page)),
                     session=session,
-                    headers=Toonily_Com.search_headers,
+                    headers=self.search_headers,
                 )
             except HTTPError:
                 yield {}
-            soup = Toonily_Com.get_html_parser(response.text)
+            soup = self.get_html_parser(response.text)
             mangas = soup.find_all("div", {"class": "col-6 col-sm-3 col-lg-2"})
             results = {}
             for manga in mangas:
@@ -136,7 +136,7 @@ class Toonily_Com(Manga):
                 ):
                     continue
                 results[details.get_text(strip=True)] = {
-                    "domain": Toonily_Com.domain,
+                    "domain": self.domain,
                     "url": details.find("a")["href"].split("/")[-2],
                     "thumbnail": manga.find("img")["data-src"],
                     "page": page,
@@ -144,5 +144,5 @@ class Toonily_Com(Manga):
             yield results
             page += 1
 
-    def get_db():
-        return Toonily_Com.search_by_keyword("", False)
+    def get_db(self):
+        return self.search_by_keyword("", False)

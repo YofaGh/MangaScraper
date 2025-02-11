@@ -5,13 +5,13 @@ class Coloredmanga(Manga):
     domain = "coloredmanga.com"
     logo = "https://coloredmanga.com/wp-content/uploads/2022/09/cropped-000-192x192.png"
 
-    def get_info(manga):
+    def get_info(self, manga):
         from contextlib import suppress
 
-        response, _ = Coloredmanga.send_request(
+        response, _ = self.send_request(
             f"https://coloredmanga.com/mangas/{manga}/"
         )
-        soup = Coloredmanga.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         cover, title, alternative, rating, status = 5 * [""]
         extras = {}
         info_box = soup.find("div", {"class": "tab-summary"})
@@ -68,11 +68,11 @@ class Coloredmanga(Manga):
             "Extras": extras,
         }
 
-    def get_chapters(manga):
-        response, _ = Coloredmanga.send_request(
+    def get_chapters(self, manga):
+        response, _ = self.send_request(
             f"https://coloredmanga.com/mangas/{manga}/"
         )
-        soup = Coloredmanga.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         divs = soup.find_all("li", {"class": "wp-manga-chapter"})
         chapters_urls = [
             div.find("a")["href"].replace(
@@ -81,16 +81,16 @@ class Coloredmanga(Manga):
             for div in divs[::-1]
         ]
         chapters = [
-            {"url": chapter_url, "name": Coloredmanga.rename_chapter(chapter_url)}
+            {"url": chapter_url, "name": self.rename_chapter(chapter_url)}
             for chapter_url in chapters_urls
         ]
         return chapters
 
-    def get_images(manga, chapter):
-        response, _ = Coloredmanga.send_request(
+    def get_images(self, manga, chapter):
+        response, _ = self.send_request(
             f"https://coloredmanga.com/mangas/{manga}/{chapter['url']}/"
         )
-        soup = Coloredmanga.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         images = soup.find("div", {"class": "reading-content"}).find_all("img")
         images = [image["src"].strip() for image in images]
         save_names = [
@@ -98,7 +98,7 @@ class Coloredmanga(Manga):
         ]
         return images, save_names
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(self, keyword, absolute):
         from contextlib import suppress
         from requests.exceptions import HTTPError
 
@@ -106,13 +106,13 @@ class Coloredmanga(Manga):
         session = None
         while True:
             try:
-                response, session = Coloredmanga.send_request(
+                response, session = self.send_request(
                     f"https://coloredmanga.com/page/{page}/?s={keyword}&post_type=wp-manga",
                     session=session,
                 )
             except HTTPError:
                 yield {}
-            soup = Coloredmanga.get_html_parser(response.text)
+            soup = self.get_html_parser(response.text)
             mangas = soup.find_all("div", {"class": "row c-tabs-item__content"})
             results = {}
             for manga in mangas:
@@ -160,7 +160,7 @@ class Coloredmanga(Manga):
                 with suppress(Exception):
                     thumbnail = manga.find("img")["src"]
                 results[tilink.get_text(strip=True)] = {
-                    "domain": Coloredmanga.domain,
+                    "domain": self.domain,
                     "url": tilink.find("a")["href"].replace(
                         "https://coloredmanga.com/mangas/", ""
                     )[:-1],
@@ -176,9 +176,10 @@ class Coloredmanga(Manga):
             yield results
             page += 1
 
-    def get_db():
-        return Coloredmanga.search_by_keyword("", False)
+    def get_db(self):
+        return self.search_by_keyword("", False)
 
+    @staticmethod
     def rename_chapter(chapter):
         beginner = "Chapter"
         if "volume" in chapter:

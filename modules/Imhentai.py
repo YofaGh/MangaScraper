@@ -6,11 +6,11 @@ class Imhentai(Doujin):
     logo = "https://imhentai.xxx/images/logo.png"
     image_formats = {"j": "jpg", "p": "png", "b": "bmp", "g": "gif", "w": "webp"}
 
-    def get_info(code):
+    def get_info(self, code):
         from contextlib import suppress
 
-        response, _ = Imhentai.send_request(f"https://imhentai.xxx/gallery/{code}")
-        soup = Imhentai.get_html_parser(response.text)
+        response, _ = self.send_request(f"https://imhentai.xxx/gallery/{code}")
+        soup = self.get_html_parser(response.text)
         cover, title, alternative, pages = 4 * [""]
         extras = {}
         with suppress(Exception):
@@ -42,9 +42,9 @@ class Imhentai(Doujin):
             "Extras": extras,
         }
 
-    def get_title(code):
-        response, _ = Imhentai.send_request(f"https://imhentai.xxx/gallery/{code}")
-        soup = Imhentai.get_html_parser(response.text)
+    def get_title(self, code):
+        response, _ = self.send_request(f"https://imhentai.xxx/gallery/{code}")
+        soup = self.get_html_parser(response.text)
         title = (
             soup.find("div", {"class", "col-md-7 col-sm-7 col-lg-8 right_details"})
             .find("h1")
@@ -52,11 +52,11 @@ class Imhentai(Doujin):
         )
         return title
 
-    def get_images(code):
+    def get_images(self, code):
         import json
 
-        response, _ = Imhentai.send_request(f"https://imhentai.xxx/gallery/{code}")
-        soup = Imhentai.get_html_parser(response.text)
+        response, _ = self.send_request(f"https://imhentai.xxx/gallery/{code}")
+        soup = self.get_html_parser(response.text)
         path = (
             soup.find("div", {"id": "append_thumbs"})
             .find("img")["data-src"]
@@ -67,25 +67,25 @@ class Imhentai(Doujin):
         ).text
         images = json.loads(script.replace("var g_th = $.parseJSON('", "")[:-4])
         images = [
-            f"{path}/{image}.{Imhentai.image_formats[images[image][0]]}"
+            f"{path}/{image}.{self.image_formats[images[image][0]]}"
             for image in images
         ]
         return images, False
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(self, keyword, absolute):
         from requests.exceptions import HTTPError
 
         page = 1
         session = None
         while True:
             try:
-                response, session = Imhentai.send_request(
+                response, session = self.send_request(
                     f"https://imhentai.xxx/search/?key={keyword}&page={page}",
                     session=session,
                 )
             except HTTPError:
                 yield {}
-            soup = Imhentai.get_html_parser(response.text)
+            soup = self.get_html_parser(response.text)
             doujins = soup.find_all("div", {"class": "thumb"})
             if not doujins:
                 yield {}
@@ -96,7 +96,7 @@ class Imhentai(Doujin):
                 if absolute and keyword.lower() not in ti.lower():
                     continue
                 results[ti] = {
-                    "domain": Imhentai.domain,
+                    "domain": self.domain,
                     "code": caption.find("a")["href"].split("/")[-2],
                     "category": doujin.find("a", {"class": "thumb_cat"}).get_text(),
                     "thumbnail": doujin.find("div", {"class": "inner_thumb"}).find(
@@ -107,5 +107,5 @@ class Imhentai(Doujin):
             yield results
             page += 1
 
-    def get_db():
-        return Imhentai.search_by_keyword("", False)
+    def get_db(self):
+        return self.search_by_keyword("", False)

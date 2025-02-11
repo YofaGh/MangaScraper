@@ -5,11 +5,11 @@ class Manytoon(Manga):
     domain = "manytoon.com"
     logo = "https://manytoon.com/favicon.ico"
 
-    def get_info(manga):
+    def get_info(self, manga):
         from contextlib import suppress
 
-        response, _ = Manytoon.send_request(f"https://manytoon.com/comic/{manga}")
-        soup = Manytoon.get_html_parser(response.text)
+        response, _ = self.send_request(f"https://manytoon.com/comic/{manga}")
+        soup = self.get_html_parser(response.text)
         cover, title, alternative, summary, rating, status = 6 * [""]
         extras = {}
         info_box = soup.find("div", {"class": "tab-summary"})
@@ -82,36 +82,36 @@ class Manytoon(Manga):
             "Extras": extras,
         }
 
-    def get_chapters(manga):
-        response, session = Manytoon.send_request(f"https://manytoon.com/comic/{manga}")
-        soup = Manytoon.get_html_parser(response.text)
+    def get_chapters(self, manga):
+        response, session = self.send_request(f"https://manytoon.com/comic/{manga}")
+        soup = self.get_html_parser(response.text)
         post_id = soup.find("a", {"class": "wp-manga-action-button"})["data-post"]
         data = {"action": "ajax_chap", "post_id": int(post_id)}
-        response, _ = Manytoon.send_request(
+        response, _ = self.send_request(
             "https://manytoon.com/wp-admin/admin-ajax.php",
             method="POST",
             session=session,
             data=data,
         )
-        soup = Manytoon.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         lis = soup.find_all("li", {"class": "wp-manga-chapter"})
         chapters_urls = [li.find("a")["href"].split("/")[-2] for li in lis[::-1]]
         chapters = [
-            {"url": chapter_url, "name": Manytoon.rename_chapter(chapter_url)}
+            {"url": chapter_url, "name": self.rename_chapter(chapter_url)}
             for chapter_url in chapters_urls
         ]
         return chapters
 
-    def get_images(manga, chapter):
-        response, _ = Manytoon.send_request(
+    def get_images(self, manga, chapter):
+        response, _ = self.send_request(
             f"https://manytoon.com/comic/{manga}/{chapter['url']}/"
         )
-        soup = Manytoon.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         images = soup.find("div", {"class": "reading-content"}).find_all("img")
         images = [image["src"].strip() for image in images]
         return images, False
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(self, keyword, absolute):
         from contextlib import suppress
         from requests.exceptions import HTTPError
 
@@ -119,13 +119,13 @@ class Manytoon(Manga):
         session = None
         while True:
             try:
-                response, session = Manytoon.send_request(
+                response, session = self.send_request(
                     f"https://manytoon.com/page/{page}/?s={keyword}&post_type=wp-manga",
                     session=session,
                 )
             except HTTPError:
                 yield {}
-            soup = Manytoon.get_html_parser(response.text)
+            soup = self.get_html_parser(response.text)
             mangas = soup.find_all("div", {"class": "col-6 col-md-3 badge-pos-1"})
             results = {}
             for manga in mangas:
@@ -149,7 +149,7 @@ class Manytoon(Manga):
                         .split("/")[-2]
                     )
                 results[ti] = {
-                    "domain": Manytoon.domain,
+                    "domain": self.domain,
                     "url": link,
                     "latest_chapter": latest_chapter,
                     "thumbnail": manga.find("img")["src"],
@@ -158,5 +158,5 @@ class Manytoon(Manga):
             yield results
             page += 1
 
-    def get_db():
-        return Manytoon.search_by_keyword("", False)
+    def get_db(self):
+        return self.search_by_keyword("", False)

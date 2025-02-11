@@ -5,13 +5,13 @@ class Hentaixcomic(Manga):
     domain = "hentaixcomic.com"
     logo = "https://hentaixcomic.com/wp-content/uploads/2020/07/cropped-Pg_00-1-192x192.jpg"
 
-    def get_info(manga):
+    def get_info(self, manga):
         from contextlib import suppress
 
-        response, _ = Hentaixcomic.send_request(
+        response, _ = self.send_request(
             f"https://hentaixcomic.com/manga/{manga}"
         )
-        soup = Hentaixcomic.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         cover, title, rating, status = 4 * [""]
         extras = {}
         info_box = soup.find("div", {"class": "tab-summary"})
@@ -63,42 +63,42 @@ class Hentaixcomic(Manga):
             "Extras": extras,
         }
 
-    def get_chapters(manga):
+    def get_chapters(self, manga):
         session = Hentaixcomic.create_session()
-        response, session = Hentaixcomic.send_request(
+        response, session = self.send_request(
             f"https://hentaixcomic.com/manga/{manga}"
         )
-        soup = Hentaixcomic.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         manga_id = soup.find("a", {"class": "wp-manga-action-button"})["data-post"]
-        session.headers = {
+        self.headers = {
             "content-type": "application/x-www-form-urlencoded; charset=UTF-8"
         }
         data = f"action=manga_get_chapters&manga={manga_id}"
-        response, session = Hentaixcomic.send_request(
+        response, session = self.send_request(
             "https://hentaixcomic.com/wp-admin/admin-ajax.php",
             method="POST",
             session=session,
             data=data,
         )
-        soup = Hentaixcomic.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         divs = soup.find_all("li", {"class": "wp-manga-chapter"})
         chapters_urls = [div.find("a")["href"].split("/")[-2] for div in divs[::-1]]
         chapters = [
-            {"url": chapter_url, "name": Hentaixcomic.rename_chapter(chapter_url)}
+            {"url": chapter_url, "name": self.rename_chapter(chapter_url)}
             for chapter_url in chapters_urls
         ]
         return chapters
 
-    def get_images(manga, chapter):
-        response, _ = Hentaixcomic.send_request(
+    def get_images(self, manga, chapter):
+        response, _ = self.send_request(
             f"https://hentaixcomic.com/manga/{manga}/{chapter['url']}"
         )
-        soup = Hentaixcomic.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         images = soup.find("div", {"class": "reading-content"}).find_all("img")
         images = [image["src"].strip() for image in images]
         return images, False
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(self, keyword, absolute):
         from contextlib import suppress
         from requests.exceptions import HTTPError
 
@@ -106,13 +106,13 @@ class Hentaixcomic(Manga):
         session = None
         while True:
             try:
-                response, session = Hentaixcomic.send_request(
+                response, session = self.send_request(
                     f"https://hentaixcomic.com/page/{page}/?s={keyword}&post_type=wp-manga",
                     session=session,
                 )
             except HTTPError:
                 yield {}
-            soup = Hentaixcomic.get_html_parser(response.text)
+            soup = self.get_html_parser(response.text)
             mangas = soup.find_all("div", {"class": "row c-tabs-item__content"})
             results = {}
             for manga in mangas:
@@ -163,7 +163,7 @@ class Hentaixcomic(Manga):
                         .split("/")[-2]
                     )
                 results[ti] = {
-                    "domain": Hentaixcomic.domain,
+                    "domain": self.domain,
                     "url": link,
                     "latest_chapter": latest_chapter,
                     "thumbnail": manga.find("img")["src"],
@@ -177,5 +177,5 @@ class Hentaixcomic(Manga):
             yield results
             page += 1
 
-    def get_db():
-        return Hentaixcomic.search_by_keyword("", False)
+    def get_db(self):
+        return self.search_by_keyword("", False)

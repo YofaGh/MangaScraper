@@ -7,11 +7,11 @@ class Manga68(Manga):
         "https://manga68.com/wp-content/uploads/2017/10/cropped-manga68-2-192x192.png"
     )
 
-    def get_info(manga):
+    def get_info(self, manga):
         from contextlib import suppress
 
-        response, _ = Manga68.send_request(f"https://manga68.com/manga/{manga}")
-        soup = Manga68.get_html_parser(response.text)
+        response, _ = self.send_request(f"https://manga68.com/manga/{manga}")
+        soup = self.get_html_parser(response.text)
         cover, title, summary, rating, status = 5 * [""]
         extras = {}
         info_box = soup.find("div", {"class": "tab-summary"})
@@ -66,29 +66,29 @@ class Manga68(Manga):
             "Extras": extras,
         }
 
-    def get_chapters(manga):
-        response, _ = Manga68.send_request(
+    def get_chapters(self, manga):
+        response, _ = self.send_request(
             f"https://manga68.com/manga/{manga}/ajax/chapters/", method="POST"
         )
-        soup = Manga68.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         divs = soup.find_all("li", {"class": "wp-manga-chapter"})
         chapters_urls = [div.find("a")["href"].split("/")[-2] for div in divs[::-1]]
         chapters = [
-            {"url": chapter_url, "name": Manga68.rename_chapter(chapter_url)}
+            {"url": chapter_url, "name": self.rename_chapter(chapter_url)}
             for chapter_url in chapters_urls
         ]
         return chapters
 
-    def get_images(manga, chapter):
-        response, _ = Manga68.send_request(
+    def get_images(self, manga, chapter):
+        response, _ = self.send_request(
             f"https://manga68.com/manga/{manga}/{chapter['url']}/"
         )
-        soup = Manga68.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         images = soup.find("div", {"class": "reading-content"}).find_all("img")
         images = [image["data-src"].strip() for image in images]
         return images, False
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(self, keyword, absolute):
         from contextlib import suppress
         from requests.exceptions import HTTPError
 
@@ -96,7 +96,7 @@ class Manga68(Manga):
         session = None
         while True:
             try:
-                response, session = Manga68.send_request(
+                response, session = self.send_request(
                     f"https://manga68.com/page/{page}/?s={keyword}&post_type=wp-manga",
                     session=session,
                 )
@@ -104,7 +104,7 @@ class Manga68(Manga):
                 yield {}
             if response.url == f"https://manga68.com?s={keyword}&post_type=wp-manga":
                 yield {}
-            soup = Manga68.get_html_parser(response.text)
+            soup = self.get_html_parser(response.text)
             mangas = soup.find_all("div", {"class": "row c-tabs-item__content"})
             results = {}
             for manga in mangas:
@@ -150,7 +150,7 @@ class Manga68(Manga):
                         .split("/")[-2]
                     )
                 results[tilink.get_text(strip=True)] = {
-                    "domain": Manga68.domain,
+                    "domain": self.domain,
                     "url": tilink.find("a")["href"].split("/")[-2],
                     "latest_chapter": latest_chapter,
                     "thumbnail": manga.find("img")["data-src"],
@@ -164,5 +164,5 @@ class Manga68(Manga):
             yield results
             page += 1
 
-    def get_db():
-        return Manga68.search_by_keyword("", False)
+    def get_db(self):
+        return self.search_by_keyword("", False)

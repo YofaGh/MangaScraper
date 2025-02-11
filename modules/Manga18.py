@@ -7,13 +7,13 @@ class Manga18(Manga):
     logo = "https://manga18.club/fav.png?v=1"
     headers = {"User-Agent": LEECH}
 
-    def get_info(manga):
+    def get_info(self, manga):
         from contextlib import suppress
 
-        response, _ = Manga18.send_request(
-            f"https://manga18.club/manhwa/{manga}", headers=Manga18.headers
+        response, _ = self.send_request(
+            f"https://manga18.club/manhwa/{manga}", headers=self.headers
         )
-        soup = Manga18.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         (
             cover,
             title,
@@ -93,27 +93,27 @@ class Manga18(Manga):
             },
         }
 
-    def get_chapters(manga):
-        response, _ = Manga18.send_request(
-            f"https://manga18.club/manhwa/{manga}", headers=Manga18.headers
+    def get_chapters(self, manga):
+        response, _ = self.send_request(
+            f"https://manga18.club/manhwa/{manga}", headers=self.headers
         )
-        soup = Manga18.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         lis = soup.find("div", {"class": "chapter_box"}).find_all("li")
         chapters_urls = [li.find("a")["href"].split("/")[-1] for li in lis[::-1]]
         chapters = [
-            {"url": chapter_url, "name": Manga18.rename_chapter(chapter_url)}
+            {"url": chapter_url, "name": self.rename_chapter(chapter_url)}
             for chapter_url in chapters_urls
         ]
         return chapters
 
-    def get_images(manga, chapter):
+    def get_images(self, manga, chapter):
         import base64
 
-        response, _ = Manga18.send_request(
+        response, _ = self.send_request(
             f"https://manga18.club/manhwa/{manga}/{chapter['url']}",
-            headers=Manga18.headers,
+            headers=self.headers,
         )
-        soup = Manga18.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         script = soup.find(
             lambda tag: tag.name == "script" and "slides_p_path" in tag.text
         )
@@ -122,18 +122,18 @@ class Manga18(Manga):
         images = [base64.b64decode(image).decode("utf-8") for image in images]
         return images, False
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(self, keyword, absolute):
         from contextlib import suppress
 
         page = 1
         session = None
         while True:
-            response, session = Manga18.send_request(
+            response, session = self.send_request(
                 f"https://manga18.club/list-manga/{page}?search={keyword}",
                 session=session,
-                headers=Manga18.headers,
+                headers=self.headers,
             )
-            soup = Manga18.get_html_parser(response.text)
+            soup = self.get_html_parser(response.text)
             mangas = soup.find_all("div", {"class": "col-md-3 col-sm-4 col-xs-6"})
             if not mangas:
                 yield {}
@@ -150,7 +150,7 @@ class Manga18(Manga):
                         .split("/")[-1]
                     )
                 results[ti.get_text(strip=True)] = {
-                    "domain": Manga18.domain,
+                    "domain": self.domain,
                     "url": ti["href"].split("/")[-1],
                     "thumbnail": manga.find("img")["src"],
                     "latest_chapter": latest_chapter,
@@ -159,5 +159,5 @@ class Manga18(Manga):
             yield results
             page += 1
 
-    def get_db():
-        return Manga18.search_by_keyword("", False)
+    def get_db(self):
+        return self.search_by_keyword("", False)

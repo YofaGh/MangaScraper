@@ -5,11 +5,11 @@ class Nyahentai(Doujin):
     domain = "nyahentai.red"
     logo = "https://nyahentai.red/front/logo.svg"
 
-    def get_info(code):
+    def get_info(self, code):
         from contextlib import suppress
 
-        response, _ = Nyahentai.send_request(f"https://nyahentai.red/g/{code}")
-        soup = Nyahentai.get_html_parser(response.text)
+        response, _ = self.send_request(f"https://nyahentai.red/g/{code}")
+        soup = self.get_html_parser(response.text)
         cover, title, alternative, pages, uploaded = 5 * [""]
         info_box = soup.find("div", {"id": "info"})
         extras = {}
@@ -48,15 +48,15 @@ class Nyahentai(Doujin):
             "Dates": {"Uploaded": uploaded},
         }
 
-    def get_title(code):
-        response, _ = Nyahentai.send_request(f"https://nyahentai.red/g/{code}")
-        soup = Nyahentai.get_html_parser(response.text)
+    def get_title(self, code):
+        response, _ = self.send_request(f"https://nyahentai.red/g/{code}")
+        soup = self.get_html_parser(response.text)
         title = soup.find("h1", {"class", "title"}).find("span").get_text(strip=True)
         return title
 
-    def get_images(code):
-        response, _ = Nyahentai.send_request(f"https://nyahentai.red/g/{code}/")
-        soup = Nyahentai.get_html_parser(response.text)
+    def get_images(self, code):
+        response, _ = self.send_request(f"https://nyahentai.red/g/{code}/")
+        soup = self.get_html_parser(response.text)
         divs = soup.find_all("a", {"class": "gallerythumb"})
         images = [div.find("img")["data-src"] for div in divs]
         new_images = []
@@ -65,20 +65,20 @@ class Nyahentai(Doujin):
             new_images.append(f"{image.rsplit('/', 1)[0]}/{name}")
         return new_images, False
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(self, keyword, absolute):
         from requests.exceptions import HTTPError
 
         page = 1
         session = None
         while True:
             try:
-                response, session = Nyahentai.send_request(
+                response, session = self.send_request(
                     f"https://nyahentai.red/search?q={keyword}&page={page}",
                     session=session,
                 )
             except HTTPError:
                 yield {}
-            soup = Nyahentai.get_html_parser(response.text)
+            soup = self.get_html_parser(response.text)
             doujins = soup.find_all("div", {"class": "gallery"})
             if not doujins:
                 yield {}
@@ -90,7 +90,7 @@ class Nyahentai(Doujin):
                 ):
                     continue
                 results[doujin.get_text(strip=True)] = {
-                    "domain": Nyahentai.domain,
+                    "domain": self.domain,
                     "code": doujin.find("a")["href"].split("/")[-2],
                     "thumbnail": doujin.find("img")["src"],
                     "page": page,
@@ -98,5 +98,5 @@ class Nyahentai(Doujin):
             yield results
             page += 1
 
-    def get_db():
-        return Nyahentai.search_by_keyword("", False)
+    def get_db(self):
+        return self.search_by_keyword("", False)

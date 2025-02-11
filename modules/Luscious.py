@@ -5,12 +5,12 @@ class Luscious(Doujin):
     domain = "luscious.net"
     logo = "https://www.luscious.net/assets/logo.png"
 
-    def get_info(code):
+    def get_info(self, code):
         from datetime import datetime
         from contextlib import suppress
 
-        response, _ = Luscious.send_request(f"https://www.luscious.net/albums/{code}")
-        soup = Luscious.get_html_parser(response.text)
+        response, _ = self.send_request(f"https://www.luscious.net/albums/{code}")
+        soup = self.get_html_parser(response.text)
         cover, title, alternative, pages = 4 * [""]
         info_box = soup.find("div", {"class": "album-info-wrapper"})
         extras, dates, tags = {}, {}, []
@@ -61,15 +61,15 @@ class Luscious(Doujin):
             "Dates": dates,
         }
 
-    def get_title(code):
-        response, _ = Luscious.send_request(f"https://www.luscious.net/albums/{code}")
-        soup = Luscious.get_html_parser(response.text)
+    def get_title(self, code):
+        response, _ = self.send_request(f"https://www.luscious.net/albums/{code}")
+        soup = self.get_html_parser(response.text)
         title = soup.find("h1", {"class", "o-h1 album-heading"}).get_text(strip=True)
         return title
 
-    def get_images(code):
+    def get_images(self, code):
         data = "https://apicdn.luscious.net/graphql/nobatch/?operationName=PictureListInsideAlbum&query=%2520query%2520PictureListInsideAlbum%28%2524input%253A%2520PictureListInput%21%29%2520%257B%2520picture%2520%257B%2520list%28input%253A%2520%2524input%29%2520%257B%2520info%2520%257B%2520...FacetCollectionInfo%2520%257D%2520items%2520%257B%2520url_to_original%2520position%2520%257B%2520category%2520text%2520url%2520%257D%2520thumbnails%2520%257B%2520width%2520height%2520size%2520url%2520%257D%2520%257D%2520%257D%2520%257D%2520%257D%2520fragment%2520FacetCollectionInfo%2520on%2520FacetCollectionInfo%2520%257B%2520page%2520total_pages%2520%257D%2520&variables=%7B%22input%22%3A%7B%22filters%22%3A%5B%7B%22name%22%3A%22album_id%22%2C%22value%22%3A%22__album__id__%22%7D%5D%2C%22display%22%3A%22position%22%2C%22items_per_page%22%3A50%2C%22page%22%3A__page__number__%7D%7D"
-        response, session = Luscious.send_request(
+        response, session = self.send_request(
             data.replace("__album__id__", str(code)).replace("__page__number__", "1")
         )
         response = response.json()
@@ -79,7 +79,7 @@ class Luscious(Doujin):
             for item in response["data"]["picture"]["list"]["items"]
         ]
         for page in range(2, total_pages + 1):
-            response, session = Luscious.send_request(
+            response, session = self.send_request(
                 data.replace("__album__id__", str(code)).replace(
                     "__page__number__", str(page)
                 ),
@@ -92,7 +92,7 @@ class Luscious(Doujin):
             images.extend(new_images)
         return images, False
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(self, keyword, absolute):
         from contextlib import suppress
         from requests.exceptions import HTTPError
 
@@ -104,7 +104,7 @@ class Luscious(Doujin):
             if page > total_pages:
                 yield {}
             try:
-                response, session = Luscious.send_request(
+                response, session = self.send_request(
                     data.replace("__keyword__", keyword).replace(
                         "__page__number__", str(page)
                     ),
@@ -126,7 +126,7 @@ class Luscious(Doujin):
                 if absolute and keyword.lower() not in doujin["title"].lower():
                     continue
                 results[doujin["title"]] = {
-                    "domain": Luscious.domain,
+                    "domain": self.domain,
                     "code": doujin["id"],
                     "thumbnail": doujin["cover"]["url"],
                     "genres": genres,
@@ -136,5 +136,5 @@ class Luscious(Doujin):
             yield results
             page += 1
 
-    def get_db():
-        return Luscious.search_by_keyword("", False)
+    def get_db(self):
+        return self.search_by_keyword("", False)

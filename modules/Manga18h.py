@@ -4,11 +4,11 @@ from utils.models import Manga
 class Manga18h(Manga):
     domain = "manga18h.com"
 
-    def get_info(manga):
+    def get_info(self, manga):
         from contextlib import suppress
 
-        response, _ = Manga18h.send_request(f"https://manga18h.com/manga/{manga}")
-        soup = Manga18h.get_html_parser(response.text)
+        response, _ = self.send_request(f"https://manga18h.com/manga/{manga}")
+        soup = self.get_html_parser(response.text)
         cover, title, summary, rating, status = 5 * [""]
         extras = {}
         info_box = soup.find("div", {"class": "tab-summary"})
@@ -65,27 +65,27 @@ class Manga18h(Manga):
             "Extras": extras,
         }
 
-    def get_chapters(manga):
-        response, _ = Manga18h.send_request(f"https://manga18h.com/manga/{manga}")
-        soup = Manga18h.get_html_parser(response.text)
+    def get_chapters(self, manga):
+        response, _ = self.send_request(f"https://manga18h.com/manga/{manga}")
+        soup = self.get_html_parser(response.text)
         divs = soup.find_all("li", {"class": "wp-manga-chapter"})
         chapters_urls = [div.find("a")["href"].split("/")[-2] for div in divs[::-1]]
         chapters = [
-            {"url": chapter_url, "name": Manga18h.rename_chapter(chapter_url)}
+            {"url": chapter_url, "name": self.rename_chapter(chapter_url)}
             for chapter_url in chapters_urls
         ]
         return chapters
 
-    def get_images(manga, chapter):
-        response, _ = Manga18h.send_request(
+    def get_images(self, manga, chapter):
+        response, _ = self.send_request(
             f"https://manga18h.com/manga/{manga}/{chapter['url']}"
         )
-        soup = Manga18h.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         images = soup.find("div", {"class": "reading-content"}).find_all("img")
         images = [image["src"].strip() for image in images]
         return images, False
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(self, keyword, absolute):
         from contextlib import suppress
         from requests.exceptions import HTTPError
 
@@ -93,13 +93,13 @@ class Manga18h(Manga):
         session = None
         while True:
             try:
-                response, session = Manga18h.send_request(
+                response, session = self.send_request(
                     f"https://manga18h.com/page/{page}/?s={keyword}&post_type=wp-manga",
                     session=session,
                 )
             except HTTPError:
                 yield {}
-            soup = Manga18h.get_html_parser(response.text)
+            soup = self.get_html_parser(response.text)
             mangas = soup.find_all("div", {"class": "row c-tabs-item__content"})
             results = {}
             for manga in mangas:
@@ -140,7 +140,7 @@ class Manga18h(Manga):
                         .split("/")[-2]
                     )
                 results[ti] = {
-                    "domain": Manga18h.domain,
+                    "domain": self.domain,
                     "url": link,
                     "latest_chapter": latest_chapter,
                     "thumbnail": manga.find("img")["src"],
@@ -153,5 +153,5 @@ class Manga18h(Manga):
             yield results
             page += 1
 
-    def get_db():
-        return Manga18h.search_by_keyword("", False)
+    def get_db(self):
+        return self.search_by_keyword("", False)

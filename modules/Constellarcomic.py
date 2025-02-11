@@ -7,14 +7,14 @@ class Constellarcomic(Manga):
     logo = "https://constellarcomic.com/wp-content/uploads/2022/11/Constellar-Logo-Rounded-000.png"
     headers = {"User-Agent": LEECH}
 
-    def get_info(manga):
+    def get_info(self, manga):
         from contextlib import suppress
 
-        response, _ = Constellarcomic.send_request(
+        response, _ = self.send_request(
             f"https://constellarcomic.com/manga/{manga}/",
-            headers=Constellarcomic.headers,
+            headers=self.headers,
         )
-        soup = Constellarcomic.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         cover, title, alternative, summary, rating, status = 6 * [""]
         info_box = soup.find("div", {"class": "main-info"})
         extras = {}
@@ -63,33 +63,33 @@ class Constellarcomic(Manga):
             "Extras": extras,
         }
 
-    def get_chapters(manga):
-        response, _ = Constellarcomic.send_request(
+    def get_chapters(self, manga):
+        response, _ = self.send_request(
             f"https://constellarcomic.com/manga/{manga}/",
-            headers=Constellarcomic.headers,
+            headers=self.headers,
         )
-        soup = Constellarcomic.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         links = soup.find("div", {"id": "chapterlist"}).find_all("a")
         chapters_urls = [
             link["href"].split("/")[-2].replace(f"{manga}-", "") for link in links[::-1]
         ]
         chapters = [
-            {"url": chapter_url, "name": Constellarcomic.rename_chapter(chapter_url)}
+            {"url": chapter_url, "name": self.rename_chapter(chapter_url)}
             for chapter_url in chapters_urls
         ]
         return chapters
 
-    def get_images(manga, chapter):
+    def get_images(self, manga, chapter):
         import json
 
         chapter_url = chapter["url"]
         if f"{manga}-" in chapter_url:
             chapter_url = chapter_url.replace(f"{manga}-", "")
-        response, _ = Constellarcomic.send_request(
+        response, _ = self.send_request(
             f"https://constellarcomic.com/{manga}-{chapter_url}/",
-            headers=Constellarcomic.headers,
+            headers=self.headers,
         )
-        soup = Constellarcomic.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         script = soup.find(
             lambda tag: tag.name == "script" and "NO IMAGE YET" in tag.text
         )
@@ -99,18 +99,18 @@ class Constellarcomic(Manga):
         images = images["sources"][0]["images"]
         return images, False
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(self, keyword, absolute):
         from contextlib import suppress
 
         page = 1
         session = None
         while True:
-            response, session = Constellarcomic.send_request(
+            response, session = self.send_request(
                 f"https://constellarcomic.com/page/{page}/?s={keyword}",
                 session=session,
-                headers=Constellarcomic.headers,
+                headers=self.headers,
             )
-            soup = Constellarcomic.get_html_parser(response.text)
+            soup = self.get_html_parser(response.text)
             mangas = soup.find_all("div", {"class": "bs swiper-slide"})
             if (
                 not mangas
@@ -126,7 +126,7 @@ class Constellarcomic(Manga):
                 with suppress(Exception):
                     status = ti.find("i").get_text(strip=True)
                 results[ti["title"]] = {
-                    "domain": Constellarcomic.domain,
+                    "domain": self.domain,
                     "url": ti["href"].split("/")[-2],
                     "thumbnail": manga.find("img")["src"],
                     "status": status,
@@ -135,5 +135,5 @@ class Constellarcomic(Manga):
             yield results
             page += 1
 
-    def get_db():
-        return Constellarcomic.search_by_keyword("", False)
+    def get_db(self):
+        return self.search_by_keyword("", False)

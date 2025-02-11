@@ -8,11 +8,11 @@ class Nhentai_Com(Doujin):
     headers = {"User-Agent": LEECH}
     is_coded = False
 
-    def get_info(code):
+    def get_info(self, code):
         from datetime import datetime
 
-        response, _ = Nhentai_Com.send_request(
-            f"https://nhentai.com/api/comics/{code}", headers=Nhentai_Com.headers
+        response, _ = self.send_request(
+            f"https://nhentai.com/api/comics/{code}", headers=self.headers
         )
         response = response.json()
         return {
@@ -44,30 +44,30 @@ class Nhentai_Com(Doujin):
             },
         }
 
-    def get_title(code):
-        response, _ = Nhentai_Com.send_request(
-            f"https://nhentai.com/api/comics/{code}", headers=Nhentai_Com.headers
+    def get_title(self, code):
+        response, _ = self.send_request(
+            f"https://nhentai.com/api/comics/{code}", headers=self.headers
         )
         return response.json()["title"]
 
-    def get_images(code):
-        response, _ = Nhentai_Com.send_request(
-            f"https://nhentai.com/api/comics/{code}/images", headers=Nhentai_Com.headers
+    def get_images(self, code):
+        response, _ = self.send_request(
+            f"https://nhentai.com/api/comics/{code}/images", headers=self.headers
         )
         images = [image["source_url"] for image in response.json()["images"]]
         return images, False
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(self, keyword, absolute):
         from contextlib import suppress
 
         page = 1
         tail = "&sort=title" if not keyword else ""
         session = None
         while True:
-            response, session = Nhentai_Com.send_request(
+            response, session = self.send_request(
                 f"https://nhentai.com/api/comics?page={page}&q={keyword}{tail}",
                 session=session,
-                headers=Nhentai_Com.headers,
+                headers=self.headers,
             )
             doujins = response.json()["data"]
             if not doujins:
@@ -84,7 +84,7 @@ class Nhentai_Com(Doujin):
                 with suppress(Exception):
                     tags = ", ".join([tag["name"] for tag in doujin["tags"]])
                 results[doujin["title"]] = {
-                    "domain": Nhentai_Com.domain,
+                    "domain": self.domain,
                     "code": doujin["slug"],
                     "thumbnail": doujin["image_url"],
                     "category": category,
@@ -95,5 +95,5 @@ class Nhentai_Com(Doujin):
             yield results
             page += 1
 
-    def get_db():
-        return Nhentai_Com.search_by_keyword("", False)
+    def get_db(self):
+        return self.search_by_keyword("", False)

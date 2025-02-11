@@ -6,11 +6,11 @@ class Truemanga(Manga):
     logo = "https://truemanga.com/static/sites/truemanga/icons/favicon.ico"
     download_images_headers = {"Referer": "https://truemanga.com/"}
 
-    def get_info(manga):
+    def get_info(self, manga):
         from contextlib import suppress
 
-        response, _ = Truemanga.send_request(f"https://truemanga.com/{manga}")
-        soup = Truemanga.get_html_parser(response.text)
+        response, _ = self.send_request(f"https://truemanga.com/{manga}")
+        soup = self.get_html_parser(response.text)
         cover, title, alternative, summary, status = 5 * [""]
         extras = {}
         info_box = soup.find("div", {"class": "book-info"})
@@ -58,17 +58,17 @@ class Truemanga(Manga):
             "Extras": extras,
         }
 
-    def get_chapters(manga):
-        response, session = Truemanga.send_request(f"https://truemanga.com/{manga}")
-        soup = Truemanga.get_html_parser(response.text)
+    def get_chapters(self, manga):
+        response, session = self.send_request(f"https://truemanga.com/{manga}")
+        soup = self.get_html_parser(response.text)
         script = soup.find(
             lambda tag: tag.name == "script" and "bookId" in tag.text
         ).text
         book_id = script.split("bookId = ")[1].split(";", 1)[0]
-        response, session = Truemanga.send_request(
+        response, session = self.send_request(
             f"https://truemanga.com/api/manga/{book_id}/chapters", session=session
         )
-        soup = Truemanga.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         chapters = [
             {
                 "url": chapter["value"].split("/")[-1],
@@ -78,11 +78,11 @@ class Truemanga(Manga):
         ]
         return chapters
 
-    def get_images(manga, chapter):
-        response, _ = Truemanga.send_request(
+    def get_images(self, manga, chapter):
+        response, _ = self.send_request(
             f"https://truemanga.com/{manga}/{chapter['url']}"
         )
-        soup = Truemanga.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         script = soup.find(
             lambda tag: tag.name == "script" and "chapImages" in tag.text
         ).text
@@ -93,7 +93,7 @@ class Truemanga(Manga):
         ]
         return images, save_names
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(self, keyword, absolute):
         from contextlib import suppress
         from requests.exceptions import HTTPError
 
@@ -106,12 +106,12 @@ class Truemanga(Manga):
         session = None
         while True:
             try:
-                response, session = Truemanga.send_request(
+                response, session = self.send_request(
                     template.replace("P_P_P_P", str(page)), session=session
                 )
             except HTTPError:
                 yield {}
-            soup = Truemanga.get_html_parser(response.text)
+            soup = self.get_html_parser(response.text)
             mangas = soup.find_all("div", {"class": "book-item"})
             if not mangas:
                 yield {}
@@ -134,7 +134,7 @@ class Truemanga(Manga):
                         strip=True
                     )
                 results[ti] = {
-                    "domain": Truemanga.domain,
+                    "domain": self.domain,
                     "url": manga.find("div", {"class": "title"})
                     .find("a")["href"]
                     .split("/")[-1],
@@ -147,5 +147,5 @@ class Truemanga(Manga):
             yield results
             page += 1
 
-    def get_db():
-        return Truemanga.search_by_keyword("", False)
+    def get_db(self):
+        return self.search_by_keyword("", False)

@@ -6,8 +6,8 @@ class Hentaihand(Doujin):
     logo = "https://hentaihand.com/images/icon.png"
     is_coded = False
 
-    def get_info(code):
-        response, _ = Hentaihand.send_request(
+    def get_info(self, code):
+        response, _ = self.send_request(
             f"https://hentaihand.com/api/comics/{code}"
         )
         response = response.json()
@@ -34,20 +34,20 @@ class Hentaihand(Doujin):
             "Dates": {"Uploaded At": f"{response['uploaded_at']} 00:00:00"},
         }
 
-    def get_title(code):
-        response, _ = Hentaihand.send_request(
+    def get_title(self, code):
+        response, _ = self.send_request(
             f"https://hentaihand.com/api/comics/{code}"
         )
         return response.json()["title"]
 
-    def get_images(code):
-        response, _ = Hentaihand.send_request(
+    def get_images(self, code):
+        response, _ = self.send_request(
             f"https://hentaihand.com/api/comics/{code}/images"
         )
         images = [image["source_url"] for image in response.json()["images"]]
         return images, False
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(self, keyword, absolute):
         params = {
             "page": 1,
             "q": keyword,
@@ -55,7 +55,7 @@ class Hentaihand(Doujin):
         }
         session = None
         while True:
-            response, session = Hentaihand.send_request(
+            response, session = self.send_request(
                 "https://hentaihand.com/api/comics", session=session, params=params
             )
             response = response.json()
@@ -66,7 +66,7 @@ class Hentaihand(Doujin):
                 if absolute and keyword.lower() not in doujin["title"].lower():
                     continue
                 results[doujin["title"]] = {
-                    "domain": Hentaihand.domain,
+                    "domain": self.domain,
                     "code": doujin["slug"],
                     "thumbnail": doujin["image_url"],
                     "alternative": doujin["alternative_title"],
@@ -84,5 +84,5 @@ class Hentaihand(Doujin):
             yield results
             params["page"] += 1
 
-    def get_db():
-        return Hentaihand.search_by_keyword("", False)
+    def get_db(self):
+        return self.search_by_keyword("", False)

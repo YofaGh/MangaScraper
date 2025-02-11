@@ -5,9 +5,9 @@ class Mangadex(Manga):
     domain = "mangadex.org"
     logo = "https://mangadex.org/favicon.ico"
 
-    def get_info(manga):
+    def get_info(self, manga):
         manga = manga.split("/")[0] if "/" in manga else manga
-        response, _ = Mangadex.send_request(
+        response, _ = self.send_request(
             f"https://api.mangadex.org/manga/{manga}?includes[]=artist&includes[]=author&includes[]=cover_art"
         )
         data = response.json()["data"]
@@ -47,7 +47,7 @@ class Mangadex(Manga):
             },
         }
 
-    def get_chapters(manga):
+    def get_chapters(self, manga):
         manga = manga.split("/")[0] if "/" in manga else manga
         chapters = []
         params = {
@@ -57,7 +57,7 @@ class Mangadex(Manga):
             "offset": 0,
         }
         while True:
-            response, _ = Mangadex.send_request(
+            response, _ = self.send_request(
                 f"https://api.mangadex.org/manga/{manga}/feed", params=params
             )
             response = response.json()
@@ -67,7 +67,7 @@ class Mangadex(Manga):
                 [
                     {
                         "url": chapter["id"],
-                        "name": Mangadex.rename_chapter(
+                        "name": self.rename_chapter(
                             chapter["attributes"]["chapter"]
                         ),
                     }
@@ -79,8 +79,8 @@ class Mangadex(Manga):
             params["offset"] += 500
         return chapters
 
-    def get_images(manga, chapter):
-        response, _ = Mangadex.send_request(
+    def get_images(self, manga, chapter):
+        response, _ = self.send_request(
             f"https://api.mangadex.org/at-home/server/{chapter['url']}"
         )
         response = response.json()
@@ -90,7 +90,7 @@ class Mangadex(Manga):
         ]
         return images, False
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(self, keyword, absolute):
         from requests.exceptions import HTTPError
 
         page = 1
@@ -109,7 +109,7 @@ class Mangadex(Manga):
         while True:
             params["offset"] = (page - 1) * 100
             try:
-                response, session = Mangadex.send_request(
+                response, session = self.send_request(
                     url, session=session, params=params
                 )
             except HTTPError:
@@ -133,7 +133,7 @@ class Mangadex(Manga):
                 except Exception:
                     pass
                 results[title] = {
-                    "domain": Mangadex.domain,
+                    "domain": self.domain,
                     "url": manga["id"],
                     "summary": summary.get("en") or summary[list(summary)[0]],
                     "original_language": manga["attributes"]["originalLanguage"],
@@ -152,5 +152,5 @@ class Mangadex(Manga):
             yield results
             page += 1
 
-    def get_db():
-        return Mangadex.search_by_keyword("", False)
+    def get_db(self):
+        return self.search_by_keyword("", False)

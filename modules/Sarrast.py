@@ -4,11 +4,11 @@ from utils.models import Manga
 class Sarrast(Manga):
     domain = "sarrast.com"
 
-    def get_info(manga):
+    def get_info(self, manga):
         from contextlib import suppress
 
-        response, _ = Sarrast.send_request(f"https://sarrast.com/series/{manga}")
-        soup = Sarrast.get_html_parser(response.text)
+        response, _ = self.send_request(f"https://sarrast.com/series/{manga}")
+        soup = self.get_html_parser(response.text)
         cover, title, summary, rating, status, chapters, posted_on, type = 8 * [""]
         info_boxes = soup.find(
             "div",
@@ -45,9 +45,9 @@ class Sarrast(Manga):
             "Extras": {"قسمت": chapters, "تاریخ انتشار": posted_on, "کتگوری": type},
         }
 
-    def get_chapters(manga):
-        response, _ = Sarrast.send_request(f"https://sarrast.com/series/{manga}")
-        soup = Sarrast.get_html_parser(response.text)
+    def get_chapters(self, manga):
+        response, _ = self.send_request(f"https://sarrast.com/series/{manga}")
+        soup = self.get_html_parser(response.text)
         divs = soup.find(
             "div", {"class": "text-white mb-20 mt-8 relative px-4"}
         ).find_all("a")
@@ -55,14 +55,14 @@ class Sarrast(Manga):
         chapters = [
             {
                 "url": chapter_url,
-                "name": Sarrast.rename_chapter(chapter_url.rsplit("-", 1)[0]),
+                "name": self.rename_chapter(chapter_url.rsplit("-", 1)[0]),
             }
             for chapter_url in chapters_urls
         ]
         return chapters
 
-    def get_images(manga, chapter):
-        response, _ = Sarrast.send_request(
+    def get_images(self, manga, chapter):
+        response, _ = self.send_request(
             f"https://sarrast.com/series/{manga}/{chapter['url']}/api"
         )
         images = [
@@ -73,11 +73,11 @@ class Sarrast(Manga):
         ]
         return images, save_names
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(self, keyword, absolute):
         from requests.exceptions import HTTPError
 
         try:
-            response, _ = Sarrast.send_request(
+            response, _ = self.send_request(
                 f"https://sarrast.com/search?value={keyword}"
             )
             mangas = response.json()
@@ -86,7 +86,7 @@ class Sarrast(Manga):
                 yield results
             for manga in mangas:
                 results[manga["title"]] = {
-                    "domain": Sarrast.domain,
+                    "domain": self.domain,
                     "url": manga["slug"],
                     "page": 1,
                     "thumbnail": "",
@@ -96,5 +96,5 @@ class Sarrast(Manga):
             yield {}
         yield {}
 
-    def get_db():
-        return Sarrast.search_by_keyword("", False)
+    def get_db(self):
+        return self.search_by_keyword("", False)

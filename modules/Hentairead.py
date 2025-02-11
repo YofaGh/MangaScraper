@@ -8,14 +8,14 @@ class Hentairead(Doujin):
     headers = {"User-Agent": MOZILLA}
     is_coded = False
 
-    def get_info(code):
+    def get_info(self, code):
         from contextlib import suppress
         from datetime import datetime
 
-        response, _ = Hentairead.send_request(
-            f"https://hentairead.com/hentai/{code}/", headers=Hentairead.headers
+        response, _ = self.send_request(
+            f"https://hentairead.com/hentai/{code}/", headers=self.headers
         )
-        soup = Hentairead.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         cover, title, alternative, pages, uploaded, rating = 6 * [""]
         extras = {}
         with suppress(Exception):
@@ -71,26 +71,26 @@ class Hentairead(Doujin):
             },
         }
 
-    def get_title(code):
-        response, _ = Hentairead.send_request(
-            f"https://hentairead.com/hentai/{code}/", headers=Hentairead.headers
+    def get_title(self, code):
+        response, _ = self.send_request(
+            f"https://hentairead.com/hentai/{code}/", headers=self.headers
         )
-        soup = Hentairead.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         title = soup.find("h1").get_text(strip=True)
         return title
 
-    def get_images(code):
-        response, _ = Hentairead.send_request(
-            f"https://hentairead.com/hentai/{code}/", headers=Hentairead.headers
+    def get_images(self, code):
+        response, _ = self.send_request(
+            f"https://hentairead.com/hentai/{code}/", headers=self.headers
         )
-        soup = Hentairead.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         images = soup.find(
             "ul", {"class": "chapter-images-list lazy-listing__list"}
         ).find_all("img")
         images = [image["data-src"].split("?", 1)[0] for image in images]
         return images, False
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(self, keyword, absolute):
         from contextlib import suppress
         from requests.exceptions import HTTPError
 
@@ -101,14 +101,14 @@ class Hentairead(Doujin):
             template = "https://hentairead.com/hentai/page/P_P_P_P/?m_orderby=alphabet&m_order=desc"
         while True:
             try:
-                response, session = Hentairead.send_request(
+                response, session = self.send_request(
                     template.replace("P_P_P_P", str(page)),
                     session=session,
-                    headers=Hentairead.headers,
+                    headers=self.headers,
                 )
             except HTTPError:
                 yield {}
-            soup = Hentairead.get_html_parser(response.text)
+            soup = self.get_html_parser(response.text)
             doujins = soup.find_all("div", {"class": "grid-item badge-pos-1"})
             if not doujins:
                 yield {}
@@ -160,7 +160,7 @@ class Hentairead(Doujin):
                         )
                     )
                 results[ti.get_text(strip=True)] = {
-                    "domain": Hentairead.domain,
+                    "domain": self.domain,
                     "code": ti["href"].split("/")[-2],
                     "thumbnail": doujin.find("img")["data-src"].split("?", 1)[0],
                     "alternative": alternative,
@@ -175,5 +175,5 @@ class Hentairead(Doujin):
             yield results
             page += 1
 
-    def get_db():
-        return Hentairead.search_by_keyword("", False)
+    def get_db(self):
+        return self.search_by_keyword("", False)

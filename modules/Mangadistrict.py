@@ -5,13 +5,13 @@ class Mangadistrict(Manga):
     domain = "mangadistrict.com"
     logo = "https://mangadistrict.com/wp-content/uploads/2021/02/cropped-Copie-de-Copie-de-MANGADISTRICT_5-192x192.png"
 
-    def get_info(manga):
+    def get_info(self, manga):
         from contextlib import suppress
 
-        response, _ = Mangadistrict.send_request(
+        response, _ = self.send_request(
             f"https://mangadistrict.com/read-scan/{manga}"
         )
-        soup = Mangadistrict.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         cover, title, alternative, summary, rating, status = 6 * [""]
         extras = {}
         info_box = soup.find("div", {"class": "tab-summary"})
@@ -80,24 +80,24 @@ class Mangadistrict(Manga):
             "Extras": extras,
         }
 
-    def get_chapters(manga):
-        response, _ = Mangadistrict.send_request(
+    def get_chapters(self, manga):
+        response, _ = self.send_request(
             f"https://mangadistrict.com/read-scan/{manga}/ajax/chapters/", method="POST"
         )
-        soup = Mangadistrict.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         divs = soup.find_all("li", {"class": "wp-manga-chapter"})
         chapters_urls = [div.find("a")["href"].split("/")[-2] for div in divs[::-1]]
         chapters = [
-            {"url": chapter_url, "name": Mangadistrict.rename_chapter(chapter_url)}
+            {"url": chapter_url, "name": self.rename_chapter(chapter_url)}
             for chapter_url in chapters_urls
         ]
         return chapters
 
-    def get_images(manga, chapter):
-        response, _ = Mangadistrict.send_request(
+    def get_images(self, manga, chapter):
+        response, _ = self.send_request(
             f"https://mangadistrict.com/read-scan/{manga}/{chapter['url']}/"
         )
-        soup = Mangadistrict.get_html_parser(response.text)
+        soup = self.get_html_parser(response.text)
         images = soup.find("div", {"class": "reading-content"}).find_all("img")
         images = [image["src"].strip() for image in images]
         save_names = [
@@ -105,7 +105,7 @@ class Mangadistrict(Manga):
         ]
         return images, save_names
 
-    def search_by_keyword(keyword, absolute):
+    def search_by_keyword(self, keyword, absolute):
         from contextlib import suppress
         from requests.exceptions import HTTPError
 
@@ -118,12 +118,12 @@ class Mangadistrict(Manga):
         session = None
         while True:
             try:
-                response, session = Mangadistrict.send_request(
+                response, session = self.send_request(
                     template.replace("P_P_P_P", str(page)), session=session
                 )
             except HTTPError:
                 yield {}
-            soup = Mangadistrict.get_html_parser(response.text)
+            soup = self.get_html_parser(response.text)
             mangas = soup.find_all("div", {"class": "row c-tabs-item__content"})
             results = {}
             for manga in mangas:
@@ -169,7 +169,7 @@ class Mangadistrict(Manga):
                         .split("/")[-2]
                     )
                 results[tilink.get_text(strip=True)] = {
-                    "domain": Mangadistrict.domain,
+                    "domain": self.domain,
                     "url": tilink.find("a")["href"].split("/")[-2],
                     "latest_chapter": latest_chapter,
                     "thumbnail": manga.find("img")["src"],
@@ -183,5 +183,5 @@ class Mangadistrict(Manga):
             yield results
             page += 1
 
-    def get_db():
-        return Mangadistrict.search_by_keyword("", False)
+    def get_db(self):
+        return self.search_by_keyword("", False)

@@ -50,25 +50,28 @@ class Module:
         except Exception:
             return None
 
+    @staticmethod
     def get_html_parser(text):
         return BeautifulSoup(text, "html.parser")
 
+    @staticmethod
     def get_xml_parser(text):
         return BeautifulSoup(text, "xml")
 
-    def get_info() -> dict:
+    def get_info(self) -> dict:
         return {}
 
-    def get_images() -> tuple[list[str], bool | list[str]]:
+    def get_images(self) -> tuple[list[str], bool | list[str]]:
         return [], False
 
 
 class Manga(Module):
     type = __qualname__
 
-    def get_chapters() -> list[dict]:
+    def get_chapters(self) -> list[dict]:
         return []
 
+    @staticmethod
     def rename_chapter(chapter: str) -> str:
         new_name = ""
         reached_number = False
@@ -91,5 +94,5 @@ class Doujin(Module):
     type = __qualname__
     is_coded = True
 
-    def get_title() -> str:
+    def get_title(self) -> str:
         return ""
