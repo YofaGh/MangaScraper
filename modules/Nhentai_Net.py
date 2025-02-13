@@ -51,7 +51,7 @@ class Nhentai_Net(Doujin):
     def get_title(self, code):
         response, _ = self.send_request(f"https://nhentai.net/g/{code}")
         soup = self.get_html_parser(response.text)
-        title = soup.find("h1", {"class", "title"}).find("span").get_text(strip=True)
+        title = soup.find("h1", {"class", "title"}).get_text(strip=True)
         return title
 
     def get_images(self, code):
