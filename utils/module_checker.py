@@ -2,18 +2,13 @@ import os
 from contextlib import suppress
 from utils.models import Manga, Doujin
 from utils.logger import log_over, log
-from utils.modules_contributer import get_modules
+from utils.modules_contributer import get_modules, _load_cached_modules_yaml
 from utils.exceptions import MissingFunctionException
-from utils.assets import (
-    validate_corrupted_image,
-    validate_truncated_image,
-    load_modules_yaml_file,
-    sleep,
-)
+from utils.assets import validate_corrupted_image, validate_truncated_image, sleep
 
 
 def check_modules(domains: list[str] | None = None) -> None:
-    modules = load_modules_yaml_file()
+    modules = _load_cached_modules_yaml()
     domains = domains or modules.keys()
     for domain in domains:
         module = get_modules(domain)
